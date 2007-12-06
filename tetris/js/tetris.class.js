@@ -88,7 +88,6 @@ Tetris.prototype.start = function()	{
 	this.gameState = GameState.underway;
 	this.shiftFigure();
 	this.speedup();
-	this.speedingUp.start();
 	this.onScore(this.score.points);
 }
 
@@ -203,8 +202,10 @@ Tetris.prototype.keyDown = function(event)	{
 }
 
 Tetris.prototype.speedup = function()	{
+	console.log('speedup');
 	this.speed += .1;
 	this.speedElt.innerHTML = this.speed.toFixed(1);
+	this.speedingUp.start();
 }
 
 Tetris.prototype.shiftFigure = function()	{

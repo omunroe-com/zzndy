@@ -39,9 +39,7 @@ em, a
 a	{text-decoration:none;border-bottom: 1px solid}
 a:hover	{text-decoration:underline;border:none}
 
-#desc:hover * {color:#a0a0a2}
-#desc p:hover * {color:white}
-#desc p:hover {color:#e0e0e5}
+#desc:hover em, #desc:hover a {color:white}
 
 #scores-local
 	{width:100%}
@@ -60,7 +58,7 @@ form	{margin:0}
 
 .meters	{font-family:impact; width: 6ex; float: right; clear: right; text-align: right; margin-right: -.5ex; letter-spacing:.1ex}
 
-#t-s	{color:rgb(150,224,89)}
-#t-b	{color:rgb(255,220,29); opacity: 0}
+#t-s	{color: #FB9606}
+#t-b	{color: #F5E50B; opacity: 0}
 #t-b:before{content: '+'}
-#t-d	{color:rgb( 75,193,213)}
+#t-d	{color:#FB4D06}
