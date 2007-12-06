@@ -92,8 +92,6 @@ Tetris.prototype.start = function()	{
 }
 
 Tetris.prototype.onScore = function(score, bonus)	{
-	//var score = score.zerofill(this.padWidth);
-	//this.scoreElt.innerHTML = score;
 	if(!this.sch) this.reachScore();
 	if(bonus)
 		this.bonusFade(bonus);
@@ -109,8 +107,7 @@ Tetris.prototype.reachScore = function()	{
 	if(disp < this.score.points - step){
 	 	document.title = (disp + step).zerofill(this.padWidth) + ' - Javascript Tetris';
 		this.scoreElt.innerHTML = (disp + step).zerofill(this.padWidth);
-		var obj = this;
-		this.sch = window.setTimeout(function(){obj.reachScore()}, 30);
+		this.sch = window.setTimeout(this.reachScore.detach(this), 70);
 	}
 	else	{
 		this.scoreElt.innerHTML = this.score.points.zerofill(this.padWidth);
@@ -123,7 +120,7 @@ Tetris.prototype.bonusFade = function(bonus)	{
 	if(this.bfh) window.clearTimeout(this.bfh);
 	if(this.bonusElt.style.opacity>.6)
 		bonus += parseInt(this.bonusElt.innerHTML);
-		
+	
 	this.bonusElt.style.opacity = 1;
 	this.fadeOpacity();
 	this.bonusElt.innerHTML = bonus;
@@ -139,14 +136,14 @@ Tetris.prototype.fadeOpacity = function()	{
 			return;
 		}
 	}
-	var obj = this;
-	this.bfh = window.setTimeout(function(){obj.fadeOpacity()}, 70);
+	this.bfh = window.setTimeout(this.fadeOpacity.detach(this), 70);
 }
 
 Tetris.prototype.keyDown = function(event)	{
 	if(this.gameState == GameState.paused)	{
 		if(event.keyCode != Key.pause && event.charCode != Key.p && event.charCode != Key.P) return;
-	} else if(this.gameState != GameState.underway) return;
+	} else 
+	if(this.gameState != GameState.underway) return;
 	
 	switch(event.keyCode)	{
 		case Key.cr:
@@ -174,38 +171,31 @@ Tetris.prototype.keyDown = function(event)	{
 		case Key.space:
 			this.drop();
 			break;
-		case Key.w:
-		case Key.j:
+		case Key.w: case Key.j:
 			this.rotate('ccw');
 			break;
-		case Key.W:
-		case Key.J:
+		case Key.W: case Key.J:
 			this.rotate('cw');
 			break;
-		case Key.a:
-		case Key.h:
+		case Key.a: case Key.h:
 			this.move(-1);
 			break;
-		case Key.d:
-		case Key.l:
+		case Key.d: case Key.l:
 			this.move(+1);
 			break;
-		case Key.s:
-		case Key.k:
+		case Key.s: case Key.k:
 			this.fall();
 			break;
-		case Key.p:
-		case Key.P:
+		case Key.p: case Key.P:
 			this.pause();
 			break;
 	}
 }
 
 Tetris.prototype.speedup = function()	{
-	console.log('speedup');
 	this.speed += .1;
 	this.speedElt.innerHTML = this.speed.toFixed(1);
-	this.speedingUp.start();
+	this.speedingUp.restart();
 }
 
 Tetris.prototype.shiftFigure = function()	{
@@ -552,8 +542,7 @@ Tetris.prototype.showLocalScores = function()	{
 	
 	localScores.push((new Record('@current', this.score.points, Date.now())).toString());
 
-	map(function(a){return new Record(a)}, localScores);
-	console.log(localScores);
+	localScores.map(function(a){return new Record(a)});
 	localScores.sort(Record.compare).reverse();
 	
 	var table = document.createElement('table');
@@ -651,13 +640,14 @@ Tetris.prototype.makeHtml = function()	{
 	var w = Figure.area * this.gridsize.width / 4;
 	
 	cell_A.appendChild(canvas);
-	this.scoreElt = Widget.makeElt('div', {id: 't-s', class: 'meters', title: 'Total score', style: 'margin-top:-' +pad+ 'px;font-size:'+w+'px;padding-right: '+(w*.8)+'px'});
-	this.bonusElt = Widget.makeElt('div', {id: 't-b', class: 'meters', title: 'Latest scored points', style: 'margin-top:-' +(pad-.8*w)+ 'px;font-size:'+(w * .6)+'px;padding-right: '+(w/3)+'px'});
-	this.speedElt = Widget.makeElt('div', {id: 't-d', class: 'meters', title: 'Speed (drops per second)', style: 'margin-top:-' +(pad-1.6*w)+ 'px;font-size:'+(w*.8)+'px;padding-right: '+(w/2)+'px'});
+	var s = 'margin-top:-${m}px;font-size:${f}px;padding-right:${p}px';
+	var set = {id: 't-s', class: 'meters', title: 'Total score', style: s.fmt({m: pad, f: w, p:(w*.8)})}
 	
-	this.scoreElt.appendChild(document.createTextNode(''));
-	this.bonusElt.appendChild(document.createTextNode(''));
-	this.speedElt.appendChild(document.createTextNode(''));
+	this.scoreElt = Widget.makeElt('div', set);
+	with(set)[id, title, style] = ['t-b', 'Latest scored points', s.fmt({m: pad-.9*w, f: w*.8, p:(w/2)})]
+	this.bonusElt = Widget.makeElt('div', set);
+	with(set)[id, title, style] = ['t-d', 'Speed (drops per second)', s.fmt({m: pad-2*w, f: w*.8, p:(w/2)})]
+	this.speedElt = Widget.makeElt('div', set);
 	
 	cell_A.appendChild(this.scoreElt);
 	cell_A.appendChild(this.bonusElt);
