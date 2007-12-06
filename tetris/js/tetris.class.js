@@ -651,9 +651,9 @@ Tetris.prototype.makeHtml = function()	{
 	var w = Figure.area * this.gridsize.width / 4;
 	
 	cell_A.appendChild(canvas);
-	this.scoreElt = Widget.makeElt('div', {id: 't-s', class: 'meters', title: 'Total score', style: 'margin-top:-' +pad+ 'px;font-size:'+w+'px;padding-right: '+(w/2)+'px'});
-	this.bonusElt = Widget.makeElt('div', {id: 't-b', class: 'meters', title: 'Latest scored points', style: 'margin-top:-' +(pad-1*w)+ 'px;font-size:'+(w * .6)+'px;padding-right: '+(w/3)+'px'});
-	this.speedElt = Widget.makeElt('div', {id: 't-d', class: 'meters', title: 'Speed (drops per second)', style: 'margin-top:-' +(pad-2*w)+ 'px;font-size:'+(w*.8)+'px;padding-right: '+(w/2)+'px; font-weight: bold'});
+	this.scoreElt = Widget.makeElt('div', {id: 't-s', class: 'meters', title: 'Total score', style: 'margin-top:-' +pad+ 'px;font-size:'+w+'px;padding-right: '+(w*.8)+'px'});
+	this.bonusElt = Widget.makeElt('div', {id: 't-b', class: 'meters', title: 'Latest scored points', style: 'margin-top:-' +(pad-.8*w)+ 'px;font-size:'+(w * .6)+'px;padding-right: '+(w/3)+'px'});
+	this.speedElt = Widget.makeElt('div', {id: 't-d', class: 'meters', title: 'Speed (drops per second)', style: 'margin-top:-' +(pad-1.6*w)+ 'px;font-size:'+(w*.8)+'px;padding-right: '+(w/2)+'px'});
 	
 	this.scoreElt.appendChild(document.createTextNode(''));
 	this.bonusElt.appendChild(document.createTextNode(''));

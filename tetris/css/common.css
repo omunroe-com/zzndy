@@ -56,9 +56,9 @@ form	{margin:0}
 #scores-local .score	{text-align:right;padding-left: 0;padding-right: 1.5ex}
 #user-name{border:none;background:transparent}
 
-.meters	{font-family:impact; width: 6ex; float: right; clear: right; text-align: right; margin-right: -.5ex; letter-spacing:.1ex}
+.meters	{width: 6ex; float: right; clear: right; text-align: right; margin-right: -.5ex; letter-spacing:.1ex}
 
-#t-s	{color: #FB9606}
-#t-b	{color: #F5E50B; opacity: 0}
+#t-s	{color: #5EDC32}
+#t-b	{color: #F7DF00; opacity: 0; font-weight: bold;}
 #t-b:before{content: '+'}
-#t-d	{color:#FB4D06}
+#t-d	{color: #F772FF; font-style: italic; font-weight: bold;}
