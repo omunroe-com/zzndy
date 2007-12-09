@@ -1,11 +1,12 @@
 // Extensions for Canvas (CanvasRenderingContext2D) used by tetris
 
-CanvasRenderingContext2D.prototype.sharpRect = function(x, y, w, h)	{
-	this.fillRect(x, y, w, 1);
-	this.fillRect(x, y+1, 1, h-1);
-	this.fillRect(x, y+h, w+1, 1);
-	this.fillRect(x+w, y, 1, h);
-}
+CanvasRenderingContext2D.prototype.sharpRect
+  = function(x, y, w, h){with(this)	{
+	fillRect(x, y, w, 1);
+	fillRect(x, y+1, 1, h-1);
+	fillRect(x, y+h, w+1, 1);
+	fillRect(x+w, y, 1, h);
+}}
 
 CanvasRenderingContext2D.prototype.vLine = function(x, y, h)	{
 	this.fillRect(x, y, 1, h);
@@ -15,21 +16,26 @@ CanvasRenderingContext2D.prototype.hLine = function(x, y, w)	{
 	this.fillRect(x, y, w, 1);
 }
 
+/**
+  render a number using dots
+*/
 CanvasRenderingContext2D.prototype.renderNumber = function(/*string*/num, obj)	{
 	this.translate(obj.orgn.x, obj.orgn.y);
 	this.fillStyle = obj.fill;
+	var s = obj.size;
 	
 	for(var c=0; c<num.length; ++c)	{
-		if(num[c] != obj.last[c])	{
-			var a = -(num.length - c) * 7 * (obj.size + 1);
+		var [cc, pc] = [num[c], obj.last[c]];
+		if(cc != pc)	{
+			var a = -(num.length - c) * 7 * (s + 1);
 			for(var i=0; i<8; ++i)	{
-				var h = i * (obj.size + 1);
+				var h = i * (s + 1);
+				var [cp, pp] = [Digit[cc][i], Digit[pc][i]];
 				for(var j=0; j<7; ++j)	{
-					if(Digit[num[c]][i][j] != Digit[obj.last[c]][i][j])	{
-						if(Digit[num[c]][i][j])
-							this.fillRect(a + j * (obj.size + 1), h, obj.size, obj.size);
-						else
-							this.clearRect(a + j * (obj.size + 1), h, obj.size, obj.size);
+					var [cur, pre] = [cp[j], pp[j]];
+					if(cur != pre)	{
+						if(cur) this.fillRect(a + j * (s + 1), h, s, s);
+						else this.clearRect(a + j * (s + 1), h, s, s);
 					}
 				}
 			}
@@ -39,8 +45,8 @@ CanvasRenderingContext2D.prototype.renderNumber = function(/*string*/num, obj)	{
 	obj.last = num;
 }
 
-CanvasRenderingContext2D.prototype.styleFill = function(s)
-{with(this){
+CanvasRenderingContext2D.prototype.styleFill
+  = function(s){with(this)	{
 	var t = fillStyle;
 	fillStyle = s;
 	fill();

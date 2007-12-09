@@ -4,8 +4,8 @@ function Widget()	{
 
 }
 
-Widget.makeElt = function(tag, attrs, content)	{
-	var elt = document.createElement(tag)
+Widget.make = function(tag, attrs, content)	{
+	var elt = document.createElement(tag);
 	if(attrs)
 		for([name, val] in attrs)
 			elt.setAttribute(name, val);
@@ -13,4 +13,13 @@ Widget.makeElt = function(tag, attrs, content)	{
 		if(typeof content == 'string') elt.innerHTML = content;
 		else elt.appendChild(content);
 	return elt;
+}
+
+Widget.enclose = function(parent, children)	{
+	children.some(function(c){parent.appendChild(c)});
+	return parent;
+}
+
+Widget.nest = function(elements)	{
+	return elements.reduce(function(child, el){if(child)el.appendChild(child);return el;}, null);
 }

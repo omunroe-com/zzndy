@@ -27,6 +27,8 @@ function Tetris(parentId, params)	{
 	else
 		this.field = new Field(Tetris.default.fieldSize.width, Tetris.default.fieldSize.height);
 		
+	this.animatedScore = !!!(params && params['noAnimatedScore']);
+
 	if(params && params['box'])
 		this.gridsize = params.box;
 	else
@@ -59,13 +61,13 @@ Tetris.prototype.blksOk = function(blks)	{
 	return blks.every(this.pOk);
 }
 
-Tetris.prototype.init = function()	{
-	this.makeHtml();
-	this.initConsts();
-	this.drawGrid();
-	this.drawFrame();
-	this.makeStartBtn();
-}
+Tetris.prototype.init = function(){with(this)	{
+	makeHtml();
+	initConsts();
+	drawGrid();
+	drawFrame();
+	makeStartBtn();
+}}
 
 /**
  *	Meke miscellaneous precalculated variables
@@ -93,8 +95,7 @@ Tetris.prototype.start = function()	{
 
 Tetris.prototype.onScore = function(score, bonus)	{
 	if(!this.sch) this.reachScore();
-	if(bonus)
-		this.bonusFade(bonus);
+	if(bonus)this.bonusFade(bonus);
 	
 	if(score!=0);// document.title = score + ' - Javascript Tetris';
 	else document.title = 'Javascript Tetris';
@@ -104,7 +105,7 @@ Tetris.prototype.reachScore = function()	{
 	var step = 17;
 	var disp = parseInt(this.scoreElt.innerHTML, 10);
 	
-	if(disp < this.score.points - step){
+	if(this.animatedScore && disp < this.score.points - step){
 	 	document.title = (disp + step).zerofill(this.padWidth) + ' - Javascript Tetris';
 		this.scoreElt.innerHTML = (disp + step).zerofill(this.padWidth);
 		this.sch = window.setTimeout(this.reachScore.detach(this), 70);
@@ -127,7 +128,6 @@ Tetris.prototype.bonusFade = function(bonus)	{
 }
 
 Tetris.prototype.fadeOpacity = function()	{
-	
 	with(this.bonusElt.style)	{
 		opacity = opacity/1.6;
 		if(opacity < 0.1)	{
@@ -146,49 +146,49 @@ Tetris.prototype.keyDown = function(event)	{
 	if(this.gameState != GameState.underway) return;
 	
 	switch(event.keyCode)	{
-		case Key.cr:
-			this.drop();
-			break;
-		case Key.up:
-			if(event.shiftKey)this.rotate('cw');
-			else this.rotate('ccw');
-			break;
-		case Key.left:
-			this.move(-1);
-			break;
-		case Key.right:
-			this.move(+1);
-			break;
-		case Key.down:
-			this.fall();
-			break;
-		case Key.pause:
-			this.pause();
-			break;
+	case Key.cr:
+		this.drop();
+		break;
+	case Key.up:
+		if(event.shiftKey)this.rotate('cw');
+		else this.rotate('ccw');
+		break;
+	case Key.left:
+		this.move(-1);
+		break;
+	case Key.right:
+		this.move(+1);
+		break;
+	case Key.down:
+		this.fall();
+		break;
+	case Key.pause:
+		this.pause();
+		break;
 	}
 
 	switch(event.charCode)	{
-		case Key.space:
-			this.drop();
-			break;
-		case Key.w: case Key.j:
-			this.rotate('ccw');
-			break;
-		case Key.W: case Key.J:
-			this.rotate('cw');
-			break;
-		case Key.a: case Key.h:
-			this.move(-1);
-			break;
-		case Key.d: case Key.l:
-			this.move(+1);
-			break;
-		case Key.s: case Key.k:
-			this.fall();
-			break;
-		case Key.p: case Key.P:
-			this.pause();
-			break;
+	case Key.space:
+		this.drop();
+		break;
+	case Key.w: case Key.j:
+		this.rotate('ccw');
+		break;
+	case Key.W: case Key.J:
+		this.rotate('cw');
+		break;
+	case Key.a: case Key.h:
+		this.move(-1);
+		break;
+	case Key.d: case Key.l:
+		this.move(+1);
+		break;
+	case Key.s: case Key.k:
+		this.fall();
+		break;
+	case Key.p: case Key.P:
+		this.pause();
+		break;
 	}
 }
 
@@ -255,70 +255,60 @@ Tetris.prototype.fall = function(firstMove)	{
 		this.shiftFigure();
 	}
 	
-	if(!fallOk)	{
-		if(firstMove)	{
-			this.gameOver();
-			return;
-		}
+	if(!fallOk && firstMove)	{
+		this.gameOver();
+		return;
 	}
 	this.drawFigure();
 	this.falling.start(1000 / this.speed);
 }
 
-Tetris.prototype.gameOver = function()	{
-	this.gameState = GameState.gameOver;
+Tetris.prototype.gameOver = function(){with(this)	{
+	gameState = GameState.gameOver;
 	
-	this.falling.stop();
-	this.speedingUp.stop();
+	falling.stop();
+	speedingUp.stop();
 	
-	this.closeField();
+	closeField();
 	
-	this.showGameOverMsg();
-	this.showLocalScores();
-}
+	showGameOverMsg();
+	showLocalScores();
+}}
 
 Tetris.prototype.closeField = function()	{
 	this.canvas.translate(this.origin.x, this.origin.y);
-	var color = Color.parse('eee', .6).toString();
-	
-	var c = this.canvas, t = 0, w = this.field.size.width, h = this.field.size.height;
+	var front = 2.5;
 	var [empty, set] = this.field.getState();
-	
-	empty.every(function(bx, i){
-		var r = Math.floor(i/w);
-		window.setTimeout(function(){
-			c.renderBox(Color.parse(Math.floor(120 + r/h * 90).toString(16).rep(3), .3 + r / h / 2.5).toString(), bx)
-		}
-		, Math.abs((r/h - i%w/w)*w) * 100); 
-		//console.log(i
+	var [c, max] = [this.canvas, 1.0 * this.field.size.width + this.field.size.height * front];
+	var [opac, cmin, cpad, tmin, tpad] = [null, 90, 140, 50, 1300];
+
+	var fn = function(bx) {
+		var front = 2.5;
+		var val = (bx.x + bx.y*front) / max;
+		var col = Color.parse(Math.floor(cmin + val*cpad).toString(16).rep(3), opac).toString();
+		window.setTimeout(function(){c.renderBox(col, bx)}, tmin + tpad * val);
 		return true;
-	});
+	}
 	
-	set.every(function(bx, i){
-		var r = Math.floor(i/w);
-		window.setTimeout(function(){
-			c.renderBox(Color.parse(Math.floor(150 + r/h * 90).toString(16).rep(3), .3 + r / h / 2.5).toString(), bx)
-		}
-		, Math.abs((r/h - i%w/w)*w) * 100); 
-		//console.log(i
-		return true;
-	});
+	empty.every(fn);
+	var [opac, cmin, cpad, tmin, tpad] = [null, 230, -90, 100, 1000];
+	set.every(fn);
 }
 
-Tetris.prototype.pause = function()	{
-	if(this.gameState == GameState.underway)	{
-		this.gameState = GameState.paused;
-		this.falling.stop();
-		this.speedingUp.stop();
-		this.showPauseMsg();
+Tetris.prototype.pause = function(){with(this){
+	if(gameState == GameState.underway)	{
+		gameState = GameState.paused;
+		falling.stop();
+		speedingUp.stop();
+		showPauseMsg();
 	}
-	else if(this.gameState == GameState.paused)	{
-		this.removeFloater();
-		this.gameState = GameState.underway;
-		this.falling.start(1000 / this.speed);
-		this.speedingUp.start();
+	else if(gameState == GameState.paused)	{
+		removeFloater();
+		gameState = GameState.underway;
+		falling.start(1000 / speed);
+		speedingUp.start();
 	}
-}
+}}
 
 Tetris.prototype.rotate = function(direction)	{
 	var rotated = this.current.rotate(direction);
@@ -328,15 +318,17 @@ Tetris.prototype.rotate = function(direction)	{
 	var rotateOk = this.blksOk(bxs);
 	if(!rotateOk) return;
 
-	this.drawFigure({action: 'clear', boxes: this.current.andNot(rotated)});
-	this.current = rotated;
-	this.drawFigure({boxes: bxs});
+	with(this)	{
+		drawFigure({action: 'clear', boxes: current.andNot(rotated)});
+		current = rotated;
+		drawFigure({boxes: bxs});
+	}
 }
 
 /**
  *	Lay the current figure down and begin dropping new one
  */
-Tetris.prototype.drop = function()	{	with(this)	{
+Tetris.prototype.drop = function(){with(this)	{
 	var bxs = current.getBlocksToRender();
 	var delta = bxs.reduce(field.getMinHeight.detach(field), field.size.height-current.position.y);
 	
@@ -355,10 +347,11 @@ Tetris.prototype.move = function(modificator)	{
 	
 	if(!ok) return;
 
-	this.drawFigure({boxes:shifted.draw});
-	this.drawFigure({action:'clear',boxes:shifted.clear});
-
-	this.current.position.x += modificator;
+	with(this)	{
+		drawFigure({boxes:shifted.draw});
+		drawFigure({action:'clear',boxes:shifted.clear});
+		current.position.x += modificator;
+	}
 }
 
 /**
@@ -472,12 +465,10 @@ Tetris.prototype.drawFrame = function()	{
 Tetris.prototype.makeFloater = function()	{
 	var floater = document.createElement('div');
 	
-	var wnd = new Rectangle(window.innerWidth, this.pixel.height);
-	var ftr = new Rectangle(200, 80);
+	var [wnd, ftr] = [new Rectangle(window.innerWidth, this.pixel.height), new Rectangle(200, 80)];
 	var pos = new Point((wnd.width-ftr.width)/2.3, (wnd.height-ftr.height)/2);
 	
-	floater.setAttribute('id', 'floater');
-	floater.setAttribute('style', 'top:'+pos.y+'px;left:'+pos.x+'px;width:'+ftr.width+'px;height:'+ftr.height+'px;');
+	floater = Widget.make('div', {id: 'floater', style: 'top:' + pos.y + 'px;left:' + pos.x + 'px;width:' + ftr.width + 'px;height:' + ftr.height + 'px;'});
 	
 	this.parent.appendChild(floater);
 	
@@ -487,32 +478,6 @@ Tetris.prototype.makeFloater = function()	{
 Tetris.prototype.removeFloater = function()	{
 	var floater = document.getElementById('floater');
 	if(floater) floater.parentNode.removeChild(floater);
-}
-
-Tetris.prototype.showPauseMsg = function()	{
-	var floater = this.makeFloater();
-	
-	var msg = document.createElement('div');
-	msg.setAttribute('id', 'pause-msg');
-	msg.appendChild(document.createTextNode(String.fromCharCode(0x25cf) + ' Pause ' + String.fromCharCode(0x25cf)));
-	
-	var tip = document.createElement('div');
-	tip.setAttribute('id', 'pause-top');
-	tip.appendChild(document.createTextNode('(press '));
-	var tmp = document.createElement('em');
-	tmp.appendChild(document.createTextNode('pause'));
-	tip.appendChild(tmp);
-	tip.appendChild(document.createTextNode(' or '));
-	tmp = document.createElement('em');
-	tmp.appendChild(document.createTextNode('p'));
-	tip.appendChild(tmp);
-	tip.appendChild(document.createTextNode(' to continue)'));
-	
-	floater.appendChild(msg);
-	floater.appendChild(tip);
-	msg.focus();
-	
-	return msg;
 }
 
 function submit_name()	{
@@ -586,35 +551,29 @@ Tetris.prototype.showLocalScores = function()	{
 }
 
 Tetris.prototype.showGameOverMsg = function()	{
-	var floater = this.makeFloater();
-	
-	var msg = document.createElement('div');
-	msg.setAttribute('id', 'gameover-msg');
-	msg.appendChild(document.createTextNode(String.fromCharCode(0x25c6) + ' Game Over ' + String.fromCharCode(0x25c6)));
-	
-	var tip = document.createElement('div');
-	tip.setAttribute('id', 'pause-top');
-	tip.appendChild(document.createTextNode('You scored '));
-	var tmp = document.createElement('em');
-	tmp.appendChild(document.createTextNode(this.score.points));
-	tip.appendChild(tmp);
-	tip.appendChild(document.createTextNode(' points'));
-	
-	floater.appendChild(msg);
-	floater.appendChild(tip);
-	msg.focus();
-	
-	return msg;
+	Widget.enclose(this.makeFloater(), [
+		Widget.make('div', {id: 'gameover-msg'}, '◆ Game Over ◆'), 
+		Widget.make('div', {id: 'gameover-top'}, 'You scored <em>'+this.score.points+'</em> points')
+	]);
+}
+
+Tetris.prototype.showPauseMsg = function()	{
+	Widget.enclose(this.makeFloater(), [
+		Widget.make('div', {id: 'pause-msg'}, '● Pause ●'), 
+		Widget.make('div', {id: 'pause-top'}, 'Press <em>pause</em> or <em>p</em> to continue')
+	]);
 }
 
 Tetris.prototype.makeStartBtn = function()	{
+	var button = Widget.make('button', {id: 'runit', onclick: this.start.detach(this)}, 'Start');
+	
 	var floater = this.makeFloater();
 	
-	var button = document.createElement('button');
+	/*var button = document.createElement('button');
 	button.setAttribute('id', 'runit');
 	button.appendChild(document.createTextNode('Start'));
 	
-	button.onclick = this.start.detach(this);
+	button.onclick = this.start.detach(this);*/
 	
 	floater.appendChild(button);
 	button.focus();
@@ -623,46 +582,32 @@ Tetris.prototype.makeStartBtn = function()	{
 }
 
 Tetris.prototype.makeHtml = function()	{
-	var canvas = Widget.makeElt('canvas', {id: 'tetris-canvas'});
-
-    var canvasSize = Rectangle.sum(this.pixel, new Rectangle(Figure.area * this.gridsize.width + 20, 5));
-	canvas.setAttribute('width', canvasSize.width);
-	canvas.setAttribute('height', canvasSize.height);
-	canvas.appendChild(document.createTextNode('Only for browsers supporting canvas element.'));
-	
-	var table = document.createElement('table');
-	var body = document.createElement('tbody');
-	var row = document.createElement('tr');
-	var cell_A = document.createElement('td');
-	var cell_B = document.createElement('td');
+	var canvasSize = Rectangle.sum(this.pixel, new Rectangle(Figure.area * this.gridsize.width + 20, 5));
+	var canvas = Widget.make('canvas', 
+		{id: 'tetris-canvas', width: canvasSize.width, height: canvasSize.height}, 
+		'Only for browsers supporting canvas element.');
 	
 	var pad = Math.floor(this.pixel.height - Figure.area * this.gridsize.height);
 	var w = Figure.area * this.gridsize.width / 4;
 	
-	cell_A.appendChild(canvas);
 	var s = 'margin-top:-${m}px;font-size:${f}px;padding-right:${p}px';
 	var set = {id: 't-s', class: 'meters', title: 'Total score', style: s.fmt({m: pad, f: w, p:(w*.8)})}
 	
-	this.scoreElt = Widget.makeElt('div', set);
+	this.scoreElt = Widget.make('div', set);
 	with(set)[id, title, style] = ['t-b', 'Latest scored points', s.fmt({m: pad-.9*w, f: w*.8, p:(w/2)})]
-	this.bonusElt = Widget.makeElt('div', set);
+	this.bonusElt = Widget.make('div', set);
 	with(set)[id, title, style] = ['t-d', 'Speed (drops per second)', s.fmt({m: pad-2*w, f: w*.8, p:(w/2)})]
-	this.speedElt = Widget.makeElt('div', set);
+	this.speedElt = Widget.make('div', set);
 	
-	cell_A.appendChild(this.scoreElt);
-	cell_A.appendChild(this.bonusElt);
-	cell_A.appendChild(this.speedElt);
+	Widget.nest([
+		Widget.enclose(Widget.make('tr'), [
+			Widget.enclose(Widget.make('td'), [canvas, this.scoreElt, this.bonusElt, this.speedElt]),
+			Widget.make('td', {id: 'desc', width: Math.floor(canvasSize.width * .5)}, tetrisDescription)
+		]),
+  		Widget.make('tbody'), Widget.make('table'), this.parent
+	]);
 	
-	var cell_B = Widget.makeElt('td', {id: 'desc', width: Math.floor(canvasSize.width * .5)}, tetrisDescription);
-	
-	row.appendChild(cell_A);
-	row.appendChild(cell_B);
-	
-	body.appendChild(row);
-	
-	table.appendChild(body);
-    
-	this.parent.appendChild(table);
+	(function(){var h=this.innerHTML; var l=h.replace(/ at /, '@').replace(/ dot /, '.'); this.innerHTML = '<a href="mailto:'+l+'">'+l+'</a>'}).apply(document.getElementById('addr'));
 	this.canvas = canvas.getContext('2d');
 	this.canvas.tetris = this;
 	
