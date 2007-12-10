@@ -56,6 +56,14 @@ function sub(a, b){return a - b}
 function div(a, b){return a / b}
 function sqr(a)   {return a * a}
 
+function limit(lower, upper, value)	{
+	return Math.min(Math.max(value, lower), upper);
+}
+
+function deviate(deviation){
+	return Math.floor(2*deviation * Math.random() - deviation);
+}
+
 Array.prototype.reduce = function(fn2, init)    {
         if(!(fn2 instanceof Function))fn2 = function(a){return a};
 		var res = init, l = this.length;

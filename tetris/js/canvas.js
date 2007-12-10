@@ -67,19 +67,18 @@ CanvasRenderingContext2D.prototype.renderBox = function(color, point)	{
 
 	this.translate(origin.x, origin.y);
 
-	if(color == -1)
+	if(color == 0)
 		this.clearRect(0, 0, this.tetris.box.width, this.tetris.box.height);
 	else with(this)	{
-		fillStyle = color;
+		fillStyle = color.toString();
 		fillRect(0, 0, tetris.box.width, tetris.box.height);
-
 		makePath(tetris.val.hi);
 		styleFill(tetris.val.hlColor);
 		makePath(tetris.val.lo);
 		styleFill(tetris.val.shadowColor);
 	}
 	this.translate(-origin.x, -origin.y);
-	return color;// neede for use with reduce
+	return color;// needed for use with reduce
 }
 
 var Digit = {

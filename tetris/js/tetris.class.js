@@ -285,7 +285,7 @@ Tetris.prototype.closeField = function()	{
 	var fn = function(bx) {
 		var front = 2.5;
 		var val = (bx.x + bx.y*front) / max;
-		var col = Color.parse(Math.floor(cmin + val*cpad).toString(16).rep(3), opac).toString();
+		var col = Color.parse(Math.floor(cmin + val*cpad).toString(16).rep(3), opac);
 		window.setTimeout(function(){c.renderBox(col, bx)}, tmin + tpad * val);
 		return true;
 	}
@@ -365,7 +365,7 @@ Tetris.prototype.drawFigure = function(args)	{
 	
 	var color = figure && figure.color;
 	if(action == 'clear')
-		color = -1;
+		color = 0;
 	
 	var origin = new Point(this.origin.x, this.origin.y + shift);
 

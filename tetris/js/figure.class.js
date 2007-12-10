@@ -4,13 +4,13 @@ function Figure(block)	{
 	if(arguments.length == 0)	{ // default constructor
 		this.figureId = Figure.defaultFigureId;
 		this.figure = Figure.defaultFigure;
-		this.color = Figure.colors[Figure.defaultFigureId];
+		this.color = Figure.colors[Figure.defaultFigureId].deviate(Figure.deviations);
 		this.position = new Point(0, 0);
 	}
 	else if(typeof block == 'number')	{ // initialize by id
 		this.figureId = block;
 		this.figure = Figure.figures[block];
-		this.color = Figure.colors[block];
+		this.color = Figure.colors[block].deviate(Figure.deviations);
 		this.position = new Point(0, 0);
 	}
 	else	{ // initializa by another block
@@ -31,17 +31,16 @@ Figure.figures = [
 	/*6 []*/ [ [0,0,0,0,0], [0,1,1,0,0], [0,1,1,0,0], [0,0,0,0,0], [0,0,0,0,0] ]
 ];
 
-Figure.margins = [0, ,-1];
-
 Figure.colors = [
-	'rgb(150,224,89)','rgb( 75,193,213)','rgb(231,96,73)','rgb(255,220,29)',
-	'rgb(221,156,216)','rgb( 82,133,238)','rgb(240,134,62)',
+	new Color(150,224,89), new Color( 75,193,213), new Color(231,96,73), new Color(255,220,29), 
+	new Color(221,156,216), new Color( 82,133,238), new Color(240,134,62) 
 ]
 Figure.colors[-1]=-1;
 
 Figure.area = 5;
 Figure.defaultFigureId = 4;
 Figure.defaultFigure = Figure.figures[Figure.defaultFigureId];
+Figure.deviations = {base:25, r:5, g:5, b:5, a:0};
 
 Figure.prototype.rotate = function(direction)	{
 	if(this.figureId == 6) return null; // Box is not rotating
@@ -49,6 +48,7 @@ Figure.prototype.rotate = function(direction)	{
 		direction = 'cw';
 	
 	var newFigure = new Figure(this);
+	newFigure.color = this.color;
 	newFigure.figure = new Array(Figure.array);
 	
 	for(var i=0; i<Figure.area; ++i)	{

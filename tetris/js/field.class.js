@@ -7,7 +7,7 @@ function Field(width, height)	{
 	for(var i=0; i<height; ++i)	{
 		this.field[i] = new Array(width);
 		for(var j=0; j<width; ++j)
-			this.field[i][j] = -1;
+			this.field[i][j] = 0;
 	}
 }
 
@@ -22,17 +22,18 @@ Field.prototype.burnLines = function(lowestLine, lines)	{
 		for(var j=0;j<this.field[i].length;++j)	{
 			if(this.field[i][j] != this.field[k][j])	{
 				this.field[i][j] = this.field[k][j];
-				rslt.push({color: Figure.colors[this.field[i][j]], point: new Point(j,i)});
+				rslt.push({color: this.field[i][j], point: new Point(j,i)});
 			}
-			if(lineClear && this.field[i][j] != -1) lineClear = false;
+			if(lineClear && this.field[i][j]) lineClear = false;
 		}
 		if(lineClear)break;
 	}
+	
 	for(;i>k;--i)	{
 		for(var j=0;j<this.field[i].length;++j)	{
-			if(this.field[i][j] != -1)	{
-				this.field[i][j] = -1;
-				rslt.push({color: -1, point: new Point(j,i)});
+			if(this.field[i][j])	{
+				this.field[i][j] = 0;
+				rslt.push({color: 0, point: new Point(j,i)});
 			}
 		}
 	}
@@ -45,7 +46,7 @@ Field.prototype.fill = function(figure)	{
 	lines[10] = true;
 	for(var i=0; i<blocks.length; ++i)	{
 		var block = blocks[i];
-		this.field[block.y][block.x] = figure.figureId;
+		this.field[block.y][block.x] = figure.color;//figureId;
 		lines[block.y] = true;
 	}
 	return lines;
@@ -63,7 +64,7 @@ Field.prototype.getFilledLines = function(allLines)	{
 	for(var i in allLines)	{
 		var filled = true;
 		for(var j=0; j<this.field[i].length; ++j)
-			if(this.field[i][j] == -1)	{
+			if(!this.field[i][j])	{
 				filled = false;
 				break;
 			}
@@ -78,7 +79,7 @@ Field.prototype.getFilledLines = function(allLines)	{
 Field.prototype.getLineBlocks = function(i)	{
 	var res = [];
 	for(var j=0; j<this.field[i].length; ++j)
-		if(this.field[i] != -1) res.push(new Point(j, i));
+		if(this.field[i]) res.push(new Point(j, i));
 	return res;
 }
 
@@ -86,7 +87,7 @@ Field.prototype.getState = function()	{
 	var res = [[], []];
 	for(var i=0; i<this.field.length; ++i)	{
 		for(var j=0; j<this.field[i].length; ++j)
-			if(this.field[i][j] == -1) res[0].push(new Point(j, i));
+			if(!this.field[i][j]) res[0].push(new Point(j, i));
 			else res[1].push(new Point(j, i));
 	}
 	return res;
@@ -98,14 +99,14 @@ Field.prototype.pointOk = function(point)	{
 		&& (point.x < this.size.width) 
 		&& (point.y < this.size.height) 
 		&& (point.y >= 0)
-		&& this.field[point.y][point.x] == -1);
+		&& !this.field[point.y][point.x]);
 }
 
 // called through reduce
 Field.prototype.getMinHeight = function(result, point)	{
 	var heightTreshold = Math.min(result, this.size.height - point.y - 1);
 	for(var y = point.y + 1; y<point.y + heightTreshold + 1; ++y)
-		if(this.field[y][point.x] != -1)
+		if(this.field[y][point.x])
 			return Math.min(heightTreshold, y - point.y - 1);
 	return heightTreshold;
 }
