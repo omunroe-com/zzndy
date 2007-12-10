@@ -5,15 +5,16 @@
  */
 
 String.prototype.pad = function(n, s)	{
-	s = s || ' '
-	var l = this.length
-			return (Math.abs(n)>l)?(n>0?this+s.rep(n-l):s.rep(Math.abs(n)-l)+this):this.toString()
+	s = s || ' ';
+	var l = this.length;
+	return (Math.abs(n)>l)?(n>0?this+s.rep(n-l):s.rep(Math.abs(n)-l)+this):this.toString();
 }
 
 String.prototype.rep = function(n)	{
 	return (new Array(n+1)).join(this);
 }
 
+Number.prototype.zf = 
 Number.prototype.zerofill = function(w, p)	{
 	if(p) return this.toFixed(p).pad(-w, '0')
 	return this.toString().pad(-w, '0')
@@ -23,8 +24,6 @@ Number.prototype.pad = function(w, p, s)	{
 	if(p) return this.toFixed(p).pad(w, s)
 	return this.toString().pad(w, s)
 }
-
-
 
 String.prototype.fmt = function(a)	{
 	var r = this
@@ -50,6 +49,7 @@ String.prototype.format = function(a)	{
 	return r;
 }
 
+// operators to use in reduce or 
 function add(a, b){return a + b}
 function mul(a, b){return a * b}
 function sub(a, b){return a - b}
@@ -57,10 +57,10 @@ function div(a, b){return a / b}
 function sqr(a)   {return a * a}
 
 Array.prototype.reduce = function(fn2, init)    {
-        if(!(fn2 instanceof Function))fn2 = function(a){return a}
-		var res = init, l = this.length
-        for(var i=0; i<l; ++i) res = fn2(res, this[i])
-        return res
+        if(!(fn2 instanceof Function))fn2 = function(a){return a};
+		var res = init, l = this.length;
+        for(var i=0; i<l; ++i) res = fn2(res, this[i]);
+        return res;
 }
 
 Array.prototype.sum = function(){return this.reduce(add, 0)}
