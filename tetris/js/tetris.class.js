@@ -566,19 +566,8 @@ Tetris.prototype.showPauseMsg = function()	{
 
 Tetris.prototype.makeStartBtn = function()	{
 	var button = Widget.make('button', {id: 'runit', onclick: this.start.detach(this)}, 'Start');
-	
-	var floater = this.makeFloater();
-	
-	/*var button = document.createElement('button');
-	button.setAttribute('id', 'runit');
-	button.appendChild(document.createTextNode('Start'));
-	
-	button.onclick = this.start.detach(this);*/
-	
-	floater.appendChild(button);
+	Widget.enclose(this.makeFloater(), [button]);
 	button.focus();
-	
-	return button;
 }
 
 Tetris.prototype.makeHtml = function()	{
