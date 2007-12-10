@@ -610,5 +610,4 @@ Tetris.prototype.makeHtml = function()	{
 	(function(){var h=this.innerHTML; var l=h.replace(/ at /, '@').replace(/ dot /, '.'); this.innerHTML = '<a href="mailto:'+l+'">'+l+'</a>'}).apply(document.getElementById('addr'));
 	this.canvas = canvas.getContext('2d');
 	this.canvas.tetris = this;
-	
 }

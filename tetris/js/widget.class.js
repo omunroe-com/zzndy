@@ -7,8 +7,10 @@ function Widget()	{
 Widget.make = function(tag, attrs, content)	{
 	var elt = document.createElement(tag);
 	if(attrs)
-		for([name, val] in attrs)
-			elt.setAttribute(name, val);
+		for([name, val] in attrs)	{
+			if(val instanceof Function) elt[name] = val;
+			else elt.setAttribute(name, val);
+		}
 	if(content)
 		if(typeof content == 'string') elt.innerHTML = content;
 		else elt.appendChild(content);
