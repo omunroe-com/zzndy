@@ -55,12 +55,12 @@ Color.parse = function(scol, alpha)	{
 }
 
 Color.prototype.deviate = function(deviation)	{
-	var dev = deviate(deviation.base);
+	var dev = deviate(deviation.base/3)*3;
 	console.log(dev);
 	return new Color(
-		limit(0, 255, this.red + dev + deviate(deviation.r)),
-		limit(0, 255, this.green + dev + deviate(deviation.g)),
-		limit(0, 255, this.blue + dev + deviate(deviation.b)),
+		limit(0, 255, this.red + dev + deviate(deviation.r/3)*3),
+		limit(0, 255, this.green + dev + deviate(deviation.g/3)*3),
+		limit(0, 255, this.blue + dev + deviate(deviation.b/3)*3),
 		limit(0, 1, this.alpha + deviate(deviation.a))
 	);
 }

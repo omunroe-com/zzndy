@@ -48,7 +48,6 @@ Figure.prototype.rotate = function(direction)	{
 		direction = 'cw';
 	
 	var newFigure = new Figure(this);
-	newFigure.color = this.color;
 	newFigure.figure = new Array(Figure.array);
 	
 	for(var i=0; i<Figure.area; ++i)	{
