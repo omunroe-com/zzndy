@@ -11,7 +11,7 @@ String.prototype.pad = function(n, s)	{
 }
 
 String.prototype.rep = function(n)	{
-	return (new Array(n+1)).join(this);
+	return Array(n+1).join(this);
 }
 
 Number.prototype.zf = 
@@ -35,14 +35,14 @@ String.prototype.fmt = function(a)	{
 }
 
 String.prototype.format = function(a)	{
-	var r=this.fmt(a);
+	var r = this.fmt(a);
 	for(var [i, l] in a)	{
 		var rx = new RegExp('\\$\\{('+i+')(?::(-|0)?(\\d+)?(?:(?:\\.)(\\d+))?)?\\}');
 		var n = new Number(l), m;
 		while(m = r.match(rx))	{
-			var [o,,f,w,p] = m, s
+			var [o,,f,w,p] = m;
 			if(f&&f=='-') w=-w;
-			s = (f && f == '0')?n.zerofill(w, p):(p?n.pad(w, p):l.pad(w))
+			var s = (f && f == '0')?n.zerofill(w, p):(p?n.pad(w, p):l.pad(w))
 			r = r.replace(o, s);
 		}
 	}
