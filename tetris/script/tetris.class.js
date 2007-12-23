@@ -1,6 +1,7 @@
 var tetrisDescription = '<div id="desc"><h1>Javascript Tetris v3</h1><p>This is a tetris game written in javascript without using images. It requires <a href="http://www.mozilla.com/firefox">Firefox</a> browser.</p><p>The point of the game is to score as much as possible. Fast play is favored.</p><p>By dropping figures (with <em>space</em>) on can get many points-score for drop&shy;ing is pro&shy;por&shy;tional to the number of lines the figure falls. Speed in&shy;crea&shy;ses with time and not with score.</p><p>To restart just press <em>F5</em>. To pause press <em>Pause/Break</em> button or <em>P</em>.</p><p>To control block&apos;s position use <em>left</em> and <em>right</em> buttons, <em>a</em> and <em>d</em> or <em>h</em> and <em>l</em>. To rotate figure press <em>up</em> button, <em>w</em>&nbsp;or&nbsp;<em>j</em>.</p><p>To lower figure by one level press <em>down</em> arrow, <em>s</em> or <em>k</em>. It is re&shy;com&shy;mended though to drop figures with <em>space</em> as it&apos;s faster and yields significant amount of score. </p><div>&copy; A. Vynogradov 2007</div><div id="addr">zzandy at rootshell dot be</div></div>';
 
 var top10k = {
+	cookie: 'jst-top10',
 	url: 'http://www.rootshell.be/~zzandy/top10k.php'
 }
 
@@ -57,8 +58,9 @@ function Tetris(parentId, params)	{
 	this.init();
 }
 
-Tetris.prototype.blksOk = function(blks)	{
-	return blks.every(this.pOk);
+Tetris.default = {
+	fieldSize: new Rectangle(9, 20),
+	box: new Rectangle(20,20)
 }
 
 Tetris.prototype.init = function(){with(this)	{
@@ -66,16 +68,14 @@ Tetris.prototype.init = function(){with(this)	{
 	initConsts();
 	drawGrid();
 	drawFrame();
-	makeStartBtn();
+	Widget.floater2start(makeFloater(), start.detach(this));
 }}
 
-/**
- *	Meke miscellaneous precalculated variables
- */
 Tetris.prototype.initConsts = function()	{
 	with(this.gridsize)	{this.val = {
 		hlColor: Color.parse('fff', .25).toString(),
 		shadowColor: Color.parse('000', .15).toString(),
+		ss: {min: 3, max: 300} // score step
 	}}
 	
 	with(this.box)	{
@@ -85,58 +85,12 @@ Tetris.prototype.initConsts = function()	{
 }
 
 Tetris.prototype.start = function()	{
-	this.removeFloater();
+	Widget.rm('floater');
 	window.onkeypress = this.keyDown.detach(this);
 	this.gameState = GameState.underway;
 	this.shiftFigure();
 	this.speedup();
 	this.onScore(this.score.points);
-}
-
-Tetris.prototype.onScore = function(score, bonus)	{
-	if(!this.sch) this.reachScore();
-	if(bonus)this.bonusFade(bonus);
-	
-	if(score!=0);// document.title = score + ' - Javascript Tetris';
-	else document.title = 'Javascript Tetris';
-}
-
-Tetris.prototype.reachScore = function()	{
-	var step = 17;
-	var disp = parseInt(this.scoreElt.innerHTML, 10);
-	
-	if(this.animatedScore && disp < this.score.points - step){
-	 	document.title = (disp + step).zerofill(this.padWidth) + ' - Javascript Tetris';
-		this.scoreElt.innerHTML = (disp + step).zerofill(this.padWidth);
-		this.sch = window.setTimeout(this.reachScore.detach(this), 70);
-	}
-	else	{
-		this.scoreElt.innerHTML = this.score.points.zerofill(this.padWidth);
-		document.title = this.score.points.zerofill(this.padWidth) + ' - Javascript Tetris';
-		this.sch = null;
-	}
-}
-
-Tetris.prototype.bonusFade = function(bonus)	{
-	if(this.bfh) window.clearTimeout(this.bfh);
-	if(this.bonusElt.style.opacity>.6)
-		bonus += parseInt(this.bonusElt.innerHTML);
-	
-	this.bonusElt.style.opacity = 1;
-	this.fadeOpacity();
-	this.bonusElt.innerHTML = bonus;
-}
-
-Tetris.prototype.fadeOpacity = function()	{
-	with(this.bonusElt.style)	{
-		opacity = opacity/1.6;
-		if(opacity < 0.1)	{
-			opacity = 0;
-			this.bfh = null;
-			return;
-		}
-	}
-	this.bfh = window.setTimeout(this.fadeOpacity.detach(this), 70);
 }
 
 Tetris.prototype.keyDown = function(event)	{
@@ -192,6 +146,14 @@ Tetris.prototype.keyDown = function(event)	{
 	}
 }
 
+Tetris.prototype.onScore = function(score, bonus)	{
+	with(this)	{
+		if(!sch)reachScore();
+		if(bonus)bonusFade(bonus);
+	}
+	if(score==0)document.title = 'Javascript Tetris';
+}
+
 Tetris.prototype.speedup = function()	{
 	this.speed += .1;
 	this.speedElt.innerHTML = this.speed.toFixed(1);
@@ -199,6 +161,7 @@ Tetris.prototype.speedup = function()	{
 }
 
 Tetris.prototype.shiftFigure = function()	{
+	if(this.gameState != GameState.underway) return;
 	if(this.next == null)	{
 		this.current = new Figure(Math.floor(Math.random() * Figure.figures.length));
 	}
@@ -232,7 +195,96 @@ Tetris.prototype.shiftFigure = function()	{
 	}
 }
 
-var lev = 0;
+Tetris.prototype.gameOver = function(){with(this)	{
+	falling.stop();
+	speedingUp.stop();
+	
+	gameState = GameState.gameOver;
+	
+	closeField();
+	Widget.floater2over(this.makeFloater(), this.score.points);
+	showScores();
+}}
+
+Tetris.prototype.updScore = function(val)	{
+	var score = (val || this.score.points).zf(this.padWidth);
+	this.scoreElt.innerHTML = score;
+	document.title = score + ' - Javascript Tetris';
+}
+
+// Effects-n-animations
+Tetris.prototype.reachScore = function()	{with(this){
+	var cur = parseInt(this.scoreElt.innerHTML, 10);
+	var dif = score.points - cur;
+	if(animatedScore && dif > val.ss.min)	{
+		updScore(cur + Math.min(val.ss.max, Math.floor(dif/3)));
+		sch = window.setTimeout(reachScore.detach(this), 70);
+	}
+	else	{
+		updScore();
+		sch = null;
+	}
+}}
+
+Tetris.prototype.bonusFade = function(bonus)	{
+	if(this.bfh) window.clearTimeout(this.bfh);
+	if(this.bonusElt.style.opacity>.6)
+		bonus += parseInt(this.bonusElt.innerHTML);
+	
+	this.bonusElt.style.opacity = 1;
+	this.fadeOpacity();
+	this.bonusElt.innerHTML = bonus;
+}
+
+Tetris.prototype.fadeOpacity = function()	{
+	with(this.bonusElt.style)	{
+		opacity = opacity/1.6;
+		if(opacity < 0.1)	{
+			opacity = 0;
+			this.bfh = null;
+			return;
+		}
+	}
+	this.bfh = window.setTimeout(this.fadeOpacity.detach(this), 70);
+}
+
+Tetris.prototype.closeField = function()	{
+	this.canvas.translate(this.origin.x, this.origin.y);
+	var front = .2;
+	var [empty, set] = this.field.getState();
+	var [c, max, cmin, cpad, tmin, tpad, omin, opad] = [this.canvas, 1.0 * this.field.size.width + this.field.size.height * front, 
+		90, 140, 50, 1300, 1, -.2];
+
+	var fn = function(bx) {
+		var val = (bx.x + bx.y*front) / max;
+		var col = Color.parse(Math.floor(cmin + val*cpad).toString(16).rep(3), omin + val*opad);
+		window.setTimeout(function(){c.renderBox(col, bx)}, tmin + tpad * val);
+		return true;
+	}
+	
+	empty.every(fn);
+	front = 2.5;
+	var [max, cmin, cpad, tmin, tpad, omin, opad] = [1.0 * this.field.size.width + this.field.size.height * front, 220, -70, 100, 1000, .7, .25];
+	set.every(fn);
+}
+
+Tetris.prototype.pause = function(){with(this){
+	if(gameState == GameState.underway)	{
+		gameState = GameState.paused;
+		falling.stop();
+		speedingUp.stop();
+		Widget.floater2pause(makeFloater());
+	}
+	else if(gameState == GameState.paused)	{
+		Widget.rm('floater');
+		gameState = GameState.underway;
+		falling.start(1000 / speed);
+		speedingUp.start();
+	}
+}}
+
+//// Figure movements
+
 
 /**
  *	Lower the current figure one level down on timer or
@@ -243,11 +295,12 @@ var lev = 0;
 Tetris.prototype.fall = function(firstMove)	{
 	firstMove = typeof firstMove == 'boolean' && firstMove;
 	this.falling.stop();
-	
+	if(this.gameState != GameState.underway) return;
+
 	var fallOk = false;
 	++this.current.position.y;
 	var tr = this.current.getBlocksToRender();
-	fallOk = this.blksOk(tr);
+	fallOk = tr.every(this.pOk);
 	if(!firstMove && fallOk)this.drawFigure({action: 'clear', shift: -1});
 	
 	if(!(firstMove || fallOk))	{
@@ -263,59 +316,12 @@ Tetris.prototype.fall = function(firstMove)	{
 	this.falling.start(1000 / this.speed);
 }
 
-Tetris.prototype.gameOver = function(){with(this)	{
-	gameState = GameState.gameOver;
-	
-	falling.stop();
-	speedingUp.stop();
-	
-	closeField();
-	
-	showGameOverMsg();
-	showScores();
-}}
-
-Tetris.prototype.closeField = function()	{
-	this.canvas.translate(this.origin.x, this.origin.y);
-	var front = .2;
-	var [empty, set] = this.field.getState();
-	var [c, max, opac, cmin, cpad, tmin, tpad] = [this.canvas, 1.0 * this.field.size.width + this.field.size.height * front, 
-		0.8, 90, 140, 50, 1300];
-
-	var fn = function(bx) {
-		var val = (bx.x + bx.y*front) / max;
-		var col = Color.parse(Math.floor(cmin + val*cpad).toString(16).rep(3), opac);
-		window.setTimeout(function(){c.renderBox(col, bx)}, tmin + tpad * val);
-		return true;
-	}
-	
-	empty.every(fn);
-	front = 2.5;
-	var [max, opac, cmin, cpad, tmin, tpad] = [1.0 * this.field.size.width + this.field.size.height * front, 0.6, 220, -70, 100, 1000];
-	set.every(fn);
-}
-
-Tetris.prototype.pause = function(){with(this){
-	if(gameState == GameState.underway)	{
-		gameState = GameState.paused;
-		falling.stop();
-		speedingUp.stop();
-		showPauseMsg();
-	}
-	else if(gameState == GameState.paused)	{
-		removeFloater();
-		gameState = GameState.underway;
-		falling.start(1000 / speed);
-		speedingUp.start();
-	}
-}}
-
 Tetris.prototype.rotate = function(direction)	{
 	var rotated = this.current.rotate(direction);
 	if(!rotated) return;
 	
 	var bxs = rotated.andNot(this.current);
-	var rotateOk = this.blksOk(bxs);
+	var rotateOk = bxs.every(this.pOk);
 	if(!rotateOk) return;
 
 	with(this)	{
@@ -343,7 +349,7 @@ Tetris.prototype.drop = function(){with(this)	{
 
 Tetris.prototype.move = function(modificator)	{
 	var shifted = this.current.shifted(modificator);
-	var ok = this.blksOk(shifted.draw);
+	var ok = shifted.draw.every(this.pOk);
 	
 	if(!ok) return;
 
@@ -359,6 +365,7 @@ Tetris.prototype.move = function(modificator)	{
  * @param args-object {[action: ('clear'|'render')], [figure: (current|next)]}-default action is render current
  */
 Tetris.prototype.drawFigure = function(args)	{
+	if(this.gameState != GameState.underway) return;
 	var action = (args && args.action) || 'render';
 	var figure = (args && args.figure) || this.current;
 	var shift = ((args && args.shift) || 0) * this.gridsize.height;
@@ -382,12 +389,17 @@ Tetris.prototype.drawFigure = function(args)	{
 	this.canvas.translate(-origin.x, -origin.y);
 }
 
-Tetris.default = {
-	fieldSize: new Rectangle(9, 20),
-	box: new Rectangle(20,20)
-}
-
 /// Draw once sector
+
+
+Tetris.prototype.fillGradient = function(grad, decay)	{
+	decay = decay || 1.5;
+	grad.addColorStop(0, Color.parse('f068fb', .6 / decay));
+	grad.addColorStop(.25, Color.parse('f7f045', .55 / decay));
+	grad.addColorStop(.5, Color.parse('90f87a', .5 / decay));
+	grad.addColorStop(.75, Color.parse('f88576', .45 / decay));
+	grad.addColorStop(1, Color.parse('70f0ea', .4 / decay));
+}
 
 Tetris.prototype.drawGrid = function()	{
     if(this.box.width == this.gridsize.width) return;
@@ -432,15 +444,6 @@ Tetris.prototype.drawGrid = function()	{
 	this.canvas.translate(-this.origin.x, -this.origin.y);
 }
 
-Tetris.prototype.fillGradient = function(grad, decay)	{
-	decay = decay || 1.5;
-	grad.addColorStop(0, Color.parse('f068fb', .6 / decay));
-	grad.addColorStop(.25, Color.parse('f7f045', .55 / decay));
-	grad.addColorStop(.5, Color.parse('90f87a', .5 / decay));
-	grad.addColorStop(.75, Color.parse('f88576', .45 / decay));
-	grad.addColorStop(1, Color.parse('70f0ea', .4 / decay));
-}
-
 Tetris.prototype.drawFrame = function()	{
 	var grad = this.canvas.createLinearGradient(this.pixel.width / 4, 0, this.pixel.width * 3/4, this.pixel.height);
 	this.fillGradient(grad);
@@ -473,16 +476,6 @@ Tetris.prototype.makeFloater = function()	{
 	this.parent.appendChild(floater);
 	
 	return floater;
-}
-
-Tetris.prototype.removeFloater = function()	{
-	var floater = document.getElementById('floater');
-	if(floater) floater.parentNode.removeChild(floater);
-}
-
-function submit_name()	{
-	alert('hello');
-	return false;
 }
 
 Tetris.prototype.showScores = function()	{
@@ -552,26 +545,6 @@ Tetris.prototype.showLocalScores = function()	{
 		x.focus();
 		x.select();
 	}
-}
-
-Tetris.prototype.showGameOverMsg = function()	{
-	Widget.enclose(this.makeFloater(), [
-		Widget.make('div', {id: 'gameover-msg'}, '◆ Game Over ◆'), 
-		Widget.make('div', {id: 'gameover-top'}, 'You scored <em>'+this.score.points+'</em> points')
-	]);
-}
-
-Tetris.prototype.showPauseMsg = function()	{
-	Widget.enclose(this.makeFloater(), [
-		Widget.make('div', {id: 'pause-msg'}, '● Pause ●'), 
-		Widget.make('div', {id: 'pause-top'}, 'Press <em>pause</em> or <em>p</em> to continue')
-	]);
-}
-
-Tetris.prototype.makeStartBtn = function()	{
-	var button = Widget.make('button', {id: 'runit', onclick: this.start.detach(this)}, 'Start');
-	Widget.enclose(this.makeFloater(), [button]);
-	button.focus();
 }
 
 Tetris.prototype.makeHtml = function()	{

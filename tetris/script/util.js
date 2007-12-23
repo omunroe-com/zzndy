@@ -10,6 +10,7 @@ String.prototype.pad = function(n, s)	{
 	return (Math.abs(n)>l)?(n>0?this+s.rep(n-l):s.rep(Math.abs(n)-l)+this):this.toString();
 }
 
+String.prototype.x = 
 String.prototype.rep = function(n)	{
 	return Array(n+1).join(this);
 }
