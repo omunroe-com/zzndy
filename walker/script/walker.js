@@ -1,6 +1,6 @@
 var canvas, field, dot, done = false;
 var pi = Math.PI, pi2 = pi / 2, deg = pi / 180.0, pii = 2 * pi;
-var [astep, gstep] = [6, 5];
+var astep = 6, gstep = 5; // angular step (in degrees), movement step
 var bxsize = 20;
 var treshold = 0.001;
 
@@ -9,7 +9,6 @@ window.onload = function()	{
 	canvas = element.getContext('2d');
 	canvas.fillStyle = 'silver';
 	canvas.size = new Box(element.width, element.height);
-	//canvas.fill_rect(new Point(0), canvas.size);
 	
 	field = new Field(25, 25);
 	dot = new Player(new Point(200, 100), 180*deg);	
@@ -86,45 +85,46 @@ Player.prototype.eq = function(player){
 }
 
 CanvasRenderingContext2D.prototype.fill_rect = function(rect, size)	{
-	if(arguments.length == 1 && rect instanceof Rect)
-		this.fillRect(rect.pos.x, rect.pos.y, rect.size.width, rect.size.height)
-	else if(arguments.length == 2 && rect instanceof Point && size instanceof Box)
-		this.fillRect(rect.x, rect.y, size.width, size.height)
+	if(rect instanceof Rect)
+		with (rect) this.fillRect(pos.x, pos.y, size.width, size.height);
+	else if(rect instanceof Point && size instanceof Box)
+		this.fillRect(rect.x, rect.y, size.width, size.height);
 	else this.fillRect.apply(this, arguments);		
 }
 
 CanvasRenderingContext2D.prototype.clear_rect = function(rect, size)	{
-	if(arguments.length == 1 && rect instanceof Rect)
-		this.clearRect(rect.pos.x, rect.pos.y, rect.size.width, rect.size.height)
-	else if(arguments.length == 2 && rect instanceof Point && size instanceof Box)
-		this.clearRect(rect.x, rect.y, size.width, size.height)
+	if(rect instanceof Rect)
+		with (rect) this.clearRect(pos.x, pos.y, size.width, size.height);
+	else if(rect instanceof Point && size instanceof Box)
+		this.clearRect(rect.x, rect.y, size.width, size.height);
 	else this.clearRect.apply(this, arguments);		
 }
 
 CanvasRenderingContext2D.prototype.draw = function(what, obstacles)	{
-	if(what instanceof Player)	{
-		var fs = this.fillStyle;
-		this.fillStyle = canvas.createRadialGradient(what.pos.x, what.pos.y, 0, what.pos.x, what.pos.y, 200);
-		this.fillStyle.addColorStop(0, 'rgba(240, 235, 160, .9)');
-		this.fillStyle.addColorStop(1, 'rgba(230, 225, 150, .1)');
-		this.beginPath();
+	if(what instanceof Player)	{with(this){
+		var fs = fillStyle;
+		fillStyle = createRadialGradient(what.pos.x, what.pos.y, 0, what.pos.x, what.pos.y, 200);
+		fillStyle.addColorStop(0, 'rgba(240, 235, 160, .9)');
+		fillStyle.addColorStop(1, 'rgba(230, 225, 150, .1)');
+		beginPath();
 		
-		this.moveTo(what.pos.x, what.pos.y);
-		this.arc(what.pos.x, what.pos.y, 200, what.dir - what.angle / 2, what.dir + what.angle / 2, false);
-		this.moveTo(what.pos.x, what.pos.y);
-		this.arc(what.pos.x, what.pos.y, 3, 0, 2*pi, false);
+		moveTo(what.pos.x, what.pos.y);
+		arc(what.pos.x, what.pos.y, 200, what.dir - what.angle / 2, what.dir + what.angle / 2, false);
+		moveTo(what.pos.x, what.pos.y);
+		arc(what.pos.x, what.pos.y, 3, 0, 2*pi, false);
 		
-		this.closePath();
-		this.fill();
-		this.fillStyle = 'grey';
-		obstacles.some(function(bx){canvas.fill_rect(bx)});
-		this.fillStyle = fs;
-	}
+		closePath();
+		fill();
+		fillStyle = 'grey';
+		var can = this;
+		obstacles.some(function(bx){can.fill_rect(bx)});
+		fillStyle = fs;
+	}}
 	else if( what instanceof Field ){
 		bx = new Box(bxsize);
 		for(var i=0; i<what.size.height; ++i)
 			for(var j=0; j<what.size.width; ++j)
 				if(what.field[i][j] == 1)
-					canvas.fill_rect(new Point(i*bx.height, j*bx.width), bx);
+					this.fill_rect(new Point(i*bx.height, j*bx.width), bx);
 	}
 }
