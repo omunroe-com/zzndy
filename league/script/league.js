@@ -3,7 +3,7 @@ function League()	{
 	this.body = null; 
 }
 
-var docroot = '/league/';
+var docroot = 'league/';
 
 var league = new League();
 var ready = false;
