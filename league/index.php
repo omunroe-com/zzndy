@@ -1,4 +1,9 @@
-<html>
+<?php
+
+save_player(array('name' => 'yagoo', 'rating' => 0.2));
+save_player(array('name' => 'yagoo', 'rating' => 'huyase'));
+
+?><html>
 <head>
 	<title>League</title>
 	<link rel="stylesheet" type="text/css" href="style/common.css" />

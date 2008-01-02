@@ -1,5 +1,8 @@
 -- Mysql >= 5 required
 
+CREATE DATABASE IF NOT EXISTS league;
+USE league;
+
 DROP TABLE IF EXISTS Matches;
 DROP TABLE IF EXISTS Games;
 DROP TABLE IF EXISTS Prizes;
