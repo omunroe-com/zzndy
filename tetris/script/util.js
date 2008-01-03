@@ -10,9 +10,23 @@ String.prototype.pad = function(n, s)	{
 	return (Math.abs(n)>l)?(n>0?this+s.rep(n-l):s.rep(Math.abs(n)-l)+this):this.toString();
 }
 
-String.prototype.x = 
-String.prototype.rep = function(n)	{
+String.prototype.rep = 
+String.prototype.x = function(n)	{
 	return Array(n+1).join(this);
+}
+
+String.prototype.trim = function(){ return this.replace(/^\s+|\s+$/g, "")}
+function trim(str){return str.trim()}
+
+String.prototype.trimsplit = 
+String.prototype.ts = function(splitter)	{
+	return this.split(splitter).map(trim);
+}
+String.prototype.in = function(str)	{
+	return str.indexOf(this) != -1;
+}
+String.prototype.has = function(str)	{
+	return this.indexOf(str) != -1;
 }
 
 Number.prototype.zf = 
