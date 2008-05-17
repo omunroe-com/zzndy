@@ -84,11 +84,11 @@ Number.prototype.nonPositive = function()	{return this.constrain(0, Infinity)}
 Number.prototype.nonNegative = function()	{return this.constrain(Infinity, 0)}
 
 /**
- * Format is ${name[:{-|0}[width[.decimal]][base]]}
+ * Format is <Name[:{-|0}[width[.decimal]][base]]>
  * where
  *  name		name of a field, can also be in form "property[10].another.prop[10][11].length"
- * 	-  \tforces right align *
- * 	0  \tzerofill *,**
+ * 	-           forces right align *
+ * 	0           zerofill *,**
  * 	width		align width
  * 	decimal		decimal places**
  *  base		enumeration base**, can be one of
@@ -100,15 +100,13 @@ Number.prototype.nonNegative = function()	{return this.constrain(Infinity, 0)}
  *
  * *  - useless w/o width
  * ** - for numbers only
- * format is ${name[:x|th|[align][fillwidth[.after comma]]]
+ * Watch the case
  */
 String.prototype.format =
 String.prototype.fmt = function(fmtObj)	{
 	function getValue(path)	{
-		console.log(path)
 		var prop = path.match(/^(\.?\w+|\[\d+\])(?=\.|$|\[\d+)/)[0]
 		var rest = path.replace(prop, '')
-		console.log('rest' + rest)
 		if(rest) return getValue.call(this[prop.replace(/^\.|^\[|\]$/g, '')], rest)
 		else return this[prop.replace(/^\.|^\[|\]$/g, '')]
 	}
@@ -116,27 +114,33 @@ String.prototype.fmt = function(fmtObj)	{
 	function simpleFormat(a)	{
 		var r = this
 		for(var k in a)	{
-			var rx = new RegExp('\\$\\{'+k+'\\}', 'g');
-			r = r.replace(rx, a[k]);
+			if(typeof a[k] == 'function') continue
+			if(typeof k == 'string')
+				var rx = new RegExp('<' + k.charAt(0).toUpperCase() + k.substr(1) + '>', 'g')
+			else var rx = new RegExp('<' + k + '>', 'g')
+			r = r.replace(rx, a[k])
 		}
 		return r
 	}
 
-	var res = simpleFormat.call(this, fmtObj);
+	var res = simpleFormat.call(this, fmtObj)
+	var opts = '(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?'
 
 	for(name in fmtObj)	{
 		var value, backUp = []
 		value = backUp[0] = fmtObj[name]
-		var rx = new RegExp('\\$\\{('+name+'(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?)\\}')
+		if(typeof value == 'function') continue
+		if(typeof name == 'string') name = name.charAt(0).toUpperCase() + name.substr(1)
+		var rx = new RegExp('<(' + name + opts + ')?>')
 		var num = backUp[1] = new Number(value), m;
 		while(m = res.match(rx))	{
 			var match = m[0], path = m[1], align=m[2], width=m[3], deci=m[4], base=m[5]
 			var useBackup = !!(path || base)
 			if(path) {
+				if(typeof name == 'string') path = path.charAt(0).toLowerCase() + path.substr(1)
 				value = getValue.call(fmtObj, path)
 				num = new Number(value)
 			}
-			width = align == '-' ? -width : width
 			switch(base)	{
 				case 'b': value = num.toString(2); break
 				case 'o': value = num.toString(8); break
@@ -144,14 +148,16 @@ String.prototype.fmt = function(fmtObj)	{
 				case 'n': value = num.toPos(); break
 				case 'r': value = num.toRoman(); break
 			}
+
 			res = res.replace(match, (isNaN(num) || base) ? value.pad(align == '-' ? -width : width) : (align == '0' ? num.zf(width, deci) : num.pad(width, deci)))
+
 			if(useBackup)	{
 				value = backUp[0]
 				num = backUp[1]
 			}
 		}
 	}
-	return res;
+	return res
 }
 
 // operators to use in reduce
