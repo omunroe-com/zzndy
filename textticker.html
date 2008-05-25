@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head><title>Text Ticker</title></head>
+<body>
+
+<form name="show-em">
+	<textarea name="src" rows="8" cols="50" style="border: 1px solid gray">10 PRINT 'HELLO WORLD'
+20 GOTO 40
+30 PRINT 'INFINITE LOOP'
+40 GOTO 30</textarea>
+	<input type="submit"/>
+</form>
+
+<pre id="target"></pre>
+<script type="text/javascript" src="script/text-ticker.class.js">
+
+</script>
+<script type="text/javascript">
+
+	var target = document.getElementById('target');
+	
+	document.forms['show-em'].onsubmit = function()	{
+		(new TextTicker(target, this.src.value)).start()
+		return false
+	}
+</script>
+</body>
+</html>
