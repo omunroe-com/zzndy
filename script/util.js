@@ -7,6 +7,22 @@ Object.prototype.map = function(fn, thisObj)	{
 	return res
 }
 
+Object.prototype.clone = function()	{
+	var newOne = {}
+	for(var i in this)
+		newOne[i] = this[i]
+		
+	return newOne
+}
+
+Object.prototype.extend = function()	{
+	for(var i=0; i<arguments.length; ++i)
+		for(var field in arguments[i])
+			this[field] = arguments[i][field]
+			
+	return this
+}
+
 Object.prototype.toQuery = function()	{
 	var res = []
 	for(var i in this) if(typeof this[i] != 'function')
@@ -64,6 +80,8 @@ Number.prototype.times = function(fn, self)	{
 	var res = []
 	if(typeof fn == 'function')
 		for(var i=0; i<this; ++i) res.push(fn.call(this, i, self))
+	else if(typeof fn == 'object' || fn instanceof Array)
+		for(var i=0; i<this; ++i) res.push(fn.clone())
 	else
 		for(var i=0; i<this; ++i) res.push(fn)
 
