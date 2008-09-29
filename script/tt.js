@@ -3,8 +3,8 @@
  */
 (function(){
 	var defaults = {
-		loops: 5,
-		delay: 20
+		loops: 3,
+		delay: 10
 	}
 	
 	function tick(n)	{
