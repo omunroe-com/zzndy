@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>Boo-o-m</title>
+		<script type="text/javascript" src="script/util.js"></script>
+		<script type="text/javascript" src="script/canvas.js"></script>
+		<link rel="stylesheet" type="text/css" href="style/common.css" />
+		<style type="text/css">
+			canvas
+			{
+				border: 1px solid;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="target"></div>
+		<script type="text/javascript">
+			var canvas = document.createElement('canvas');
+			canvas.setAttribute('width', '800px');
+			canvas.setAttribute('height', '500px');
+			var ctx = canvas.getContext('2d');
+			document.getElementById('target').appendChild(canvas);
+
+			Function.prototype.animate = function(timems)
+			{
+				var fraction = 30;
+				var fn = this;
+				var seq = [];
+				var n = timems/fraction;
+				var step = 1/n, x = 0;
+
+				// linear easing (more to come)
+				while(x<1)	{
+					seq.push(x);
+					x += step;
+				}
+				seq.push(1);
+
+				for(var i in seq)
+					window.setTimeout(fn, seq[i] * timems, seq[i]);
+			}
+
+			var x, y, r, mx = 800, my = 500, n = 500;
+	
+			function setCircle()	{
+				x = Math.random() * mx;
+				y = Math.random() * my;
+				r = 40 + Math.random() * 20;
+				ctx.fillStyle = '#d7d7d7';
+			}
+
+			function drawCircle(n)
+			{
+				ctx.fillCircle(x, y, n * r);
+			}
+						
+			function resetCircle()	{
+				ctx.fillStyle = '#262626';
+				nx = x - 20 + Math.random() * 41;
+				ny = y - 20 + Math.random() * 41;
+				r += 1.1 * Math.sqrt((x-nx)*(x-nx) + (y-ny)*(y-ny));
+				x = nx;
+				y = ny;
+				drawCircle.animate(n);
+			}
+
+			function doit()	{
+				setCircle();
+				var t = n * ( .8 + Math.random() * .45);
+				drawCircle.animate(t);
+				window.setTimeout(function(){
+						resetCircle();
+						var t2 = t * .8;
+						drawCircle.animate(t2);
+						window.setTimeout(doit, t2);
+					}, t);
+			}
+
+			doit();
+		</script>
+	</body>
+</html>
