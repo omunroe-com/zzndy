@@ -29,9 +29,10 @@ IN THE SOFTWARE.
 
 	function mkElt(name, attrs, children)
 	{
-		if(navigator.userAgent.match(/MSIE/))
+		if(navigator.userAgent.match(/MSIE/i) !== null)
 			function mkEmptyElt(name, attrs)	{
 				var elt = document.createElement(attrs.name ? '<' + name + ' name="' + attrs.name + '>' : name);
+
 				for(var i in attrs)
 					if(typeof attrs[i] != 'function')
 						setAttributeIe(elt, i, attrs[i]);
@@ -65,6 +66,8 @@ IN THE SOFTWARE.
 
 			return elt;
 		}
+
+		return mkElt(name, attrs, children);
 	}
 
 	function tagFn(name)	{
