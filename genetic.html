@@ -1,270 +1,305 @@
 <html>
-  <head>
-    <title></title>
-      <link rel="stylesheet" href="style/common.css"/>
-      <script type="text/javascript" src="script/util.js"></script>
-      <script type="text/javascript" src="script/canvas.js"></script>
-      <script type="text/javascript" src="script/domgen.js"></script>
-  </head>
-  <body>
+<head>
+    <title>Genetic</title>
+    <link rel="stylesheet" href="style/common.css"/>
+    <script type="text/javascript" src="script/util.js"></script>
+    <script type="text/javascript" src="script/canvas.js"></script>
+    <script type="text/javascript" src="script/domgen.js"></script>
+</head>
+<body>
 <script type="text/javascript">
-    function Blip(x, y, m, h, s, v)
+function Blip(x, y, m, h, s, v)
+{
+    this.x = x;
+    this.y = y;
+    this.m = m; // magnitude
+    this.h = h; // hue
+    this.s = s; // saturation
+    this.v = v; // value
+}
+
+Blip.prototype.toString = function()
+{
+    function prepare(w, val)
     {
-        this.x = x;
-        this.y = y;
-        this.m = m; // magnitude
-        this.h = h; // hue
-        this.s = s; // saturation
-        this.v = v; // value
+        return Math.floor(val).toString(2).pad(-w, '0').substr(0, w);
     }
 
-    Blip.prototype.toString = function()
+    var h = prepare(8, this.h * 256);
+    var x = prepare(7, this.x);
+    var y = prepare(7, this.y);
+    var m = prepare(2, this.m - 4);
+
+    return parseInt(h.substr(0, 4) + x + m + y + h.substr(4), 2).toString(16);
+}
+
+/**
+ * Set blip fields from given string mutable representation
+ * @param {String} str - string mutable representation
+ */
+Blip.prototype.fromString = function(str)
+{
+    var bin = parseInt(str, 16).toString(2);
+
+    this.h = parseInt(bin.substr(0, 4) + bin.substr(-4), 2) / 256;
+    this.x = parseInt(bin.substr(4, 7), 2) + Math.floor(Math.random() * 9 - 4);
+    this.m = parseInt(bin.substr(11, 2), 2) + 4;
+    this.y = parseInt(bin.substr(13, 7), 2) + Math.floor(Math.random() * 9 - 4);
+
+    this.s = 1;
+    this.v = .5;
+
+    return this;
+}
+
+Blip.prototype.render = function(ctx)
+{
+    ctx.renderBlip(this);
+    return this;
+}
+
+/**
+ * Converts an HSV color value to RGB. Conversion formula adapted from
+ * http://en.wikipedia.org/wiki/HSV_color_space. Assumes h, s, and v are
+ * contained in the set [0, 1] and returns r, g, and b in the set [0, 255].
+ *
+ * @param   {Number}    h       The hue
+ * @param   {Number}    s       The saturation
+ * @param   {Number}    v       The value
+ * @return  {Array}             The RGB representation
+ */
+function hsvToRgb(h, s, v) {
+    var r, g, b;
+
+    var i = Math.floor(h * 6);
+    var f = h * 6 - i;
+    var p = v * (1 - s);
+    var q = v * (1 - f * s);
+    var t = v * (1 - (1 - f) * s);
+
+    switch (i) {
+        case 0: r = v,g = t,b = p; break;
+        case 1: r = q,g = v,b = p; break;
+        case 2: r = p,g = v,b = t; break;
+        case 3: r = p,g = q,b = v; break;
+        case 4: r = t,g = p,b = v; break;
+        case 5: r = v,g = p,b = q; break;
+    }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+;
+
+var ox = -400, oy = -250, dx = 7, dy = 7;
+
+/**
+ * Rate given Blip, save the score in it. The bigger the score, the worse
+ * @param {Blip} blip
+ */
+function rateBlip(blip) {
+    var xdx = blip.x * dx + ox;
+    var xdy = blip.y * dx + oy;
+
+    var r = Math.sqrt(xdx * xdx + xdy * xdy);
+    var x = Math.abs(100 - r);
+    var score = Math.log((x + 2) / 30) * x;
+    if (score < 0) score = 0;
+
+    //var az = Math.acos((1+xdy/r)/2) / Math.PI;
+    //score += Math.abs(az - blip.h) * Math.abs(az - blip.h);
+
+    return score
+}
+
+/**
+ * Compare to instances of type Blip. Used in sorting of arrays of Blips.
+ * @param {Blip} b1
+ * @param {Blip} b2
+ */
+function blipSort(b1, b2)
+{
+    if (!('score' in b1)) b1.score = rateBlip(b1);
+    if (!('score' in b2)) b2.score = rateBlip(b2);
+
+    return b1.score - b2.score;
+}
+
+/**
+ * Crossover two given strings
+ * @param {String} s1
+ * @param {String} s2
+ */
+function crossover(s1, s2)
+{
+    function mutate(array)
     {
-        var xy = this.x.constrain(0, 128) * 128 + this.x.constrain(0, 128);
-        var parts = [
-                xy.toString(16).pad(-3, '0').substr(0, 3),
-                (this.m - 4).toString(16).substr(0, 1),
-                Math.round(this.h * 128).toString(16).pad(-2, '0').substr(0, 2),
-                Math.round(this.v * 128).toString(16).pad(-2, '0').substr(0, 2),
-        ]
-
-        return parts.join('');
+        var i = Math.floor(Math.random() * array.length);
+        var val = parseInt(array[i], 16);
+        array[i] = Math.abs(Math.floor(val + Math.random() * 9 - 4) % 16).toString(16);
     }
 
-    /**
-     * Set blip fields from given string mutable representation
-     * @param {String} str - string mutable representation
-     */
-    Blip.prototype.fromString = function(str)
+    if (Math.random() > .5)
     {
-        var xy = parseInt(str.substr(0, 3), 16);
-        this.m = parseInt(str.substr(3, 1), 16) % 4 + 4;
-        this.h = parseInt(str.substr(4, 2), 16) / 128;
-        this.v = parseInt(str.substr(6, 2), 16) / 128;
-        this.s = 1;
-
-        this.y = xy % 128;
-        this.x = Math.floor(xy / 128);
-        return this;
+        var tm = s1;
+        s1 = s2;
+        s2 = tm;
     }
 
-    Blip.prototype.render = function(ctx)
+    var split = Math.floor(1 + Math.random() * (s1.length - 2));
+    var offspring = s1.substr(0, split) + s2.substr(split);
+
+    if (Math.random() > .5)
     {
-        ctx.renderBlip(this);
-        return this;
+        offspring = offspring.split('');
+
+        mutate(offspring);
+        if (Math.random() > .6) mutate(offspring);
+        if (Math.random() > .7) mutate(offspring);
+
+        offspring = offspring.join('');
     }
 
-    /**
-     * Converts an HSV color value to RGB. Conversion formula adapted from
-     * http://en.wikipedia.org/wiki/HSV_color_space. Assumes h, s, and v are
-     * contained in the set [0, 1] and returns r, g, and b in the set [0, 255].
-     *
-     * @param   {Number}    h       The hue
-     * @param   {Number}    s       The saturation
-     * @param   {Number}    v       The value
-     * @return  {Array}             The RGB representation
-     */
-    function hsvToRgb(h, s, v){
-        var r, g, b;
+    return offspring;
+}
 
-        var i = Math.floor(h * 6);
-        var f = h * 6 - i;
-        var p = v * (1 - s);
-        var q = v * (1 - f * s);
-        var t = v * (1 - (1 - f) * s);
 
-        switch(i){
-            case 0: r = v, g = t, b = p; break;
-            case 1: r = q, g = v, b = p; break;
-            case 2: r = p, g = v, b = t; break;
-            case 3: r = p, g = q, b = v; break;
-            case 4: r = t, g = p, b = v; break;
-            case 5: r = v, g = p, b = q; break;
-        }
+CanvasRenderingContext2D.prototype.renderBlip = function(blip) {
+    this.fillStyle = 'rgb(' + hsvToRgb(blip.h, blip.s, blip.v) + ')';
+    this.strokeStyle = '#d7d7d7';
 
-        return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-    };
+    return this
+            .strokeRect(blip.x * dx - blip.m / 2 + ox, blip.y * dy - blip.m / 2 + oy, blip.m, blip.m)
+            .fillRect(blip.x * dx - blip.m / 2 + ox, blip.y * dy - blip.m / 2 + oy, blip.m, blip.m);
+}
 
-    /**
-     * Rate given Blip, save the score in it. The bigger the score, the worse
-     * @param {Blip} blip
-     */
-    function rateBlip(blip) {
-        var xdx = blip.x*dx + ox;
-        var xdy = blip.y*dx + oy;
-        var r2 = Math.sqrt(xdx*xdx + xdy*xdy);
-        var score = Math.abs(100 - r2);
-
-        var az = Math.atan(xdy/xdx) / Math.PI;
-        score += Math.abs(az - blip.h) * 100000;
-        return score
-    }
-
-    /**
-     * Compare to instances of type Blip. Used in sorting of arrays of Blips.
-     * @param {Blip} b1
-     * @param {Blip} b2
-     */
-    function blipSort(b1, b2)
-    {
-        if(!('score' in b1)) b1.score = rateBlip(b1);
-        if(!('score' in b2)) b2.score = rateBlip(b2);
-
-        return b1.score - b2.score;
-    }
-
-    /**
-     * Crossover two given strings
-     * @param {String} s1
-     * @param {String} s2
-     */
-    function crossover(s1, s2)
-    {
-        var split = Math.floor(1 + Math.random() * (s1.length-2));
-        var offspring = s1.substr(0, split) + s2.substr(split);
-
-        if(Math.random() > .6)  {
-            offspring = offspring.split('');
-            offspring[Math.floor(Math.random() * offspring.length)] = Math.floor(Math.random()*16).toString(16);
-            offspring = offspring.join('');
-        }
-
-        if(Math.random() > .9)  {
-            offspring = offspring.split('');
-            offspring[Math.floor(Math.random() * offspring.length)] = Math.floor(Math.random()*16).toString(16);
-            offspring = offspring.join('');
-        }
-
-        return offspring;
-    }
-
-    var ox = -400, oy = -250, dx = 7, dy = 7;
-    CanvasRenderingContext2D.prototype.renderBlip = function(blip){
-        this.fillStyle = 'rgb('+hsvToRgb(blip.h, blip.s, blip.v)+')';
-        this.strokeStyle = '#d7d7d7';
-
-        return this
-            .strokeRect(blip.x * dx - blip.m + ox, blip.y * dy - blip.m + oy, blip.m * 2, blip.m * 2)
-            .fillRect(blip.x * dx - blip.m + ox, blip.y * dy - blip.m + oy, blip.m * 2, blip.m * 2);
-    }
-
-    function renderPlanet() {
-        ctx.fillStyle = ctx.createRadialGradient(-30, -30, 5, -30, -30, 100);
-        ctx.fillStyle
+function renderPlanet() {
+    ctx.fillStyle = ctx.createRadialGradient(-30, -30, 5, -30, -30, 100);
+    ctx.fillStyle
             .addColorStop(0, '#d7d7d7')
-            .addColorStop(.6,'#c0c0c0')
+            .addColorStop(.6, '#c0c0c0')
             .addColorStop(1, '#999999');
 
-        ctx.fillCircle(0, 0, 50);
-    }
+    ctx.fillCircle(0, 0, 50);
+}
 
-    /**
-        * Display current generation.
-        * @param {Number} gen - Generation number
-        * @param {Array} pop - Array of Blips comprising the generation to display
-        */
-       function showGeneration(gen, pop)
-       {
-           console.log('Generation', gen);
+/**
+ * Display current generation.
+ * @param {Number} gen - Generation number
+ * @param {Array}  pop - Array of Blips comprising the generation to display
+ */
+function showGeneration(gen, pop)
+{
+    console.log('Generation', gen);
 
-           ctx.fillStyle = 'rgba(38, 38, 38, .5)';
-           ctx.fillRect(-400, -250, 800, 500);
-           renderPlanet();
+    ctx.fillStyle = 'rgba(38, 38, 38, .5)';
+    ctx.fillRect(-400, -250, 800, 500);
+    renderPlanet();
 
-           for(var i in pop) if(pop[i] instanceof Blip)
-           {
-               var blip = pop[i];
-			   if(i<10)	
-               {
-					   ctx.strokeCircle(blip.x * dx + ox, blip.y * dy + oy, 10 + Math.random()*15);
-					   console.log(blip.score);
-			   }
-               blip.render(ctx);
-           }
-       }
-
-       /**
-        * Construct blip object
-        * @param {string} str - blip string mutable representation
-        */
-       function makeBlip(str)
-       {
-           var blip = new Blip;
-           return blip.fromString(str);
-       }
-
-       /**
-        * Perform genetic algorithm.
-        *
-        * @param {Array} firstGen        - first generation
-        * @param {Number} generations    - number of generations to perform
-        * @param {Function} sort         - sort function
-        * @param {Number} fittestPct     - percentage of fittest to select from population
-        * @param {Function} generationFn - function to run on each generation
-        * @param {Function} constructFn  - function to construct single population member
-        * @param {Number} delay          - delay between generations
-        */
-       function evolve(firstGen, generations, sort, fittestPct, generationFn, constructFn, delay)
-       {
-           var population = firstGen.length;
-           var fn = function(pop, gen)
-           {
-               pop.sort(sort);
-               generationFn(gen, pop);
-
-               var fittest = pop.slice(0, Math.floor(fittestPct*population));
-               var newpop = [];
-
-               while(newpop.length < population)
-               {
-                   var parentA = fittest[Math.floor(Math.random()*fittest.length)].toString('dna');
-                   var parentB = fittest[Math.floor(Math.random()*fittest.length)].toString('dna');
-                   newpop.push(constructFn(crossover(parentA, parentB)));
-               }
-
-               if(gen < generations){
-                   var callback = function()   {
-                       fn(newpop, ++gen);
-                   }
-                   window.setTimeout(callback, delay);
-               }
-           }
-
-           fn(firstGen, 0);
-       }
-
-
-    // Init
-    initDomGen();
-
-    var body = document.getElementsByTagName('body')[0];
-    var canvas = $canvas({width: 800, height: 500}, 'Canvas element is not supported by this browser.');
-
-    // Init canvas
-    var ctx = canvas.getContext('2d');
-    body.appendChild(canvas);
-
-    ctx.fillStyle = 'rgb(38, 38, 38)';
-    ctx.translate(400, 250).fillRect(-400, -250, 800, 500);
-
-    var blips = [], i=100;
-
-    // Make first generation
-    while(i--)
+    for (var i in pop) if (pop[i] instanceof Blip)
     {
-        var blip = new Blip(
-                Math.round(Math.random() * 128),
-                Math.round(Math.random() * 128),
-                4 + Math.floor(Math.random()*5),
-                Math.random(), 1, .5
-                );
+        var blip = pop[i];
+        if (i < 10)
+            ctx.strokeCircle(blip.x * dx + ox, blip.y * dy + oy, blip.m * (1 + 3 * Math.random()));
 
-        blips.push(blip);
+        blip.render(ctx);
+    }
+}
+
+/**
+ * Construct blip object
+ * @param {string} str - blip string mutable representation
+ */
+function makeBlip(str)
+{
+    var blip = new Blip;
+    return blip.fromString(str);
+}
+
+/**
+ * Perform genetic algorithm.
+ *
+ * @param {Array} firstGen        - first generation
+ * @param {Number} generations    - number of generations to perform
+ * @param {Function} sort         - sort function
+ * @param {Number} fittestPct     - percentage of fittest to select from population
+ * @param {Function} generationFn - function to run on each generation
+ * @param {Function} constructFn  - function to construct single population member
+ * @param {Number} delay          - delay between generations
+ */
+function evolve(firstGen, generations, sort, fittestPct, generationFn, constructFn, delay)
+{
+    var population = firstGen.length;
+    var fn = function(pop, gen)
+    {
+        pop.sort(sort);
+        generationFn(gen, pop);
+
+        var fittest = pop.slice(0, Math.floor(fittestPct * population));
+        for (var i = 0; i < fittest.length / 3; ++i)
+        {
+            fittest[Math.floor(Math.random() * fittest.length)] = pop[Math.floor(Math.random() * pop.length)];
+        }
+
+        var newpop = [];
+
+        while (newpop.length < population)
+        {
+            var parentA = fittest[Math.floor(Math.random() * fittest.length)].toString('dna');
+            var parentB = fittest[Math.floor(Math.random() * fittest.length)].toString('dna');
+            newpop.push(constructFn(crossover(parentA, parentB)));
+        }
+
+        if (gen < generations) {
+            var callback = function() {
+                fn(newpop, ++gen);
+            }
+            window.setTimeout(callback, delay);
+        }
     }
 
-    // Start
-    evolve(blips, 30, blipSort, .1, showGeneration, makeBlip, 200);
+    fn(firstGen, 0);
+}
 
+
+// Init
+initDomGen();
+
+var body = document.getElementsByTagName('body')[0];
+var canvas = $canvas({width: 800, height: 500}, 'Canvas element is not supported by this browser.');
+
+// Init canvas
+var ctx = canvas.getContext('2d');
+body.appendChild(canvas);
+
+ctx.fillStyle = 'rgb(38, 38, 38)';
+ctx.translate(400, 250).fillRect(-400, -250, 800, 500);
+
+var blips = [], i = 100;
+
+// Make first generation
+while (i--)
+{
+    var blip = new Blip(
+            Math.round(Math.random() * 128),
+            Math.round(Math.random() * 128),
+            4 + Math.floor(Math.random() * 5),
+            Math.random(), 1, .5
+            );
+
+    blips.push(blip);
+}
+
+// Start
+evolve(blips, 30, blipSort, .1, showGeneration, makeBlip, 200);
+/*
+ for(var i=0; i<128; ++i)
+ for(var j=0; j<128; ++j)
+ {
+ var blip = new Blip(i, j, 4, Math.random(), 1, .5);
+ blip.m = Math.log(rateBlip(blip));
+ blip.render(ctx);
+ }
+ //*/
 </script>
-  </body>
+</body>
 </html>
