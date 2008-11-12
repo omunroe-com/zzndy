@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="script/util.js"></script>
+  <title></title>
+</head>
+<body>
+<textarea id="in" rows="5" cols="50">
+      [Main]
+      UserName=Grobachov
+      Resolution=1024x786
+
+      [Attributes]
+      Strength=3
+      Perception=6
+      Endurance=4
+      Charisma=4
+      Intelligence=6
+      Agility=10
+      Luck=7
+      Spare=0
+
+
+      [Traits]
+    ; Traits are kept as an array
+      Traits=Gifted
+      Traits=Small Frame
+
+      [Skills]
+      Small Arms=74
+      Big Guns=20
+      Energy Weapons=33
+
+      [Perks]
+      Finessee=1
+      Mutate=1
+</textarea>
+<div id="out"></div>
+<script type="text/javascript">
+    var src=document.getElementById('in');
+    var out=document.getElementById('out');
+
+    var object = {};
+    var section = 'Main';
+
+    var text = src.value;
+
+    text
+            .trimsplit('\n')
+            .filter(keyValuePairsOnly)
+            .forEach(addProperty);
+
+    function keyValuePairsOnly(line){
+        return line.length && line[0]!=';'
+    }
+
+    function addProperty(line)
+    {
+        if(line[0] == '[')
+        {
+            section = line.substr(1, line.length-2);
+            if(!(section in object))object[section] = {};
+        }
+        else
+        {
+            var eqIndex = line.indexOf('=');
+            var key = line.substr(0, eqIndex);
+            var value = line.substr(eqIndex+1);
+
+            if(key in object[section])  {
+                if(!(object[section][key] instanceof Array))
+                    object[section][key]=[object[section][key]];
+                object[section][key].push(value);
+            }
+            else object[section][key]=value;
+        }
+    }
+
+</script>
+</body>
+</html>
