@@ -169,7 +169,7 @@ String.prototype.fmt = function(fmtObj) {
     var res = simpleFormat.call(this, fmtObj)
     var opts = '(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?'
 
-    for (name in fmtObj) {
+    for (var name in fmtObj) {
         var value, backUp = []
         value = backUp[0] = fmtObj[name]
         if (typeof value == 'function') continue
