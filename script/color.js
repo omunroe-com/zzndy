@@ -1,4 +1,4 @@
-(function(){
+(function(){   
 /**
  * Color class
  * RGB(A) representation and operations
@@ -6,12 +6,59 @@
  * requires utils.js
  */
 
+Color = function(r, g, b, a)	{
+	this.alpha = 1;
+	this.red = this.green = this.blue = 0;
+
+	switch(arguments.length)	{
+		case 4:
+			this.alpha = parseFloat(a).within(0, 1);
+		case 3:
+			this.red = parseInt(r).within(0, 255);
+			this.green = parseInt(g).within(0, 255);
+			this.blue = parseInt(b).within(0, 255);
+			break;
+		case 2:
+			parse.call(this, r, g);
+			break;
+		case 1:
+			if(typeof r == 'string')
+				parse.call(this, r);
+			else	{
+				this.red = r.red;
+				this.green = r.green;
+				this.blue = r.blue;
+				this.alpha = r.alpha;
+			}
+			break;
+	}
+}
+
+var C = Color.prototype;
+
+C.toString = function(h)	{with(this){
+	if(alpha != 1)
+		return 'rgba(' + [red, green, blue, alpha] + ')';
+	if(h == 'h')
+		return '#' + red.toString(16).pad(2, '0') + green.toString(16).pad(2, '0') + blue.toString(16).pad(2, '0');
+	else
+		return 'rgb(' + [red, green, blue] + ')';
+}}
+
+var mask = /rgb(a)?\(\s*(25[0-5]|2[0-4]\d|[01]?\d?\d)\s*,\s*(25[0-5]|2[0-4]\d|[01]?\d?\d)\s*,\s*(25[0-5]|2[0-4]\d|[01]?\d?\d)\s*(?:,\s*((?:1|0)?\.\d+|1|0)\s*)?\)/i;
+
+/*	Parse a colour specified in HTML format and
+ *	return as a Color object, alpha is optional
+ */
 function parse(scol, alpha)	{
-	var base=10, r, g, b;
+	var base=10, r, g, b, a, m;
+
 	if(scol.substr(0, 3) == 'rgb')	{ // parsing RGB(A) text
-		var m = scol.match(/(a)?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*((?:1|0)?\.\d+|1|0)\s*)?\)/)
-		var a = m[1], r = m[2], g = m[3], b = m[4], o = m[5]
-		alpha = (a && o)? parseFloat(o): parseFloat(alpha);
+		m = scol.match(mask);
+		if(!m) return;
+		a = m[1]; r = m[2]; g = m[3]; b = m[4]; alpha = m[5];
+
+		alpha = (a && alpha) ? parseFloat(alpha) : 1;
 	}
 	else	{
 		base = 16;
@@ -19,94 +66,41 @@ function parse(scol, alpha)	{
 		var w = scol.length/3;
 		if(w != 2 && w != 1) return;
 
-		r = scol.substr(0, w);
-		g = scol.substr(w, w);
-		b = scol.substr(2*w, w);
+		m = [scol.substr(0, w), scol.substr(w, w), scol.substr(2*w, w)];
+		r = m[0]; g = m[1]; b = m[2];
 
 		if(w == 1)	{
-				r = r.rep(2);
-				g = g.rep(2);
-				b = b.rep(2);
+			r = r.x(2); g = g.x(2); b = b.x(2);
 		}
+
+		alpha || (alpha = 1);
 	}
 
-	return [parseInt(r, base), parseInt(g, base),
-		parseInt(b, base), alpha];
+	this.red = parseInt(r, base).within(0, 255);
+	this.green = parseInt(g, base).within(0, 255);
+	this.blue = parseInt(b, base).within(0, 255);
+	this.alpha = alpha.within(0, 1);
 }
 
-Color = function(r, g, b, a)	{
-	switch(arguments.length)	{
-		case 0: // default construtor
-			this.red = this.green = this.blue = 0;
-			this.alpha = NaN; // not specified
-			break;
-		case 1:
-			if(typeof t == 'object' && 'red' in r && 'green' in r && 'blue' in r && 'alpha' in r)	{
-				// copy constructor
-				this.red = r.red.constrain(0, 255);
-				this.green = r.green.constrain(0, 255);
-				this.blue = r.blue.constrain(0, 255);
-				this.alpha = r.alpha.constrain(0, 1);
-			}
-		case 2: // fallthrough for string constructor with optional alpha argument
-			if(typeof r != 'string')	{
-				this.red = this.green = this.blue = 0;
-				this.alpha = NaN; // not specified
-				break;
-			}
-			
-			var components = parse(r, g === undefined ? NaN : g)
-			this.red   = components[0].constrain(0, 255);
-			this.green = components[1].constrain(0, 255);
-			this.blue  = components[2].constrain(0, 255);
-			this.alpha = components[3].constrain(0, 1);
-			break;
-		case 3:
-		case 4:
-			this.red = parseInt(r).constrain(0, 255);
-			this.green = parseInt(g).constrain(0, 255);
-			this.blue = parseInt(b).constrain(0, 255);
-			if(arguments.length == 4)
-				this.alpha = parseFloat(a).constrain(0, 1);
-			else
-				this.alpha = NaN;
-			break;
-		default:
-			throw new Error('Invalid arguments to Color constructor');
-	}
-}
-
-Color.prototype.toString = function(asHex)	{
-	if(asHex)
-		return '#' + this.red.toString(16) + this.green.toString(16) + this.blue.toString(16);
-	if(isNaN(this.alpha))
-		return 'rgb(' + this.red + ', ' + this.green + ', ' + this.blue + ')';
-	return 'rgba(' + this.red + ', ' + this.green + ', ' + this.blue + ', ' + this.alpha + ')';
-}
-
-Color.prototype.tint = function(tones)	{
+C.tint = function(tones)	{
 	return new Color(
-		 this.red   + tones
-		,this.green + tones
-		,this.blue  + tones
-		,this.alpha);
+		(this.red + tones).within(0, 255),
+		(this.green + tones).within(0, 255),
+		(this.blue + tones).within(0, 255),
+		this.alpha);
 }
 
-/**
- * Randomly change current color, yield new object
- */
-Color.prototype.deviate = function(r, g, b, a, minStep)	{
-	function deviate(value, amount)	{
-		return value + Math.random() * (amount + 1) * 2 - amount
-	}
-	
-	var step = minStep === undefined ? 4 : minStep;
-	var dev = deviate(deviation.base/step)*step;
+// Alter color in random fassion
+// deviation is {base: int, r: int, g: int, b:int, a: float}
+C.deviate = function(base, r, g, b, a)	{
+	var step = 4;
+	var dev = deviate(base/step)*step;
 	return new Color(
-		 this.red   + deviate(this.red, r/step)*step
-		,this.green + deviate(this.green, r/step)*step
-		,this.blue  + deviate(this.blue, r/step)*step
-		,this.alpha + deviate(this.alpha, r/step)*step
+		this.red + dev + deviate(r/step)*step,
+		this.green + dev + deviate(g/step)*step,
+		this.blue + dev + deviate(b/step)*step,
+		this.alpha + deviate(a)
 	);
 }
+
 })()
