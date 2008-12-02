@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title></title>
+    <script type="text/javascript" src="script/unit.js"></script>
+    <script type="text/javascript" src="script/amount.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+		/*
+		   TODO: o implement tokenisation
+		         o implement infix to postfix conversion
+				 o construct expression tree from postfix queue
+	 	*/
+
+    var m = new Unit('m');
+    var km = new Unit('km', 'as', 1000, 'm');
+
+    var s = new Unit('s');
+    var h = new Unit('h', 'as', 3600, 's');
+
+    var m_s = new Unit('m/s')
+    var km_h = new Unit('km/h');
+
+    var t1 = new Amount(1000, 's');
+    var t2 = new Amount(.7, 'h');
+
+    var v1 = new Amount(20, m_s);
+    var v2 = new Amount(36, km_h);
+
+    document.write(t1.add(t2));
+    document.write(v1.add(v2));
+</script>
+</body>
+</html>
