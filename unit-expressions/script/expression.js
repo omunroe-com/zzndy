@@ -1,60 +1,5 @@
-/*
-
- (2+2)*10-1 --->
- expr -
- left expr *
- left expr +
- left 2
- right 2
- right 10
- right 1
-
- m2/s --->
- expr /
- left m2
- right s
-
- infix to postfix
-
- * While there are tokens to be read:
-
- * Read a token.
- * If the token is a number, then add it to the output queue.
- * If the token is a function token, then push it onto the stack.
- * If the token is a function argument separator (e.g., a comma):
-
- * Until the topmost element of the stack is a left parenthesis, pop the element from the stack and push it onto the output queue. If no left parentheses are encountered, either the separator was misplaced or parentheses were mismatched.
-
- * If the token is an operator, o1, then:
-
- * while there is an operator, o2, at the top of the stack, and either
-
- o1 is associative or left-associative and its precedence is less than (lower precedence) or equal to that of o2, or
- o1 is right-associative and its precedence is less than (lower precedence) that of o2,
-
- pop o2 off the stack, onto the output queue;
-
- * push o1 onto the stack.
-
- * If the token is a left parenthesis, then push it onto the stack.
- * If the token is a right parenthesis:
-
- * Until the token at the top of the stack is a left parenthesis, pop operators off the stack onto the output queue.
- * Pop the left parenthesis from the stack, but not onto the output queue.
- * If the token at the top of the stack is a function token, pop it onto the output queue.
- * If the stack runs out without finding a left parenthesis, then there are mismatched parentheses.
-
- * When there are no more tokens to read:
-
- * While there are still operator tokens in the stack:
-
- * If the operator token on the top of the stack is a parenthesis, then there are mismatched parenthesis.
- * Pop the operator onto the output queue.
-
- * Exit.
-
-
- */
+// precedance
+var prc = {'^':9, '×':8, '*':8, '÷':8, '/':8, '%':8, '+':6, '-':6, '(':-1};
 
 /**
  * Tokenize expression.
@@ -68,9 +13,21 @@ function tokenize(expr)
         return str.replace(/^\s+|\s+$/, '') != '';
     }
 
+    function prettify(token)
+    {
+        switch (token) {
+            case '*':
+                return '×';
+//            case '/':
+//                return '÷';
+            default:
+                return token;
+        }
+    }
+
     return expr
-            .replace(/([() +\/*^-])/g, '@$1@')
-            .split('@')
+            .replace(/([() +\/*^-])/g, '◊$1◊')
+            .split('◊')
             .filter(isEmpty);
 }
 
@@ -82,15 +39,94 @@ function tokenize(expr)
  */
 function infix2postfix(infix)
 {
+    var out = [], opstack = [];
 
+    for (var i = 0; i < infix.length; ++i)
+    {
+        var tok = infix[i];
+        if (tok == ')')
+        {
+            while (opstack.length > 0 && opstack[opstack.length - 1] != '(')
+                out.push(opstack.pop());
+
+            if (opstack.length == 0) throw new Error('Unmatched paratheses');
+            opstack.pop()
+        }
+        else if (tok == '(' || tok in prc) {
+            while (tok != '(' && opstack.length > 0 && prc[tok] <= prc[opstack[opstack.length - 1]])
+                out.push(opstack.pop());
+
+            opstack.push(tok);
+        }
+        else
+            out.push(tok);
+    }
+
+    var top;
+    while (top = opstack.pop()) out.push(top);
+    if (out[out.length - 1] == '(') throw new Error('Unmatched paratheses');
+
+    return out;
 }
 
 /**
  * @constructor Expression
- * @param {Array} postfix  postfix expression queue
+ * @param {Array} postfix    postfix expression queue
+ * - or -
+ * @param {String} operator  operator
+ * @param {Object} left      left argument, Expression or value
+ * @param {Object} right     right argument, Expression or value
  */
-Expression = function(postfix) {
+Expression = function() {
+    switch (arguments.length) {
+        case 1: // postfix
+            var op = arguments[0].pop();
+            var expr = getExpr(op, arguments[0]);
+            this.op = expr.op;
+            this.left = expr.left;
+            this.right = expr.right;
+            break;
+        case 3: // op, left, right
+            this.op = arguments[0];
+            this.left = arguments[1];
+            this.right = arguments[2];
+            break;
+    }
+    this.parent = null;
+}
 
+Expression.prototype.toString = function()
+{
+    var tx=[];
+    if(this.parent && (this.op == '+' || this.op == '-')) tx.push('(');
+    tx.push(this.left.toString());
+    tx.push(' ');
+    tx.push(this.op);
+    tx.push(' ');
+    tx.push(this.right.toString());
+    if(this.parent && (this.op == '+' || this.op == '-')) tx.push(')');
+    return tx.join('');
+}
+
+function getExpr(op, infix) {
+    if (!(op in prc)) throw new Error('Expecting ' + op + ' to be an operator.');
+
+    var expr = new Expression(op, null, null);
+    var right = infix.pop();
+    if (right in prc){
+        expr.right = getExpr(right, infix);
+        expr.right.parent = expr;
+    }
+    else expr.right = right;
+
+    var left = infix.pop();
+    if (left in prc){
+        expr.left = getExpr(left, infix);
+        expr.left.parent = expr;
+    }
+    else expr.left = left;
+
+    return expr;
 }
 
 function expresseion2infix(expr)

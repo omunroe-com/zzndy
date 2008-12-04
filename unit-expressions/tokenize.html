@@ -2,18 +2,36 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title></title>
+    <title>Tokenize</title>
     <script type="text/javascript" src="script/expression.js"></script>
+    <meta name="http-equiv" content="Content-type: text/html; charset=utf8"/>
 </head>
 <body style="font: 9.5pt/14pt sans-serif">
-<form onsubmit="console.log(tokenize(this.raw.value));return false;">
-		<label>
-				Input expression in text field below and press enter,<br/>
-				the tokenized expression is then output to console.<br/>
-				<br/>
-				<input type="text" id="raw" name="raw" size="46" />
-		</label>
+<form onsubmit="doit(this.raw.value);return false;">
+    <label>
+        Input expression in text field below and press enter,<br/>
+        the tokenized expression is then output to console.<br/>
+        <br/>
+        <input type="text" id="raw" name="raw" size="46"/>
+    </label>
 </form>
+<script type="text/javascript">
+    function doit(value) {
+        try
+        {
+            var tokens = tokenize(value);
+            console.log('infix tokens', tokens);
+            var postfix = infix2postfix(tokens);
+            console.log('postfix tokens', postfix);
+            var exp = new Expression(postfix);
+            console.log(exp);
+        }
+        catch(ex)
+        {
+            console.log(ex.message);
+        }
+    }
+</script>
 
 </body>
 </html>

@@ -5,32 +5,25 @@
   <title></title>
     <script type="text/javascript" src="script/unit.js"></script>
     <script type="text/javascript" src="script/amount.js"></script>
+    <meta name="http-equiv" content="Content-type: text/html; charset=utf8"/>
 </head>
 <body>
 <script type="text/javascript">
-		/*
-		   TODO: o implement tokenisation
-		         o implement infix to postfix conversion
-				 o construct expression tree from postfix queue
-	 	*/
+    Unit.add('m');
+    Unit.add('km', 1000, 'm');
+    Unit.add('cm', 0.01, 'm');
 
-    var m = new Unit('m');
-    var km = new Unit('km', 'as', 1000, 'm');
+    Unit.add('s');
+    Unit.add('m', 60, 's');
+    Unit.add('h', 60, 'm');
 
-    var s = new Unit('s');
-    var h = new Unit('h', 'as', 3600, 's');
+    Unit.add('m/s');
+    Unit.add('km/h');
 
-    var m_s = new Unit('m/s')
-    var km_h = new Unit('km/h');
+    var v1 = new Amount(30, 'm/s');
+    var v2 = new Amount(60, 'km/h');
 
-    var t1 = new Amount(1000, 's');
-    var t2 = new Amount(.7, 'h');
-
-    var v1 = new Amount(20, m_s);
-    var v2 = new Amount(36, km_h);
-
-    document.write(t1.add(t2));
-    document.write(v1.add(v2));
+    document.writeln(v1.add(v2));
 </script>
 </body>
 </html>
