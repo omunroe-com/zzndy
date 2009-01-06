@@ -327,6 +327,12 @@ F.detach = function(obj) {
     }
 }
 
+F.fork = function()	{
+	var args = arguments, fn = this;
+	var delegate = function(){return fn.apply(null, args);}
+	window.setTimeout(delegate, 10);
+}
+
 N.map = function(fn, self) {
     if (typeof fn != 'function') throw new Error('Type error: map expecting first parameter to be a function not ' + typeof fn)
 

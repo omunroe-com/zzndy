@@ -90,17 +90,25 @@ C.tint = function(tones)	{
 		this.alpha);
 }
 
-// Alter color in random fassion
-// deviation is {base: int, r: int, g: int, b:int, a: float}
+/**
+ * Mutate color randomly
+ * @param {Number} base  base deviation affects all color channels (tint deviation)
+ * @param {Number} r     red deviation (optional)
+ * @param {Number} g     green deviation (optional)
+ * @param {Number} b     blue deviation (optional)
+ * @param {Number} a     alpha deviation (optional)
+ * @return {Color}       deviated color
+ */
 C.deviate = function(base, r, g, b, a)	{
 	var step = 4;
-	var dev = deviate(base/step)*step;
+    r = r || 0; g = g || 0; b = b || 0; a = a || 0;
+	var dev = (0).dev(base/step)*step;
+    	
 	return new Color(
-		this.red + dev + deviate(r/step)*step,
-		this.green + dev + deviate(g/step)*step,
-		this.blue + dev + deviate(b/step)*step,
-		this.alpha + deviate(a)
+		this.red + dev + (0).dev(r/step) * step,
+		this.green + dev + (0).dev(g/step) * step,
+		this.blue + dev + (0).dev(b/step) * step,
+		this.alpha + (0).dev(a)
 	);
 }
-
 })()
