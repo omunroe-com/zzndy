@@ -9,21 +9,36 @@
 </head>
 <body>
 <script type="text/javascript">
-    Unit.add('m');
-    Unit.add('km', 1000, 'm');
-    Unit.add('cm', 0.01, 'm');
+		// Default Unit.system('metric')
+		Unit.add('m', 'length');
+		Unit.add('km', 1000, 'm');
+		Unit.add('cm', 0.01, 'm');
 
-    Unit.add('s');
-    Unit.add('m', 60, 's');
-    Unit.add('h', 60, 'm');
+		Unit.add('m/s', 'velocity');
+		Unit.add('kph', 10/36, 'm/s');
 
-    Unit.add('m/s');
-    Unit.add('km/h');
+		Unit.add('s', 'time');
 
-    var v1 = new Amount(30, 'm/s');
-    var v2 = new Amount(60, 'km/h');
+		Unit.system('imperial');
+		Unit.add('in', 2.54, 'cm');
+		Unit.add('ft', 12, 'in');
+		Unit.add('ft', 30.48, 'cm'); 
+		Unit.add('yd', 3, 'ft');
+		Unit.add('yd', 91.44, 'cm');
+		Unit.add('mile', 1609.344, 'm');
+		Unit.add('mph', 1.609344, 'kph');
 
-    document.writeln(v1.add(v2));
+		Unit.system('metric');
+		Unit.add('m2', 'area'); // Expecting to have km2 defined as well.
+		Unit.add('m3', 'volume'); // Same as for areas 
+
+		var v1 = new Amount('100 m/s');
+		var v2 = new Amount('75 mph');
+
+		var vs = v1.plus(v2);
+        console.log(v1, '+', v2, '=', vs);
+		// Excecting vs to be 133.52800 m/s
+
 </script>
 </body>
 </html>
