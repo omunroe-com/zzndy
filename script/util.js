@@ -239,6 +239,31 @@ if (!('reduce' in Array))
         for (; i < l; ++i) res = fn2(res, this[i], i, this);
         return res;
     }
+    
+if (!('flatten' in Array))
+    A.flatten = function()
+    {
+        function flatten(prev, current){
+            if(current instanceof Array) return current.reduce(flatten, prev);
+            prev.push(current);
+            return prev;
+        }
+        return this.reduce(flatten, []);
+    }
+    
+if (!('uniq' in Array))    
+    A.uniq = function()
+    {
+        function uniq(prev, current)
+        {
+            if(prev.indexOf(current) == -1)
+                prev.push(current);
+                
+            return prev;
+        }
+    
+        return this.reduce(uniq, []);
+    }
 
 A.delayedReduce = function(delay, fn2, init, callback) {
     var i = 0;
