@@ -1,66 +1,107 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <!-- $Id$ -->
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-        <title>Backup-restore</title>
-        
-        <link type="text/css" rel="stylesheet" href="../../playground/dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
-        <script language="javascript" src="../../playground/dp.SyntaxHighlighter/scripts/shCore.js"></script>
-        <script language="javascript" src="../../playground/dp.SyntaxHighlighter/scripts/shBrushSql.js"></script>
-    </head>
-    <body>
-        <h2>Backup-restore routines</h2>
-        
-        <script type="text/javascript" src="../../playground/script/util.js">
-        </script>
-        <script type="text/javascript" src="foreign-key.js">
-        </script>
-        <script type="text/javascript" src="node.js">
-        </script>
-        <script type="text/javascript" src="routines.js">
-        </script>
-        <script type="text/javascript">
-            /**
-             * Tables with CREATED_BY/MODIFYED_BY columns
-             */
-            add_tagged('FIELD_PHASE_DEVELOPMENT');
-            add_tagged('GLOBAL_ASSUMPTIONS');
-            add_tagged('CONTRACT_ADDITIONAL');
-            add_tagged('FIELD_ADDITIONAL');
-            add_tagged('LIQUID_PRICE');
-            add_tagged('GAS_PRICE');
-            add_tagged('INFLATION');
-            add_tagged('INV_ASS');
-            add_tagged('TAX_SYSTEM');
-            add_tagged('TAX_NODE');
-            add_tagged('FIELD_COMPLEX');
-            add_tagged('BLOCK_ADDITIONAL');
-            add_tagged('COMPANY_ADDITIONAL');
-            
-            // FIELD
-            node('FIELD_HEADER');
-            node('FIELD_ADDITIONAL', 'FIE_ID', 'FIELD_HEADER');
-            node('FIELD_CONTRACTS_BLOCKS', 'FIE_ID', 'FIELD_HEADER');
-            node('FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'FIELD_ADDITIONAL');
-            node('FIELD_RESERVOIRS', 'FIE_ID', 'FIELD_HEADER');
-            node('FIELD_RESV_LITHOLOGIES', 'FIE_ID', 'FIELD_HEADER');
-            node('PT_CON_CASH_FLOW_DATA', 'TAX_NODE_ID', 'TAX_NODE');
-            node('PT_DETAIL_CASH_FLOW_DATA', 'TAX_NODE_ID', 'TAX_NODE');
-            node('PT_DETAIL_CASH_FLOW_GROUP', 'TAX_NODE_ID', 'TAX_NODE');
-            node('PT_DETAIL_CASH_FLOW_TIMESERIES', 'TAX_NODE_ID', 'TAX_NODE');
-            node('PT_ECONOMIC_INDICATOR', 'TAX_NODE_ID', 'TAX_NODE');
-            node('PT_OTHER_INDICATOR', 'TAX_NODE_ID', 'TAX_NODE');
-            node('FIELD_ADDITIONAL', 'INV_ASS_ORIGINAL_ID', 'INV_ASS', 'INV_ASS_ID');
-            node('FIELD_ADDITIONAL', 'INV_ASS_REDIST_ID', 'INV_ASS', 'INV_ASS_ID');
-            node('FIELD_ADDITIONAL', 'TAX_NODE_ID', 'TAX_NODE');
-            node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
-            node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
-            
-            make_backup_sql();
-            make_restore_sql();
-            
-            dp.SyntaxHighlighter.HighlightAll('out');
-        </script>
-    </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Backup-restore</title>
+
+    <link type="text/css" rel="stylesheet"
+          href="../../playground/dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css" />
+    <script type="text/javascript" src="../../playground/dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+    <script type="text/javascript" src="../../playground/dp.SyntaxHighlighter/Scripts/shBrushSql.js"></script>
+</head>
+<body>
+<h2>Backup-restore routines</h2>
+
+<script type="text/javascript" src="../../playground/script/util.js">
+</script>
+<script type="text/javascript" src="foreign-key.js">
+</script>
+<script type="text/javascript" src="node.js">
+</script>
+<script type="text/javascript" src="routines.js">
+</script>
+<script type="text/javascript">
+    /**
+     * Tables with CREATED_BY/MODIFYED_BY columns
+     */
+    add_tagged('FIELD_PHASE_DEVELOPMENT');
+    add_tagged('GLOBAL_ASSUMPTIONS');
+    add_tagged('CONTRACT_ADDITIONAL');
+    add_tagged('FIELD_ADDITIONAL');
+    add_tagged('LIQUID_PRICE');
+    add_tagged('GAS_PRICE');
+    add_tagged('INFLATION');
+    add_tagged('INV_ASS');
+    add_tagged('TAX_SYSTEM');
+    add_tagged('TAX_NODE');
+    add_tagged('FIELD_COMPLEX');
+    add_tagged('BLOCK_ADDITIONAL');
+    add_tagged('COMPANY_ADDITIONAL');
+
+    // FIELD
+    node('FIELD_HEADER');
+    node('FIELD_ADDITIONAL', 'FIE_ID', 'FIELD_HEADER');
+    node('FIELD_CONTRACTS_BLOCKS', 'FIE_ID', 'FIELD_HEADER');
+    node('FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'FIELD_ADDITIONAL');
+    node('FIELD_RESERVOIRS', 'FIE_ID', 'FIELD_HEADER');
+    node('FIELD_RESV_LITHOLOGIES', 'FIE_ID', 'FIELD_HEADER');
+    node('PT_CON_CASH_FLOW_DATA', 'TAX_NODE_ID', 'TAX_NODE');
+    node('PT_DETAIL_CASH_FLOW_DATA', 'TAX_NODE_ID', 'TAX_NODE');
+    node('PT_DETAIL_CASH_FLOW_GROUP', 'TAX_NODE_ID', 'TAX_NODE');
+    node('PT_DETAIL_CASH_FLOW_TIMESERIES', 'TAX_NODE_ID', 'TAX_NODE');
+    node('PT_ECONOMIC_INDICATOR', 'TAX_NODE_ID', 'TAX_NODE');
+    node('PT_OTHER_INDICATOR', 'TAX_NODE_ID', 'TAX_NODE');
+    node('FIELD_ADDITIONAL', 'INV_ASS_ORIGINAL_ID', 'INV_ASS', 'INV_ASS_ID');
+    node('FIELD_ADDITIONAL', 'INV_ASS_REDIST_ID', 'INV_ASS', 'INV_ASS_ID');
+    node('FIELD_ADDITIONAL', 'TAX_NODE_ID', 'TAX_NODE');
+    node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
+    node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
+
+    make_backup_sql('FIELD', 'FIE_ID');
+    make_restore_sql('FIELD', 'FIE_ID');
+
+    clear_setup();
+
+    // BLOCK
+    node('BLOCK_HEADER');
+    node('BLOCK_ADDITIONAL', 'GA_ID', 'BLOCK_HEADER');
+    node('GROUP_PARTNER_INTERESTS');
+    node('BLOCK_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
+    node('CONTRACT_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
+
+    make_backup_sql('BLOCK', 'GA_ID');
+    make_restore_sql('BLOCK', 'GA_ID');
+
+    clear_setup();
+
+    // COMPLEX
+    node('FIELD_COMPLEX', 'INV_ASS_ID', 'INV_ASS');
+    node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
+    node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
+    
+    make_backup_sql('COMPLEX', 'FIELD_COMPLEX_ID');
+    make_restore_sql('COMPLEX', 'FIELD_COMPLEX_ID');
+
+    clear_setup();
+
+    // GLOBALS
+    node('GLOBAL_ASSUMPTIONS');
+
+    node('GAS_PRICE_DATA', 'GAS_PRICE_ID', 'GAS_PRICE');
+    node('INFLATION_DATA', 'INFLATION_ID', 'INFLATION');
+    
+    node('LIQUID_PRICE_DATA', 'LIQUID_PRICE_ID', 'LIQUID_PRICE');
+    node('GAS_PRICE', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
+    node('LIQUID_PRICE', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
+    node('INFLATION', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
+
+    make_backup_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID');
+    make_restore_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID');
+
+    clear_setup();
+
+    dp.SyntaxHighlighter.HighlightAll('out');
+</script>
+</body>
 </html>

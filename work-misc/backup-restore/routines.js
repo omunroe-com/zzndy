@@ -1,11 +1,40 @@
+/**
+ * $Id$
+ */
+
 var sql = {
-
-    'update': "UPDATE <Table> SET MODIFIED_BY='<User>' WHERE <IdField>=@<Id>",
-    'insert': "INSERT INTO <Target>\n\tSELECT * FROM <Source>\n\tWHERE <IdField>=@<Id>",
-    'del': "DELETE FROM <Table> WHERE <IdField>=@<Id>",
-    'declare': 'DECLARE @<Var> DECIMAL(12,0)\nSET @<Var> = ?'
-
+    'update': "\t\tUPDATE <Table> SET MODIFIED_BY='<User>' WHERE <IdField>=@<Id>;",
+    'insert': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>\n\t\t\tWHERE <IdField>=@<Id>;",
+    'del': "\t\tDELETE FROM <Table> WHERE <IdField>=@<Id>;",
+    'declare': '\t\tDECLARE @<Var> DECIMAL(12,0)',
+    'set':'\t\tSET @<Var> = ?',
+    'sp_head':
+            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
+                    + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
+                    + 'CREATE PROCEDURE SP_<Action>_<Name> @<Id> DECIMAL (12,0)\nAS\nBEGIN\n'
+                    + '\tSET NOCOUNT ON\n',
+    'shadow': "EXEC SP_CREATE_SHADOW_TABLE '<Table>';",
+    'sp_start': '\tBEGIN TRANSACTION\n\tBEGIN TRY',
+    'sp_end':
+            '\tEND TRY\n\n'
+                    + '\tBEGIN CATCH\n'
+                    + '\t\tROLLBACK TRANSACTION\n'
+                    + '\t\tRETURN 1\n'
+                    + '\tEND CATCH\n\n'
+                    + '\tCOMMIT TRANSACTION\n'
+                    + 'END\n'
+                    + 'GO'
 };
+
+var declares = {};
+
+declares['FIELD'] = '\t\tSELECT @TAX_NODE_ID = TAX_NODE_ID FROM FIELD_ADDITIONAL WHERE FIE_ID = @FIE_ID\n\n'
+        + '\t\tSELECT @INV_ASS_ORIGINAL_ID = INV_ASS_ORIGINAL_ID FROM FIELD_ADDITIONAL WHERE FIE_ID = @FIE_ID\n\n'
+        + '\t\tSELECT @INV_ASS_REDIST_ID = INV_ASS_REDIST_ID FROM FIELD_ADDITIONAL WHERE FIE_ID = @FIE_ID';
+
+declares['BLOCK'] = '\t\tSELECT @PAR_ID = PAR_ID FROM BLOCK_HEADER WHERE GA_ID = @GA_ID';
+
+declares['COMPLEX'] = '\t\tSELECT @INV_ASS_ID = INV_ASS_ID FROM FIELD_COMPLEX WHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID';
 
 var statement_glue = '\n\n';
 var section_glue = '\n\n\n';
@@ -13,12 +42,14 @@ var section_glue = '\n\n\n';
 // sql generation setup
 var source_suffix = '';
 var target_suffix = '';
-var owner = ''
+var owner = '';
+
+var all_nodes = [];
 
 /**
- * Setup environment for generation of restore SQL.
+ * Setup environment for generation of backup SQL.
  */
-function setup_backup(){
+function setup_backup() {
     source_suffix = '';
     target_suffix = '_SHADOW';
     owner = 'USER';
@@ -27,91 +58,151 @@ function setup_backup(){
 /**
  * Setup environment for generation of restore SQL.
  */
-function setup_restore(){
+function setup_restore() {
     source_suffix = '_SHADOW';
     target_suffix = '';
     owner = 'IHS';
 }
 
-function write(){
+function write() {
     var target = document.getElementById('out');
     var text = [].join.call(arguments, section_glue);
-    if (target) 
+    if (target)
         target.innerHTML += section_glue + text;
-    else 
+    else
         document.write('<textarea class="sql" name="out" id="out" rows="30" cols="144">' + text + '</textarea>');
 }
 
-function istagged(node){
+/**
+ * @param {Node} node
+ */
+function istagged(node) {
     return tagged.indexOf(node.name) != -1;
 }
 
-function make_backup_sql(){
+function comment(msg)
+{
+    return '\t\t--\n\t\t-- ' + msg + '\n\t\t--';
+}
+
+function make_backup_sql(name, id) {
+    function not_id(node) {
+        return get_id(node.name) != id;
+    }
+
+    var out = [];
+
+    out.push(sql.sp_head.fmt({action:'BACKUP', name:name, id:id}));
+    out.push(sql.sp_start);
+
     setup_backup();
-    
+
     var nodelist = rectify_nodes();
-    
+    all_nodes = all_nodes.concat(nodelist.map(function(node) {
+        return node.name
+    }));
+
     // backup routine:
     // 0. declare variables
-    var sql0 = nodelist.map(make_declare_sql).flatten().uniq().join(statement_glue);
-    
+    out.push(comment('Declare id variables'));
+    out = out.concat(nodelist.filter(not_id).map(make_declare_sql).flatten().uniq());
+
+    out.push(comment('Set id variables'));
+    if (name in declares)
+        out.push(declares[name])
+    else
+        out = out.concat(nodelist.filter(not_id).map(make_set_sql).flatten().uniq());
+
     // 1. delete old backup version
-    var sql1 = nodelist.map(make_del_sql).flatten().join(statement_glue);
-    
+    out.push(comment('Delete old backup'));
+    out = out.concat(nodelist.map(make_del_sql).flatten().reverse());
+
     // 2. copy data to shadow tables
-    var sql2 = nodelist.map(make_copy_sql).flatten().join(statement_glue);
-    
-    // 3. update tags    
-    var sql3 = nodelist.filter(istagged).map(make_upd_sql).flatten().join(statement_glue);
-    
-    write('--\n-- Backup actions\n--');
-    write('BEGIN TRANSACTION', sql0, sql1, sql2, sql3, 'COMMIT TRANSACTION');
+    out.push(comment('Backup data'));
+    out = out.concat(nodelist.map(make_copy_sql).flatten());
+
+    // 3. update tags
+    out.push(comment('Update tags'));
+    out = out.concat(nodelist.filter(istagged).map(make_upd_sql).flatten());
+
+    out.push(sql.sp_end);
+    write(out.join(statement_glue));
 }
 
-function make_restore_sql(){
+function make_restore_sql(name, id) {
+    function not_id(node) {
+        return get_id(node.name) != id;
+    }
+
+    var out = [];
+
+    out.push(sql.sp_head.fmt({action:'RESTORE', name:name, id:id}));
+    out.push(sql.sp_start);
+
     setup_restore();
-    
+
     var nodelist = rectify_nodes();
-    
+
     // restore routine:
     // 0. declare variables
-    var sql0 = nodelist.map(make_declare_sql).flatten().uniq().join(statement_glue);
-    
+    out.push(comment('Declare id variables'));
+    out = out.concat(nodelist.filter(not_id).map(make_declare_sql).flatten().uniq());
+
+    out.push(comment('Set id variables'));
+    if (name in declares)
+        out.push(declares[name])
+    else
+        out = out.concat(nodelist.filter(not_id).map(make_set_sql).flatten().uniq());
+
     // 1. delete user version
-    var sql1 = nodelist.map(make_del_sql).flatten().join(statement_glue);
-    
+    out.push(comment('Delete user version'));
+    out = out.concat(nodelist.map(make_del_sql).flatten().reverse());
+
     // 2. copy data from shadow tables
-    var sql2 = nodelist.map(make_copy_sql).flatten().join(statement_glue);
-    
+    out.push(comment('Restore data'));
+    out = out.concat(nodelist.map(make_copy_sql).flatten());
+
     // 3. update tags
-    var sql3 = nodelist.filter(istagged).map(make_upd_sql).flatten().join(statement_glue);
-    
+    out.push(comment('Update tags'));
+    out = out.concat(nodelist.filter(istagged).map(make_upd_sql).flatten());
+
     // 4. delete backup
     setup_backup();
-    var sql4 = nodelist.map(make_declare_sql).flatten().uniq().join(statement_glue);
-    
-    write('--\n-- Restore actions\n--');
-    write('BEGIN TRANSACTION', sql0, sql1, sql2, sql3, sql4, 'COMMIT TRANSACTION');
+    out.push(comment('Delete backup'));
+    out = out.concat(nodelist.map(make_del_sql).flatten().uniq().reverse());
+
+    out.push(sql.sp_end);
+    write(out.join(statement_glue));
 }
 
-function format_del(name, idfield, id){
+function create_shadow()
+{
+    return all_nodes.uniq().map(format_shadow).join('\n');
+}
+
+function format_shadow(table)
+{
+    return sql.shadow.fmt({table:table});
+}
+
+function format_del(name, idfield, id) {
     return sql.del.fmt({
         table: name + target_suffix,
         idField: idfield,
         id: id
-    })
+    });
 }
 
-function format_copy(name, idfield, id){
+function format_copy(name, idfield, id) {
     return sql.insert.fmt({
         target: name + target_suffix,
         source: name + source_suffix,
         idField: idfield,
         id: id
-    })
+    });
 }
 
-function format_upd(name, idfield, id){
+function format_upd(name, idfield, id) {
     return sql.update.fmt({
         table: name,
         user: owner,
@@ -120,38 +211,54 @@ function format_upd(name, idfield, id){
     });
 }
 
-function format_declare(name, idfield, id){
+function format_declare(name, idfield, id) {
     return sql.declare.fmt({
         'var': id
     });
 }
 
-function prepare_sql(node, callback){
-    var id = ids[node.name];
+function format_set(name, idfield, id) {
+    return sql.set.fmt({
+        'var': id
+    });
+}
+
+function prepare_sql(node, callback) {
+    var id = get_id(node.name);
     var sqls = [];
-    
-    if (id in tees) 
-        for (var i = 0; i < tees[id].length; ++i) 
-            sqls.push(callback(node.name, id, tees[id][i]));
-    
-    else 
+
+    if (tee_defined(id))
+        for (var i = 0; i < get_tee(id).length; ++i)
+            sqls.push(callback(node.name, id, get_tee(id)[i]));
+
+    else
         sqls.push(callback(node.name, id, id));
-    
+
     return sqls;
 }
 
-function make_declare_sql(node){
+function make_declare_sql(node) {
     return prepare_sql(node, format_declare);
 }
 
-function make_del_sql(node){
+function make_set_sql(node) {
+    return prepare_sql(node, format_set);
+}
+
+function make_del_sql(node) {
     return prepare_sql(node, format_del);
 }
 
-function make_copy_sql(node){
+function make_copy_sql(node) {
     return prepare_sql(node, format_copy);
 }
 
-function make_upd_sql(node){
+function make_upd_sql(node) {
     return prepare_sql(node, format_upd);
+}
+
+function clear_setup()
+{
+    nodes = {};
+    clear_fk_setup();
 }
