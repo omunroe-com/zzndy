@@ -20,11 +20,11 @@
         this.pColumn = pc;
         this.fTable = ft;
         this.fColumn = fc || pc;
-    }
+    };
 
     ForeingKey.prototype.toString = function() {
         return [this.pTable, this.pColumn, '->', this.fTable, this.fColumn].join(' ');
-    }
+    };
 
     /**
      * Add foreign key to the directory.
@@ -48,15 +48,12 @@
 
             // Add a tee (when same id is referenced by different names)
             if (ln.pColumn != ln.fColumn) {
-                if (!(ln.fColumn in tees))
-                    tees[ln.fColumn] = [];
-
-                tees[ln.fColumn].push(ln.pColumn);
+                add_tee(ln.fColumn, ln.pColumn);
             }
 
         }
         return fks[desc];
-    }
+    };
 
     function add_id(table, id) {
         if (!(table in ids))
@@ -69,16 +66,23 @@
     get_id = function(name)
     {
         return ids[name];
-    }
+    };
 
     get_tee = function(id) {
         return tees[id];
-    }
+    };
+
+    add_tee = function(original, alternative) {
+        if (!(original in tees))
+            tees[original] = [];
+
+        tees[original].push(alternative);
+    };
 
     tee_defined = function(id)
     {
         return id in tees;
-    }
+    };
 
     /**
      * Clear all directories: foreign keys, ids, tees.
@@ -88,5 +92,5 @@
         fks = {};
         ids = {};
         tees = {};
-    }
+    };
 })()

@@ -3,9 +3,9 @@
  */
 
 var sql = {
-    'update': "\t\tUPDATE <Table> SET MODIFIED_BY='<User>' WHERE <IdField>=@<Id>;",
-    'insert': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>\n\t\t\tWHERE <IdField>=@<Id>;",
-    'del': "\t\tDELETE FROM <Table> WHERE <IdField>=@<Id>;",
+    'update': "\t\tUPDATE <Table> SET MODIFIED_BY='<User>' WHERE <IdField><Op><Id>;",
+    'insert': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>\n\t\t\tWHERE <IdField><Op><Id>;",
+    'del': "\t\tDELETE FROM <Table> WHERE <IdField><Op><Id>;",
     'declare': '\t\tDECLARE @<Var> DECIMAL(12,0)',
     'set':'\t\tSET @<Var> = ?',
     'sp_head':
@@ -175,6 +175,11 @@ function make_restore_sql(name, id) {
     write(out.join(statement_glue));
 }
 
+function get_operator(id)
+{
+    return id[0] == '(' ? ' IN ' : ' = @';
+}
+
 function create_shadow()
 {
     return all_nodes.uniq().map(format_shadow).join('\n');
@@ -189,7 +194,8 @@ function format_del(name, idfield, id) {
     return sql.del.fmt({
         table: name + target_suffix,
         idField: idfield,
-        id: id
+        id: id,
+        op: get_operator(id)
     });
 }
 
@@ -198,7 +204,8 @@ function format_copy(name, idfield, id) {
         target: name + target_suffix,
         source: name + source_suffix,
         idField: idfield,
-        id: id
+        id: id,
+        op: get_operator(id)
     });
 }
 
@@ -207,7 +214,8 @@ function format_upd(name, idfield, id) {
         table: name,
         user: owner,
         idField: idfield,
-        id: id
+        id: id,
+        op: get_operator(id)
     });
 }
 
