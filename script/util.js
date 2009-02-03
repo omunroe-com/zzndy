@@ -289,20 +289,21 @@ A.clone = function() {
     return [].concat(this);
 }
 
-// pick n randomly chosen items from the array
+/**
+ * Randomly pick n items from the array
+ * @param {Number} n  number of items to pick 
+ */
 A.pick = function(n) {
-    var picked = []
-    n = Math.floor(n)
+    var picked = [];
+    n = Math.floor(n);
     return n.map(function() {
-        if (picked.length == this.length) return undefined
-        var i
+        if (picked.length == this.length) return undefined;
+        var i;
 
         do i = Math.floor(Math.random() * this.length)
-        while (i in picked)
-
-        picked.push(i)
-        return this[i]
-    }, this)
+        while (i in picked) picked.push(i);
+        return this[i];
+    }, this);
 }
 
 A.shuffle = function () {
@@ -348,32 +349,32 @@ F.wrap = function(g) {
 F.detach = function(obj) {
     var fn = this;
     return function() {
-        return fn.apply(obj, arguments)
+        return fn.apply(obj, arguments);
     }
 }
 
 F.fork = function()	{
 	var args = arguments, fn = this;
-	var delegate = function(){return fn.apply(null, args);}
+	var delegate = function(){return fn.apply(null, args);};
 	window.setTimeout(delegate, 10);
 }
 
 N.map = function(fn, self) {
     if (typeof fn != 'function') throw new Error('Type error: map expecting first parameter to be a function not ' + typeof fn)
 
-    if (self === undefined) self = this
+    if (self === undefined) self = this;
 
-    var ar = []
+    var ar = [];
     for (var i = 0; i < this; ++i)ar.push(fn.call(self, i, i, undefined))
-    return ar
-}
+    return ar;
+};
 
 N.abbr = function() {
     var s = this.toString();
-    var order = Math.floor((s.length - 1) / 3), disp;
+    var order = Math.floor((s.length - 1) / 3);
     if (order > 0) return s.substr(0, s.length - 3 * order) + [, 'K', 'M', 'B'][Math.min(3, order)];
     else return s;
-}
+};
 
 N.toPos = function() {
     var s = this % 10, sfx = 'th';
@@ -384,15 +385,15 @@ N.toPos = function() {
         case 3: sfx = 'rd'; break;
     }
     return this + '-' + sfx;
-}
+};
 
 N.toRoman = (function() {
-    var rn = ['IIII','V','XXXX','L','CCCC','D','MMMM']
+    var rn = ['IIII','V','XXXX','L','CCCC','D','MMMM'];
 
     return function(original) {
-        if (this < 1 || this > 4000) return this
-        var n = this
-        var original = !!original, res = '', d
+        if (this < 1 || this > 4000) return this;
+        var n = this;
+        var original = !!original, res = '';
         for (var i = 0, item; item = rn[i]; ++i) {
             var x = item.length + 1;
             var d = n % x;
@@ -402,10 +403,10 @@ N.toRoman = (function() {
 
         if (!original)
             res = res.replace(/DCCCC/g, 'CM').replace(/CCCC/g, 'CD').replace(/LXXXX/g, 'XC')
-                    .replace(/XXXX/g, 'XL').replace(/VIIII/g, 'IX').replace(/IIII/g, 'IV')
-        return res
-    }
-})()
+                    .replace(/XXXX/g, 'XL').replace(/VIIII/g, 'IX').replace(/IIII/g, 'IV');
+        return res;
+    };
+})();
 
 N.toAgoInterval = (function() {
     /**
@@ -418,11 +419,11 @@ N.toAgoInterval = (function() {
     N.toAgoInterval = function() {
         var interval = (Date.now() - this) / 1000, i, n
         for (i = lengths.length - 1; i >= 0 && (n = Math.floor(interval / lengths[i])) < 1; --i);
-        if (i == -1 || i == 0 && n < 20) return 'just now'
+        if (i == -1 || i == 0 && n < 20) return 'just now';
 
-        return (n > 1 ? n : 'a') + ' ' + periods[i] + (n > 1 ? 's' : '') + ' ago'
-    }
-})()
+        return (n > 1 ? n : 'a') + ' ' + periods[i] + (n > 1 ? 's' : '') + ' ago';
+    };
+})();
 
 /**
  *    Deviate this number by specified quantities
@@ -431,26 +432,26 @@ N.toAgoInterval = (function() {
  */
 N.dev =
 N.deviate = function() {
-    var upper, lower = arguments[0], relative = false
+    var upper, lower = arguments[0], relative = false;
     switch (arguments.length) {
-        case 0: throw new Error('To few arguments for deviate'); break
-        case 1: upper = lower; break
+        case 0: throw new Error('To few arguments for deviate'); break;
+        case 1: upper = lower; break;
         case 2:
             if (typeof arguments[1] == 'boolean') {
-                upper = lower
-                relative = arguments[1]
+                upper = lower;
+                relative = arguments[1];
             }
             else
-                upper = arguments[1]
-            break
+                upper = arguments[1];
+            break;
         default:
-            upper = arguments[1]
-            relative = !!arguments[2]
-            break
+            upper = arguments[1];
+            relative = !!arguments[2];
+            break;
     }
     if (relative) {
-        upper = this * upper
-        lower = this * lower
+        upper = this * upper;
+        lower = this * lower;
     }
     return this - lower + Math.random() * (upper + lower)
 }
