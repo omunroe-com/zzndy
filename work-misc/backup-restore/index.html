@@ -58,8 +58,8 @@
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
 
-    make_backup_sql('FIELD', 'FIE_ID');
-    make_restore_sql('FIELD', 'FIE_ID');
+    make_backup_sql('FIELD', 'FIE_ID', 'FIELD_ADDITIONAL');
+    make_restore_sql('FIELD', 'FIE_ID', 'FIELD_ADDITIONAL');
 
     clear_setup();
 
@@ -70,8 +70,8 @@
     node('BLOCK_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
     node('CONTRACT_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
 
-    make_backup_sql('BLOCK', 'GA_ID');
-    make_restore_sql('BLOCK', 'GA_ID');
+    make_backup_sql('BLOCK', 'GA_ID', 'BLOCK_ADDITIONAL');
+    make_restore_sql('BLOCK', 'GA_ID', 'BLOCK_ADDITIONAL');
 
     clear_setup();
 
@@ -80,8 +80,8 @@
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
     
-    make_backup_sql('COMPLEX', 'FIELD_COMPLEX_ID');
-    make_restore_sql('COMPLEX', 'FIELD_COMPLEX_ID');
+    make_backup_sql('COMPLEX', 'FIELD_COMPLEX_ID', 'FIELD_COMPLEX');
+    make_restore_sql('COMPLEX', 'FIELD_COMPLEX_ID', 'FIELD_COMPLEX');
 
     clear_setup();
 
@@ -96,12 +96,12 @@
     node('LIQUID_PRICE', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
     node('INFLATION', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
 
-    add_tee('GAS_PRICE_ID', '(SELECT GAS_PRICE_ID FROM GAS_PRICE WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
-    add_tee('LIQUID_PRICE_ID', '(SELECT LIQUID_PRICE_ID FROM LIQUID_PRICE WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
-    add_tee('INFLATION_ID', '(SELECT INFLATION_ID FROM INFLATION WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
+    add_tee('GAS_PRICE_ID', '(SELECT GAS_PRICE_ID FROM GAS_PRICE<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
+    add_tee('LIQUID_PRICE_ID', '(SELECT LIQUID_PRICE_ID FROM LIQUID_PRICE<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
+    add_tee('INFLATION_ID', '(SELECT INFLATION_ID FROM INFLATION<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
 
-    make_backup_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID');
-    make_restore_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID');
+    make_backup_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
+    make_restore_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
 
     clear_setup();
 

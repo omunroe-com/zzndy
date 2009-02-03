@@ -3,16 +3,16 @@
  */
 
 var sql = {
-    'update': "\t\tUPDATE <Table> SET MODIFIED_BY='<User>' WHERE <IdField><Op><Id>;",
+    'update': "\t\tUPDATE <Table> SET MODIFIED_BY='<User>'\n\t\t\tWHERE <IdField><Op><Id>;",
     'insert': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>\n\t\t\tWHERE <IdField><Op><Id>;",
-    'del': "\t\tDELETE FROM <Table> WHERE <IdField><Op><Id>;",
+    'del': "\t\tDELETE FROM <Table> WHERE\n\t\t\t<IdField><Op><Id>;",
     'declare': '\t\tDECLARE @<Var> DECIMAL(12,0)',
     'set':'\t\tSET @<Var> = ?',
     'sp_head':
             "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
                     + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
                     + 'CREATE PROCEDURE SP_<Action>_<Name> @<Id> DECIMAL (12,0)\nAS\nBEGIN\n'
-                    + '\tSET NOCOUNT ON\n',
+                    + '\tSET NOCOUNT ON',
     'shadow': "EXEC SP_CREATE_SHADOW_TABLE '<Table>';",
     'sp_start': '\tBEGIN TRANSACTION\n\tBEGIN TRY',
     'sp_end':
@@ -23,7 +23,11 @@ var sql = {
                     + '\tEND CATCH\n\n'
                     + '\tCOMMIT TRANSACTION\n'
                     + 'END\n'
-                    + 'GO'
+                    + 'GO',
+    'check_tag':"\tIF (SELECT MODIFIED_BY FROM <Tagged> WHERE <IdField><Op><Id>) != '<Owner>'\n"
+            + '\t\tRETURN -- No backup needed',
+    'update_tag':"\t\tUPDATE <Tagged> SET MODIFIED_BY='<Owner>' WHERE <IdField><Op><Id>"
+
 };
 
 var declares = {};
@@ -35,6 +39,8 @@ declares['FIELD'] = '\t\tSELECT @TAX_NODE_ID = TAX_NODE_ID FROM FIELD_ADDITIONAL
 declares['BLOCK'] = '\t\tSELECT @PAR_ID = PAR_ID FROM BLOCK_HEADER WHERE GA_ID = @GA_ID';
 
 declares['COMPLEX'] = '\t\tSELECT @INV_ASS_ID = INV_ASS_ID FROM FIELD_COMPLEX WHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID';
+
+declares['GLOBALS'] = '';
 
 var statement_glue = '\n\n';
 var section_glue = '\n\n\n';
@@ -85,7 +91,11 @@ function comment(msg)
     return '\t\t--\n\t\t-- ' + msg + '\n\t\t--';
 }
 
-function make_backup_sql(name, id) {
+function get_name(node) {
+    return node.name;
+}
+
+function make_backup_sql(name, id, tagged) {
     function not_id(node) {
         return get_id(node.name) != id;
     }
@@ -93,19 +103,30 @@ function make_backup_sql(name, id) {
     var out = [];
 
     out.push(sql.sp_head.fmt({action:'BACKUP', name:name, id:id}));
+
+    // Used to set owner to 'IHS'
+    setup_restore();
+
+    // Backup routine
+    // 0. Check if backup needed;
+    out.push(sql.check_tag.fmt({
+        tagged: tagged,
+        idField: id,
+        id: id,
+        owner: owner,
+        op: get_operator(id)}));
+
+    // 1. Begin transaction
     out.push(sql.sp_start);
 
     setup_backup();
 
     var nodelist = rectify_nodes();
-    all_nodes = all_nodes.concat(nodelist.map(function(node) {
-        return node.name
-    }));
+    all_nodes = all_nodes.concat(nodelist.map(get_name)); // fill the list of all used nodes
 
-    // backup routine:
-    // 0. declare variables
+    // 2. Declare variables;
     out.push(comment('Declare id variables'));
-    out = out.concat(nodelist.filter(not_id).map(make_declare_sql).flatten().uniq());
+    out = out.concat(nodelist.filter(not_id).map(make_declare_sql).flatten().filter(is_valid_sql).uniq());
 
     out.push(comment('Set id variables'));
     if (name in declares)
@@ -113,23 +134,33 @@ function make_backup_sql(name, id) {
     else
         out = out.concat(nodelist.filter(not_id).map(make_set_sql).flatten().uniq());
 
-    // 1. delete old backup version
+    // 3. Delete any old backup information;
     out.push(comment('Delete old backup'));
     out = out.concat(nodelist.map(make_del_sql).flatten().reverse());
 
-    // 2. copy data to shadow tables
+    // 4. Copy data to shadow tables;
     out.push(comment('Backup data'));
     out = out.concat(nodelist.map(make_copy_sql).flatten());
 
-    // 3. update tags
-    out.push(comment('Update tags'));
-    out = out.concat(nodelist.filter(istagged).map(make_upd_sql).flatten());
+    // 5. Update tag.
+    out.push(comment('Update tag'));
+    out.push(sql.update_tag.fmt({
+        tagged: tagged,
+        idField: id,
+        id: id,
+        owner: owner,
+        op: get_operator(id)}));
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
 }
 
-function make_restore_sql(name, id) {
+function is_valid_sql(text)
+{
+    return !text.match(/@\(/);
+}
+
+function make_restore_sql(name, id, tagged) {
     function not_id(node) {
         return get_id(node.name) != id;
     }
@@ -143,30 +174,35 @@ function make_restore_sql(name, id) {
 
     var nodelist = rectify_nodes();
 
-    // restore routine:
-    // 0. declare variables
+    // Restore routine:
+    // 1. Declare variables;
     out.push(comment('Declare id variables'));
-    out = out.concat(nodelist.filter(not_id).map(make_declare_sql).flatten().uniq());
+    out = out.concat(nodelist.filter(not_id).map(make_declare_sql).flatten().filter(is_valid_sql).uniq());
 
     out.push(comment('Set id variables'));
     if (name in declares)
         out.push(declares[name])
     else
-        out = out.concat(nodelist.filter(not_id).map(make_set_sql).flatten().uniq());
+        out = out.concat(nodelist.filter(not_id).map(make_set_sql).flatten().filter(is_valid_sql).uniq());
 
-    // 1. delete user version
+    // 2. Delete user version;
     out.push(comment('Delete user version'));
     out = out.concat(nodelist.map(make_del_sql).flatten().reverse());
 
-    // 2. copy data from shadow tables
+    // 3. Copy data from shadow tables;
     out.push(comment('Restore data'));
     out = out.concat(nodelist.map(make_copy_sql).flatten());
 
-    // 3. update tags
-    out.push(comment('Update tags'));
-    out = out.concat(nodelist.filter(istagged).map(make_upd_sql).flatten());
+    // 4. update tags;
+    out.push(comment('Update tag'));
+    out.push(sql.update_tag.fmt({
+        tagged: tagged,
+        idField: id,
+        id: id,
+        owner: owner,
+        op: get_operator(id)}));
 
-    // 4. delete backup
+    // 5. Delete backup.
     setup_backup();
     out.push(comment('Delete backup'));
     out = out.concat(nodelist.map(make_del_sql).flatten().uniq().reverse());
@@ -196,7 +232,7 @@ function format_del(name, idfield, id) {
         idField: idfield,
         id: id,
         op: get_operator(id)
-    });
+    }).fmt({suffix:source_suffix});
 }
 
 function format_copy(name, idfield, id) {
@@ -206,7 +242,7 @@ function format_copy(name, idfield, id) {
         idField: idfield,
         id: id,
         op: get_operator(id)
-    });
+    }).fmt({suffix:source_suffix});
 }
 
 function format_upd(name, idfield, id) {
@@ -216,7 +252,7 @@ function format_upd(name, idfield, id) {
         idField: idfield,
         id: id,
         op: get_operator(id)
-    });
+    }).fmt({suffix:source_suffix});
 }
 
 function format_declare(name, idfield, id) {
