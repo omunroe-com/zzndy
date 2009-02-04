@@ -3,6 +3,7 @@
  */
 
 var nodes = {};
+all_nodes = [];
 var tagged = [];
 
 function Node(name) {
@@ -81,8 +82,11 @@ function node(pt, pc, ft, fc) {
 }
 
 function get_node(name) {
-    if (!(name in nodes))
+    if (!(name in nodes)){
         nodes[name] = new Node(name);
+        if(all_nodes.indexOf(name) == -1)
+            all_nodes.push(name);    
+    }
 
     return nodes[name];
 }

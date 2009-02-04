@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- $Id: index.html 62 2009-02-03 15:50:10Z vynogradov $ -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Copy/Delete</title>
+
+    <link type="text/css" rel="stylesheet"
+          href="../../playground/dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css" />
+    <script type="text/javascript" src="../../playground/dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+    <script type="text/javascript" src="../../playground/dp.SyntaxHighlighter/Scripts/shBrushSql.js"></script>
+</head>
+<body>
+<h2>Copy-delete routines</h2>
+<p>
+    <a href="index.html">Backup-restore</a>
+</p>
+
+<script type="text/javascript" src="../../playground/script/util.js">
+</script>
+<script type="text/javascript" src="foreign-key.js">
+</script>
+<script type="text/javascript" src="node.js">
+</script>
+<script type="text/javascript" src="init.js">
+</script>
+<script type="text/javascript" src="routines.js">
+</script>
+<script type="text/javascript">
+    write_header();
+
+    init_field();
+    make_delete_sql('FIELD', 'FIE_ID', 'FIELD_ADDITIONAL');
+    clear_setup();
+
+    init_block();
+    make_delete_sql('BLOCK', 'GA_ID', 'BLOCK_ADDITIONAL');
+    clear_setup();
+
+    init_complex();
+    make_delete_sql('COMPLEX', 'FIELD_COMPLEX_ID', 'FIELD_COMPLEX');
+    clear_setup();
+
+    init_globals();
+    make_delete_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
+    clear_setup();
+
+    dp.SyntaxHighlighter.HighlightAll('out');
+</script>
+</body>
+</html>

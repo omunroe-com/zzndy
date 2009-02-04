@@ -79,6 +79,15 @@ function write() {
         document.write('<textarea class="sql" name="out" id="out" rows="30" cols="144">' + text + '</textarea>');
 }
 
+function write_ahead() {
+    var target = document.getElementById('out');
+    var text = [].join.call(arguments, section_glue);
+    if (target)
+        target.innerHTML += text + section_glue + target.innerHTML;
+    else
+        write(text);
+}
+
 /**
  * @param {Node} node
  */
@@ -93,6 +102,15 @@ function comment(msg)
 
 function get_name(node) {
     return node.name;
+}
+
+function write_header()
+{
+    write('--\n'
+            + '-- Default AssetBank database name is ABDB.\n'
+            + '--\n'
+            + 'USE ABDB\n'
+            + 'GO');
 }
 
 function make_backup_sql(name, id, tagged) {
@@ -122,7 +140,6 @@ function make_backup_sql(name, id, tagged) {
     setup_backup();
 
     var nodelist = rectify_nodes();
-    all_nodes = all_nodes.concat(nodelist.map(get_name)); // fill the list of all used nodes
 
     // 2. Declare variables;
     out.push(comment('Declare id variables'));
@@ -158,6 +175,20 @@ function make_backup_sql(name, id, tagged) {
 function is_valid_sql(text)
 {
     return !text.match(/@\(/);
+}
+
+function write_shadow_generation()
+{
+    var out = [];
+    out.push(comment('Create tables to backup field domain object.'));
+    out = out.concat(all_nodes.map(make_shadow_sql));
+
+    write(out.join(statement_glue));
+}
+
+function make_shadow_sql(table)
+{
+    return "EXEC SP_CREATE_SHADOW_TABLE '<Table>'".fmt({table:table});
 }
 
 function make_restore_sql(name, id, tagged) {
@@ -206,6 +237,37 @@ function make_restore_sql(name, id, tagged) {
     setup_backup();
     out.push(comment('Delete backup'));
     out = out.concat(nodelist.map(make_del_sql).flatten().uniq().reverse());
+
+    out.push(sql.sp_end);
+    write(out.join(statement_glue));
+}
+
+function make_delete_sql(name, id, tagged) {
+    function not_id(node) {
+        return get_id(node.name) != id;
+    }
+
+    var out = [];
+
+    out.push(sql.sp_head.fmt({action:'DELETE', name:name, id:id}));
+    out.push(sql.sp_start);
+
+    setup_restore();
+
+    var nodelist = rectify_nodes();
+
+    out.push(comment('Declare id variables'));
+    out = out.concat(nodelist.filter(not_id).map(make_declare_sql).flatten().filter(is_valid_sql).uniq());
+
+    out.push(comment('Set id variables'));
+    if (name in declares)
+        out.push(declares[name])
+    else
+        out = out.concat(nodelist.filter(not_id).map(make_set_sql).flatten().uniq());
+
+    // 2. Delete data
+    out.push(comment('Delete data'));
+    out = out.concat(nodelist.map(make_del_sql).flatten().reverse());
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
