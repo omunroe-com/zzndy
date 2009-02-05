@@ -62,20 +62,21 @@ function init_globals()
 
     node('GAS_PRICE_DATA', 'GAS_PRICE_ID', 'GAS_PRICE');
     node('INFLATION_DATA', 'INFLATION_ID', 'INFLATION');
-
     node('LIQUID_PRICE_DATA', 'LIQUID_PRICE_ID', 'LIQUID_PRICE');
     node('GAS_PRICE', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
     node('LIQUID_PRICE', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
     node('INFLATION', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
 
+    // Special case for GLOBALS' child objects
     add_tee('GAS_PRICE_ID', '(SELECT GAS_PRICE_ID FROM GAS_PRICE<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
     add_tee('LIQUID_PRICE_ID', '(SELECT LIQUID_PRICE_ID FROM LIQUID_PRICE<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
     add_tee('INFLATION_ID', '(SELECT INFLATION_ID FROM INFLATION<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
 
+    // When creating new identities, GLOBALS' child objects need to have their id's updated
     add_update_ids('GLOBALS',
             "\t\tDECLARE @NEW_<Id> DECIMAL(12, 0);\n"
                     + "\t\tDECLARE CURS CURSOR\n"
-                    + "\t\tFOR SELECT DISTINCT <Id> FROM <Table> WHERE GLOBAL_ASSUMPTIONS_ID=@NEW_GLOBAL_ASSUMPTIONS_ID;\n"
+                    + "\t\tFOR SELECT DISTINCT <Id> FROM <Table> WHERE GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID;\n"
                     + "\n"
                     + "\t\tOPEN CURS;\n"
                     + "\t\tDECLARE @<Id> DECIMAL(12, 0);\n"
@@ -84,6 +85,7 @@ function init_globals()
                     + "\t\tWHILE @@FETCH_STATUS = 0\n"
                     + "\t\tBEGIN\n"
                     + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n"
+                    + "\t\t\tUPDATE <Table> SET GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID WHERE <Id> = @<Id>;\n"
                     + "\t\t\tUPDATE <Table> SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
                     + "\t\t\tUPDATE <Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
                     + "\n"
