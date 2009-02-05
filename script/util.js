@@ -202,7 +202,12 @@ S.fmt = function(fmtObj) {
                 case 'r': value = num.toRoman(); break
             }
 
+            try{
             res = res.replace(match, (isNaN(num) || base) ? value.pad(align == '-' ? -width : width) : (align == '0' ? num.zf(width, deci) : num.pad(width, deci)))
+            }catch(ex)
+            {
+                throw new Error('Undefined parameter ' + path + ' in template ' + this);
+            }
 
             if (useBackup) {
                 value = backUp[0]
