@@ -9,6 +9,12 @@ var target_prefix = '';
 var owner = '';
 
 var all_nodes = [];
+var update_ids = {};
+
+function add_update_ids(name, sql)
+{
+    update_ids[name] = sql;
+}
 
 /**
  * Setup environment for generation of backup SQL.
@@ -88,7 +94,7 @@ function write_header()
 
 function is_valid_sql(text)
 {
-    return !text.match(/@\(/);
+    return !text.match(/@(?:NEW_)?\(/);
 }
 
 

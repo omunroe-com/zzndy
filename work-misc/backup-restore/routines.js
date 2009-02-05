@@ -5,6 +5,7 @@
 var sql = {
     'update': "\t\tUPDATE <Table> SET MODIFIED_BY='<User>'\n\t\t\tWHERE <IdField><Op><Id>;",
     'insert': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>\n\t\t\tWHERE <IdField><Op><Id>;",
+    'insert_all': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>;",
     'del': "\t\tDELETE FROM <Table> WHERE\n\t\t\t<IdField><Op><Id>;",
     'declare': '\t\tDECLARE @<Var> DECIMAL(12,0)',
     'set':'\t\tSET @<Var> = ?',
@@ -16,7 +17,7 @@ var sql = {
     'sp_copy_head':
             "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
                     + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
-                    + 'CREATE PROCEDURE SP_<Action>_<Name> @<Id> DECIMAL (12,0), OUT @NEW_<Id> DECIMAL (12,0)\nAS\nBEGIN\n'
+                    + 'CREATE PROCEDURE SP_<Action>_<Name> @<Id> DECIMAL (12,0), @NEW_<Id> DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
     'shadow': "EXEC SP_CREATE_SHADOW_TABLE '<Table>';",
     'sp_start': '\tBEGIN TRANSACTION\n\tBEGIN TRY',
@@ -36,7 +37,7 @@ var sql = {
     'make_temp': '\t\tSELECT * INTO #<Table>\n'
             + '\t\t\tFROM <Table> WHERE 42=10;',
     'decl_new_id': '\t\tDECLARE @NEW_<Id> DECIMAL (12, 0);',
-    'get_new_id': "\t\tEXEC sp_GenerateNumericIdentity OUT @NEW_<Id>, '<Table>', '<IdField>';",
+    'get_new_id': "\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<IdField>';",
     'update_id': '\t\tUPDATE <Table> SET <IdField> = @NEW_<Id> WHERE <IdField><Op><Id>;',
     'drop_table': '\t\tDROP TABLE <Table>;'
 
@@ -237,13 +238,26 @@ function make_copy_sp_sql(name, id, tagged) {
 
     // 6. Update IDs;
     out.push(comment('Update IDs'));
-    out = out.concat(nodelist.map(to_sql(format_update_id)).flatten());
+    out = out.concat(nodelist.map(to_sql(format_update_id)).flatten().filter(is_valid_sql));
+
+    if (name in update_ids)
+    {
+        var custom = update_ids[name];
+        if (name == 'GLOBALS')
+            out = out.concat([
+                {table:'LIQUID_PRICE', id:'LIQUID_PRICE_ID'}
+                , {table:'GAS_PRICE', id:'GAS_PRICE_ID'}
+                , {table:'INFLATION', id:'INFLATION_ID'}
+            ].map(function(obj) {
+                return custom.fmt(obj)
+            }));
+    }
 
     setup_restore_temp();
 
     // 7. 'Restore' copy;
     out.push(comment("'Restore' copy"));
-    out = out.concat(nodelist.map(to_sql(format_copy)).flatten().map(ins_new_prefix));
+    out = out.concat(nodelist.map(to_sql(format_copy_all)).flatten().map(ins_new_prefix));
 
     // 8. Drop temporaries.
     out.push(comment('Drop temporaries'));
@@ -310,6 +324,13 @@ function format_copy(name, idfield, id) {
         idField: idfield,
         id: id,
         op: get_operator(id)
+    }).fmt({suffix:source_suffix});
+}
+
+function format_copy_all(name, idfield, id) {
+    return sql.insert_all.fmt({
+        target: target_prefix + name + target_suffix,
+        source: source_prefix + name + source_suffix
     }).fmt({suffix:source_suffix});
 }
 
