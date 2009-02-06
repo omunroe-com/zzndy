@@ -130,6 +130,16 @@ function write_shadow_generation()
     write(out.join(statement_glue));
 }
 
+/**
+ * Replace all table names with their shadow equivalents. Called through reduce.
+ * @param {String} value  a 'running total' value of the statement
+ * @param {Node} node     next node
+ * @return {String}       next value of the statement
+ */
+function replace_all_tables(value, node) {
+    return value.replace(new RegExp('\\b' + node.name + '\\b', 'g'), node.name + source_suffix);
+}
+
 
 function make_restore_sql(name, id, tagged) {
     function not_id(node) {
@@ -159,6 +169,15 @@ function make_restore_sql(name, id, tagged) {
     // 2. Delete user version;
     out.push(comment('Delete user version'));
     out = out.concat(nodelist.map(to_sql(format_del)).flatten().reverse());
+
+    out.push(comment('Set id variables acording to backed copy'));
+    if (name in declares)
+    {
+        var decl = declares[name];
+        out.push(nodelist.reduce(replace_all_tables, decl));
+    }
+    else
+        out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().filter(is_valid_sql).uniq());
 
     // 3. Copy data from shadow tables;
     out.push(comment('Restore data'));
