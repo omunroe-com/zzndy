@@ -12,12 +12,12 @@ var sql = {
     'sp_head':
             "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
                     + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
-                    + 'CREATE PROCEDURE SP_<Action>_<Name> @<Id> DECIMAL (12,0)\nAS\nBEGIN\n'
+                    + 'CREATE PROCEDURE [SP_<Action>_<Name>] @<Id> DECIMAL (12,0)\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
     'sp_copy_head':
             "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
                     + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
-                    + 'CREATE PROCEDURE SP_<Action>_<Name> @<Id> DECIMAL (12,0), @NEW_<Id> DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
+                    + 'CREATE PROCEDURE [SP_<Action>_<Name>] @<Id> DECIMAL (12,0), @NEW_<Id> DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
     'shadow': "EXEC SP_CREATE_SHADOW_TABLE '<Table>';",
     'sp_start': '\tBEGIN TRANSACTION\n\tBEGIN TRY',
@@ -39,7 +39,8 @@ var sql = {
     'decl_new_id': '\t\tDECLARE @NEW_<Id> DECIMAL (12, 0);',
     'get_new_id': "\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<IdField>';",
     'update_id': '\t\tUPDATE <Table> SET <IdField> = @NEW_<Id> WHERE <IdField><Op><Id>;',
-    'drop_table': '\t\tDROP TABLE <Table>;'
+    'drop_table': '\t\tDROP TABLE <Table>;',
+    'grant_sp': 'GRANT EXEC ON [SP_<Action>_<Name>] TO [abu]\nGO'
 
 };
 
@@ -113,6 +114,7 @@ function make_backup_sql(name, id, tagged) {
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
+    write(sql.grant_sp.fmt({action:'BACKUP', name:name}));
 }
 
 
@@ -199,6 +201,7 @@ function make_restore_sql(name, id, tagged) {
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
+    write(sql.grant_sp.fmt({action:'RESTORE', name:name}));
 }
 
 function make_copy_sp_sql(name, id, tagged) {
@@ -284,6 +287,7 @@ function make_copy_sp_sql(name, id, tagged) {
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
+    write(sql.grant_sp.fmt({action:'COPY', name:name}));
 }
 
 function make_delete_sql(name, id, tagged) {
@@ -315,6 +319,7 @@ function make_delete_sql(name, id, tagged) {
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
+    write(sql.grant_sp.fmt({action:'DELETE', name:name}));
 }
 
 function create_shadow()

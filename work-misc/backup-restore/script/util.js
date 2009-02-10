@@ -87,7 +87,7 @@ function write_header()
     write('--\n'
             + '-- Default AssetBank database name is ABDB.\n'
             + '--\n'
-            + 'USE ABDB\n'
+            + 'USE [ABDB]\n'
             + 'GO');
 }
 
