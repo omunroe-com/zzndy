@@ -13,7 +13,10 @@ var update_ids = {};
 
 function add_update_ids(name, sql)
 {
-    update_ids[name] = sql;
+    if (!(name in update_ids))
+        update_ids[name] = [];
+    
+    update_ids[name].push(sql);
 }
 
 /**

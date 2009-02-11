@@ -35,6 +35,17 @@ function init_field()
     node('FIELD_ADDITIONAL', 'TAX_NODE_ID', 'TAX_NODE');
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
+
+    add_uniq('FIELD_RESERVOIRS', 'RESV_ID');
+    add_uniq('PT_DETAIL_CASH_FLOW_GROUP');
+    add_uniq('PT_DETAIL_CASH_FLOW_TIMESERIES');
+    add_uniq('PT_ECONOMIC_INDICATOR');
+    add_uniq('FIELD_PHASE_DEVELOPMENT', 'PHASE_ID');
+
+    add_update_ids(
+            'PT_DETAIL_CASH_FLOW_TIMESERIES',
+            "\t\t\tUPDATE PT_DETAIL_CASH_FLOW_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
+            );
 }
 
 function init_block()
@@ -72,27 +83,45 @@ function init_globals()
     add_tee('LIQUID_PRICE_ID', '(SELECT LIQUID_PRICE_ID FROM LIQUID_PRICE<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
     add_tee('INFLATION_ID', '(SELECT INFLATION_ID FROM INFLATION<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
 
+    add_uniq('GAS_PRICE');
+    add_uniq('LIQUID_PRICE');
+    add_uniq('INFLATION');
+
+    var update_parent_sql = '\t\t\tUPDATE #<Table> SET <ParentId> = @NEW_<ParentId> WHERE <Id> = @<Id>;\n';
+    var update_data_sql = '\t\t\tUPDATE #<Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n';
+
+    add_update_ids('GAS_PRICE', update_parent_sql);
+    add_update_ids('GAS_PRICE', update_data_sql);
+
+    add_update_ids('LIQUID_PRICE', update_parent_sql);
+    add_update_ids('LIQUID_PRICE', update_data_sql);
+
+    add_update_ids('INFLATION', update_parent_sql);
+    add_update_ids('INFLATION', update_data_sql);
+
     // When creating new identities, GLOBALS' child objects need to have their id's updated
-    add_update_ids('GLOBALS',
-            "\t\tDECLARE @NEW_<Id> DECIMAL(12, 0);\n"
-                    + "\t\tDECLARE CURS CURSOR\n"
-                    + "\t\tFOR SELECT DISTINCT <Id> FROM <Table> WHERE GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID;\n"
-                    + "\n"
-                    + "\t\tOPEN CURS;\n"
-                    + "\t\tDECLARE @<Id> DECIMAL(12, 0);\n"
-                    + "\n"
-                    + "\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
-                    + "\t\tWHILE @@FETCH_STATUS = 0\n"
-                    + "\t\tBEGIN\n"
-                    + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n"
-                    + "\t\t\tUPDATE <Table> SET GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID WHERE <Id> = @<Id>;\n"
-                    + "\t\t\tUPDATE <Table> SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
-                    + "\t\t\tUPDATE <Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
-                    + "\n"
-                    + "\t\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
-                    + "\t\tEND\n"
-                    + "\n"
-                    + "\t\tCLOSE CURS;\n"
-                    + "\t\tDEALLOCATE CURS;\n"
-            );
+    /*
+     add_update_ids('GLOBALS',
+     "\t\tDECLARE @NEW_<Id> DECIMAL(12, 0);\n"
+     + "\t\tDECLARE CURS CURSOR\n"
+     + "\t\tFOR SELECT DISTINCT <Id> FROM <Table> WHERE GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID;\n"
+     + "\n"
+     + "\t\tOPEN CURS;\n"
+     + "\t\tDECLARE @<Id> DECIMAL(12, 0);\n"
+     + "\n"
+     + "\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
+     + "\t\tWHILE @@FETCH_STATUS = 0\n"
+     + "\t\tBEGIN\n"
+     + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n"
+     + "\t\t\tUPDATE <Table> SET GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID WHERE <Id> = @<Id>;\n"
+     + "\t\t\tUPDATE <Table> SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
+     + "\t\t\tUPDATE <Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
+     + "\n"
+     + "\t\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
+     + "\t\tEND\n"
+     + "\n"
+     + "\t\tCLOSE CURS;\n"
+     + "\t\tDEALLOCATE CURS;\n"
+     );
+     */
 }

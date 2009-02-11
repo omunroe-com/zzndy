@@ -3,6 +3,7 @@
  */
 
 var nodes = {};
+var uniqs = {};
 all_nodes = [];
 var tagged = [];
 
@@ -82,10 +83,10 @@ function node(pt, pc, ft, fc) {
 }
 
 function get_node(name) {
-    if (!(name in nodes)){
+    if (!(name in nodes)) {
         nodes[name] = new Node(name);
-        if(all_nodes.indexOf(name) == -1)
-            all_nodes.push(name);    
+        if (all_nodes.indexOf(name) == -1)
+            all_nodes.push(name);
     }
 
     return nodes[name];
@@ -108,11 +109,34 @@ function add_tagged(node) {
         tagged.push(node);
 }
 
+function add_uniq(node, id) {
+    if(id === undefined)
+        id = node + '_ID';
+
+    if (!has_uniqs(node))
+        uniqs[node] = [];
+
+    uniqs[node].push(id);
+}
+
+function has_uniqs(node)
+{
+    return node in uniqs;
+}
+
+function get_uniqs(node)
+{
+    if (!has_uniqs(node))
+        throw new Error('No uniqs defined for ' + node);
+    return uniqs[node];
+}
+
 /**
  * Clear nodes directory.
  * @param {Boolean} all  if true also cleaar tagged tables
  */
 function clear_node_setup(all) {
     nodes = {};
+    uniqs = {};
     if (all) tagged = [];
 }

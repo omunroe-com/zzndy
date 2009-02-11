@@ -39,8 +39,35 @@ var sql = {
     'decl_new_id': '\t\tDECLARE @NEW_<Id> DECIMAL (12, 0);',
     'get_new_id': "\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<IdField>';",
     'update_id': '\t\tUPDATE <Table> SET <IdField> = @NEW_<Id> WHERE <IdField><Op><Id>;',
+    'update_id_all': '\t\tUPDATE <Table> SET <IdField> = @NEW_<Id>;',
     'drop_table': '\t\tDROP TABLE <Table>;',
-    'grant_sp': 'GRANT EXEC ON [SP_<Action>_<Name>] TO [abu]\nGO'
+    'grant_sp': 'GRANT EXEC ON [SP_<Action>_<Name>] TO [abu]\nGO',
+    'iterate_ids':
+            "\t\tDECLARE @NEW_<Id> DECIMAL(12, 0);\n"
+                    + "\t\tDECLARE CURS CURSOR\n"
+                    + "\t\tFOR SELECT DISTINCT <Id>\n"
+                    + "\t\t\tFROM #<Table>\n"
+                    + "\t\t\tWHERE <ParentId> = @NEW_<ParentId>;\n"
+                    + "\n"
+                    + "\t\tOPEN CURS;\n"
+                    + "\t\tDECLARE @<Id> DECIMAL(12, 0);\n"
+                    + "\n"
+                    + "\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
+                    + "\t\tWHILE @@FETCH_STATUS = 0\n"
+                    + "\t\tBEGIN\n"
+                    + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n\n"
+                //+ "\t\t\tUPDATE <Table> SET <ParentId> = @NEW_<ParentId> WHERE <Id> = @<Id>;\n"
+                    + "\t\t\tUPDATE #<Table>\n"
+                    + "\t\t\t\tSET <Id> = @NEW_<Id>\n"
+                    + "\t\t\t\tWHERE <Id> = @<Id>;\n"
+                //+ "\t\t\tUPDATE <Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
+                    + "<Additional>"
+                    + "\n"
+                    + "\t\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
+                    + "\t\tEND\n"
+                    + "\n"
+                    + "\t\tCLOSE CURS;\n"
+                    + "\t\tDEALLOCATE CURS;\n"
 
 };
 
@@ -222,6 +249,22 @@ function make_copy_sp_sql(name, id, tagged) {
         return text.replace(/=\s@/, '= @NEW_')
     }
 
+    function get_uniq_struct(node) {
+        return {name:node, uniqs:get_uniqs(node)};
+    }
+
+    function uniq_pipe(nodelist, fmt_fn)
+    {
+        return nodelist
+                .map(get_name)
+                .filter(has_uniqs)
+                .map(get_uniq_struct)
+                .map(to_sql_struct(fmt_fn))
+                .flatten()
+                .filter(is_valid_sql)
+                .uniq();
+    }
+
     var out = [];
 
     out.push(sql.sp_copy_head.fmt({action:'COPY', name:name, id:id}));
@@ -255,31 +298,35 @@ function make_copy_sp_sql(name, id, tagged) {
     // 5. Get new IDs;
     out.push(comment('Get new IDs'));
     out = out.concat(nodelist.filter(not_id).filter(is_new_id).map(to_sql(format_decl_new)).flatten().filter(is_valid_sql).uniq());
+    //out = out.concat(uniq_pipe(nodelist, format_decl_new));
     ids = [];
     out = out.concat(nodelist.filter(is_new_id).map(to_sql(format_get_new)).flatten().filter(is_valid_sql).uniq());
+    //out = out.concat(uniq_pipe(nodelist, format_get_new));
 
     // 6. Update IDs;
     out.push(comment('Update IDs'));
     out = out.concat(nodelist.map(to_sql(format_update_id)).flatten().filter(is_valid_sql));
 
-    if (name in update_ids)
-    {
-        var custom = update_ids[name];
-        if (name == 'GLOBALS')
-            out = out.concat([
-                {table:'LIQUID_PRICE', id:'LIQUID_PRICE_ID'}
-                , {table:'GAS_PRICE', id:'GAS_PRICE_ID'}
-                , {table:'INFLATION', id:'INFLATION_ID'}
-            ].map(function(obj) {
-                return custom.fmt(obj)
-            }));
-    }
+    out = out.concat(uniq_pipe(nodelist, format_iterate_ids));
+    /*
+     if (name in update_ids)
+     {
+     var custom = update_ids[name];
+     if (name == 'GLOBALS')
+     out = out.concat([
+     {table:'LIQUID_PRICE', id:'LIQUID_PRICE_ID'}
+     , {table:'GAS_PRICE', id:'GAS_PRICE_ID'}
+     , {table:'INFLATION', id:'INFLATION_ID'}
+     ].map(function(obj) {
+     return custom.fmt(obj)
+     }));
+     }*/
 
     setup_restore_temp();
 
     // 7. 'Restore' copy;
     out.push(comment("'Restore' copy"));
-    out = out.concat(nodelist.map(to_sql(format_copy_all)).flatten().map(ins_new_prefix));
+    out = out.concat(nodelist.map(to_sql(format_copy)).flatten().map(ins_new_prefix));
 
     // 8. Drop temporaries.
     out.push(comment('Drop temporaries'));
@@ -394,6 +441,28 @@ function format_get_new(name, idField, id)
     return sql.get_new_id.fmt({table:name, id:id, idField:idField});
 }
 
+function format_iterate_ids(name, idField, id)
+{
+    function format(sql)
+    {
+        return sql.fmt(fmt);
+    }
+
+    var pc = get_node(name).parents, parent;
+    for (var i in pc)
+        if (pc[i] instanceof Array)
+            parent = pc[i][0];
+    var parentId = parent.pColumn;
+
+    var fmt = {table:name, id:id, idField:idField, parentId:parentId};
+    fmt.additional = '';
+    
+    if (name in update_ids)
+        fmt.additional = '\n' + update_ids[name].map(format).join('');
+
+    return sql.iterate_ids.fmt(fmt);
+}
+
 function format_update_id(name, idField, id)
 {
     return sql.update_id.fmt({
@@ -404,11 +473,29 @@ function format_update_id(name, idField, id)
     });
 }
 
+function format_update_id_all(name, idField, id)
+{
+    return sql.update_id_all.fmt({
+        table:target_prefix + name + target_suffix,
+        idField: idField,
+        id: id,
+        op: get_operator(id)
+    });
+}
+
 function format_drop(name, idField, id)
 {
     return sql.drop_table.fmt({
-        table: source_prefix + name + source_suffix,
+        table: source_prefix + name + source_suffix
     });
+}
+
+function prepare_sql_struct(struct, callback) {
+    var sqls = [];
+    for (var i = 0; i < struct.uniqs.length; ++i)
+        sqls.push(callback(struct.name, struct.uniqs[i], struct.uniqs[i]));
+
+    return sqls;
 }
 
 function prepare_sql(node, callback) {
@@ -423,6 +510,12 @@ function prepare_sql(node, callback) {
         sqls.push(callback(node.name, id, id));
 
     return sqls;
+}
+
+function to_sql_struct(fmt_fn) {
+    return function(node) {
+        return prepare_sql_struct(node, fmt_fn);
+    }
 }
 
 function to_sql(fmt_fn) {
