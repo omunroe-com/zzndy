@@ -426,15 +426,15 @@ function format_upd(name, idfield, id) {
     }).fmt({suffix:source_suffix});
 }
 
-function format_declare(/*name, idfield,*/ id) {
+function format_declare(/*name, idfield, id*/) {
     return sql.declare.fmt({
-        'varName': id
+        'varName': arguments[2]
     });
 }
 
-function format_set(/*name, idfield,*/ id) {
+function format_set(/*name, idfield, id*/) {
     return sql.set.fmt({
-        'varName': id
+        'varName': arguments[2]
     });
 }
 
