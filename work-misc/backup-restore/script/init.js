@@ -36,6 +36,8 @@ function init_field()
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
 
+    add_name('FIELD_HEADER', 'FIELD_NAME');
+
     add_uniq('FIELD_RESERVOIRS', 'RESV_ID');
     add_uniq('PT_DETAIL_CASH_FLOW_GROUP');
     add_uniq('PT_DETAIL_CASH_FLOW_TIMESERIES');
@@ -56,6 +58,8 @@ function init_block()
     node('GROUP_PARTNER_INTERESTS');
     node('BLOCK_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
     node('CONTRACT_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
+
+    add_name('BLOCK_HEADER', 'BLOCK_NAME');
 }
 
 function init_complex()
@@ -64,6 +68,8 @@ function init_complex()
     node('FIELD_COMPLEX', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
+
+    add_name('FIELD_COMPLEX', 'FIELD_COMPLEX_NAME');
 }
 
 function init_globals()
@@ -86,6 +92,8 @@ function init_globals()
     add_uniq('GAS_PRICE');
     add_uniq('LIQUID_PRICE');
     add_uniq('INFLATION');
+
+    add_name('GLOBAL_ASSUMPTIONS', 'GLOBALS_NAME');
 
     var update_parent_sql = '\t\t\tUPDATE #<Table> SET <ParentId> = @NEW_<ParentId> WHERE <Id> = @<Id>;\n';
     var update_data_sql = '\t\t\tUPDATE #<Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n';

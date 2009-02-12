@@ -4,6 +4,7 @@
 
 var nodes = {};
 var uniqs = {};
+var names = {table:null, column:null};
 all_nodes = [];
 var tagged = [];
 
@@ -110,7 +111,7 @@ function add_tagged(node) {
 }
 
 function add_uniq(node, id) {
-    if(id === undefined)
+    if (id === undefined)
         id = node + '_ID';
 
     if (!has_uniqs(node))
@@ -138,5 +139,16 @@ function get_uniqs(node)
 function clear_node_setup(all) {
     nodes = {};
     uniqs = {};
+    names = {table:null, column:null};
     if (all) tagged = [];
+}
+
+function add_name(table, column)
+{
+    names = {table:table, column:column};
+}
+
+function get_entity_name()
+{
+    return names;
 }

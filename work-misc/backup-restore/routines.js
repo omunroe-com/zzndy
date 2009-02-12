@@ -67,7 +67,8 @@ var sql = {
                     + "\t\tEND\n"
                     + "\n"
                     + "\t\tCLOSE CURS;\n"
-                    + "\t\tDEALLOCATE CURS;\n"
+                    + "\t\tDEALLOCATE CURS;\n",
+    'set_name': "\t\tUPDATE <Table> SET <NameField> = 'Copy of ' + <NameField> WHERE <IdField><Op><Id>;"
 
 };
 
@@ -295,6 +296,16 @@ function make_copy_sp_sql(name, id, tagged) {
     out.push(comment("'Backup' specifyed object to temporaties"));
     out = out.concat(nodelist.map(to_sql(format_copy)).flatten());
 
+    var entity_name = get_entity_name();
+    var entity_id = get_id(entity_name.table);
+    out.push(sql.set_name.fmt({
+        table:target_prefix + entity_name.table + target_suffix,
+        nameField:entity_name.column,
+        idField:entity_id ,
+        op:get_operator(entity_id) ,
+        id:entity_id
+    }));
+
     // 5. Get new IDs;
     out.push(comment('Get new IDs'));
     out = out.concat(nodelist.filter(not_id).filter(is_new_id).map(to_sql(format_decl_new)).flatten().filter(is_valid_sql).uniq());
@@ -308,19 +319,6 @@ function make_copy_sp_sql(name, id, tagged) {
     out = out.concat(nodelist.map(to_sql(format_update_id)).flatten().filter(is_valid_sql));
 
     out = out.concat(uniq_pipe(nodelist, format_iterate_ids));
-    /*
-     if (name in update_ids)
-     {
-     var custom = update_ids[name];
-     if (name == 'GLOBALS')
-     out = out.concat([
-     {table:'LIQUID_PRICE', id:'LIQUID_PRICE_ID'}
-     , {table:'GAS_PRICE', id:'GAS_PRICE_ID'}
-     , {table:'INFLATION', id:'INFLATION_ID'}
-     ].map(function(obj) {
-     return custom.fmt(obj)
-     }));
-     }*/
 
     setup_restore_temp();
 
@@ -456,7 +454,7 @@ function format_iterate_ids(name, idField, id)
 
     var fmt = {table:name, id:id, idField:idField, parentId:parentId};
     fmt.additional = '';
-    
+
     if (name in update_ids)
         fmt.additional = '\n' + update_ids[name].map(format).join('');
 
