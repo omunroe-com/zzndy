@@ -7,8 +7,8 @@ var sql = {
     'insert': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>\n\t\t\tWHERE <IdField><Op><Id>;",
     'insert_all': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>;",
     'del': "\t\tDELETE FROM <Table> WHERE\n\t\t\t<IdField><Op><Id>;",
-    'declare': '\t\tDECLARE @<Var> DECIMAL(12,0)',
-    'set':'\t\tSET @<Var> = ?',
+    'declare': '\t\tDECLARE @<VarName> DECIMAL(12,0)',
+    'set':'\t\tSET @<VarName> = ?',
     'sp_head':
             "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
                     + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
@@ -32,7 +32,7 @@ var sql = {
                     + 'GO',
     'check_tag':"\tIF (SELECT MODIFIED_BY FROM <Tagged> WHERE <IdField><Op><Id>) != '<Owner>'\n"
             + '\t\tRETURN -- No backup needed',
-    'update_tag':"\t\tUPDATE <Tagged> SET MODIFIED_BY='<Owner>' WHERE <IdField><Op><Id>;",
+    'update_tag':"\t\tUPDATE <Tagged> SET <TagField>='<Owner>' WHERE <IdField><Op><Id>;",
 
     'make_temp': '\t\tSELECT * INTO #<Table>\n'
             + '\t\t\tFROM <Table> WHERE 42=10;',
@@ -119,7 +119,7 @@ function make_backup_sql(name, id, tagged) {
 
     out.push(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name])
+        out.push(declares[name]);
     else
         out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
 
@@ -137,6 +137,7 @@ function make_backup_sql(name, id, tagged) {
         tagged: tagged,
         idField: id,
         id: id,
+        tagField: tagField,
         owner: owner,
         op: get_operator(id)}));
 
@@ -192,7 +193,7 @@ function make_restore_sql(name, id, tagged) {
 
     out.push(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name])
+        out.push(declares[name]);
     else
         out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().filter(is_valid_sql).uniq());
 
@@ -213,19 +214,21 @@ function make_restore_sql(name, id, tagged) {
     out.push(comment('Restore data'));
     out = out.concat(nodelist.map(to_sql(format_copy)).flatten());
 
-    // 4. update tags;
+    // 4. Delete backup.
+    setup_backup();
+    out.push(comment('Delete backup'));
+    out = out.concat(nodelist.map(to_sql(format_del)).flatten().uniq().reverse());
+
+    // 5. update tags;
+    setup_restore();
     out.push(comment('Update tag'));
     out.push(sql.update_tag.fmt({
         tagged: tagged,
         idField: id,
         id: id,
+        tagField: tagField,
         owner: owner,
         op: get_operator(id)}));
-
-    // 5. Delete backup.
-    setup_backup();
-    out.push(comment('Delete backup'));
-    out = out.concat(nodelist.map(to_sql(format_del)).flatten().uniq().reverse());
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
@@ -247,7 +250,7 @@ function make_copy_sp_sql(name, id, tagged) {
     }
 
     function ins_new_prefix(text) {
-        return text.replace(/=\s@/, '= @NEW_')
+        return text.replace(/=\s@/, '= @NEW_');
     }
 
     function get_uniq_struct(node) {
@@ -287,7 +290,7 @@ function make_copy_sp_sql(name, id, tagged) {
     // 3. Set ids
     out.push(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name])
+        out.push(declares[name]);
     else
         out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
 
@@ -326,16 +329,26 @@ function make_copy_sp_sql(name, id, tagged) {
     out.push(comment("'Restore' copy"));
     out = out.concat(nodelist.map(to_sql(format_copy)).flatten().map(ins_new_prefix));
 
-    // 8. Drop temporaries.
+    // 8. Drop temporaries;
     out.push(comment('Drop temporaries'));
     out = out.concat(nodelist.map(to_sql(format_drop)).flatten().uniq());
+
+    // 9. update tags.
+    out.push(comment('Update tag'));
+    out.push(sql.update_tag.fmt({
+        tagged: tagged,
+        idField: id,
+        id: id,
+        tagField: tagField,
+        owner: owner,
+        op: get_operator(id)}));
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
     write(sql.grant_sp.fmt({action:'COPY', name:name}));
 }
 
-function make_delete_sql(name, id, tagged) {
+function make_delete_sql(name, id/*, tagged*/) {
     function not_id(node) {
         return get_id(node.name) != id;
     }
@@ -354,7 +367,7 @@ function make_delete_sql(name, id, tagged) {
 
     out.push(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name])
+        out.push(declares[name]);
     else
         out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
 
@@ -396,7 +409,7 @@ function format_copy(name, idfield, id) {
     }).fmt({suffix:source_suffix});
 }
 
-function format_copy_all(name, idfield, id) {
+function format_copy_all(name/*, idfield, id*/) {
     return sql.insert_all.fmt({
         target: target_prefix + name + target_suffix,
         source: source_prefix + name + source_suffix
@@ -413,19 +426,19 @@ function format_upd(name, idfield, id) {
     }).fmt({suffix:source_suffix});
 }
 
-function format_declare(name, idfield, id) {
+function format_declare(/*name, idfield,*/ id) {
     return sql.declare.fmt({
-        'var': id
+        'varName': id
     });
 }
 
-function format_set(name, idfield, id) {
+function format_set(/*name, idfield,*/ id) {
     return sql.set.fmt({
-        'var': id
+        'varName': id
     });
 }
 
-function format_temp(name, idfield, id) {
+function format_temp(name/*, idfield, id*/) {
     return sql.make_temp.fmt({table:name});
 }
 
@@ -481,7 +494,7 @@ function format_update_id_all(name, idField, id)
     });
 }
 
-function format_drop(name, idField, id)
+function format_drop(name/*, idField, id*/)
 {
     return sql.drop_table.fmt({
         table: source_prefix + name + source_suffix
@@ -513,11 +526,11 @@ function prepare_sql(node, callback) {
 function to_sql_struct(fmt_fn) {
     return function(node) {
         return prepare_sql_struct(node, fmt_fn);
-    }
+    };
 }
 
 function to_sql(fmt_fn) {
     return function(node) {
         return prepare_sql(node, fmt_fn);
-    }
+    };
 }

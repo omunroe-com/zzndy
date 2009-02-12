@@ -7,6 +7,7 @@ var target_suffix = '';
 var source_prefix = '';
 var target_prefix = '';
 var owner = '';
+var tagField = '';
 
 var all_nodes = [];
 var update_ids = {};
@@ -25,6 +26,7 @@ function add_update_ids(name, sql)
 function setup_backup() {
     source_suffix = '';
     target_suffix = '_SHADOW';
+    tagField = 'MODIFIED_BY';
     owner = 'USER';
     source_prefix = '';
     target_prefix = '';
@@ -36,6 +38,7 @@ function setup_backup() {
 function setup_restore() {
     source_suffix = '_SHADOW';
     target_suffix = '';
+    tagField = 'MODIFIED_BY';
     owner = 'IHS';
     source_prefix = '';
     target_prefix = '';
@@ -45,7 +48,8 @@ function setup_backup_temp()
 {
     source_suffix = '';
     target_suffix = '';
-    owner = '';
+    tagField = 'CREATED_BY';
+    owner = 'USER';
     source_prefix = '';
     target_prefix = '#';
 }
@@ -54,7 +58,8 @@ function setup_restore_temp()
 {
     source_suffix = '';
     target_suffix = '';
-    owner = '';
+    tagField = 'CREATED_BY';
+    owner = 'USER';
     source_prefix = '#';
     target_prefix = '';
 }
