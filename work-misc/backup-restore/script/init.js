@@ -46,7 +46,7 @@ function init_field()
 
     add_update_ids(
             'PT_DETAIL_CASH_FLOW_TIMESERIES',
-            "\t\t\tUPDATE PT_DETAIL_CASH_FLOW_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
+            "\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
             );
 }
 

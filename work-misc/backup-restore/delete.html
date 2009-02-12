@@ -14,6 +14,7 @@
 <h2>Copy routines</h2>
 <p>
     <a href="index.html">Backup-restore</a>
+    <a href="delete.html">Delete</a>
 </p>
 
 <script type="text/javascript" src="../../playground/script/util.js">
@@ -32,19 +33,19 @@
     write_header();
 
     init_field();
-    make_copy_sp_sql('FIELD', 'FIE_ID', 'FIELD_ADDITIONAL');
+    make_delete_sql('FIELD', 'FIE_ID', 'FIELD_ADDITIONAL');
     clear_setup();
 
     init_block();
-    make_copy_sp_sql('BLOCK', 'GA_ID', 'BLOCK_ADDITIONAL');
+    make_delete_sql('BLOCK', 'GA_ID', 'BLOCK_ADDITIONAL');
     clear_setup();
 
     init_complex();
-    make_copy_sp_sql('COMPLEX', 'FIELD_COMPLEX_ID', 'FIELD_COMPLEX');
+    make_delete_sql('COMPLEX', 'FIELD_COMPLEX_ID', 'FIELD_COMPLEX');
     clear_setup();
 
     init_globals();
-    make_copy_sp_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
+    make_delete_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
     clear_setup();
 
     dp.SyntaxHighlighter.HighlightAll('out');
