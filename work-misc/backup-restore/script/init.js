@@ -57,7 +57,14 @@ function init_block()
     node('BLOCK_ADDITIONAL', 'GA_ID', 'BLOCK_HEADER');
     node('GROUP_PARTNER_INTERESTS');
     node('BLOCK_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
-    node('CONTRACT_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
+    //node('CONTRACT_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
+    node('BLOCK_HEADER', 'EPC_ID', 'CONTRACT_HEADER');
+    node('BLOCK_HEADER', 'EPC_ID', 'CONTRACT_ADDITIONAL');
+
+    add_uniq();    
+
+    //    [EPCSTG_ID] ASC,
+    //	[EPC_ID] ASC
 
     add_name('BLOCK_HEADER', 'BLOCK_NAME');
 }

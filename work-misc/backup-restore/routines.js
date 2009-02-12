@@ -44,23 +44,25 @@ var sql = {
     'grant_sp': 'GRANT EXEC ON [SP_<Action>_<Name>] TO [abu]\nGO',
     'iterate_ids':
             "\t\tDECLARE @NEW_<Id> DECIMAL(12, 0);\n"
+                    + "\n"
                     + "\t\tDECLARE CURS CURSOR\n"
                     + "\t\tFOR SELECT DISTINCT <Id>\n"
                     + "\t\t\tFROM #<Table>\n"
                     + "\t\t\tWHERE <ParentId> = @NEW_<ParentId>;\n"
                     + "\n"
                     + "\t\tOPEN CURS;\n"
+                    + "\n"
                     + "\t\tDECLARE @<Id> DECIMAL(12, 0);\n"
                     + "\n"
                     + "\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
+                    + "\n"
                     + "\t\tWHILE @@FETCH_STATUS = 0\n"
                     + "\t\tBEGIN\n"
-                    + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n\n"
-                //+ "\t\t\tUPDATE <Table> SET <ParentId> = @NEW_<ParentId> WHERE <Id> = @<Id>;\n"
+                    + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n"
+                    + "\n"
                     + "\t\t\tUPDATE #<Table>\n"
                     + "\t\t\t\tSET <Id> = @NEW_<Id>\n"
                     + "\t\t\t\tWHERE <Id> = @<Id>;\n"
-                //+ "\t\t\tUPDATE <Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
                     + "<Additional>"
                     + "\n"
                     + "\t\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
@@ -78,7 +80,8 @@ declares['FIELD'] = '\t\tSELECT @TAX_NODE_ID = TAX_NODE_ID FROM FIELD_ADDITIONAL
         + '\t\tSELECT @INV_ASS_ORIGINAL_ID = INV_ASS_ORIGINAL_ID FROM FIELD_ADDITIONAL WHERE FIE_ID = @FIE_ID\n\n'
         + '\t\tSELECT @INV_ASS_REDIST_ID = INV_ASS_REDIST_ID FROM FIELD_ADDITIONAL WHERE FIE_ID = @FIE_ID';
 
-declares['BLOCK'] = '\t\tSELECT @PAR_ID = PAR_ID FROM BLOCK_HEADER WHERE GA_ID = @GA_ID';
+declares['BLOCK'] = '\t\tSELECT @PAR_ID = PAR_ID FROM BLOCK_HEADER WHERE GA_ID = @GA_ID;\n\n'
+        + '\t\tSELECT @EPC_ID = EPC_ID FROM BLOCK_HEADER WHERE GA_ID = @GA_ID';
 
 declares['COMPLEX'] = '\t\tSELECT @INV_ASS_ID = INV_ASS_ID FROM FIELD_COMPLEX WHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID';
 
