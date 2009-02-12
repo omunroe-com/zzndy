@@ -312,10 +312,8 @@ function make_copy_sp_sql(name, id, tagged) {
     // 5. Get new IDs;
     out.push(comment('Get new IDs'));
     out = out.concat(nodelist.filter(not_id).filter(is_new_id).map(to_sql(format_decl_new)).flatten().filter(is_valid_sql).uniq());
-    //out = out.concat(uniq_pipe(nodelist, format_decl_new));
     ids = [];
     out = out.concat(nodelist.filter(is_new_id).map(to_sql(format_get_new)).flatten().filter(is_valid_sql).uniq());
-    //out = out.concat(uniq_pipe(nodelist, format_get_new));
 
     // 6. Update IDs;
     out.push(comment('Update IDs'));

@@ -106,30 +106,4 @@ function init_globals()
 
     add_update_ids('INFLATION', update_parent_sql);
     add_update_ids('INFLATION', update_data_sql);
-
-    // When creating new identities, GLOBALS' child objects need to have their id's updated
-    /*
-     add_update_ids('GLOBALS',
-     "\t\tDECLARE @NEW_<Id> DECIMAL(12, 0);\n"
-     + "\t\tDECLARE CURS CURSOR\n"
-     + "\t\tFOR SELECT DISTINCT <Id> FROM <Table> WHERE GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID;\n"
-     + "\n"
-     + "\t\tOPEN CURS;\n"
-     + "\t\tDECLARE @<Id> DECIMAL(12, 0);\n"
-     + "\n"
-     + "\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
-     + "\t\tWHILE @@FETCH_STATUS = 0\n"
-     + "\t\tBEGIN\n"
-     + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n"
-     + "\t\t\tUPDATE <Table> SET GLOBAL_ASSUMPTIONS_ID = @NEW_GLOBAL_ASSUMPTIONS_ID WHERE <Id> = @<Id>;\n"
-     + "\t\t\tUPDATE <Table> SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
-     + "\t\t\tUPDATE <Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
-     + "\n"
-     + "\t\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
-     + "\t\tEND\n"
-     + "\n"
-     + "\t\tCLOSE CURS;\n"
-     + "\t\tDEALLOCATE CURS;\n"
-     );
-     */
 }
