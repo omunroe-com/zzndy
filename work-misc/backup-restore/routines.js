@@ -70,7 +70,22 @@ var sql = {
                     + "\n"
                     + "\t\tCLOSE CURS;\n"
                     + "\t\tDEALLOCATE CURS;\n",
-    'set_name': "\t\tUPDATE <Table> SET <NameField> = 'Copy of ' + <NameField> WHERE <IdField><Op><Id>;"
+    'set_name':
+            "\t\tDECLARE @NAME VARCHAR(50)\n"
+                    + "\t\tSELECT @NAME = 'Copy of ' + <NameField> FROM <Table> WHERE <IdField><Op><Id>;\n"
+                    + "\t\t\n"
+                    + "\t\tDECLARE @N INT;\n"
+                    + "\t\tSET @N = 1;\n"
+                    + "\t\t\n"
+                    + "\t\tWHILE EXISTS (SELECT <NameField> FROM <OriginalTable> WHERE <NameField> = @NAME)\n"
+                    + "\t\tBEGIN\n"
+                    + "\t\t\tSELECT @NAME = 'Copy of ' + <NameField> + ' (' + CONVERT(VARCHAR(2), @N) + ')'\n"
+                    + "\t\t\t\tFROM <Table> WHERE <IdField><Op><Id>;\n"
+                    + "\t\t\n"
+                    + "\t\t\tSET @N = @N + 1;\n"
+                    + "\t\tEND\n"
+                    + "\n"
+                    + "\t\tUPDATE <Table> SET <NameField> = @NAME WHERE <IdField><Op><Id>;"
 
 };
 
@@ -238,7 +253,7 @@ function make_restore_sql(name, id, tagged) {
     write(sql.grant_sp.fmt({action:'RESTORE', name:name}));
 }
 
-function make_copy_sp_sql(name, id, tagged) {
+function make_clone_sql(name, id, tagged) {
     function not_id(node) {
         return get_id(node.name) != id;
     }
@@ -274,7 +289,7 @@ function make_copy_sp_sql(name, id, tagged) {
 
     var out = [];
 
-    out.push(sql.sp_copy_head.fmt({action:'COPY', name:name, id:id}));
+    out.push(sql.sp_copy_head.fmt({action:'CLONE', name:name, id:id}));
     out.push(sql.sp_start);
 
     setup_restore();
@@ -306,6 +321,7 @@ function make_copy_sp_sql(name, id, tagged) {
     var entity_id = get_id(entity_name.table);
     out.push(sql.set_name.fmt({
         table:target_prefix + entity_name.table + target_suffix,
+        originalTable: entity_name.table,
         nameField:entity_name.column,
         idField:entity_id ,
         op:get_operator(entity_id) ,
@@ -321,6 +337,12 @@ function make_copy_sp_sql(name, id, tagged) {
     // 6. Update IDs;
     out.push(comment('Update IDs'));
     out = out.concat(nodelist.map(to_sql(format_update_id)).flatten().filter(is_valid_sql));
+
+    // HARDCODE
+    if (name == 'BLOCK') {
+        out.push('\t\tUPDATE #BLOCK_HEADER SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;');
+        out.push('\t\tUPDATE #FIELD_CONTRACTS_BLOCKS SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;');
+    }
 
     out = out.concat(uniq_pipe(nodelist, format_iterate_ids));
 

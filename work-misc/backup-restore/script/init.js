@@ -57,14 +57,11 @@ function init_block()
     node('BLOCK_ADDITIONAL', 'GA_ID', 'BLOCK_HEADER');
     node('GROUP_PARTNER_INTERESTS');
     node('BLOCK_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
-    //node('CONTRACT_HEADER', 'PAR_ID', 'GROUP_PARTNER_INTERESTS');
     node('BLOCK_HEADER', 'EPC_ID', 'CONTRACT_HEADER');
-    node('BLOCK_HEADER', 'EPC_ID', 'CONTRACT_ADDITIONAL');
 
-    add_uniq();    
-
-    //    [EPCSTG_ID] ASC,
-    //	[EPC_ID] ASC
+    node('CONTRACT_ADDITIONAL', 'EPC_ID', 'CONTRACT_HEADER');
+    node('FIELD_CONTRACTS_BLOCKS', 'GA_ID', 'BLOCK_HEADER');
+    node('FIELD_CONTRACTS_BLOCKS', 'EPC_ID', 'CONTRACT_HEADER');
 
     add_name('BLOCK_HEADER', 'BLOCK_NAME');
 }
@@ -72,6 +69,7 @@ function init_block()
 function init_complex()
 {
     // COMPLEX
+    add_id('FIELD_COMPLEX', 'FIELD_COMPLEX_ID');
     node('FIELD_COMPLEX', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');

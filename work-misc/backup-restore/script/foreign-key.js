@@ -55,13 +55,13 @@
         return fks[desc];
     };
 
-    function add_id(table, id) {
+    add_id = function(table, id) {
         if (!(table in ids))
             ids[table] = id;
         else
             if (ids[table] != id)
                 throw new Error(['PK', ids[table], 'for table ', table, 'already exists. Trying to add ', id].join(' '))
-    }
+    };
 
     get_id = function(name)
     {
