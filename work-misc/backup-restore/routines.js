@@ -368,7 +368,7 @@ function make_clone_sql(name, id, tagged) {
 
     out.push(sql.sp_end);
     write(out.join(statement_glue));
-    write(sql.grant_sp.fmt({action:'COPY', name:name}));
+    write(sql.grant_sp.fmt({action:'CLONE', name:name}));
 }
 
 function make_delete_sql(name, id/*, tagged*/) {
