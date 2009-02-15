@@ -5,8 +5,9 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="style/pixelless.css" type="text/css"/>
     <script type="text/javascript" src="script/util.js"></script>
+    <script type="text/javascript" src="script/geometry.js"></script>
     <script type="text/javascript" src="script/canvas.js"></script>
-    <title>Playground</title>
+    <title>Bezier Curves</title>
     <style type="text/css">
         canvas {
             border: 1px solid;
@@ -43,29 +44,6 @@
         'rgba(150, 150, 255, .9)',
         'rgba(220, 220, 220, .9)'
     ];
-
-    function Point(x, y) {
-        if (x instanceof Object && 'x' in x && 'y' in y) {
-            this.x = x.x;
-            this.y = x.y;
-        }
-        else {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    Point.prototype.toString = function()
-    {
-        return ['(', this.x, ', ', this.y, ')'].join('');
-    };
-
-    Point.prototype.inVicinityOf = function(p, r)
-    {
-        if (r === undefined) r = 5;
-        return Math.abs(p.x - this.x) < r && Math.abs(p.y - this.y) < r;
-    };
-
 
     function Curve(p1, c1, p2, c2)
     {
@@ -126,7 +104,6 @@
         var i = -1, n = nodes.length;
         while (++i < n) {
             var p = nodes[i];
-            console.log(nodes[i])
             if (p.inVicinityOf(pos)) return p;
         }
         return null;

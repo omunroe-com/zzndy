@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="../script/util.js"></script>
+    <script type="text/javascript" src="../script/canvas.js"></script>
+    <script type="text/javascript" src="../script/geometry.js"></script>
+    <script type="text/javascript" src="script/hexcell.js"></script>
+    <script type="text/javascript" src="script/hexgrid.js"></script>
+    <title>Hexademical grid</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Hexademical grid</h1>
+    </div>
+
+    <div class="content">
+        <canvas id="target" width="800px" height="500px">Convas is not supported in this browser.</canvas>
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    var ctx = document.getElementById('target').getContext('2d');
+    ctx.translate(400.5, 250.5);
+    ctx.strokeStyle = 'rgba(215, 215, 215, .5)';
+    var grid = new HexGrid(17, 21, 40, 2);
+    grid.strokeAll(ctx);
+
+    function getPos(e)
+    {
+        return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
+    }
+
+    function mousemove(e)
+    {
+        var pos = getPos(e);
+        console.log(pos);
+    }
+
+    document.getElementById('target').onmousemove = mousemove;
+
+</script>
+</body>
+</html>
