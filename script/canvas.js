@@ -17,81 +17,81 @@
  */
 (function() {
 
-    var C, G
+    var C, G;
 
     if (!('CanvasRenderingContext2D' in this)) // WebKit
     {
-        var ctx = document.createElement('canvas').getContext('2d')
-        C = ctx.__proto__
-        G = ctx.createLinearGradient(0, 0, 0, 0).__proto__
-        CanvasRenderingContext2D = {prototype:C}
-        CanvasGradient = {prototype:G}
+        var ctx = document.createElement('canvas').getContext('2d');
+        C = ctx.__proto__;
+        G = ctx.createLinearGradient(0, 0, 0, 0).__proto__;
+        CanvasRenderingContext2D = {prototype:C};
+        CanvasGradient = {prototype:G};
     }
     else
     {
         C = CanvasRenderingContext2D.prototype;
-        G = CanvasGradient.prototype
+        G = CanvasGradient.prototype;
     }
 
     // Make canvas' methods chainable
     ('restore,rotate,save,scale,translate,arc,arcTo,bezierCurveTo,beginPath,clip,closePath,lineTo,moveTo,quadraticCurveTo,rect,stroke,strokeRect,clearRect,fill,fillRect,clip,drawImage,drawImageFromRect')
             .split(',').forEach(function(method) {
         if (method in C) {
-            var meth = C[method]
+            var meth = C[method];
             C[method] = function() {
                 return meth.apply(this, arguments) || this
-            }
+            };
         }
-    })
+    });
 
     // Make gradient's addColorStop chainable
-    var addColorStop = G.addColorStop
+    var addColorStop = G.addColorStop;
     G.addColorStop = function() {
-        addColorStop.apply(this, arguments)
-        return this
-    }
+        addColorStop.apply(this, arguments);
+        return this;
+    };
 
     C.strokeCircle = function(x, y, r)
     {
         return this.beginPath()
                 .arc(x, y, r, 0, Math.PI * 2, true)
                 .closePath()
-                .stroke()
-    }
+                .stroke();
+    };
 
     C.fillCircle = function(x, y, r)
     {
         return this.beginPath()
                 .arc(x, y, r, 0, Math.PI * 2, true)
                 .closePath()
-                .fill()
-    }
+                .fill();
+    };
 
     C.vLine = function(x, y, h) {
         return this.fillRect(x, y, 1, h);
-    }
+    };
 
     C.hLine = function(x, y, w) {
         return this.fillRect(x, y, w, 1);
-    }
+    };
 
-    C.fillPoly = function(vx, color) {
+    C.fillPoly = function(vx) {
         this.beginPath().moveTo(vx[0], vx[1]);
         for (var i = 2; i < vx.length; i += 2)this.lineTo(vx[i], vx[i + 1]);
         return this.closePath().fill();
-    }
+    };
 
     C.strokePoly = function(vx) {
         this.beginPath().moveTo(vx[0], vx[1]);
         for (var i = 2; i < vx.length; i += 2)this.lineTo(vx[i], vx[i + 1]);
         return this.stroke();
-    }
+    };
 
     C.clear = function()
     {
         if ('size' in this && 'origin' in this)
             this.clearRect(this.origin.x, this.origin.y, this.size.w, this.size.h)
-        return this
-    }
+        return this;
+    };
 
-})()
+})();

@@ -63,8 +63,8 @@ S.x = function(n) {
     return (new Array(n + 1)).join(this)
 }
 
-S.insws = function()	{
-	return this.replace(/(\w)(?=[A-Z](?=[a-z]))/g, '$1 ');
+S.insws = function() {
+    return this.replace(/(\w)(?=[A-Z](?=[a-z]))/g, '$1 ');
 }
 
 S.trim = function() {
@@ -114,7 +114,7 @@ N.times = function(fn, self) {
     return res;
 }
 
-N.within = 
+N.within =
 N.constrain = function(min, max, bounce) {
     if (bounce) {
         if (this < min) return (2 * min - this).constrain(min, max)
@@ -202,9 +202,9 @@ S.fmt = function(fmtObj) {
                 case 'r': value = num.toRoman(); break
             }
 
-            try{
-            res = res.replace(match, (isNaN(num) || base) ? value.pad(align == '-' ? -width : width) : (align == '0' ? num.zf(width, deci) : num.pad(width, deci)))
-            }catch(ex)
+            try {
+                res = res.replace(match, (isNaN(num) || base) ? value.pad(align == '-' ? -width : width) : (align == '0' ? num.zf(width, deci) : num.pad(width, deci)))
+            } catch(ex)
             {
                 throw new Error('Undefined parameter ' + path + ' in template ' + this);
             }
@@ -244,29 +244,29 @@ if (!('reduce' in Array))
         for (; i < l; ++i) res = fn2(res, this[i], i, this);
         return res;
     }
-    
+
 if (!('flatten' in Array))
     A.flatten = function()
     {
-        function flatten(prev, current){
-            if(current instanceof Array) return current.reduce(flatten, prev);
+        function flatten(prev, current) {
+            if (current instanceof Array) return current.reduce(flatten, prev);
             prev.push(current);
             return prev;
         }
         return this.reduce(flatten, []);
     }
-    
-if (!('uniq' in Array))    
+
+if (!('uniq' in Array))
     A.uniq = function()
     {
         function uniq(prev, current)
         {
-            if(prev.indexOf(current) == -1)
+            if (prev.indexOf(current) == -1)
                 prev.push(current);
-                
+
             return prev;
         }
-    
+
         return this.reduce(uniq, []);
     }
 
@@ -287,29 +287,32 @@ A.delayedReduce = function(delay, fn2, init, callback) {
 A.diff = function(other) {
     return this.map(function(x, i) {
         return (x == other[i]) ? undefined : [x, other[i]]
-    })
-}
+    });
+};
 
 A.clone = function() {
     return [].concat(this);
-}
+};
 
 /**
  * Randomly pick n items from the array
- * @param {Number} n  number of items to pick 
+ * @param {Number} n  number of items to pick
  */
 A.pick = function(n) {
+    if (n === undefined)return this[Math.floor(Math.random() * this.length)];
     var picked = [];
-    n = Math.floor(n);
+    n = Math.floor(n) || 1;
     return n.map(function() {
         if (picked.length == this.length) return undefined;
         var i;
 
-        do i = Math.floor(Math.random() * this.length)
-        while (i in picked) picked.push(i);
+        do
+            i = Math.floor(Math.random() * this.length);
+        while (i in picked);
+        picked.push(i);
         return this[i];
     }, this);
-}
+};
 
 A.shuffle = function () {
     var i,L;
@@ -358,10 +361,12 @@ F.detach = function(obj) {
     }
 }
 
-F.fork = function()	{
-	var args = arguments, fn = this;
-	var delegate = function(){return fn.apply(null, args);};
-	window.setTimeout(delegate, 10);
+F.fork = function() {
+    var args = arguments, fn = this;
+    var delegate = function() {
+        return fn.apply(null, args);
+    };
+    window.setTimeout(delegate, 10);
 }
 
 N.map = function(fn, self) {

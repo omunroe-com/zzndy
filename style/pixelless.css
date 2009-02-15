@@ -22,6 +22,22 @@ p {
     margin: 1em 0;
 }
 
+a {
+    color: #0066ff;
+}
+
+a:visited {
+    color: #cc00ff
+}
+
+a:hover {
+    color: #fff;
+}
+
+a:hover:visited {
+    color: #ffff66
+}
+
 #container {
     position: relative;
     _height: 100%; /*IE6*/
@@ -29,11 +45,16 @@ p {
     margin-bottom: -2.5em; /*$footer-height*/
 }
 
+#container *:first-child {
+    padding-top: 0;
+}
+
 #footer {
     position: relative;
     height: 2.5em; /*$footer-height*/
     color: #fff;
     text-shadow: 0 .09em 0 rgba( 30, 30, 30, .7 );
+    text-align: center;
 }
 
 .emtpy_footer {
@@ -112,3 +133,4 @@ p {
 #menu0 .selected, #menu1 .selected, #menu2 .selected {
     text-decoration: none;
 }
+

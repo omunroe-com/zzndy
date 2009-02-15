@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="script/util.js"></script>
+    <script type="text/javascript" src="script/canvas.js"></script>
+    <title>Playground</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Bezier Curves</h1>
+    </div>
+
+    <div class="content">
+        <canvas id="target" width="800px" height="500px">Convas is not supported in this browser.</canvas>
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    var ctx = document.getElementById('target').getContext('2d');
+    ctx.translate(-.5, -.5);
+
+    var colors = [
+        'rgba(255, 140, 255, .9)',
+        'rgba(140, 255, 255, .9)',
+        'rgba(255, 255, 140, .9)',
+        'rgba(150, 255, 150, .9)',
+        'rgba(255, 150, 150, .9)',
+        'rgba(150, 150, 255, .9)',
+        'rgba(220, 220, 220, .9)'
+    ];
+
+    function Point(x, y) {
+        if (x instanceof Object && 'x' in x && 'y' in y) {
+            this.x = x.x;
+            this.y = x.y;
+        }
+        else {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    Point.prototype.toString = function()
+    {
+        return ['(', this.x, ', ', this.y, ')'].join('');
+    };
+
+    Point.prototype.inVicinityOf = function(p, r)
+    {
+        if (r === undefined) r = 5;
+        return Math.abs(p.x - this.x) < r && Math.abs(p.y - this.y) < r;
+    };
+
+
+    function Curve(p1, c1, p2, c2)
+    {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.c1 = c1;
+        this.c2 = c2;
+        this.color = colors.pick();
+    }
+
+    Curve.prototype.toString = function()
+    {
+        return ['[', this.p1, 'x', this.c1, ' ~ ', this.p2,  'x', this.c2, ']'].join('');
+    };
+
+    Curve.prototype.draw = function(ctx)
+    {
+        with (this) {
+            ctx.strokeStyle = 'rgba(160, 160, 160, .5)';
+            ctx.strokeCircle(p1.x, p1.y, 5).beginPath().moveTo(p1.x, p1.y).lineTo(c1.x, c1.y).stroke().closePath().strokeRect(c1.x - 3, c1.y - 3, 6, 6);
+            ctx.strokeCircle(p2.x, p2.y, 5).beginPath().moveTo(p2.x, p2.y).lineTo(c2.x, c2.y).stroke().closePath().strokeRect(c2.x - 3, c2.y - 3, 6, 6);
+            ctx.strokeStyle = color;
+            ctx.beginPath().moveTo(p1.x, p1.y).bezierCurveTo(c1.x, c1.y, c2.x, c2.y, p2.x, p2.y).stroke().closePath();
+        }
+    };
+
+    var nodes = [];
+    var curves = [];
+
+    function addCurve(p1, c1, p2, c2)
+    {
+        var c = new Curve(p1, c1, p2, c2);
+        nodes.push(c1, c2, p1, p2);
+        curves.push(c);
+        redraw();
+    }
+
+    function redraw()
+    {
+        ctx.clearRect(0, 0, w, h);
+
+        curves.map(function(c) {
+            c.draw(ctx)
+        });
+    }
+
+    var ismousedown = false;
+    var currentObj;
+    var enterPoint = null;
+
+    function getPos(e)
+    {
+        return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
+    }
+
+    function getObject(pos)
+    {
+        var i = -1, n = nodes.length;
+        while (++i < n) {
+            var p = nodes[i];
+            console.log(nodes[i])
+            if (p.inVicinityOf(pos)) return p;
+        }
+        return null;
+    }
+
+    function mousedown(e)
+    {
+        var pos = getPos(e);
+        ismousedown = true;
+        currentObj = getObject(pos);
+        if (!currentObj)enterPoint = pos;
+        redraw();
+    }
+
+    function mousemove(e)
+    {
+        var pos = getPos(e);
+        if (currentObj) {
+            currentObj.x = pos.x;
+            currentObj.y = pos.y;
+            redraw();
+        }
+    }
+
+    function mouseup(e)
+    {
+        if (enterPoint) {
+            var pos = getPos(e);
+            if (!pos.inVicinityOf(enterPoint)) {
+                var dx = pos.x - enterPoint.x;
+                var dy = pos.y - enterPoint.y;
+                addCurve(enterPoint, new Point(pos.x - dx * .6, pos.y - dy * .6), pos, new Point(pos.x - dx * .3, pos.y - dy * .3));
+            }
+            enterPoint = null;
+        }
+        ismousedown = false;
+        currentObj = null;
+    }
+
+    document.getElementById('target').onmousedown = mousedown;
+    document.getElementById('target').onmousemove = mousemove;
+    document.getElementById('target').onmouseup = mouseup;
+
+    var w = 800, h = 500;
+    var x = 20, y = 20, dx = 300, dy = 0;
+
+    var p1 = new Point(x, y);
+    var c1 = new Point(x + dx, y + dy);
+    var p2 = new Point(w - x, h - y);
+    var c2 = new Point(w - x - dx, h - y - dy);
+
+    addCurve(p1, c1, p2, c2);
+
+</script>
+</body>
+</html>
