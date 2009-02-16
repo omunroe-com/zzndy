@@ -46,7 +46,7 @@ function init_field()
 
     add_update_ids(
             'PT_DETAIL_CASH_FLOW_TIMESERIES',
-            "\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n"
+            "\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_DATA SET {id} = @NEW_{id} WHERE {id} = @{id};\n"
             );
 }
 
@@ -90,9 +90,9 @@ function init_globals()
     node('INFLATION', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
 
     // Special case for GLOBALS' child objects
-    add_tee('GAS_PRICE_ID', '(SELECT GAS_PRICE_ID FROM GAS_PRICE<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
-    add_tee('LIQUID_PRICE_ID', '(SELECT LIQUID_PRICE_ID FROM LIQUID_PRICE<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
-    add_tee('INFLATION_ID', '(SELECT INFLATION_ID FROM INFLATION<Suffix> WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
+    add_tee('GAS_PRICE_ID', '(SELECT GAS_PRICE_ID FROM GAS_PRICE{suffix} WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
+    add_tee('LIQUID_PRICE_ID', '(SELECT LIQUID_PRICE_ID FROM LIQUID_PRICE{suffix} WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
+    add_tee('INFLATION_ID', '(SELECT INFLATION_ID FROM INFLATION{suffix} WHERE GLOBAL_ASSUMPTIONS_ID = @GLOBAL_ASSUMPTIONS_ID)');
 
     add_uniq('GAS_PRICE');
     add_uniq('LIQUID_PRICE');
@@ -100,8 +100,8 @@ function init_globals()
 
     add_name('GLOBAL_ASSUMPTIONS', 'GLOBALS_NAME');
 
-    var update_parent_sql = '\t\t\tUPDATE #<Table> SET <ParentId> = @NEW_<ParentId> WHERE <Id> = @<Id>;\n';
-    var update_data_sql = '\t\t\tUPDATE #<Table>_DATA SET <Id> = @NEW_<Id> WHERE <Id> = @<Id>;\n';
+    var update_parent_sql = '\t\t\tUPDATE #{table} SET {parentId} = @NEW_{parentId} WHERE {id} = @{id};\n';
+    var update_data_sql = '\t\t\tUPDATE #{table}_DATA SET {id} = @NEW_{id} WHERE {id} = @{id};\n';
 
     add_update_ids('GAS_PRICE', update_parent_sql);
     add_update_ids('GAS_PRICE', update_data_sql);

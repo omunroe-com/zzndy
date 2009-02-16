@@ -3,23 +3,23 @@
  */
 
 var sql = {
-    'update': "\t\tUPDATE <Table> SET MODIFIED_BY='<User>'\n\t\t\tWHERE <IdField><Op><Id>;",
-    'insert': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>\n\t\t\tWHERE <IdField><Op><Id>;",
-    'insert_all': "\t\tINSERT INTO <Target>\n\t\t\tSELECT * FROM <Source>;",
-    'del': "\t\tDELETE FROM <Table> WHERE\n\t\t\t<IdField><Op><Id>;",
-    'declare': '\t\tDECLARE @<VarName> DECIMAL(12,0)',
-    'set':'\t\tSET @<VarName> = ?',
+    'update': "\t\tUPDATE {table} SET MODIFIED_BY='{user}'\n\t\t\tWHERE {idField}{op}{id};",
+    'insert': "\t\tINSERT INTO {target}\n\t\t\tSELECT * FROM {source}\n\t\t\tWHERE {idField}{op}{id};",
+    'insert_all': "\t\tINSERT INTO {target}\n\t\t\tSELECT * FROM {source};",
+    'del': "\t\tDELETE FROM {table} WHERE\n\t\t\t{idField}{op}{id};",
+    'declare': '\t\tDECLARE @{varName} DECIMAL(12,0)',
+    'set':'\t\tSET @{varName} = ?',
     'sp_head':
-            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
-                    + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
-                    + 'CREATE PROCEDURE [SP_<Action>_<Name>] @<Id> DECIMAL (12,0)\nAS\nBEGIN\n'
+            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_{action}_{name}')\n"
+                    + '\tDROP PROCEDURE [SP_{action}_{name}]\nGO\n'
+                    + 'CREATE PROCEDURE [SP_{action}_{name}] @{id} DECIMAL (12,0)\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
     'sp_copy_head':
-            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_<Action>_<Name>')\n"
-                    + '\tDROP PROCEDURE [SP_<Action>_<Name>]\nGO\n'
-                    + 'CREATE PROCEDURE [SP_<Action>_<Name>] @<Id> DECIMAL (12,0), @NEW_<Id> DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
+            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_{action}_{name}')\n"
+                    + '\tDROP PROCEDURE [SP_{action}_{name}]\nGO\n'
+                    + 'CREATE PROCEDURE [SP_{action}_{name}] @{id} DECIMAL (12,0), @NEW_{id} DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
-    'shadow': "EXEC SP_CREATE_SHADOW_TABLE '<Table>';",
+    'shadow': "EXEC SP_CREATE_SHADOW_TABLE '{table}';",
     'sp_start': '\tBEGIN TRANSACTION\n\tBEGIN TRY',
     'sp_end':
             '\tEND TRY\n\n'
@@ -30,62 +30,62 @@ var sql = {
                     + '\tCOMMIT TRANSACTION\n'
                     + 'END\n'
                     + 'GO',
-    'check_tag':"\tIF (SELECT MODIFIED_BY FROM <Tagged> WHERE <IdField><Op><Id>) != '<Owner>'\n"
+    'check_tag':"\tIF (SELECT MODIFIED_BY FROM {tagged} WHERE {idField}{op}{id}) != '{owner}'\n"
             + '\t\tRETURN -- No backup needed',
-    'update_tag':"\t\tUPDATE <Tagged> SET <TagField>='<Owner>' WHERE <IdField><Op><Id>;",
+    'update_tag':"\t\tUPDATE {tagged} SET {tagField}='{owner}' WHERE {idField}{op}{id};",
 
-    'make_temp': '\t\tSELECT * INTO #<Table>\n'
-            + '\t\t\tFROM <Table> WHERE 42=10;',
-    'decl_new_id': '\t\tDECLARE @NEW_<Id> DECIMAL (12, 0);',
-    'get_new_id': "\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<IdField>';",
-    'update_id': '\t\tUPDATE <Table> SET <IdField> = @NEW_<Id> WHERE <IdField><Op><Id>;',
-    'update_id_all': '\t\tUPDATE <Table> SET <IdField> = @NEW_<Id>;',
-    'drop_table': '\t\tDROP TABLE <Table>;',
-    'grant_sp': 'GRANT EXEC ON [SP_<Action>_<Name>] TO [abu]\nGO',
+    'make_temp': '\t\tSELECT * INTO #{table}\n'
+            + '\t\t\tFROM {table} WHERE 42=10;',
+    'decl_new_id': '\t\tDECLARE @NEW_{id} DECIMAL (12, 0);',
+    'get_new_id': "\t\tEXEC sp_GenerateNumericIdentity @NEW_{id} OUTPUT, '{table}', '{idField}';",
+    'update_id': '\t\tUPDATE {table} SET {idField} = @NEW_{id} WHERE {idField}{op}{id};',
+    'update_id_all': '\t\tUPDATE {table} SET {idField} = @NEW_{id};',
+    'drop_table': '\t\tDROP TABLE {table};',
+    'grant_sp': 'GRANT EXEC ON [SP_{action}_{name}] TO [abu]\nGO',
     'iterate_ids':
-            "\t\tDECLARE @NEW_<Id> DECIMAL(12, 0);\n"
+            "\t\tDECLARE @NEW_{id} DECIMAL(12, 0);\n"
                     + "\n"
                     + "\t\tDECLARE CURS CURSOR\n"
-                    + "\t\tFOR SELECT DISTINCT <Id>\n"
-                    + "\t\t\tFROM #<Table>\n"
-                    + "\t\t\tWHERE <ParentId> = @NEW_<ParentId>;\n"
+                    + "\t\tFOR SELECT DISTINCT {id}\n"
+                    + "\t\t\tFROM #{table}\n"
+                    + "\t\t\tWHERE {parentId} = @NEW_{parentId};\n"
                     + "\n"
                     + "\t\tOPEN CURS;\n"
                     + "\n"
-                    + "\t\tDECLARE @<Id> DECIMAL(12, 0);\n"
+                    + "\t\tDECLARE @{id} DECIMAL(12, 0);\n"
                     + "\n"
-                    + "\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
+                    + "\t\tFETCH NEXT FROM CURS INTO @{id};\n"
                     + "\n"
                     + "\t\tWHILE @@FETCH_STATUS = 0\n"
                     + "\t\tBEGIN\n"
-                    + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_<Id> OUTPUT, '<Table>', '<Id>';\n"
+                    + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_{id} OUTPUT, '{table}', '{id}';\n"
                     + "\n"
-                    + "\t\t\tUPDATE #<Table>\n"
-                    + "\t\t\t\tSET <Id> = @NEW_<Id>\n"
-                    + "\t\t\t\tWHERE <Id> = @<Id>;\n"
-                    + "<Additional>"
+                    + "\t\t\tUPDATE #{table}\n"
+                    + "\t\t\t\tSET {id} = @NEW_{id}\n"
+                    + "\t\t\t\tWHERE {id} = @{id};\n"
+                    + "{additional}"
                     + "\n"
-                    + "\t\t\tFETCH NEXT FROM CURS INTO @<Id>;\n"
+                    + "\t\t\tFETCH NEXT FROM CURS INTO @{id};\n"
                     + "\t\tEND\n"
                     + "\n"
                     + "\t\tCLOSE CURS;\n"
                     + "\t\tDEALLOCATE CURS;\n",
     'set_name':
             "\t\tDECLARE @NAME VARCHAR(50)\n"
-                    + "\t\tSELECT @NAME = 'Copy of ' + <NameField> FROM <Table> WHERE <IdField><Op><Id>;\n"
+                    + "\t\tSELECT @NAME = 'Copy of ' + {nameField} FROM {table} WHERE {idField}{op}{id};\n"
                     + "\t\t\n"
                     + "\t\tDECLARE @N INT;\n"
                     + "\t\tSET @N = 1;\n"
                     + "\t\t\n"
-                    + "\t\tWHILE EXISTS (SELECT <NameField> FROM <OriginalTable> WHERE <NameField> = @NAME)\n"
+                    + "\t\tWHILE EXISTS (SELECT {nameField} FROM {originalTable} WHERE {nameField} = @NAME)\n"
                     + "\t\tBEGIN\n"
-                    + "\t\t\tSELECT @NAME = 'Copy of ' + <NameField> + ' (' + CONVERT(VARCHAR(2), @N) + ')'\n"
-                    + "\t\t\t\tFROM <Table> WHERE <IdField><Op><Id>;\n"
+                    + "\t\t\tSELECT @NAME = 'Copy of ' + {nameField} + ' (' + CONVERT(VARCHAR(2), @N) + ')'\n"
+                    + "\t\t\t\tFROM {table} WHERE {idField}{op}{id};\n"
                     + "\t\t\n"
                     + "\t\t\tSET @N = @N + 1;\n"
                     + "\t\tEND\n"
                     + "\n"
-                    + "\t\tUPDATE <Table> SET <NameField> = @NAME WHERE <IdField><Op><Id>;"
+                    + "\t\tUPDATE {table} SET {nameField} = @NAME WHERE {idField}{op}{id};"
 
 };
 
@@ -167,7 +167,7 @@ function make_backup_sql(name, id, tagged) {
 
 function make_shadow_sql(table)
 {
-    return "EXEC SP_CREATE_SHADOW_TABLE '<Table>';\nGO".fmt({table:table});
+    return "EXEC SP_CREATE_SHADOW_TABLE '{table}';\nGO".fmt({table:table});
 }
 
 function write_shadow_generation()
@@ -182,7 +182,7 @@ function write_shadow_generation()
 /**
  * Replace all table names with their shadow equivalents. Called through reduce.
  * @param {String} value  a 'running total' value of the statement
- * @param {Node} node     next node
+ * @param {node} node     next node
  * @return {String}       next value of the statement
  */
 function replace_all_tables(value, node) {
