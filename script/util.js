@@ -137,7 +137,7 @@ N.nonNegative = function() {
 }
 
 /**
- * Format is <Name[:{-|0}[width[.decimal]][base]]>
+ * Format is {name[:{-|0}[width[.decimal]][base]]}
  * where
  *  name        name of a field, can also be in form "property[10].another.prop[10][11].length"
  *     -           forces right align *
@@ -153,7 +153,6 @@ N.nonNegative = function() {
  *
  * *  - useless w/o width
  * ** - for numbers only
- * Watch the case
  */
 S.format =
 S.fmt = function(fmtObj) {
@@ -168,9 +167,7 @@ S.fmt = function(fmtObj) {
         var r = this
         for (var k in a) {
             if (typeof a[k] == 'function') continue
-            if (typeof k == 'string')
-                var rx = new RegExp('<' + k.charAt(0).toUpperCase() + k.substr(1) + '>', 'g')
-            else var rx = new RegExp('<' + k + '>', 'g')
+            var rx = new RegExp('\\{' + k + '\\}', 'g')
             r = r.replace(rx, a[k])
         }
         return r
