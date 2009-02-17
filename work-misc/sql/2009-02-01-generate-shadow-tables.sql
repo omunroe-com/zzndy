@@ -1,7 +1,7 @@
 --
 -- Default AssetBank database name is ABDB.
 --
-USE ABDB
+USE [ABDB]
 GO
 --
 -- Always rewrite stored procedure.

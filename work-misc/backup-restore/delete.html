@@ -6,12 +6,13 @@
     <title>Delete</title>
 
     <link type="text/css" rel="stylesheet"
-          href="../../playground/dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css" />
+          href="../../playground/dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"/>
     <script type="text/javascript" src="../../playground/dp.SyntaxHighlighter/Scripts/shCore.js"></script>
     <script type="text/javascript" src="../../playground/dp.SyntaxHighlighter/Scripts/shBrushSql.js"></script>
 </head>
 <body>
 <h2>Copy routines</h2>
+
 <p>
     <a href="index.html">Backup-restore</a>
     <a href="clone.html">Clone</a>
@@ -46,6 +47,14 @@
 
     init_globals();
     make_delete_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
+    clear_setup();
+
+    init_company();
+    make_delete_sql('COMPANY', 'PU_ID', 'COMPANY_HEADER');
+    clear_setup();
+
+    init_tax_system();
+    make_delete_sql('TAXSYSTEM', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
     clear_setup();
 
     dp.SyntaxHighlighter.HighlightAll('out');

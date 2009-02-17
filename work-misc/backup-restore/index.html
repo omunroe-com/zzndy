@@ -54,6 +54,16 @@
     make_restore_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
     clear_setup();
 
+    init_company();
+    make_backup_sql('COMPANY', 'PU_ID', 'COMPANY_HEADER');
+    make_restore_sql('COMPANY', 'PU_ID', 'COMPANY_HEADER');
+    clear_setup();
+
+    init_tax_system();
+    make_backup_sql('TAXSYSTEM', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
+    make_restore_sql('TAXSYSTEM', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
+    clear_setup();
+
     write_shadow_generation();
 
     dp.SyntaxHighlighter.HighlightAll('out');

@@ -368,14 +368,17 @@ function make_clone_sql(name, id, tagged) {
 
     var entity_name = get_entity_name();
     var entity_id = get_id(entity_name.table);
-    out.push(sql.set_name.fmt({
-        table:target_prefix + entity_name.table + target_suffix,
-        originalTable: entity_name.table,
-        nameField:entity_name.column,
-        idField:entity_id ,
-        op:get_operator(entity_id) ,
-        id:entity_id
-    }).fmt({tmpSufix:'_' + objectName}));
+
+    if (entity_id) {
+        out.push(sql.set_name.fmt({
+            table:target_prefix + entity_name.table + target_suffix,
+            originalTable: entity_name.table,
+            nameField:entity_name.column,
+            idField:entity_id ,
+            op:get_operator(entity_id) ,
+            id:entity_id
+        }).fmt({tmpSufix:'_' + objectName}));
+    }
 
     // 5. Get new IDs;
     out.push(comment('Get new IDs'));

@@ -47,7 +47,7 @@ function setup_restore() {
 function setup_backup_temp()
 {
     source_suffix = '';
-    target_suffix = '';
+    target_suffix = '{tmpSufix}';
     tagField = 'CREATED_BY';
     owner = 'USER';
     source_prefix = '';
@@ -56,7 +56,7 @@ function setup_backup_temp()
 
 function setup_restore_temp()
 {
-    source_suffix = '';
+    source_suffix = '{tmpSufix}';
     target_suffix = '';
     tagField = 'CREATED_BY';
     owner = 'USER';

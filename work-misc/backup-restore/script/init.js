@@ -46,7 +46,7 @@ function init_field()
 
     add_update_ids(
             'PT_DETAIL_CASH_FLOW_TIMESERIES',
-            "\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_DATA SET {id} = @NEW_{id} WHERE {id} = @{id};\n"
+            "\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_DATA{tmpSufix} SET {id} = @NEW_{id} WHERE {id} = @{id};\n"
             );
 }
 
@@ -100,8 +100,8 @@ function init_globals()
 
     add_name('GLOBAL_ASSUMPTIONS', 'GLOBALS_NAME');
 
-    var update_parent_sql = '\t\t\tUPDATE #{table} SET {parentId} = @NEW_{parentId} WHERE {id} = @{id};\n';
-    var update_data_sql = '\t\t\tUPDATE #{table}_DATA SET {id} = @NEW_{id} WHERE {id} = @{id};\n';
+    var update_parent_sql = '\t\t\tUPDATE #{table}{tmpSufix} SET {parentId} = @NEW_{parentId} WHERE {id} = @{id};\n';
+    var update_data_sql = '\t\t\tUPDATE #{table}_DATA{tmpSufix} SET {id} = @NEW_{id} WHERE {id} = @{id};\n';
 
     add_update_ids('GAS_PRICE', update_parent_sql);
     add_update_ids('GAS_PRICE', update_data_sql);
@@ -111,4 +111,20 @@ function init_globals()
 
     add_update_ids('INFLATION', update_parent_sql);
     add_update_ids('INFLATION', update_data_sql);
+}
+
+function init_company()
+{
+    // COMPANY
+    node('COMPANY_HEADER');
+    node('COMPANY_ADDITIONAL', 'PU_ID', 'COMPANY_HEADER');
+
+    add_name('COMPANY_HEADER', 'COMPANY_NAME');
+}
+
+function init_tax_system()
+{
+    // TAXSYSTEM
+    node('TAX_SYSTEM');
+    node('TAX_SYSTEM_SHEETS', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
 }
