@@ -31,10 +31,10 @@ var sql = {
                     + 'END\n'
                     + 'GO',
     'check_tag':"\tIF (SELECT MODIFIED_BY FROM {tagged} WHERE {idField}{op}{id}) != '{owner}'\n"
-            + '\t\tRETURN -- No backup needed',
+            + '\t\tRETURN -- No action required',
     'update_tag':"\t\tUPDATE {tagged} SET {tagField}='{owner}' WHERE {idField}{op}{id};",
 
-    'make_temp': '\t\tSELECT * INTO #{table}\n'
+    'make_temp': '\t\tSELECT * INTO #{table}{tmpSufix}\n'
             + '\t\t\tFROM {table} WHERE 42=10;',
     'decl_new_id': '\t\tDECLARE @NEW_{id} DECIMAL (12, 0);',
     'get_new_id': "\t\tEXEC sp_GenerateNumericIdentity @NEW_{id} OUTPUT, '{table}', '{idField}';",
@@ -47,7 +47,7 @@ var sql = {
                     + "\n"
                     + "\t\tDECLARE CURS CURSOR\n"
                     + "\t\tFOR SELECT DISTINCT {id}\n"
-                    + "\t\t\tFROM #{table}\n"
+                    + "\t\t\tFROM #{table}{tmpSufix}\n"
                     + "\t\t\tWHERE {parentId} = @NEW_{parentId};\n"
                     + "\n"
                     + "\t\tOPEN CURS;\n"
@@ -60,7 +60,7 @@ var sql = {
                     + "\t\tBEGIN\n"
                     + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_{id} OUTPUT, '{table}', '{id}';\n"
                     + "\n"
-                    + "\t\t\tUPDATE #{table}\n"
+                    + "\t\t\tUPDATE #{table}{tmpSufix}\n"
                     + "\t\t\t\tSET {id} = @NEW_{id}\n"
                     + "\t\t\t\tWHERE {id} = @{id};\n"
                     + "{additional}"
@@ -85,7 +85,32 @@ var sql = {
                     + "\t\t\tSET @N = @N + 1;\n"
                     + "\t\tEND\n"
                     + "\n"
-                    + "\t\tUPDATE {table} SET {nameField} = @NAME WHERE {idField}{op}{id};"
+                    + "\t\tUPDATE {table} SET {nameField} = @NAME WHERE {idField}{op}{id};",
+    'clone_fields':
+            '\t\tDECLARE @FIE_ID DECIMAL(12, 0);\n'
+                    + '\t\tDECLARE @NEW_FIE_ID DECIMAL(12, 0);\n'
+                    + '\t\t\n'
+                    + '\t\tDECLARE FIELDS_CURSOR CURSOR\n'
+                    + '\t\tFOR SELECT FIE_ID\n'
+                    + '\t\t\tFROM FIELD_ADDITIONAL\n'
+                    + '\t\t\tWHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;\n'
+                    + '\t\t\n'
+                    + '\t\tOPEN FIELDS_CURSOR;\n'
+                    + '\t\t\n'
+                    + '\t\tFETCH NEXT FROM FIELDS_CURSOR INTO @FIE_ID;\n'
+                    + '\t\t\n'
+                    + '\t\tWHILE @@FETCH_STATUS = 0\n'
+                    + '\t\tBEGIN\n'
+                    + '\t\t\tEXEC SP_CLONE_FIELD @FIE_ID, @NEW_FIE_ID OUTPUT;\n'
+                    + '\t\t\tUPDATE FIELD_ADDITIONAL SET\n'
+                    + '\t\t\t\tFIELD_COMPLEX_ID = @NEW_FIELD_COMPLEX_ID\n'
+                    + '\t\t\t\tWHERE FIE_ID = @NEW_FIE_ID\n'
+                    + '\t\t\n'
+                    + '\t\t\tFETCH NEXT FROM FIELDS_CURSOR INTO @FIE_ID;\n'
+                    + '\t\tEND\n'
+                    + '\t\t\n'
+                    + '\t\tCLOSE FIELDS_CURSOR;\n'
+                    + '\t\tDEALLOCATE FIELDS_CURSOR;'
 
 };
 
@@ -102,12 +127,15 @@ declares['COMPLEX'] = '\t\tSELECT @INV_ASS_ID = INV_ASS_ID FROM FIELD_COMPLEX WH
 
 declares['GLOBALS'] = '';
 
+var objectName = '<unset>';
+
 
 function make_backup_sql(name, id, tagged) {
     function not_id(node) {
         return get_id(node.name) != id;
     }
 
+    objectName = name;
     var out = [];
 
     out.push(sql.sp_head.fmt({action:'BACKUP', name:name, id:id}));
@@ -162,6 +190,7 @@ function make_backup_sql(name, id, tagged) {
     out.push(sql.sp_end);
     write(out.join(statement_glue));
     write(sql.grant_sp.fmt({action:'BACKUP', name:name}));
+    objectName = '<unset>';
 }
 
 
@@ -195,9 +224,21 @@ function make_restore_sql(name, id, tagged) {
         return get_id(node.name) != id;
     }
 
+    objectName = name;
     var out = [];
 
     out.push(sql.sp_head.fmt({action:'RESTORE', name:name, id:id}));
+
+    setup_backup();
+
+    // 0. Check if backup needed;
+    out.push(sql.check_tag.fmt({
+        tagged: tagged,
+        idField: id,
+        id: id,
+        owner: owner,
+        op: get_operator(id)}));
+    
     out.push(sql.sp_start);
 
     setup_restore();
@@ -251,6 +292,7 @@ function make_restore_sql(name, id, tagged) {
     out.push(sql.sp_end);
     write(out.join(statement_glue));
     write(sql.grant_sp.fmt({action:'RESTORE', name:name}));
+    objectName = '<unset>';
 }
 
 function make_clone_sql(name, id, tagged) {
@@ -287,6 +329,7 @@ function make_clone_sql(name, id, tagged) {
                 .uniq();
     }
 
+    objectName = name;
     var out = [];
 
     out.push(sql.sp_copy_head.fmt({action:'CLONE', name:name, id:id}));
@@ -326,7 +369,7 @@ function make_clone_sql(name, id, tagged) {
         idField:entity_id ,
         op:get_operator(entity_id) ,
         id:entity_id
-    }));
+    }).fmt({tmpSufix:'_' + objectName}));
 
     // 5. Get new IDs;
     out.push(comment('Get new IDs'));
@@ -366,9 +409,16 @@ function make_clone_sql(name, id, tagged) {
         owner: owner,
         op: get_operator(id)}));
 
+    // HARDCODE
+    if (name == 'COMPLEX') {
+        out.push(comment('Clone all child fields'));
+        out.push(sql.clone_fields);
+    }
+
     out.push(sql.sp_end);
     write(out.join(statement_glue));
     write(sql.grant_sp.fmt({action:'CLONE', name:name}));
+    objectName = '<unset>';
 }
 
 function make_delete_sql(name, id/*, tagged*/) {
@@ -376,6 +426,7 @@ function make_delete_sql(name, id/*, tagged*/) {
         return get_id(node.name) != id;
     }
 
+    objectName = name;
     var out = [];
 
     out.push(sql.sp_head.fmt({action:'DELETE', name:name, id:id}));
@@ -401,6 +452,7 @@ function make_delete_sql(name, id/*, tagged*/) {
     out.push(sql.sp_end);
     write(out.join(statement_glue));
     write(sql.grant_sp.fmt({action:'DELETE', name:name}));
+    objectName = '<unset>';
 }
 
 function create_shadow()
@@ -429,14 +481,14 @@ function format_copy(name, idfield, id) {
         idField: idfield,
         id: id,
         op: get_operator(id)
-    }).fmt({suffix:source_suffix});
+    }).fmt({suffix:source_suffix, tmpSufix:'_' + objectName});
 }
 
 function format_copy_all(name/*, idfield, id*/) {
     return sql.insert_all.fmt({
         target: target_prefix + name + target_suffix,
         source: source_prefix + name + source_suffix
-    }).fmt({suffix:source_suffix});
+    }).fmt({suffix:source_suffix, tmpSufix:'_' + objectName});
 }
 
 function format_upd(name, idfield, id) {
@@ -446,7 +498,7 @@ function format_upd(name, idfield, id) {
         idField: idfield,
         id: id,
         op: get_operator(id)
-    }).fmt({suffix:source_suffix});
+    }).fmt({suffix:source_suffix, tmpSufix:'_' + objectName});
 }
 
 function format_declare(/*name, idfield, id*/) {
@@ -462,7 +514,7 @@ function format_set(/*name, idfield, id*/) {
 }
 
 function format_temp(name/*, idfield, id*/) {
-    return sql.make_temp.fmt({table:name});
+    return sql.make_temp.fmt({table:name, tmpSufix:'_' + objectName});
 }
 
 function format_decl_new(name, idField, id)
@@ -488,7 +540,7 @@ function format_iterate_ids(name, idField, id)
             parent = pc[i][0];
     var parentId = parent.pColumn;
 
-    var fmt = {table:name, id:id, idField:idField, parentId:parentId};
+    var fmt = {table:name, id:id, idField:idField, parentId:parentId, tmpSufix:'_' + objectName};
     fmt.additional = '';
 
     if (name in update_ids)
@@ -504,7 +556,7 @@ function format_update_id(name, idField, id)
         idField: idField,
         id: id,
         op: get_operator(id)
-    });
+    }).fmt({tmpSufix:'_' + objectName});
 }
 
 function format_update_id_all(name, idField, id)
@@ -514,14 +566,14 @@ function format_update_id_all(name, idField, id)
         idField: idField,
         id: id,
         op: get_operator(id)
-    });
+    }).fmt({tmpSufix:'_' + objectName});
 }
 
 function format_drop(name/*, idField, id*/)
 {
     return sql.drop_table.fmt({
         table: source_prefix + name + source_suffix
-    });
+    }).fmt({tmpSufix:'_' + objectName});
 }
 
 function prepare_sql_struct(struct, callback) {
