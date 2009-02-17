@@ -20,14 +20,20 @@ var sql = {
                     + 'CREATE PROCEDURE [SP_{action}_{name}] @{id} DECIMAL (12,0), @NEW_{id} DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
     'shadow': "EXEC SP_CREATE_SHADOW_TABLE '{table}';",
-    'sp_start': '\tBEGIN TRANSACTION\n\tBEGIN TRY',
+    'sp_start':
+            '\tDECLARE @ERROR_PROCEDURE NVARCHAR(255);\n\n'
+                    + '\tDECLARE @ERROR_MESSAGE NVARCHAR(255);\n\n'
+                    + '\tBEGIN TRY\n'
+                    + '\t\tBEGIN TRANSACTION',
     'sp_end':
-            '\tEND TRY\n\n'
+            '\t\tCOMMIT TRANSACTION\n'
+                    + '\tEND TRY\n\n'
                     + '\tBEGIN CATCH\n'
-                    + '\t\tROLLBACK TRANSACTION\n'
+                    + '\t\tROLLBACK TRANSACTION\n\n'
+                    + '\t\tSELECT @ERROR_PROCEDURE = ERROR_PROCEDURE(), @ERROR_MESSAGE = ERROR_MESSAGE();\n\n'
+                    + "\t\tRAISERROR('%s failed: %s', 15, 1, @ERROR_PROCEDURE, @ERROR_MESSAGE);\n\n"
                     + '\t\tRETURN 1\n'
                     + '\tEND CATCH\n\n'
-                    + '\tCOMMIT TRANSACTION\n'
                     + 'END\n'
                     + 'GO',
     'check_tag':"\tIF (SELECT MODIFIED_BY FROM {tagged} WHERE {idField}{op}{id}) != '{owner}'\n"
@@ -238,7 +244,7 @@ function make_restore_sql(name, id, tagged) {
         id: id,
         owner: owner,
         op: get_operator(id)}));
-    
+
     out.push(sql.sp_start);
 
     setup_restore();
