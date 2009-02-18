@@ -55,8 +55,8 @@
     clear_setup();
 
     init_company();
-    make_backup_sql('COMPANY', 'PU_ID', 'COMPANY_HEADER');
-    make_restore_sql('COMPANY', 'PU_ID', 'COMPANY_HEADER');
+    make_backup_sql('COMPANY', 'PU_ID', 'COMPANY_ADDITIONAL');
+    make_restore_sql('COMPANY', 'PU_ID', 'COMPANY_ADDITIONAL');
     clear_setup();
 
     init_tax_system();
