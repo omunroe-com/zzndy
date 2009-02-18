@@ -142,16 +142,15 @@ function make_backup_sql(name, id, tagged) {
     }
 
     objectName = name;
-    var out = [];
 
-    out.push(sql.sp_head.fmt({action:'BACKUP', name:name, id:id}));
+    print(sql.sp_head.fmt({action:'BACKUP', name:name, id:id}));
 
     // Used to set owner to 'IHS'
     setup_restore();
 
     // Backup routine
     // 0. Check if backup needed;
-    out.push(sql.check_tag.fmt({
+    print(sql.check_tag.fmt({
         tagged: tagged,
         idField: id,
         id: id,
@@ -159,33 +158,33 @@ function make_backup_sql(name, id, tagged) {
         op: get_operator(id)}));
 
     // 1. Begin transaction
-    out.push(sql.sp_start);
+    print(sql.sp_start);
 
     setup_backup();
 
     var nodelist = rectify_nodes();
 
     // 2. Declare variables;
-    out.push(comment('Declare id variables'));
-    out = out.concat(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
+    print(comment('Declare id variables'));
+    print(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
 
-    out.push(comment('Set id variables'));
+    print(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name]);
+        print(declares[name]);
     else
-        out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
+        print(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
 
     // 3. Delete any old backup information;
-    out.push(comment('Delete old backup'));
-    out = out.concat(nodelist.map(to_sql(format_del)).flatten().reverse());
+    print(comment('Delete old backup'));
+    print(nodelist.map(to_sql(format_del)).flatten().reverse());
 
     // 4. Copy data to shadow tables;
-    out.push(comment('Backup data'));
-    out = out.concat(nodelist.map(to_sql(format_copy)).flatten());
+    print(comment('Backup data'));
+    print(nodelist.map(to_sql(format_copy)).flatten());
 
     // 5. Update tag.
-    out.push(comment('Update tag'));
-    out.push(sql.update_tag.fmt({
+    print(comment('Update tag'));
+    print(sql.update_tag.fmt({
         tagged: tagged,
         idField: id,
         id: id,
@@ -193,9 +192,8 @@ function make_backup_sql(name, id, tagged) {
         owner: owner,
         op: get_operator(id)}));
 
-    out.push(sql.sp_end);
-    write(out.join(statement_glue));
-    write(sql.grant_sp.fmt({action:'BACKUP', name:name}));
+    print(sql.sp_end);
+    print(sql.grant_sp.fmt({action:'BACKUP', name:name}));
     objectName = '<unset>';
 }
 
@@ -208,8 +206,8 @@ function make_shadow_sql(table)
 function write_shadow_generation()
 {
     var out = [];
-    out.push(comment('Create tables to backup field domain object.'));
-    out = out.concat(all_nodes.map(make_shadow_sql));
+    print(comment('Create tables to backup field domain object.'));
+    print(all_nodes.map(make_shadow_sql));
 
     write(out.join(statement_glue));
 }
@@ -233,19 +231,19 @@ function make_restore_sql(name, id, tagged) {
     objectName = name;
     var out = [];
 
-    out.push(sql.sp_head.fmt({action:'RESTORE', name:name, id:id}));
+    print(sql.sp_head.fmt({action:'RESTORE', name:name, id:id}));
 
     setup_backup();
 
     // 0. Check if backup needed;
-    out.push(sql.check_tag.fmt({
+    print(sql.check_tag.fmt({
         tagged: tagged,
         idField: id,
         id: id,
         owner: owner,
         op: get_operator(id)}));
 
-    out.push(sql.sp_start);
+    print(sql.sp_start);
 
     setup_restore();
 
@@ -253,41 +251,41 @@ function make_restore_sql(name, id, tagged) {
 
     // Restore routine:
     // 1. Declare variables;
-    out.push(comment('Declare id variables'));
-    out = out.concat(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
+    print(comment('Declare id variables'));
+    print(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
 
-    out.push(comment('Set id variables'));
+    print(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name]);
+        print(declares[name]);
     else
-        out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().filter(is_valid_sql).uniq());
+        print(nodelist.filter(not_id).map(to_sql(format_set)).flatten().filter(is_valid_sql).uniq());
 
     // 2. Delete user version;
-    out.push(comment('Delete user version'));
-    out = out.concat(nodelist.map(to_sql(format_del)).flatten().reverse());
+    print(comment('Delete user version'));
+    print(nodelist.map(to_sql(format_del)).flatten().reverse());
 
-    out.push(comment('Set id variables acording to backed copy'));
+    print(comment('Set id variables acording to backed copy'));
     if (name in declares)
     {
         var decl = declares[name];
-        out.push(nodelist.reduce(replace_all_tables, decl));
+        print(nodelist.reduce(replace_all_tables, decl));
     }
     else
-        out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().filter(is_valid_sql).uniq());
+        print(nodelist.filter(not_id).map(to_sql(format_set)).flatten().filter(is_valid_sql).uniq());
 
     // 3. Copy data from shadow tables;
-    out.push(comment('Restore data'));
-    out = out.concat(nodelist.map(to_sql(format_copy)).flatten());
+    print(comment('Restore data'));
+    print(nodelist.map(to_sql(format_copy)).flatten());
 
     // 4. Delete backup.
     setup_backup();
-    out.push(comment('Delete backup'));
-    out = out.concat(nodelist.map(to_sql(format_del)).flatten().uniq().reverse());
+    print(comment('Delete backup'));
+    print(nodelist.map(to_sql(format_del)).flatten().uniq().reverse());
 
     // 5. update tags;
     setup_restore();
-    out.push(comment('Update tag'));
-    out.push(sql.update_tag.fmt({
+    print(comment('Update tag'));
+    print(sql.update_tag.fmt({
         tagged: tagged,
         idField: id,
         id: id,
@@ -295,9 +293,9 @@ function make_restore_sql(name, id, tagged) {
         owner: owner,
         op: get_operator(id)}));
 
-    out.push(sql.sp_end);
-    write(out.join(statement_glue));
-    write(sql.grant_sp.fmt({action:'RESTORE', name:name}));
+    print(sql.sp_end);
+    print(out.join(statement_glue));
+    print(sql.grant_sp.fmt({action:'RESTORE', name:name}));
     objectName = '<unset>';
 }
 
@@ -338,8 +336,8 @@ function make_clone_sql(name, id, tagged) {
     objectName = name;
     var out = [];
 
-    out.push(sql.sp_copy_head.fmt({action:'CLONE', name:name, id:id}));
-    out.push(sql.sp_start);
+    print(sql.sp_copy_head.fmt({action:'CLONE', name:name, id:id}));
+    print(sql.sp_start);
 
     setup_restore();
 
@@ -347,30 +345,30 @@ function make_clone_sql(name, id, tagged) {
 
     // Copy routine:
     // 1. Create temporary tables;
-    out.push(comment('Create temporary tables (Just copy tables structure)'));
-    out = out.concat(nodelist.map(to_sql(format_temp)).flatten().uniq());
+    print(comment('Create temporary tables (Just copy tables structure)'));
+    print(nodelist.map(to_sql(format_temp)).flatten().uniq());
 
     // 2. Declare ids
-    out.push(comment('Declare id variables'));
-    out = out.concat(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
+    print(comment('Declare id variables'));
+    print(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
 
     // 3. Set ids
-    out.push(comment('Set id variables'));
+    print(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name]);
+        print(declares[name]);
     else
-        out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
+        print(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
 
     // 4. 'Backup' specifyed object to temporaties;
     setup_backup_temp();
-    out.push(comment("'Backup' specifyed object to temporaties"));
-    out = out.concat(nodelist.map(to_sql(format_copy)).flatten());
+    print(comment("'Backup' specifyed object to temporaties"));
+    print(nodelist.map(to_sql(format_copy)).flatten());
 
     var entity_name = get_entity_name();
     var entity_id = get_id(entity_name.table);
 
     if (entity_id) {
-        out.push(sql.set_name.fmt({
+        print(sql.set_name.fmt({
             table:target_prefix + entity_name.table + target_suffix,
             originalTable: entity_name.table,
             nameField:entity_name.column,
@@ -381,36 +379,36 @@ function make_clone_sql(name, id, tagged) {
     }
 
     // 5. Get new IDs;
-    out.push(comment('Get new IDs'));
-    out = out.concat(nodelist.filter(not_id).filter(is_new_id).map(to_sql(format_decl_new)).flatten().filter(is_valid_sql).uniq());
+    print(comment('Get new IDs'));
+    print(nodelist.filter(not_id).filter(is_new_id).map(to_sql(format_decl_new)).flatten().filter(is_valid_sql).uniq());
     ids = [];
-    out = out.concat(nodelist.filter(is_new_id).map(to_sql(format_get_new)).flatten().filter(is_valid_sql).uniq());
+    print(nodelist.filter(is_new_id).map(to_sql(format_get_new)).flatten().filter(is_valid_sql).uniq());
 
     // 6. Update IDs;
-    out.push(comment('Update IDs'));
-    out = out.concat(nodelist.map(to_sql(format_update_id)).flatten().filter(is_valid_sql));
+    print(comment('Update IDs'));
+    print(nodelist.map(to_sql(format_update_id)).flatten().filter(is_valid_sql));
 
     // HARDCODE
     if (name == 'BLOCK') {
-        out.push('\t\tUPDATE #BLOCK_HEADER SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;');
-        out.push('\t\tUPDATE #FIELD_CONTRACTS_BLOCKS SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;');
+        print('\t\tUPDATE #BLOCK_HEADER SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;');
+        print('\t\tUPDATE #FIELD_CONTRACTS_BLOCKS SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;');
     }
 
-    out = out.concat(uniq_pipe(nodelist, format_iterate_ids));
+    print(uniq_pipe(nodelist, format_iterate_ids));
 
     setup_restore_temp();
 
     // 7. 'Restore' copy;
-    out.push(comment("'Restore' copy"));
-    out = out.concat(nodelist.map(to_sql(format_copy)).flatten().map(ins_new_prefix));
+    print(comment("'Restore' copy"));
+    print(nodelist.map(to_sql(format_copy)).flatten().map(ins_new_prefix));
 
     // 8. Drop temporaries;
-    out.push(comment('Drop temporaries'));
-    out = out.concat(nodelist.map(to_sql(format_drop)).flatten().uniq());
+    print(comment('Drop temporaries'));
+    print(nodelist.map(to_sql(format_drop)).flatten().uniq());
 
     // 9. update tags.
-    out.push(comment('Update tag'));
-    out.push(sql.update_tag.fmt({
+    print(comment('Update tag'));
+    print(sql.update_tag.fmt({
         tagged: tagged,
         idField: id,
         id: id,
@@ -420,13 +418,13 @@ function make_clone_sql(name, id, tagged) {
 
     // HARDCODE
     if (name == 'COMPLEX') {
-        out.push(comment('Clone all child fields'));
-        out.push(sql.clone_fields);
+        print(comment('Clone all child fields'));
+        print(sql.clone_fields);
     }
 
-    out.push(sql.sp_end);
-    write(out.join(statement_glue));
-    write(sql.grant_sp.fmt({action:'CLONE', name:name}));
+    print(sql.sp_end);
+    print(out.join(statement_glue));
+    print(sql.grant_sp.fmt({action:'CLONE', name:name}));
     objectName = '<unset>';
 }
 
@@ -438,29 +436,29 @@ function make_delete_sql(name, id/*, tagged*/) {
     objectName = name;
     var out = [];
 
-    out.push(sql.sp_head.fmt({action:'DELETE', name:name, id:id}));
-    out.push(sql.sp_start);
+    print(sql.sp_head.fmt({action:'DELETE', name:name, id:id}));
+    print(sql.sp_start);
 
     setup_restore();
 
     var nodelist = rectify_nodes();
 
-    out.push(comment('Declare id variables'));
-    out = out.concat(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
+    print(comment('Declare id variables'));
+    print(nodelist.filter(not_id).map(to_sql(format_declare)).flatten().filter(is_valid_sql).uniq());
 
-    out.push(comment('Set id variables'));
+    print(comment('Set id variables'));
     if (name in declares)
-        out.push(declares[name]);
+        print(declares[name]);
     else
-        out = out.concat(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
+        print(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
 
     // 2. Delete data
-    out.push(comment('Delete data'));
-    out = out.concat(nodelist.map(to_sql(format_del)).flatten().reverse());
+    print(comment('Delete data'));
+    print(nodelist.map(to_sql(format_del)).flatten().reverse());
 
-    out.push(sql.sp_end);
-    write(out.join(statement_glue));
-    write(sql.grant_sp.fmt({action:'DELETE', name:name}));
+    print(sql.sp_end);
+    print(out.join(statement_glue));
+    print(sql.grant_sp.fmt({action:'DELETE', name:name}));
     objectName = '<unset>';
 }
 

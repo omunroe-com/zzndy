@@ -45,17 +45,19 @@
     make_clone_sql('COMPLEX', 'FIELD_COMPLEX_ID', 'FIELD_COMPLEX');
     clear_setup();
 
-    init_globals();
-    make_clone_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
-    clear_setup();
-
     init_company();
     make_clone_sql('COMPANY', 'PU_ID', 'COMPANY_ADDITIONAL');
+    clear_setup();
+/*
+    init_globals();
+    make_clone_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
     clear_setup();
 
     init_tax_system();
     make_clone_sql('TAXSYSTEM', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
     clear_setup();
+*/    
+    flush();
 
     dp.SyntaxHighlighter.HighlightAll('out');
 </script>

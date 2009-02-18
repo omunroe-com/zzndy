@@ -45,17 +45,19 @@
     make_delete_sql('COMPLEX', 'FIELD_COMPLEX_ID', 'FIELD_COMPLEX');
     clear_setup();
 
-    init_globals();
-    make_delete_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
-    clear_setup();
-
     init_company();
     make_delete_sql('COMPANY', 'PU_ID', 'COMPANY_HEADER');
+    clear_setup();
+/*
+    init_globals();
+    make_delete_sql('GLOBALS', 'GLOBAL_ASSUMPTIONS_ID', 'GLOBAL_ASSUMPTIONS');
     clear_setup();
 
     init_tax_system();
     make_delete_sql('TAXSYSTEM', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
     clear_setup();
+*/
+    flush();
 
     dp.SyntaxHighlighter.HighlightAll('out');
 </script>

@@ -64,14 +64,30 @@ function setup_restore_temp()
     target_prefix = '';
 }
 
+var buffer = [];
+
+function print()
+{
+    var i=-1, n = arguments.length;
+    while(++i<n)
+    {
+        if(arguments[i] instanceof Array)
+            print.apply(null, arguments[i]);
+        
+        buffer.push(arguments[i]);
+    }
+}
+
+function flush()
+{
+    var text = buffer.join(section_glue);
+    write(text);
+    buffer = [];
+}
+
 
 function write() {
-    var target = document.getElementById('out');
-    var text = [].join.call(arguments, section_glue);
-    if (target)
-        target.innerHTML += section_glue + text;
-    else
-        document.write('<textarea class="sql" name="out" id="out" rows="30" cols="144">' + text + '</textarea>');
+    document.write('<textarea class="sql" name="out" rows="30" cols="144">' + text + '</textarea>');
 }
 
 /**
