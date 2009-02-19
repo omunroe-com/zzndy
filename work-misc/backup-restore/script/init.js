@@ -63,6 +63,9 @@ function init_block()
     node('FIELD_CONTRACTS_BLOCKS', 'GA_ID', 'BLOCK_HEADER');
     node('FIELD_CONTRACTS_BLOCKS', 'EPC_ID', 'CONTRACT_HEADER');
 
+    //add_where('BLOCK_HEADER', "LAST_STAGE_FLAG='Y'");
+    //add_where('BLOCK_HEADER', "BLOCK_VALIDITY_FLAG='Y'");
+
     add_name('BLOCK_HEADER', 'BLOCK_NAME');
 }
 
@@ -118,6 +121,9 @@ function init_company()
     // COMPANY
     node('COMPANY_HEADER');
     node('COMPANY_ADDITIONAL', 'PU_ID', 'COMPANY_HEADER');
+
+    //add_where('COMPANY_HEADER', "LAST_STAGE_FLAG='Y'");
+    //add_where('COMPANY_HEADER', "STAGE_VALIDITY_FLAG='Y'");
 
     add_name('COMPANY_HEADER', 'COMPANY_NAME');
 }

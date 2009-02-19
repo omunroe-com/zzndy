@@ -20,6 +20,16 @@ function add_update_ids(name, sql)
     update_ids[name].push(sql);
 }
 
+function apply_where(str)
+{
+    var table = str.match(/FROM (\w+) WHERE/);
+    var rval = str;
+    if(table && table[1])
+        rval = str.fmt({where: has_where(table[1]) ? ' AND (' + get_where(table[1]).join(' AND ') + ')' : ''});
+
+    return rval;
+}
+
 /**
  * Setup environment for generation of backup SQL.
  */
@@ -65,14 +75,17 @@ function setup_restore_temp()
 }
 
 var buffer = [];
+var log = false;
 
 function print()
 {
     var i=-1, n = arguments.length;
     while(++i<n)
     {
-        if(arguments[i] instanceof Array)
+        if(arguments[i] instanceof Array){
             print.apply(null, arguments[i]);
+            continue;
+        }
         
         buffer.push(arguments[i]);
     }
@@ -86,7 +99,7 @@ function flush()
 }
 
 
-function write() {
+function write(text) {
     document.write('<textarea class="sql" name="out" rows="30" cols="144">' + text + '</textarea>');
 }
 
@@ -108,7 +121,7 @@ function get_name(node) {
 
 function write_header()
 {
-    write('--\n'
+    print('--\n'
             + '-- Default AssetBank database name is ABDB.\n'
             + '--\n'
             + 'USE [ABDB]\n'
