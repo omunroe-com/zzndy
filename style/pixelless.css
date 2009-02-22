@@ -22,12 +22,18 @@ p {
     margin: 1em 0;
 }
 
+input, textarea {
+    border: 1px solid #6f6f73;
+    background-color: #454547;
+    color: #D7D7D7;
+}
+
 a {
-    color: #0066ff;
+    color: #2189fc;
 }
 
 a:visited {
-    color: #cc00ff
+    color: #d91fff
 }
 
 a:hover {
@@ -36,6 +42,11 @@ a:hover {
 
 a:hover:visited {
     color: #ffff66
+}
+
+pre a {
+    text-decoration: none;
+
 }
 
 #container {

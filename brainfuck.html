@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="script/util.js"></script>
+    <title>Brainfuck</title>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Brainfuck</h1>
+    </div>
+
+    <div class="content">
+        <p>brainfuck "IDE"</p>
+        <a href="#" id="runit">Run</a><br/>
+
+        <pre>Clear: <a href="javascript:add(this)" onclick="add(this); return false;">[-]</a>                          Clear prev no zero: <a
+                href="javascript:add(this)" onclick="add(this); return false;">[[-]&lt;]</a>
+Rewind: <a href="javascript:add(this)" onclick="add(this); return false;">[&lt;]&gt;</a>                        Fast-forward: <a
+                    href="javascript:add(this)" onclick="add(this); return false;">[&gt;]&lt;</a>
+Cat: <a href="javascript:add(this)" onclick="add(this); return false;">,[.,]</a>                          Moving the pointer: <a
+                    href="javascript:add(this)" onclick="add(this); return false;">&gt;,[.&gt;,]</a>
+Add: <a href="javascript:add(this)" onclick="add(this); return false;">[-&gt;+&lt;]</a> or <a
+                    href="javascript:add(this)" onclick="add(this); return false;">[-&gt;+&gt;+&lt;&lt;]&gt;&gt;[-&lt;&lt;+&gt;&gt;]</a>  Copy: <a
+                    href="javascript:add(this)" onclick="add(this); return false;">[-]&gt;[-]&lt;&lt;[-&gt;+&gt;+&lt;&lt;]&gt;&gt;[-&lt;&lt;+&gt;&gt;]</a></pre>
+
+
+        <div id="memory" style="float:right"></div>
+        <label>Input: <input type="text" id="input" value="" style="font-family:monospace; width:80ex"/></label><br/>
+        <textarea id="edit" cols="80" rows="14"></textarea>
+        <textarea id="out" cols="80" rows="6" readonly="readonly"></textarea>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    document.getElementById('runit').onclick = run;
+
+    var memoryLimit = 30000;
+    var execLimit = 1000;
+
+    function add(obj)
+    {
+        var target = document.getElementById('edit');
+        var x = target.selectionStart;
+        var value = obj.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        var before = target.value.substring(0, x);
+        var after = target.value.substr(target.selectionEnd);
+        target.value = before + value + after;
+        target.selectionStart = x + value.length;
+        target.selectionEnd = x + value.length;
+        target.focus();
+    }
+
+    function run()
+    {
+        function add(n)
+        {
+            var x = (memory[addr] || 0) + n;
+            if (x > 255)x = 0;
+            if (x < 0)x = 255;
+            memory[addr] = x;
+            return x;
+        }
+
+        function get_input()
+        {
+            var r = input[inpos++];
+            if (r === undefined) return 0; // EOF
+            return r.charCodeAt(0);
+        }
+
+        var inpos = 0;
+        var input = document.getElementById('input').value;
+        var src = document.getElementById('edit').value;
+
+        var addr = 0;
+        var memory = [];
+        var out = '';
+
+        var line = 1;
+        var column = 0;
+
+        var loops = [];
+        var steps = 0;
+        var loopstack = [];
+
+        var i = -1, n = src.length;
+        while (++i < n)
+        {
+            ++column;
+            var op = src[i];
+            switch (op) {
+                case '[':
+                    loops[i] = 0;
+                    loopstack.push(i);
+
+                    break;
+
+                case ']':
+                    var loop = loopstack.pop();
+
+                    if (loop === undefined)
+                        throw new Error(['Loop brace mismatch at line', line, ', column', column].join(' '));
+                    loops[loop] = i;
+
+                    break;
+
+                case '\n':
+                    ++line;
+                    column = 1;
+
+                    break;
+            }
+        }
+
+        delete loopstack;
+
+        line = 1;
+        column = 0;
+        i = -1;
+        n = src.length;
+        while (++i < n)
+        {
+            if (++steps > execLimit)
+                throw new Error(['Execution limit of ', execLimit, ' cycles exceded at line ', line, ', column', column].join(' '));
+
+            ++column;
+            var op = src[i];
+            switch (op) {
+                case '\n':
+                    ++line;
+                    column = 0;
+
+                    break;
+
+                case '<':
+                    if (--addr < 0)
+                        throw new Error(['Address underrun at line', line, ', column', column].join(' '));
+
+                    break;
+
+                case '>':
+                    if (++addr > memoryLimit)
+                        throw new Error(['Address overrun at line', line, ', column', column].join(' '));
+
+                    break;
+
+                case '-':
+                    add(-1);
+
+                    break;
+
+                case '+':
+                    add(1);
+
+                    break;
+
+                case '[':
+                    if (!memory[addr])
+                        i = loops[i];
+
+                    break;
+
+                case ']':
+                    i = loops.indexOf(i);
+                    if (i == -1)
+                        throw new Error(['Unxepected loop error at line', line, ', column', column].join(' '));
+
+                    --i;
+                    break;
+
+                case '.':
+                    if (memory[addr] < 32)
+                        out += memory[addr].toString() + ' ';
+                    else
+                        out += String.fromCharCode(memory[addr]);
+
+                    break;
+
+                case ',':
+                    memory[addr] = get_input();
+
+                    break;
+            }
+        }
+
+        document.getElementById('memory').innerHTML = memory.map(function(x, n) {
+            if (n == addr)return '<u>' + x + '</u>'; else return x;
+        });
+        document.getElementById('out').value = out;
+    }
+
+
+</script>
+</body>
+</html>

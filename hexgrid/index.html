@@ -35,9 +35,11 @@
 </div>
 <script type="text/javascript" language="JavaScript">
     var ctx = document.getElementById('target').getContext('2d');
-    ctx.translate(400.5, 250.5);
+    var off = new Point(400.5, 250.5);
+    ctx.translate(off.x, off.y);
     ctx.strokeStyle = 'rgba(215, 215, 215, .5)';
-    var grid = new HexGrid(17, 21, 40, 2);
+    var grid = new HexGrid(15, 19, 40, 2);
+    console.log(grid.cap)
     grid.strokeAll(ctx);
 
     function getPos(e)
@@ -45,13 +47,18 @@
         return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
     }
 
-    function mousemove(e)
+    function click(e)
     {
         var pos = getPos(e);
-        console.log(pos);
+
+        ctx.clearRect(-off.x, -off.y, 800, 500)
+
+        var [i, j] = grid.getAt(pos.x-off.x, pos.y-off.y);
+        grid.fill(i, j, ctx)
+        grid.strokeAll(ctx);
     }
 
-    document.getElementById('target').onmousemove = mousemove;
+    document.getElementById('target').onclick = click;
 
 </script>
 </body>
