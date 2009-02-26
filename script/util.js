@@ -4,23 +4,29 @@
  * @return {Object}     cloned object
  */
 function clone(obj) {
-    var newOne = {}
-    for (var i in obj)
-        newOne[i] = obj[i]
+    var newOne = {};
+    for (var i in obj) {
+        var prop = obj[i];
+        if (prop instanceof Array)
+            prop = prop.clone();
+        else if (typeof prop == 'object')
+            prop = clone(prop);
+        newOne[i] = prop;
+    }
 
-    return newOne
+    return newOne;
 }
 
 /**
  * Extend first object given with properties from all other objects.
  */
 function extend() {
-    var obj = arguments[0]
+    var obj = arguments[0];
     for (var i = 1; i < arguments.length; ++i)
         for (var field in arguments[i])
             obj[field] = arguments[i][field]
 
-    return obj
+    return obj;
 }
 
 /**
@@ -29,10 +35,26 @@ function extend() {
  * @return {String}     query string representaion
  */
 function toQueryString(obj) {
-    var res = []
+    var res = [];
     for (var i in obj) if (typeof obj[i] != 'function')
-        res.push(i + '=' + encodeURIComponent(obj[i]))
-    return res.join('&')
+        res.push(encodeURIComponent(i) + '=' + encodeURIComponent(obj[i]));
+    return res.join('&');
+}
+
+/**
+ * Convert URL query string to object.
+ * @param {String} string  query string
+ * @return {Object}        javascript object
+ */
+function fromQueryString(string)
+{
+    var obj = {};
+    string.split('&').map(function(part) {
+        var x = part.split('=');
+        obj[decodeURIComponent(x[0])] = decodeURIComponent(x[1]);
+    });
+
+    return obj;
 }
 
 /**
@@ -56,63 +78,64 @@ S.pad = function(n, s) {
     s = s || ' ';
     var l = this.length;
     return (Math.abs(n) > l) ? (n > 0 ? this + s.rep(n - l) : s.rep(Math.abs(n) - l) + this) : this.toString();
-}
+};
 
 S.rep =
 S.x = function(n) {
-    return (new Array(n + 1)).join(this)
-}
+    return (new Array(n + 1)).join(this);
+};
 
+/**
+ * Insert whitespace. Convert CamelCasedString to 'Camel Cased String'.
+ */
 S.insws = function() {
     return this.replace(/(\w)(?=[A-Z](?=[a-z]))/g, '$1 ');
-}
+};
 
 S.trim = function() {
-    return this.replace(/^\s+|\s+$/g, "")
-}
+    return this.replace(/^\s+|\s+$/g, "");
+};
 
 S.trimsplit =
 S.ts = function(splitter) {
     return this.split(splitter).map(trim);
-}
-S.isIn = function(str) {
-    return str.indexOf(this) != -1;
-}
-S.has = function(str) {
-    return this.indexOf(str) != -1;
-}
-S.toArray = function() {
-    return this.split('')
-}
+};
 S.map = function(fn, self) {
-    return this.toArray().map(fn, self)
-}
+    return this.split('').map(fn, self);
+};
 S.reduce = function(fn, init) {
-    return this.toArray().reduce(fn, init)
-}
+    return this.split('').reduce(fn, init);
+};
 
 N.zf =
 N.zerofill = function(w, p) {
-    if (p) return this.toFixed(p).pad(-w, '0')
-    return this.toString().pad(-w, '0')
-}
+    if (p) return this.toFixed(p).pad(-w, '0');
+    return this.toString().pad(-w, '0');
+};
 
 N.pad = function(w, p, s) {
-    if (p) return this.toFixed(p).pad(w, s)
-    return this.toString().pad(w, s)
-}
+    if (p) return this.toFixed(p).pad(w, s);
+    return this.toString().pad(w, s);
+};
 
 N.times = function(fn, self) {
-    var res = []
+    var res = [], k = -1;
+
     if (typeof fn == 'function')
-        for (var i = 0; i < this; ++i) res.push(fn.call(this, i, self))
-    else if (typeof fn == 'object' || fn instanceof Array)
-        for (var i = 0; i < this; ++i) res.push(fn.clone())
-    else
-        for (var i = 0; i < this; ++i) res.push(fn)
+        while (++k < this)
+            res.push(fn.call(this, k, self));
+    else if (fn instanceof Array)
+        while (++k < this)
+            res.push(fn.clone());
+    else if (typeof fn == 'object')
+            while (++k < this)
+                res.push(clone(fn));
+        else
+            while (++k < this)
+                res.push(fn);
 
     return res;
-}
+};
 
 N.within =
 N.constrain = function(min, max, bounce) {
@@ -157,46 +180,44 @@ N.nonNegative = function() {
 S.format =
 S.fmt = function(fmtObj) {
     function getValue(path) {
-        var prop = path.match(/^(\.?\w+|\[\d+\])(?=\.|$|\[\d+)/)[0]
-        var rest = path.replace(prop, '')
+        var prop = path.match(/^(\.?\w+|\[\d+\])(?=\.|$|\[\d+)/)[0];
+        var rest = path.replace(prop, '');
         if (rest) return getValue.call(this[prop.replace(/^\.|^\[|\]$/g, '')], rest)
-        else return this[prop.replace(/^\.|^\[|\]$/g, '')]
+        else return this[prop.replace(/^\.|^\[|\]$/g, '')];
     }
 
     function simpleFormat(a) {
-        var r = this
+        var r = this;
         for (var k in a) {
-            if (typeof a[k] == 'function') continue
-            var rx = new RegExp('\\{' + k + '\\}', 'g')
-            r = r.replace(rx, a[k])
+            if (typeof a[k] == 'function') continue;
+            var rx = new RegExp('\\{' + k + '\\}', 'g');
+            r = r.replace(rx, a[k]);
         }
-        return r
+        return r;
     }
 
-    var res = simpleFormat.call(this, fmtObj)
-    var opts = '(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?'
+    var res = simpleFormat.call(this, fmtObj);
+    var opts = '(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?';
 
     for (var name in fmtObj) {
-        var value, backUp = []
-        value = backUp[0] = fmtObj[name]
-        if (typeof value == 'function') continue
-        if (typeof name == 'string') name = name.charAt(0).toUpperCase() + name.substr(1)
-        var rx = new RegExp('<(' + name + opts + ')?>')
+        var value, backUp = [];
+        value = backUp[0] = fmtObj[name];
+        if (typeof value == 'function') continue;
+        var rx = new RegExp('\\{(' + name + opts + ')?\\}');
         var num = backUp[1] = new Number(value), m;
         while (m = res.match(rx)) {
-            var match = m[0], path = m[1], align = m[2], width = m[3], deci = m[4], base = m[5]
-            var useBackup = !!(path || base)
+            var match = m[0], path = m[1], align = m[2], width = m[3], deci = m[4], base = m[5];
+            var useBackup = !!(path || base);
             if (path) {
-                if (typeof name == 'string') path = path.charAt(0).toLowerCase() + path.substr(1)
-                value = getValue.call(fmtObj, path)
-                num = new Number(value)
+                value = getValue.call(fmtObj, path);
+                num = new Number(value);
             }
             switch (base) {
-                case 'b': value = num.toString(2); break
-                case 'o': value = num.toString(8); break
-                case 'x': value = num.toString(16); break
-                case 'n': value = num.toPos(); break
-                case 'r': value = num.toRoman(); break
+                case 'b': value = num.toString(2); break;
+                case 'o': value = num.toString(8); break;
+                case 'x': value = num.toString(16); break;
+                case 'n': value = num.toPos(); break;
+                case 'r': value = num.toRoman(); break;
             }
 
             try {
@@ -207,29 +228,29 @@ S.fmt = function(fmtObj) {
             }
 
             if (useBackup) {
-                value = backUp[0]
-                num = backUp[1]
+                value = backUp[0];
+                num = backUp[1];
             }
         }
     }
-    return res
-}
+    return res;
+};
 
 // operators to use in reduce
 function add(a, b) {
-    return a + b
+    return a + b;
 }
 function mul(a, b) {
-    return a * b
+    return a * b;
 }
 function sub(a, b) {
-    return a - b
+    return a - b;
 }
 function div(a, b) {
-    return a / b
+    return a / b;
 }
 function sqr(a) {
-    return a * a
+    return a * a;
 }
 
 if (!('reduce' in Array))
@@ -240,7 +261,7 @@ if (!('reduce' in Array))
         var res = init, l = this.length;
         for (; i < l; ++i) res = fn2(res, this[i], i, this);
         return res;
-    }
+    };
 
 if (!('flatten' in Array))
     A.flatten = function()
@@ -251,7 +272,7 @@ if (!('flatten' in Array))
             return prev;
         }
         return this.reduce(flatten, []);
-    }
+    };
 
 if (!('uniq' in Array))
     A.uniq = function()
@@ -265,7 +286,7 @@ if (!('uniq' in Array))
         }
 
         return this.reduce(uniq, []);
-    }
+    };
 
 A.delayedReduce = function(delay, fn2, init, callback) {
     var i = 0;
@@ -276,19 +297,23 @@ A.delayedReduce = function(delay, fn2, init, callback) {
         if (++idx < l)
             window.setTimeout(arguments.callee, delay, res, array[idx], idx, array);
         else if (callback) callback(res);
-    }
+    };
 
     fn(res, this[i], i, this);
 }
 
 A.diff = function(other) {
     return this.map(function(x, i) {
-        return (x == other[i]) ? undefined : [x, other[i]]
+        return (x == other[i]) ? undefined : [x, other[i]];
     });
 };
 
 A.clone = function() {
-    return [].concat(this);
+    return this.map(function(i){
+        if(i instanceof Array)return i.clone();
+        else if(typeof i=='object')return clone(i);
+        else return i;
+    });
 };
 
 /**
@@ -301,10 +326,7 @@ A.pick = function(n) {
     n = Math.floor(n) || 1;
     return n.map(function() {
         if (picked.length == this.length) return undefined;
-        var i;
-
-        do
-            i = Math.floor(Math.random() * this.length);
+        do var i = Math.floor(Math.random() * this.length);
         while (i in picked);
         picked.push(i);
         return this[i];
@@ -320,43 +342,30 @@ A.shuffle = function () {
         this[i] = this[r];
         this[r] = x;
     }
-}
+
+    return this;
+};
 
 A.sum = function() {
-    return this.reduce(add, 0)
-}
+    return this.reduce(add, 0);
+};
 A.prod = function() {
-    return this.reduce(mul, 0)
-}
+    return this.reduce(mul, 1);
+};
 
 F.timeit = function(self, args) {
-    var start = new Date()
-    this.apply(self, args)
-    var time = (new Date()) - start
-    return (time < 1000) ? time + 'ms' : (time / 1000).toFixed(3) + 's'
-}
-
-F.append = function(g) {
-    var f = this;
-    return function() {
-        f();
-        g()
-    }
-}
-
-F.wrap = function(g) {
-    var f = this;
-    return function() {
-        f(g())
-    }
-}
+    var start = new Date();
+    this.apply(self, args);
+    var time = (new Date()) - start;
+    return (time < 1000) ? time + 'ms' : (time / 1000).toFixed(3) + 's';
+};
 
 F.detach = function(obj) {
     var fn = this;
     return function() {
         return fn.apply(obj, arguments);
-    }
-}
+    };
+};
 
 F.fork = function() {
     var args = arguments, fn = this;
@@ -364,7 +373,7 @@ F.fork = function() {
         return fn.apply(null, args);
     };
     window.setTimeout(delegate, 10);
-}
+};
 
 N.map = function(fn, self) {
     if (typeof fn != 'function') throw new Error('Type error: map expecting first parameter to be a function not ' + typeof fn)
@@ -399,8 +408,8 @@ N.toRoman = (function() {
 
     return function(original) {
         if (this < 1 || this > 4000) return this;
-        var n = this;
-        var original = !!original, res = '';
+        var n = this, res = '';
+        original = !!original;
         for (var i = 0, item; item = rn[i]; ++i) {
             var x = item.length + 1;
             var d = n % x;
@@ -420,11 +429,11 @@ N.toAgoInterval = (function() {
      *    Convert milliseconds since epoch to nice message
      *    saying how long ago something happened
      */
-    var periods = ["second", "minute", "hour", "day", "week", "month", "year", "decade"]
-    var lengths = [1, 60, 3600, 86400, 604800, 2630880, 31570560, 315705600]
+    var periods = ["second", "minute", "hour", "day", "week", "month", "year", "decade"];
+    var lengths = [1, 60, 3600, 86400, 604800, 2630880, 31570560, 315705600];
 
-    N.toAgoInterval = function() {
-        var interval = (Date.now() - this) / 1000, i, n
+    return function() {
+        var interval = (Date.now() - this) / 1000, i, n;
         for (i = lengths.length - 1; i >= 0 && (n = Math.floor(interval / lengths[i])) < 1; --i);
         if (i == -1 || i == 0 && n < 20) return 'just now';
 
@@ -460,11 +469,11 @@ N.deviate = function() {
         upper = this * upper;
         lower = this * lower;
     }
-    return this - lower + Math.random() * (upper + lower)
-}
+    return this - lower + Math.random() * (upper + lower);
+};
 
 function range(n) {
-    var ar = []
-    for (i = 0; i < n; ++i) ar.push(i)
-    return ar
+    var ar = [], i = -1;
+    while (++i < n) ar.push(i);
+    return ar;
 }

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="../script/util.js"></script>
+    <title>Unit-tests for util.js</title>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Unit-tests for util.js</h1>
+    </div>
+
+    <div class="content">
+
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    var o1 = {x:10, y:'sepul', z:{a:90}, w:[0,1]};
+    var o2 = clone(o1);
+
+    o1.x = 900;
+    o1.y += '!';
+    o1.z.a = '%';
+    o1.w[0] = '400';
+    fireunit.ok(o1.x != o2.x && o1.y != o2.y && o1.z.a != o2.z.a && o1.w[0] != o2.w[0], 'clone(object)');
+
+    var s1 = [0, [0, 1], [[0, 1], [0,1], [0, 1]]];
+    var s2 = s1.clone();
+
+    s1[0] = 500;
+    s1[1][1] = 800;
+    s1[2][2][2] = 1000;
+    fireunit.ok(s1[0] != s2[0] && s1[1][1] != s2[1][1] && s1[2][2][2] != s2[2][2][2], 'Array.clone');
+
+    var str = '99';
+
+    fireunit.ok((9).times(function rx() {
+        return 'x';
+    }).join('%') == 'x%x%x%x%x%x%x%x%x', 'Number.times(function)');
+    fireunit.ok((9).times([0,1]).join(':') == '0,1:0,1:0,1:0,1:0,1:0,1:0,1:0,1:0,1', 'Number.times(array)');
+
+    fireunit.ok((30).within(50, 100) == 50
+            && (60).within(50, 100) == 60
+            && (120).within(50, 100) == 100
+            && (30).within(50, 100, true) == 70
+            && (60).within(50, 100, true) == 60
+            && (120).within(50, 100, true) == 80, 'Number.within(from, to[, bounce])');
+
+    fireunit.ok("google.com".map(function(x) {
+        return x.toUpperCase();
+    }).join() == 'G,O,O,G,L,E,.,C,O,M', 'String.map');
+    fireunit.ok("google.com".reduce(function(x, y) {
+        return x.toUpperCase() + y.toUpperCase();
+    }, '-') == '-GOOGLE.COM', 'String.map')
+
+    fireunit.ok(str.x(4) == '99999999', 'String.x(n)');
+    fireunit.ok(str.x(4) == (4).map(function() {
+        return str;
+    }).join(''), 'Int.map');
+
+    var template = '{speed} {animal[0].color} {animal[0].name} {action} over a {animal[1].trait} {animal[1].name}.';
+    var fmt = {
+        speed: 'Quick',
+        action:'jumped',
+        animal:[{name:'fox', color:'red'}, {name:'dog', trait:'lazy'}]
+    };
+    fireunit.ok(template.fmt(fmt) == 'Quick red fox jumped over a lazy dog.'
+            , 'Complex object format with deep paths');
+
+    template = '{d0:n}, {d1:n} or {d2:n} july of {y:r}. x={x:09}; z={z:-9x};';
+    fmt = {d0:1, d1:2, d2:3, y:1979, x:456, z:983};
+    fireunit.ok(template.fmt(fmt) == '1-st, 2-nd or 3-rd july of MCMLXXIX. x=000000456; z=      3d7;'
+            , 'Complex format with value transformation (incl. Number.toPos and Number.toRoman)');
+
+    var a1 = [55 * 10, 20, 30, ['g', 'o'.x(2), 'gle'].join(''), 20, 10, 550, 'google' ].uniq();
+    var a2 = [550, 20, 30, "google", 10];
+
+    var sa1 = a1.join('$#$');
+    fireunit.ok(sa1 == a2.join('$#$'), 'Array.uniq');
+
+    var a1a = a1.clone();
+    var sa1a = a1a.join('$#$');
+    a1.shuffle();
+    var sa1s = a1.join('$#$');
+
+    fireunit.ok(sa1 == sa1a, 'Array.clone');
+    fireunit.ok(sa1 != sa1s && a1.sort().join('$#$') == a1a.sort().join('$#$'), 'Array.shuffle');
+
+    fireunit.ok([1,2,3,4].sum() == 10, 'Array.sum');
+    fireunit.ok([2,3,4,5].prod() == 120, 'Array.prod');
+
+    fireunit.ok([1,2,3,4,5,6].diff([1,2,3,4,10,6,7]).map(function(y) {
+        return (y === undefined ? '' : '[' + y + ']');
+    }, '').join() == ',,,,[5,10],'
+            , 'Array.diff');
+
+    a1 = [[1,2,3,4],[2,3,4],[[0,1],[0,1]]];
+    a2 = [1, 2, 3, 4, 2, 3, 4, 0, 1, 0, 1];
+    fireunit.ok(a1.flatten().join('$#$') == a2.join('$#$'), 'Array.flatten');
+
+    fireunit.ok(range(10).join('$#') == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].join('$#'), 'range(n)');
+
+
+</script>
+</body>
+</html>
