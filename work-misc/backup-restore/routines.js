@@ -387,8 +387,8 @@ function make_clone_sql(name, id, tagged) {
 
     // HARDCODE
     if (name == 'BLOCK') {
-        print('\t\tUPDATE #BLOCK_HEADER SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;');
-        print('\t\tUPDATE #FIELD_CONTRACTS_BLOCKS SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;');
+        print('\t\tUPDATE #BLOCK_HEADER_BLOCK SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;');
+        print('\t\tUPDATE #FIELD_CONTRACTS_BLOCKS_BLOCK SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;');
     }
 
     print(uniq_pipe(nodelist, format_iterate_ids));

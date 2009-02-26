@@ -133,4 +133,6 @@ function init_tax_system()
     // TAXSYSTEM
     node('TAX_SYSTEM');
     node('TAX_SYSTEM_SHEETS', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
+
+    add_name('TAX_SYSTEM', 'TAX_SYSTEM_NAME');
 }
