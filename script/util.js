@@ -360,7 +360,7 @@ F.timeit = function( self, args ) {
     return (time < 1000) ? time + 'ms' : (time / 1000).toFixed(3) + 's';
 };
 
-F.detach = function( obj ) {
+F.bind = F.detach = function( obj ) {
     var fn = this;
     return function() {
         return fn.apply(obj, arguments);

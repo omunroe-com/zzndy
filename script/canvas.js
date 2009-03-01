@@ -19,7 +19,7 @@
 
     var C, G;
 
-    if (!('CanvasRenderingContext2D' in this)) // WebKit
+    if ( !('CanvasRenderingContext2D' in this) ) // WebKit
     {
         var ctx = document.createElement('canvas').getContext('2d');
         C = ctx.__proto__;
@@ -35,8 +35,8 @@
 
     // Make canvas' methods chainable
     ('restore,rotate,save,scale,translate,arc,arcTo,bezierCurveTo,beginPath,clip,closePath,lineTo,moveTo,quadraticCurveTo,rect,stroke,strokeRect,clearRect,fill,fillRect,clip,drawImage,drawImageFromRect')
-            .split(',').forEach(function(method) {
-        if (method in C) {
+            .split(',').forEach(function( method ) {
+        if ( method in C ) {
             var meth = C[method];
             C[method] = function() {
                 return meth.apply(this, arguments) || this
@@ -51,7 +51,7 @@
         return this;
     };
 
-    C.strokeCircle = function(x, y, r)
+    C.strokeCircle = function( x, y, r )
     {
         return this.beginPath()
                 .arc(x, y, r, 0, Math.PI * 2, true)
@@ -59,7 +59,7 @@
                 .stroke();
     };
 
-    C.fillCircle = function(x, y, r)
+    C.fillCircle = function( x, y, r )
     {
         return this.beginPath()
                 .arc(x, y, r, 0, Math.PI * 2, true)
@@ -67,29 +67,29 @@
                 .fill();
     };
 
-    C.vLine = function(x, y, h) {
+    C.vLine = function( x, y, h ) {
         return this.fillRect(x, y, 1, h);
     };
 
-    C.hLine = function(x, y, w) {
+    C.hLine = function( x, y, w ) {
         return this.fillRect(x, y, w, 1);
     };
 
-    C.fillPoly = function(vx) {
+    C.fillPoly = function( vx ) {
         this.beginPath().moveTo(vx[0], vx[1]);
-        for (var i = 2; i < vx.length; i += 2)this.lineTo(vx[i], vx[i + 1]);
+        for ( var i = 2; i < vx.length; i += 2 )this.lineTo(vx[i], vx[i + 1]);
         return this.closePath().fill();
     };
 
-    C.strokePoly = function(vx) {
+    C.strokePoly = function( vx ) {
         this.beginPath().moveTo(vx[0], vx[1]);
-        for (var i = 2; i < vx.length; i += 2)this.lineTo(vx[i], vx[i + 1]);
+        for ( var i = 2; i < vx.length; i += 2 )this.lineTo(vx[i], vx[i + 1]);
         return this.stroke();
     };
 
     C.clear = function()
     {
-        if ('size' in this && 'origin' in this)
+        if ( 'size' in this && 'origin' in this )
             this.clearRect(this.origin.x, this.origin.y, this.size.w, this.size.h)
         return this;
     };
