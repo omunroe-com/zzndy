@@ -318,13 +318,29 @@ function make_clone_sql(name, id, tagged) {
         return {name:node, uniqs:get_uniqs(node)};
     }
 
+    function get_parent_refs(node)
+    {
+        function get_primaries(ref)
+        {
+            return {table:ref.pTable, id:ref.pColumn};
+        }
+
+        var rval = [{table:node.name, id:get_id(node.name)}];
+        for (var i in node.parents) {
+            var parent = node.parents[i];
+            rval.push(parent.map(get_primaries));
+        }
+
+        return rval;
+    }
+
     function uniq_pipe(nodelist, fmt_fn)
     {
         return nodelist
                 .map(get_name)
                 .filter(has_uniqs)
                 .map(get_uniq_struct)
-                .map(to_sql_struct(fmt_fn))
+                .map(to_sql(fmt_fn, prepare_sql_struct))
                 .flatten()
                 .filter(is_valid_sql)
                 .uniq();
@@ -383,7 +399,7 @@ function make_clone_sql(name, id, tagged) {
 
     // 6. Update IDs;
     print(comment('Update IDs'));
-    print(nodelist.map(to_sql(format_update_id)).flatten().filter(is_valid_sql));
+    print(nodelist.map(to_sql(format_update_id, prepare_parent_tee)).flatten().filter(is_valid_sql));
 
     // HARDCODE
     if (name == 'BLOCK') {
@@ -408,7 +424,7 @@ function make_clone_sql(name, id, tagged) {
     print(sql.update_tag.fmt({
         tagged: tagged,
         idField: id,
-        id: id,
+        id: 'NEW_' + id,
         tagField: tagField,
         owner: owner,
         op: get_operator(id)}));
@@ -580,12 +596,12 @@ function format_drop(name/*, idField, id*/)
     }).fmt({tmpSufix:'_' + objectName});
 }
 
-function prepare_sql_struct(struct, callback) {
-    var sqls = [];
-    for (var i = 0; i < struct.uniqs.length; ++i)
-        sqls.push(callback(struct.name, struct.uniqs[i], struct.uniqs[i]));
+function to_sql(fmt_fn, fn) {
+    fn = fn || prepare_sql;
 
-    return sqls;
+    return function(node) {
+        return fn(node, fmt_fn);
+    };
 }
 
 function prepare_sql(node, callback) {
@@ -602,14 +618,38 @@ function prepare_sql(node, callback) {
     return sqls;
 }
 
-function to_sql_struct(fmt_fn) {
-    return function(node) {
-        return prepare_sql_struct(node, fmt_fn);
-    };
+function prepare_sql_struct(node, callback) {
+    var sqls = [];
+    for (var i = 0; i < node.uniqs.length; ++i)
+        sqls.push(callback(node.name, node.uniqs[i], node.uniqs[i]));
+
+    return sqls;
 }
 
-function to_sql(fmt_fn) {
-    return function(node) {
-        return prepare_sql(node, fmt_fn);
+
+function prepare_parent_tee(node, callback)
+{
+    var id = get_id(node.name);
+    var sqls = [];
+
+    get_primaries = function(ref)
+    {
+        sqls.push(callback(ref.pTable, ref.pColumn, ref.pColumn));
     };
+
+    if (tee_defined(id))  {
+        for (var i = 0; i < get_tee(id).length; ++i)
+            sqls.push(callback(node.name, id, get_tee(id)[i]));
+    }
+    else
+    {
+        sqls.push(callback(node.name, id, id));
+
+        for (var i in node.parents) {
+            var parent = node.parents[i];
+            parent.forEach(get_primaries);
+        }
+    }
+
+    return sqls.uniq();
 }
