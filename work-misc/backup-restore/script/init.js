@@ -25,9 +25,9 @@ function init_field()
     node('FIELD_RESERVOIRS', 'FIE_ID', 'FIELD_HEADER');
     node('FIELD_RESV_LITHOLOGIES', 'FIE_ID', 'FIELD_HEADER');
     node('PT_CON_CASH_FLOW_DATA', 'TAX_NODE_ID', 'TAX_NODE');
-    node('PT_DETAIL_CASH_FLOW_DATA', 'TAX_NODE_ID', 'TAX_NODE');
     node('PT_DETAIL_CASH_FLOW_GROUP', 'TAX_NODE_ID', 'TAX_NODE');
     node('PT_DETAIL_CASH_FLOW_TIMESERIES', 'TAX_NODE_ID', 'TAX_NODE');
+    node('PT_DETAIL_CASH_FLOW_DATA', 'TAX_NODE_ID', 'TAX_NODE');
     node('PT_ECONOMIC_INDICATOR', 'TAX_NODE_ID', 'TAX_NODE');
     node('PT_OTHER_INDICATOR', 'TAX_NODE_ID', 'TAX_NODE');
     node('FIELD_ADDITIONAL', 'INV_ASS_ORIGINAL_ID', 'INV_ASS', 'INV_ASS_ID');
@@ -46,7 +46,12 @@ function init_field()
 
     add_update_ids(
             'PT_DETAIL_CASH_FLOW_TIMESERIES',
-            "\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_DATA{tmpSufix} SET {id} = @NEW_{id} WHERE {id} = @{id};\n"
+            '\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_DATA{tmpSufix} SET {id} = @NEW_{id} WHERE {id} = @{id};\n'
+            );
+
+    add_update_ids(
+            'PT_DETAIL_CASH_FLOW_GROUP',
+            '\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_TIMESERIES{tmpSufix} SET {id} = @NEW_{id} WHERE {id} = @{id};\n'
             );
 }
 
