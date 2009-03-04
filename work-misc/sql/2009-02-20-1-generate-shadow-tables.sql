@@ -14,6 +14,8 @@ GO
 --
 CREATE PROCEDURE SP_CREATE_SHADOW_TABLE @for_table VARCHAR(50)
 AS BEGIN
+	SET NOCOUNT ON;
+
     --
     -- Master table must exist.
     --
