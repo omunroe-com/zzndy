@@ -93,7 +93,7 @@ function print()
 
 function flush()
 {
-    var text = buffer.join(section_glue);
+    var text = buffer.join(statement_glue);
     write(text);
     buffer = [];
 }
