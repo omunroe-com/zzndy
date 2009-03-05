@@ -33,6 +33,7 @@ function init_field()
     node('FIELD_ADDITIONAL', 'INV_ASS_ORIGINAL_ID', 'INV_ASS', 'INV_ASS_ID');
     node('FIELD_ADDITIONAL', 'INV_ASS_REDIST_ID', 'INV_ASS', 'INV_ASS_ID');
     node('FIELD_ADDITIONAL', 'TAX_NODE_ID', 'TAX_NODE');
+    node('PT_CASHFLOW_GRAPH', 'FIE_ID', 'FIELD_ADDITIONAL');
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
 
