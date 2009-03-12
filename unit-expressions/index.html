@@ -3,6 +3,7 @@
 <html>
 <head>
   <title></title>
+    <script type="text/javascript" src="script/expression.js"></script>
     <script type="text/javascript" src="script/unit.js"></script>
     <script type="text/javascript" src="script/amount.js"></script>
     <meta name="http-equiv" content="Content-type: text/html; charset=utf8"/>
@@ -15,7 +16,11 @@
 		Unit.add('cm', 0.01, 'm');
 
 		Unit.add('m/s', 'velocity');
-		Unit.add('kph', 10/36, 'm/s');
+        Unit.add('kph', 10/36, 'm/s');
+
+        // Expecting these to be defined and aasigned to respective unit system automatically.
+        Unit.add('km/h');
+        Unit.add('mile/h');
 
 		Unit.add('s', 'time');
 

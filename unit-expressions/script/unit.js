@@ -77,6 +77,9 @@ Unit.add = function()
     var group = '', conversions = {};
     console.log(arguments);
 
+    if(arguments.length == 1)   {
+        group = deduce_group(name);
+    }
     if(arguments.length == 2)    {
         group = arguments[1];
         if(groups[group] === undefined) groups[group] = {};
@@ -101,6 +104,13 @@ Unit.system = function(new_system)
     if(systems[system] === undefined)
         systems[system] = {};
 }
+
+function deduce_group(unitname)
+{
+    var unitExpr = new Expression(unitname);
+    console.log(unitExpr);
+}
+
 
 
 function addUnit(unit)

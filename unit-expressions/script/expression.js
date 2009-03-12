@@ -79,9 +79,10 @@ function infix2postfix(infix)
  */
 Expression = function() {
     switch (arguments.length) {
-        case 1: // postfix
-            var op = arguments[0].pop();
-            var expr = getExpr(op, arguments[0]);
+        case 1: // infix string
+            var postfix = infix2postfix(tokenize(arguments[0]));
+            var op = postfix.pop();
+            var expr = getExpr(op, postfix);
             this.op = expr.op;
             this.left = expr.left;
             this.right = expr.right;
