@@ -8,6 +8,15 @@
 </head>
 <body>
 <script type="text/javascript">
+/**
+ * @constructor
+ * @param {Number} x x coordinate
+ * @param {Number} y y coordinate
+ * @param {Number} m magnitude
+ * @param {Number} h hue
+ * @param {Number} s saturation
+ * @param {Number} v value
+ */
 function Blip(x, y, m, h, s, v)
 {
     this.x = x;
@@ -31,7 +40,7 @@ Blip.prototype.toString = function()
     var m = prepare(2, this.m - 4);
 
     return parseInt(h.substr(0, 4) + x + m + y + h.substr(4), 2).toString(16);
-}
+};
 
 /**
  * Set blip fields from given string mutable representation
@@ -50,13 +59,13 @@ Blip.prototype.fromString = function(str)
     this.v = .5;
 
     return this;
-}
+};
 
 Blip.prototype.render = function(ctx)
 {
     ctx.renderBlip(this);
     return this;
-}
+};
 
 /**
  * Converts an HSV color value to RGB. Conversion formula adapted from
@@ -87,8 +96,7 @@ function hsvToRgb(h, s, v) {
     }
 
     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
-;
+};
 
 var ox = -400, oy = -250, dx = 7, dy = 7;
 
@@ -108,7 +116,7 @@ function rateBlip(blip) {
     //var az = Math.acos((1+xdy/r)/2) / Math.PI;
     //score += Math.abs(az - blip.h) * Math.abs(az - blip.h);
 
-    return score
+    return score;
 }
 
 /**
@@ -170,7 +178,7 @@ CanvasRenderingContext2D.prototype.renderBlip = function(blip) {
     return this
             .strokeRect(blip.x * dx - blip.m / 2 + ox, blip.y * dy - blip.m / 2 + oy, blip.m, blip.m)
             .fillRect(blip.x * dx - blip.m / 2 + ox, blip.y * dy - blip.m / 2 + oy, blip.m, blip.m);
-}
+};
 
 function renderPlanet() {
     ctx.fillStyle = ctx.createRadialGradient(-30, -30, 5, -30, -30, 100);
@@ -207,7 +215,7 @@ function showGeneration(gen, pop)
 
 /**
  * Construct blip object
- * @param {string} str - blip string mutable representation
+ * @param {String} str - blip string mutable representation
  */
 function makeBlip(str)
 {
@@ -252,10 +260,10 @@ function evolve(firstGen, generations, sort, fittestPct, generationFn, construct
         if (gen < generations) {
             var callback = function() {
                 fn(newpop, ++gen);
-            }
+            };
             window.setTimeout(callback, delay);
         }
-    }
+    };
 
     fn(firstGen, 0);
 }

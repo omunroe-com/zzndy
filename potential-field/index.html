@@ -1,145 +1,98 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Potential Field</title>
-    <link rel="stylesheet" type="text/css" href="../style/common.css"/>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="../script/util.js"></script>
+    <script type="text/javascript" src="../script/canvas.js"></script>
+    <script type="text/javascript" src="script/vector.js"></script>
+    <script type="text/javascript" src="script/pf.js"></script>
+    <title>Potential field</title>
     <style type="text/css">
         canvas {
             border: 1px solid;
         }
     </style>
-    <script type="text/javascript" src="../script/util.js"></script>
-    <script type="text/javascript" src="../script/canvas.js"></script>
-
-    <script type="text/javascript" src="script/vector.js"></script>
 </head>
 <body>
-<br/>
+<div id="container">
+    <div class="content header">
+        <h1>Potential field</h1>
+    </div>
 
-<div id="target"></div>
-<script type="text/javascript">
-    var deg = Math.PI / 180;
-    var canvas = document.createElement('canvas');
-    canvas.setAttribute('width', '800px');
-    canvas.setAttribute('height', '500px');
-    var ctx = canvas.getContext('2d');
-    ctx.strokeStyle = '#c4c0ba';
-    ctx.fillStyle = '#c4c0ba';
-    document.getElementById('target').appendChild(canvas);
+    <div class="content">
+        <canvas id="target" width="800px" height="500px">Convas is not supported in this browser.</canvas>
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    var ctx = document.getElementById('target').getContext('2d');
+    ctx.strokeStyle = '#D7D7D7';
+    ctx.fillStyle = '#D7D7D7';
 
-    var field = [], n = 50, m = 80, i = -1;
+    var n = 25, m = 40;
     var dx = 800 / m, dy = 500 / n;
-
-    function Goal(point, radius, spread)
+    ctx.translate(dx / 2, dy / 2);
+    function drawField( ctx, fld )
     {
-        this.point = point;
-        this.r = radius;
-        this.s = spread;
-    }
-
-    Goal.prototype.getVector = function(point, max)
-    {
-        var dx = this.point.x - point.x, dy = this.point.y - point.y;
-        var d = Math.sqrt(dx * dx + dy * dy);
-
-        var ang = Math.atan2(dy, dx), a = max / this.s;
-
-        var v;
-        if (d <= this.r)
-            v = new Vector(0, 0);
-        else if (d >= this.s)
-            v = new Vector(a * this.s * Math.cos(ang), a * this.s * Math.sin(ang));
-        else
-            v = new Vector(a * (d - this.r) * Math.cos(ang), a * (d - this.r) * Math.sin(ang));
-
-        if (d <= this.r) a = 0;
-
-        return v;
-    };
-
-    Goal.prototype.draw = function(ctx)
-    {
-        ctx
-                .fillCircle(this.point.x, this.point.y, this.r)
-                //.strokeCircle(this.point.x, this.point.y, this.s);
-    }
-
-    function Obstacle(point, radius, spread)
-    {
-        this.point = point;
-        this.r = radius;
-        this.s = spread;
-    }
-    Obstacle.prototype = new Goal;
-    Obstacle.prototype.getVector = function (point, max)
-    {
-        var dx = this.point.x - point.x, dy = this.point.y - point.y;
-        var d = Math.sqrt(dx * dx + dy * dy);
-
-        var ang = Math.atan2(dy, dx), a = - max / this.s;
-
-        var v;
-        if (d <= this.r)
-            v = new Vector(a * this.s * Math.cos(ang), a * this.s * Math.sin(ang));
-        else if (d >= this.s)
-            v = new Vector(0, 0);
-        else
-            v = new Vector(a * (this.s + this.r - d) * Math.cos(ang), a * (this.s + this.r - d) * Math.sin(ang));
-
-        if (d <= this.r) a = 0;
-
-        return v;
-    }
-
-    ctx.translate(dx/2, dy/2);
-    var goal = new Goal(new Point(300, 300), 25, 150);
-    var obst0 = new Obstacle(new Point(600, 140), 15, 100);
-    var obst1 = new Obstacle(new Point(100, 90), 13, 75);
-    var obst2 = new Obstacle(new Point(570, 320), 18, 125);
-
-    while (++i < n)
-    {
-        field[i] = [];
-        var j = -1;
-        while (++j < m)
+        var i = -1;
+        while( ++i < fld.rows )
         {
-            var point = new Point(j * dx, i * dy)
-            field[i][j] = new Force(
-                    point,
-                    goal.getVector(point, dx/2)
-                            .add(obst0.getVector(point, dx/1.5))
-                            .add(obst1.getVector(point, dx/1.5))
-                            .add(obst2.getVector(point, dx/1.5))
-                    );
+            var j = -1;
+            while( ++j < fld.cols )
+            {
+                ctx.fillCircle(j * dx, i * dy, 1.5)
+                        .moveTo(j * dx, i * dy)
+                        .lineTo((j + fld.body[i][j].x ) * dx, (i + fld.body[i][j].y) * dy)
+                        .stroke();
+            }
         }
     }
 
-    goal.draw(ctx);
-    obst0.draw(ctx);
-    obst1.draw(ctx);
-    obst2.draw(ctx);
-    i = -1;
-    while (++i < n)
+    var base = new PotentialField(n, m);
+    var mouse = new Charge(19.3, 10.8, -.9);
+    var wall0 = new Wall(0, 20, 40, 0, 2, 10);
+
+    base.apply(wall0);
+
+    var fld = new PotentialField(n, m);
+    fld.apply(mouse);
+    fld = fld.add(base);
+
+    drawField(ctx, fld);
+
+    function getPos( e )
     {
-        var j = -1;
-        while (++j < m)
-        {
-            draw_force(ctx, field[i][j]);
-        }
+        return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
     }
 
-    function draw_force(ctx, force)
+    function mousemove( e )
     {
-        ctx.save()
-                .translate(force.point.x, a1 = force.point.y)
-                .fillCircle(0, 0, 1.5)
-                .beginPath()
-                .moveTo(0, 0)
-                .lineTo(force.vector.x, a1 = force.vector.y)
-                .closePath()
-                .stroke()
-                .restore();
+        var pos = getPos(e);
+
+        var fld = new PotentialField(n, m);
+
+        mouse.x = (pos.x - dx / 2) / dx;
+        mouse.y = (pos.y - dy / 2) / dy;
+
+        fld.apply(mouse);
+        fld = fld.add(base);
+
+        ctx.clearRect(-dx / 2, -dy / 2, 800, 500);
+        drawField(ctx, fld);
+        ctx.moveTo(wall0.x1 * dx, wall0.y1 * dy)
+                .lineTo(wall0.x2 * dx, wall0.y2 * dy)
+                .stroke();
     }
+
+    document.getElementById('target').onmousemove = mousemove;
 
 </script>
 </body>
