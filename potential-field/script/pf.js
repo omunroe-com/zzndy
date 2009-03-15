@@ -65,8 +65,6 @@ C.getVector = function( x, y )
     var dx = this.x - x, dy = this.y - y;
     var d2 = dx * dx + dy * dy;
 
-    var ang = Math.atan2(dy, dx);
-
 
     var v;
     if( d2 > this.r2 )
@@ -75,6 +73,7 @@ C.getVector = function( x, y )
     }
     else
     {
+        var ang = Math.atan2(dy, dx);
         var k = this.m * (this.r2 - d2) / this.r2;
         v = new Vector(k * Math.cos(ang), k * Math.sin(ang));
     }
@@ -93,25 +92,28 @@ function Wall( x1, y1, x2, y2, magnitude, reach )
     this.reach = reach || this.m * 10;
     this.r2 = this.reach * this.reach;
     this.len = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+
+    this.dx = x2 - x1;
+    this.dy = y2 - y1;
 }
 
 var W = Wall.prototype;
 W.getVector = function( x, y )
 {
-    var d = Math.abs((this.x2 - this.x1) * (this.y1 + y) - (this.x1 - x) * (this.y2 + this.y1) / this.len);
+    var A = x - this.x1;
+    var B = y - this.y1;
+    var s = A * this.dy - this.dx * B;
+    var d = Math.abs(s) / this.len;
+    s = s >= 0 ? 1 : -1;
 
     var v;
     if( d > this.reach ) {
         v = new Vector(0, 0);
     }
     else {
+        var ang = Math.atan2(this.dy, this.dx) - s * Math.PI / 2;
         var k = this.m * (this.reach - d) / this.reach;
-        v = new Vector(0, k);
+        v = new Vector(k * Math.cos(ang), k * Math.sin(ang));
     }
     return v;
-};
-
-W.dist = function(x, y)
-{
-    return Math.abs((this.x2 - this.x1) * (this.y1 - y) - (this.x1 - x) * (this.y2 - this.y1) / this.len);
 };

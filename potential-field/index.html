@@ -33,6 +33,7 @@
     </div>
 </div>
 <script type="text/javascript" language="JavaScript">
+
     var ctx = document.getElementById('target').getContext('2d');
     ctx.strokeStyle = '#D7D7D7';
     ctx.fillStyle = '#D7D7D7';
@@ -57,10 +58,16 @@
     }
 
     var base = new PotentialField(n, m);
-    var mouse = new Charge(19.3, 10.8, -.9);
-    var wall0 = new Wall(0, 20, 40, 0, 2, 10);
+    var mouse = new Charge(19.3, 10.8, -.7);
+    var wall0 = new Wall(-.5, -.5, m, -.5, 1.2, 4);
+    var wall1 = new Wall(m, -.5, m, n, 1.2, 4);
+    var wall2 = new Wall(-.5, n, m, n, 1.2, 4);
+    var wall3 = new Wall(-.5, -.5, -.5, n, 1.2, 4);
 
-    base.apply(wall0);
+    base.apply(wall0)
+            .apply(wall1)
+            .apply(wall2)
+            .apply(wall3);
 
     var fld = new PotentialField(n, m);
     fld.apply(mouse);
@@ -87,9 +94,6 @@
 
         ctx.clearRect(-dx / 2, -dy / 2, 800, 500);
         drawField(ctx, fld);
-        ctx.moveTo(wall0.x1 * dx, wall0.y1 * dy)
-                .lineTo(wall0.x2 * dx, wall0.y2 * dy)
-                .stroke();
     }
 
     document.getElementById('target').onmousemove = mousemove;
