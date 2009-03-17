@@ -258,6 +258,9 @@ function make_restore_sql(name, id, tagged) {
         print(nodelist.filter(not_id).map(to_sql(format_set)).flatten().filter(is_valid_sql).uniq());
 
     // 2. Delete user version;
+    if (name in restore_before_delete)
+        print(restore_before_delete[name]);
+
     print(comment('Delete user version'));
     print(nodelist.map(to_sql(format_del)).flatten().reverse());
 
@@ -274,10 +277,15 @@ function make_restore_sql(name, id, tagged) {
     print(comment('Restore data'));
     print(nodelist.map(to_sql(format_copy)).flatten());
 
+    if (name in restore_after_restore)
+        print(restore_after_restore[name]);
+
     // 4. Delete backup.
     setup_backup();
+
     print(comment('Delete backup'));
     print(nodelist.map(to_sql(format_del)).flatten().uniq().reverse());
+
 
     // 5. update tags;
     setup_restore();
@@ -316,22 +324,6 @@ function make_clone_sql(name, id, tagged) {
 
     function get_uniq_struct(node) {
         return {name:node, uniqs:get_uniqs(node)};
-    }
-
-    function get_parent_refs(node)
-    {
-        function get_primaries(ref)
-        {
-            return {table:ref.pTable, id:ref.pColumn};
-        }
-
-        var rval = [{table:node.name, id:get_id(node.name)}];
-        for (var i in node.parents) {
-            var parent = node.parents[i];
-            rval.push(parent.map(get_primaries));
-        }
-
-        return rval;
     }
 
     function uniq_pipe(nodelist, fmt_fn)
@@ -637,7 +629,7 @@ function prepare_parent_tee(node, callback)
         sqls.push(callback(ref.pTable, ref.pColumn, ref.pColumn));
     };
 
-    if (tee_defined(id))  {
+    if (tee_defined(id)) {
         for (var i = 0; i < get_tee(id).length; ++i)
             sqls.push(callback(node.name, id, get_tee(id)[i]));
     }

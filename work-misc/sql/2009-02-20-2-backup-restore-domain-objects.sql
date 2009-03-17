@@ -868,6 +868,24 @@ BEGIN
 		SELECT @INV_ASS_ID = INV_ASS_ID FROM FIELD_COMPLEX WHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;
 
 		--
+		-- Save fieds dependant on this complex
+		--
+
+		SELECT FIE_ID INTO #TEMP_FIELD_IDS
+			FROM FIELD_ADDITIONAL
+			WHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;
+
+		--
+		-- Unbind dependant fields
+		--
+
+		UPDATE FIELD_ADDITIONAL
+			SET FIELD_COMPLEX_ID = NULL
+			FROM FIELD_ADDITIONAL
+			INNER JOIN #TEMP_FIELD_IDS
+				ON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;
+
+		--
 		-- Delete user version
 		--
 
@@ -908,6 +926,18 @@ BEGIN
 		INSERT INTO INV_ASS_TUPLE_DATA
 			SELECT * FROM INV_ASS_TUPLE_DATA_SHADOW
 			WHERE INV_ASS_ID = @INV_ASS_ID;
+
+		--
+		-- Restore link between fields and complex being restored
+		--
+
+		UPDATE FIELD_ADDITIONAL
+			SET FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID
+			FROM FIELD_ADDITIONAL
+			INNER JOIN #TEMP_FIELD_IDS
+			ON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;
+
+		DROP TABLE #TEMP_FIELD_IDS;
 
 		--
 		-- Delete backup
@@ -1529,9 +1559,9 @@ GO
 GRANT EXEC ON [SP_RESTORE_TAXSYSTEM] TO [abu]
 GO
 
---
--- Create tables to backup field domain object.
---
+		--
+		-- Create tables to backup field domain object.
+		--
 
 EXEC SP_CREATE_SHADOW_TABLE 'FIELD_HEADER';
 GO

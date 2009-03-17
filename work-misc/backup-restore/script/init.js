@@ -15,6 +15,9 @@ add_tagged('FIELD_COMPLEX');
 add_tagged('BLOCK_ADDITIONAL');
 add_tagged('COMPANY_ADDITIONAL');
 
+var restore_before_delete = {};
+var restore_after_restore = {};
+
 function init_field()
 {
     // FIELD
@@ -84,6 +87,36 @@ function init_complex()
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
 
     add_name('FIELD_COMPLEX', 'FIELD_COMPLEX_NAME');
+
+    restore_before_delete['COMPLEX'] =
+    '\t\t--\n'
+            + '\t\t-- Save fieds dependant on this complex\n'
+            + '\t\t--\n\n'
+            + '\t\tSELECT FIE_ID INTO #TEMP_FIELD_IDS\n'
+            + '\t\t\tFROM FIELD_ADDITIONAL\n'
+            + '\t\t\tWHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;\n'
+            + '\n'
+            + '\t\t--\n'
+            + '\t\t-- Unbind dependant fields\n'
+            + '\t\t--\n\n'
+            + '\t\tUPDATE FIELD_ADDITIONAL\n'
+            + '\t\t\tSET FIELD_COMPLEX_ID = NULL\n'
+            + '\t\t\tFROM FIELD_ADDITIONAL\n'
+            + '\t\t\tINNER JOIN #TEMP_FIELD_IDS\n'
+            + '\t\t\t\tON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;';
+
+    restore_after_restore['COMPLEX'] =
+    '\t\t--\n'
+            + '\t\t-- Restore link between fields and complex being restored\n'
+            + '\t\t--\n\n'
+            + '\t\tUPDATE FIELD_ADDITIONAL\n'
+            + '\t\t\tSET FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID\n'
+            + '\t\t\tFROM FIELD_ADDITIONAL\n'
+            + '\t\t\tINNER JOIN #TEMP_FIELD_IDS\n'
+            + '\t\t\tON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;\n'
+            + '\n'
+            + '\t\tDROP TABLE #TEMP_FIELD_IDS;';
+
 }
 
 function init_globals()
