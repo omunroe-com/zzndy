@@ -40,7 +40,8 @@ function init_field()
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('FIELD_WELL_TABLE', 'FIE_ID', 'FIELD_HEADER');
-    node('PT_SUMMARY_GRAPH', 'FIE_ID', 'FIELD_HEADER')
+    node('PT_SUMMARY_GRAPH', 'FIE_ID', 'FIELD_HEADER');
+    node('FIELD_REPORT', 'FIE_ID', 'FIELD_HEADER')
 
     add_name('FIELD_HEADER', 'FIELD_NAME');
 
