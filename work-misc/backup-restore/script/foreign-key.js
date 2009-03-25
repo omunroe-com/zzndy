@@ -23,7 +23,7 @@
     };
 
     ForeingKey.prototype.toString = function() {
-        return [this.pTable, this.pColumn, '->', this.fTable, this.fColumn].join(' ');
+        with ( this ) return [pTable, pColumn, '->', fTable, fColumn].join(' ');
     };
 
     /**
@@ -35,7 +35,7 @@
      */
     fk = function(pt, pc, ft, fc) {
         var ln = new ForeingKey(pt, pc, ft, fc);
-        var desc = ln.toString()
+        var desc = ln.toString();
         if (!(desc in fks))
             fks[desc] = ln;
 
@@ -93,4 +93,4 @@
         ids = {};
         tees = {};
     };
-})()
+})();

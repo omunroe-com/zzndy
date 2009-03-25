@@ -18,6 +18,9 @@ add_tagged('COMPANY_ADDITIONAL');
 var restore_before_delete = {};
 var restore_after_restore = {};
 
+var paths = {};
+
+
 function init_field()
 {
     // FIELD
@@ -37,11 +40,15 @@ function init_field()
     node('FIELD_ADDITIONAL', 'INV_ASS_REDIST_ID', 'INV_ASS', 'INV_ASS_ID');
     node('FIELD_ADDITIONAL', 'TAX_NODE_ID', 'TAX_NODE');
     node('PT_CASHFLOW_GRAPH', 'FIE_ID', 'FIELD_ADDITIONAL');
+
+    //node('INV_ASS_DATA', 'INV_ASS_ID', 'FIELD_PHASE_DEVELOPMENT');
+    //node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'FIELD_PHASE_DEVELOPMENT');
+
     node('INV_ASS_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('INV_ASS_TUPLE_DATA', 'INV_ASS_ID', 'INV_ASS');
     node('FIELD_WELL_TABLE', 'FIE_ID', 'FIELD_HEADER');
     node('PT_SUMMARY_GRAPH', 'FIE_ID', 'FIELD_HEADER');
-    node('FIELD_REPORT', 'FIE_ID', 'FIELD_HEADER')
+    node('FIELD_REPORT', 'FIE_ID', 'FIELD_HEADER');
 
     add_name('FIELD_HEADER', 'FIELD_NAME');
 
@@ -49,7 +56,6 @@ function init_field()
     add_uniq('PT_DETAIL_CASH_FLOW_GROUP');
     add_uniq('PT_DETAIL_CASH_FLOW_TIMESERIES');
     add_uniq('PT_ECONOMIC_INDICATOR');
-    add_uniq('FIELD_PHASE_DEVELOPMENT', 'PHASE_ID');
 
     add_update_ids(
             'PT_DETAIL_CASH_FLOW_TIMESERIES',
@@ -60,6 +66,9 @@ function init_field()
             'PT_DETAIL_CASH_FLOW_GROUP',
             '\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_TIMESERIES{tmpSufix} SET {id} = @NEW_{id} WHERE {id} = @{id};\n'
             );
+
+    add_path('FIELD', new Path(true, 'INV_ASS_TUPLE_DATA', 'FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'INV_ASS_ID', 'INV_ASS'));
+    add_path('FIELD', new Path(true, 'INV_ASS', 'FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'INV_ASS_ID', 'INV_ASS'));
 }
 
 function init_block()

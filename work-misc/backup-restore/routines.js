@@ -116,8 +116,22 @@ var sql = {
                     + '\t\tEND\n'
                     + '\t\t\n'
                     + '\t\tCLOSE FIELDS_CURSOR;\n'
-                    + '\t\tDEALLOCATE FIELDS_CURSOR;'
+                    + '\t\tDEALLOCATE FIELDS_CURSOR;' ,
 
+    select_path :
+            '\t\tSELECT {childTable}.* FROM {childTable}\n'
+                    + '\t\t\tINNER JOIN {mediumTable}\n'
+                    + '\t\t\t\tON {childTable}.{childId} = {mediumTable}.{mediumChildId}\n'
+                    + '\t\t\tWHERE {mediumTable}.{mediumParentId} = @{parentId};',
+
+    delete_path :
+            '\t\tDELETE FROM {childTable}\n'
+                    + '\t\t\tWHERE {childTable}.{childId} IN\n'
+                    + '\t\t\t(\n'
+                    + '\t\t\t\tSELECT {mediumTable}.{mediumChildId}\n'
+                    + '\t\t\t\t\tFROM {mediumTable}\n'
+                    + '\t\t\t\t\tWHERE {mediumTable}.{mediumParentId} = @{parentId}\n'
+                    + '\t\t\t);'
 };
 
 var declares = {};
@@ -134,7 +148,6 @@ declares['COMPLEX'] = '\t\tSELECT @INV_ASS_ID = INV_ASS_ID FROM FIELD_COMPLEX WH
 declares['GLOBALS'] = '';
 
 var objectName = '<unset>';
-
 
 function make_backup_sql(name, id, tagged) {
     function not_id(node) {
@@ -176,11 +189,18 @@ function make_backup_sql(name, id, tagged) {
 
     // 3. Delete any old backup information;
     print(comment('Delete old backup'));
+
+    if (name in paths)
+        print(print_path_delete(name));
+
     print(nodelist.map(to_sql(format_del)).flatten().reverse());
 
     // 4. Copy data to shadow tables;
     print(comment('Backup data'));
     print(nodelist.map(to_sql(format_copy)).flatten());
+
+    if (name in paths)
+        print_path_insert(name);
 
     // 5. Update tag.
     print(comment('Update tag'));
@@ -195,6 +215,38 @@ function make_backup_sql(name, id, tagged) {
     print(sql.sp_end);
     print(sql.grant_sp.fmt({action:'BACKUP', name:name}));
     objectName = '<unset>';
+}
+
+function print_path_delete(name)
+{
+    if (!(name in paths))
+        throw new Error("Cannot generate delete statement for nonexistent path " + name);
+
+    var path = paths[name];
+    return path.map(function(el) {
+        var x = clone(el);
+
+        x.childTable = target_prefix + el.childTable + target_suffix;
+        x.mediumTable = target_prefix + el.mediumTable + target_suffix;
+
+        return sql.delete_path.fmt(x);
+    });
+}
+
+function print_path_insert(name)
+{
+    if (!(name in paths))
+        throw new Error("Cannot generate insert statement for nonexistent path " + name);
+
+    var path = paths[name];
+    print(path.map(function(el) {
+        var x = clone(el);
+
+        x.childTable = source_prefix + el.childTable + source_suffix;
+        x.mediumTable = source_prefix + el.mediumTable + source_suffix;
+
+        return ('\t\tINSERT INTO ' + el.childTable + target_suffix + '\n' + sql.select_path).fmt(x);
+    }));
 }
 
 
@@ -225,6 +277,26 @@ function make_restore_sql(name, id, tagged) {
         return get_id(node.name) != id;
     }
 
+    function del_path(sqls)
+    {
+        if (!paths_deleted && name in paths) {
+            var node_name = sqls[0].match(/DELETE FROM (\w+)/)[1];
+            deleted_nodes[node_name] = true;
+
+            if (paths[name][0].mediumTable in deleted_nodes) {
+                sqls = print_path_delete(name).concat(sqls);
+                paths_deleted = true;
+            }
+        }
+        else del_path = function(sqls) {
+            return sqls;
+        };
+
+        return sqls;
+    }
+
+    var deleted_nodes = {};
+    var paths_deleted = false;
     objectName = name;
     var out = [];
 
@@ -262,7 +334,7 @@ function make_restore_sql(name, id, tagged) {
         print(restore_before_delete[name]);
 
     print(comment('Delete user version'));
-    print(nodelist.map(to_sql(format_del)).flatten().reverse());
+    print(nodelist.map(to_sql(format_del)).map(del_path).flatten().reverse());
 
     print(comment('Set id variables acording to backed copy'));
     if (name in declares)
@@ -276,6 +348,8 @@ function make_restore_sql(name, id, tagged) {
     // 3. Copy data from shadow tables;
     print(comment('Restore data'));
     print(nodelist.map(to_sql(format_copy)).flatten());
+    if (name in paths)
+        print_path_insert(name);
 
     if (name in restore_after_restore)
         print(restore_after_restore[name]);
@@ -284,8 +358,11 @@ function make_restore_sql(name, id, tagged) {
     setup_backup();
 
     print(comment('Delete backup'));
-    print(nodelist.map(to_sql(format_del)).flatten().uniq().reverse());
 
+    if (name in paths)
+        print(print_path_delete(name));
+
+    print(nodelist.map(to_sql(format_del)).flatten().uniq().reverse());
 
     // 5. update tags;
     setup_restore();
@@ -598,6 +675,10 @@ function to_sql(fmt_fn, fn) {
 
 function prepare_sql(node, callback) {
     var id = get_id(node.name);
+
+    if (id == null)
+        console.log(node.name, '-> NULL');
+
     var sqls = [];
 
     if (tee_defined(id))
