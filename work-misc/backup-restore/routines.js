@@ -494,7 +494,7 @@ function make_clone_sql( name, id, tagged ) {
     }
     else if ( name == 'FIELD' )
     {
-        print('\t\tUPDATE #FIELD_ADDITIONAL_FIELD SET COMPELX_ID = NULL WHERE FIE_ID = @FIE_ID');
+        print('\t\tUPDATE #FIELD_ADDITIONAL_FIELD SET FIELD_COMPLEX_ID = NULL WHERE FIE_ID = @FIE_ID');
     }
 
     print(uniq_pipe(nodelist, format_iterate_ids));
