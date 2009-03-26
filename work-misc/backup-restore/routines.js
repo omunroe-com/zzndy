@@ -131,6 +131,13 @@ var sql = {
                     + '\t\t\t\tSELECT {mediumChildId}\n'
                     + '\t\t\t\t\tFROM {mediumTable}\n'
                     + '\t\t\t\t\tWHERE {mediumParentId} = @{parentId}\n'
+                    + '\t\t\t);'  ,
+    delete_saved_path :
+            '\t\tDELETE FROM {childTable}\n'
+                    + '\t\t\tWHERE {childTable}.{childId} IN\n'
+                    + '\t\t\t(\n'
+                    + '\t\t\t\tSELECT {childId}\n'
+                    + '\t\t\t\t\tFROM #TEMP_{childId}S\n'
                     + '\t\t\t);'
 };
 
@@ -226,7 +233,7 @@ function make_backup_sql( name, id, tagged ) {
     objectName = '<unset>';
 }
 
-function print_path_delete( name )
+function print_path_delete( name, statement )
 {
     if ( !(name in paths) )
         throw new Error("Cannot generate delete statement for nonexistent path " + name);
@@ -238,7 +245,7 @@ function print_path_delete( name )
         x.childTable = target_prefix + el.childTable + target_suffix;
         x.mediumTable = target_prefix + el.mediumTable + target_suffix;
 
-        return sql.delete_path.fmt(x);
+        return (statement || sql.delete_path).fmt(x);
     });
 }
 
@@ -255,7 +262,7 @@ function print_path_insert( name )
         x.mediumTable = source_prefix + el.mediumTable + source_suffix;
 
         return ('\t\tINSERT INTO ' + el.childTable + target_suffix + '\n' + sql.select_path).fmt(x);
-    }));
+    }).reverse());
 }
 
 
@@ -293,7 +300,7 @@ function make_restore_sql( name, id, tagged ) {
             deleted_nodes[node_name] = true;
 
             if ( paths[name][0].mediumTable in deleted_nodes ) {
-                sqls = print_path_delete(name).reverse().concat(sqls);
+                sqls = print_path_delete(name, sql.delete_saved_path).reverse().concat(sqls);
                 paths_deleted = true;
             }
         }
@@ -356,9 +363,10 @@ function make_restore_sql( name, id, tagged ) {
 
     // 3. Copy data from shadow tables;
     print(comment('Restore data'));
-    print(nodelist.map(to_sql(format_copy)).flatten());
     if ( name in paths )
         print_path_insert(name);
+    print(nodelist.map(to_sql(format_copy)).flatten());
+
 
     if ( name in restore_after_restore )
         print(restore_after_restore[name]);

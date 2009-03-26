@@ -3,7 +3,6 @@
 
     /**
      * @constructor
-     * @param {Boolean} destructive    specifyes if processing of this path involved removing child objects
      * @param {String} childTable      child table name
      * @param {String} mediumTable     mediator table name
      * @param {String} parentId        ID field in parent table

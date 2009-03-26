@@ -77,7 +77,7 @@ function init_field()
             + '\t\t--\n\n'
 
             + '\t\tSELECT INV_ASS.INV_ASS_ID, FIELD_PHASE_DEVELOPMENT.PHASE_ID\n'
-            + '\t\t\tINTO #TEMP_PHASE_TO_IA\n'
+            + '\t\t\tINTO #TEMP_INV_ASS_IDS\n'
             + '\t\t\tFROM INV_ASS\n'
             + '\t\t\tINNER JOIN FIELD_PHASE_DEVELOPMENT\n'
             + '\t\t\t\tON FIELD_PHASE_DEVELOPMENT.INV_ASS = INV_ASS.INV_ASS_ID\n'
@@ -97,12 +97,12 @@ function init_field()
             + '\t\t--\n\n'
 
             + '\t\tUPDATE FIELD_PHASE_DEVELOPMENT\n'
-            + '\t\t\tSET FIELD_PHASE_DEVELOPMENT.INV_ASS = #TEMP_PHASE_TO_IA.INV_ASS_ID\n'
+            + '\t\t\tSET FIELD_PHASE_DEVELOPMENT.INV_ASS = #TEMP_INV_ASS_IDS.INV_ASS_ID\n'
             + '\t\t\tFROM FIELD_PHASE_DEVELOPMENT\n'
-            + '\t\t\tINNER JOIN #TEMP_PHASE_TO_IA\n'
-            + '\t\t\t\tON FIELD_PHASE_DEVELOPMENT.PHASE_ID = #TEMP_PHASE_TO_IA.PHASE_ID;\n\n'
+            + '\t\t\tINNER JOIN #TEMP_INV_ASS_IDS\n'
+            + '\t\t\t\tON FIELD_PHASE_DEVELOPMENT.PHASE_ID = #TEMP_INV_ASS_IDS.PHASE_ID;\n\n'
 
-            + '\t\tDROP TABLE #TEMP_PHASE_TO_IA;';
+            + '\t\tDROP TABLE #TEMP_INV_ASS_IDS;';
 
 }
 
