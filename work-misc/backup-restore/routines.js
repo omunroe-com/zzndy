@@ -128,9 +128,9 @@ var sql = {
             '\t\tDELETE FROM {childTable}\n'
                     + '\t\t\tWHERE {childTable}.{childId} IN\n'
                     + '\t\t\t(\n'
-                    + '\t\t\t\tSELECT {mediumTable}.{mediumChildId}\n'
+                    + '\t\t\t\tSELECT {mediumChildId}\n'
                     + '\t\t\t\t\tFROM {mediumTable}\n'
-                    + '\t\t\t\t\tWHERE {mediumTable}.{mediumParentId} = @{parentId}\n'
+                    + '\t\t\t\t\tWHERE {mediumParentId} = @{parentId}\n'
                     + '\t\t\t);'
 };
 
@@ -239,7 +239,7 @@ function print_path_delete( name )
         x.mediumTable = target_prefix + el.mediumTable + target_suffix;
 
         return sql.delete_path.fmt(x);
-    }).reverse();
+    });
 }
 
 function print_path_insert( name )
@@ -293,7 +293,7 @@ function make_restore_sql( name, id, tagged ) {
             deleted_nodes[node_name] = true;
 
             if ( paths[name][0].mediumTable in deleted_nodes ) {
-                sqls = print_path_delete(name).concat(sqls);
+                sqls = print_path_delete(name).reverse().concat(sqls);
                 paths_deleted = true;
             }
         }
