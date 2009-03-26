@@ -11,10 +11,8 @@
      * @param {String} mediumChildId   field name in mediator table pointing to child (optional)
      * @param {String} mediumParentId  field name in mediator table pointing to parent (optional)
      */
-    Path = function(destructive, childTable, mediumTable, parentId, childId, mediumChildId, mediumParentId)
+    Path = function(childTable, mediumTable, parentId, childId, mediumChildId, mediumParentId)
     {
-        this.destructive = destructive;
-
         this.childTable = childTable;
         this.mediumTable = mediumTable;
         this.parentId = parentId;

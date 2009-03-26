@@ -56,6 +56,7 @@ function init_field()
     add_uniq('PT_DETAIL_CASH_FLOW_GROUP');
     add_uniq('PT_DETAIL_CASH_FLOW_TIMESERIES');
     add_uniq('PT_ECONOMIC_INDICATOR');
+    add_uniq('FIELD_PHASE_DEVELOPMENT', 'PHASE_ID');
 
     add_update_ids(
             'PT_DETAIL_CASH_FLOW_TIMESERIES',
@@ -67,8 +68,42 @@ function init_field()
             '\t\t\tUPDATE #PT_DETAIL_CASH_FLOW_TIMESERIES{tmpSufix} SET {id} = @NEW_{id} WHERE {id} = @{id};\n'
             );
 
-    add_path('FIELD', new Path(true, 'INV_ASS_TUPLE_DATA', 'FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'INV_ASS_ID', 'INV_ASS'));
-    add_path('FIELD', new Path(true, 'INV_ASS', 'FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'INV_ASS_ID', 'INV_ASS'));
+    add_path('FIELD', new Path('INV_ASS_TUPLE_DATA', 'FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'INV_ASS_ID', 'INV_ASS'));
+    add_path('FIELD', new Path('INV_ASS', 'FIELD_PHASE_DEVELOPMENT', 'FIE_ID', 'INV_ASS_ID', 'INV_ASS'));
+
+    restore_before_delete['FIELD'] =
+    '\t\t--\n'
+            + '\t\t-- Save IA dependant on this phase\n'
+            + '\t\t--\n\n'
+
+            + '\t\tSELECT INV_ASS.INV_ASS_ID, FIELD_PHASE_DEVELOPMENT.PHASE_ID\n'
+            + '\t\t\tINTO #TEMP_PHASE_TO_IA\n'
+            + '\t\t\tFROM INV_ASS\n'
+            + '\t\t\tINNER JOIN FIELD_PHASE_DEVELOPMENT\n'
+            + '\t\t\t\tON FIELD_PHASE_DEVELOPMENT.INV_ASS = INV_ASS.INV_ASS_ID\n'
+            + '\t\t\tWHERE FIELD_PHASE_DEVELOPMENT.FIE_ID = @FIE_ID;\n\n'
+
+            + '\t\t--\n'
+            + '\t\t-- Destroy Field-Phase-IA link\n'
+            + '\t\t--\n\n'
+
+            + '\t\tUPDATE FIELD_PHASE_DEVELOPMENT\n'
+            + '\t\t\tSET INV_ASS = NULL\n'
+            + '\t\t\tWHERE FIE_ID = @FIE_ID;';
+
+    restore_after_restore['FIELD'] =
+    '\t\t--\n'
+            + '\t\t-- Restore Field-Phase-IA link\n'
+            + '\t\t--\n\n'
+
+            + '\t\tUPDATE FIELD_PHASE_DEVELOPMENT\n'
+            + '\t\t\tSET FIELD_PHASE_DEVELOPMENT.INV_ASS = #TEMP_PHASE_TO_IA.INV_ASS_ID\n'
+            + '\t\t\tFROM FIELD_PHASE_DEVELOPMENT\n'
+            + '\t\t\tINNER JOIN #TEMP_PHASE_TO_IA\n'
+            + '\t\t\t\tON FIELD_PHASE_DEVELOPMENT.PHASE_ID = #TEMP_PHASE_TO_IA.PHASE_ID;\n\n'
+
+            + '\t\tDROP TABLE #TEMP_PHASE_TO_IA;';
+
 }
 
 function init_block()
@@ -113,9 +148,9 @@ function init_complex()
             + '\t\t--\n\n'
             + '\t\tUPDATE FIELD_ADDITIONAL\n'
             + '\t\t\tSET FIELD_COMPLEX_ID = NULL\n'
-            + '\t\t\tFROM FIELD_ADDITIONAL\n'
-            + '\t\t\tINNER JOIN #TEMP_FIELD_IDS\n'
-            + '\t\t\t\tON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;';
+            + '\t\t\tWHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;';
+    //            + '\t\t\tINNER JOIN #TEMP_FIELD_IDS\n'
+    //            + '\t\t\t\tON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;';
 
     restore_after_restore['COMPLEX'] =
     '\t\t--\n'
