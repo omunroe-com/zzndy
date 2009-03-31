@@ -15,18 +15,18 @@ var PF = PotentialField.prototype;
 
 PF.add = function( other )
 {
-    if( !(other instanceof PotentialField) )
+    if ( !(other instanceof PotentialField) )
         throw new Error("Can only add potential field to another potential field.");
 
-    if( other.rows != this.rows || other.cols != this.cols )
+    if ( other.rows != this.rows || other.cols != this.cols )
         throw new Error("Cannot add potetntial fields with different dimentions.");
 
     var res = new PotentialField(this.rows, this.cols);
     var i = -1;
-    while( ++i < this.rows )
+    while ( ++i < this.rows )
     {
         var j = -1;
-        while( ++j < this.cols )
+        while ( ++j < this.cols )
         {
             res.body[i][j] = this.body[i][j].add(other.body[i][j]);
         }
@@ -38,16 +38,64 @@ PF.add = function( other )
 PF.apply = function( charge )
 {
     var i = -1;
-    while( ++i < this.rows )
+    while ( ++i < this.rows )
     {
         var j = -1;
-        while( ++j < this.cols )
+        while ( ++j < this.cols )
         {
             this.body[i][j] = this.body[i][j].add(charge.getVector(j, i));
         }
     }
 
     return this;
+};
+
+PF.getVector = function( x, y )
+{
+    var x0 = Math.floor(x);
+    var x1 = Math.ceil(x);
+    var y0 = Math.floor(y);
+    var y1 = Math.ceil(y);
+
+    var p = new Point(x, y);
+    var p0 = new Force(new Point(x0, y0), new Vector(0, 0));
+    var p1 = new Force(new Point(x0, y1), new Vector(0, 0));
+    var p2 = new Force(new Point(x1, y0), new Vector(0, 0));
+    var p3 = new Force(new Point(x1, y1), new Vector(0, 0));
+
+    if ( x0 >= 0 && x0 < this.cols ) {
+        if ( y0 >= 0 && y0 < this.rows ) {
+            p0.vector.x = this.body[y0][x0].x;
+            p0.vector.y = this.body[y0][x0].y;
+        }
+
+        if ( y1 >= 0 && y1 < this.rows ) {
+            p2.vector.x = this.body[y1][x0].x;
+            p2.vector.y = this.body[y1][x0].y;
+        }
+    }
+
+    if ( x1 >= 0 && x1 < this.cols ) {
+        if ( y0 >= 0 && y0 < this.rows ) {
+            p1.vector.x = this.body[y0][x1].x;
+            p1.vector.y = this.body[y0][x1].y;
+        }
+
+        if ( y1 >= 0 && y1 < this.rows ) {
+            p3.vector.x = this.body[y1][x1].x;
+            p3.vector.y = this.body[y1][x1].y;
+        }
+    }
+
+    return p0.vector.add(p1.vector.add(p2.vector.add(p3.vector))).div(4);
+
+//
+//    var d0 = p.dist(p0.point);
+//    var d1 = p.dist(p1.point);
+//    var d2 = p.dist(p2.point);
+//    var d3 = p.dist(p3.point);
+//
+//    console.log([p0.point, p1.point, p2.point, p3.point].join('" - "'));
 };
 
 function Charge( x, y, magnitude, reach )
@@ -65,9 +113,8 @@ C.getVector = function( x, y )
     var dx = this.x - x, dy = this.y - y;
     var d2 = dx * dx + dy * dy;
 
-
     var v;
-    if( d2 > this.r2 )
+    if ( d2 > this.r2 )
     {
         v = new Vector(0, 0);
     }
@@ -107,7 +154,7 @@ W.getVector = function( x, y )
     s = s >= 0 ? 1 : -1;
 
     var v;
-    if( d > this.reach ) {
+    if ( d > this.reach ) {
         v = new Vector(0, 0);
     }
     else {

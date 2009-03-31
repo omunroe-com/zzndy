@@ -33,6 +33,7 @@
     </div>
 </div>
 <script type="text/javascript" language="JavaScript">
+    var potentialRenderable = false;
 
     var ctx = document.getElementById('target').getContext('2d');
     ctx.strokeStyle = '#D7D7D7';
@@ -40,63 +41,128 @@
 
     var n = 25, m = 40;
     var dx = 800 / m, dy = 500 / n;
-    ctx.translate(dx / 2, dy / 2);
-    function drawField( ctx, fld )
+    var offset = new Point(dx / 2 + .5, dy / 2 + .5);
+
+    ctx.translate(offset.x, offset.y);
+
+    var obj = {
+        pos: new Point(5, 5),
+        dir: new Vector(3, 0)
+    };
+
+    function drawField( /* ctx, fld */ )
     {
         var i = -1;
-        while( ++i < fld.rows )
+        var verticalGridDrawn = false;
+
+        ctx.clearRect(-dx / 2, -dy / 2, 800, 500);
+
+        while ( potentialRenderable && ++i < glob.fld.rows )
         {
+            ctx.strokeStyle = 'rgba(0, 128, 255, .1)';
+            if ( !(i % 4) )
+                ctx.strokeStyle = 'rgba(0, 200, 255, .25)';
+            ctx.moveTo(0, i * dy)
+                    .lineTo((glob.fld.cols - 1) * dx, i * dy)
+                    .stroke()
+                    .strokeStyle = '#D7D7D7';
+
             var j = -1;
-            while( ++j < fld.cols )
+            while ( ++j < glob.fld.cols )
             {
-                ctx.fillCircle(j * dx, i * dy, 1.5)
-                        .moveTo(j * dx, i * dy)
-                        .lineTo((j + fld.body[i][j].x ) * dx, (i + fld.body[i][j].y) * dy)
-                        .stroke();
+                if ( !verticalGridDrawn )
+                {
+                    ctx.strokeStyle = 'rgba(0, 128, 255, .1)';
+                    if ( !(j % 4) )
+                        ctx.strokeStyle = 'rgba(0, 200, 255, .25)';
+                    ctx.moveTo(j * dx, 0)
+                            .lineTo(j * dx, (glob.fld.rows - 1) * dy)
+                            .stroke()
+                            .strokeStyle = '#D7D7D7';
+                }
+
+                if ( potentialRenderable )
+                    ctx.fillCircle(j * dx, i * dy, 1.5)
+                            .moveTo(j * dx, i * dy)
+                            .lineTo((j + glob.fld.body[i][j].x ) * dx, (i + glob.fld.body[i][j].y) * dy)
+                            .stroke();
             }
+
+            verticalGridDrawn = true;
         }
+
+        obj.dir = obj.dir.add(glob.fld.getVector(obj.pos.x, obj.pos.y)).div(2);
+
+        obj.pos.x += obj.dir.x;
+        obj.pos.y += obj.dir.y;
+
+        ctx.save()
+                .translate(obj.pos.x * dx, obj.pos.y * dx)
+                .rotate(obj.dir.angle)
+                .fillRect(-5, -5, 10, 10)
+                .restore();
+
+        window.setTimeout(drawField, 1000/25);
     }
 
     var base = new PotentialField(n, m);
-    var mouse = new Charge(19.3, 10.8, -.7);
-    var wall0 = new Wall(-.5, -.5, m, -.5, 1.2, 4);
-    var wall1 = new Wall(m, -.5, m, n, 1.2, 4);
-    var wall2 = new Wall(-.5, n, m, n, 1.2, 4);
-    var wall3 = new Wall(-.5, -.5, -.5, n, 1.2, 4);
+    var mouse = new Charge(19.3, 10.8, -1.5, 18);
+    var wall0 = new Wall(-.5, -.5, m, -.5, 2, 5);
+    var wall1 = new Wall(m, -.5, m, n, 2, 5);
+    var wall2 = new Wall(-.5, n, m, n, 2, 5);
+    var wall3 = new Wall(-.5, -.5, -.5, n, 2, 5);
 
     base.apply(wall0)
             .apply(wall1)
             .apply(wall2)
             .apply(wall3);
 
-    var fld = new PotentialField(n, m);
-    fld.apply(mouse);
-    fld = fld.add(base);
+    var glob =
+    {
+        ctx:ctx,
+        fld:null
+    };
 
-    drawField(ctx, fld);
+
+    glob.fld = new PotentialField(n, m);
+    glob.fld.apply(mouse);
+    glob.fld = glob.fld.add(base);
+
+    //drawField(ctx, fld);
 
     function getPos( e )
     {
         return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
     }
 
+    function getFieldPos( domPos )
+    {
+        return new Point((domPos.x - offset.x) / dx, (domPos.y - offset.y) / dy);
+    }
+
+    function getDomPos( fldPos )
+    {
+        return new Point(fldPos.x * dx + offset.x, fldPos.y * dy + offset.y);
+    }
+
     function mousemove( e )
     {
         var pos = getPos(e);
+        var fldPos = getFieldPos(pos);
 
         var fld = new PotentialField(n, m);
 
-        mouse.x = (pos.x - dx / 2) / dx;
-        mouse.y = (pos.y - dy / 2) / dy;
+        mouse.x = fldPos.x;
+        mouse.y = fldPos.y;
 
         fld.apply(mouse);
-        fld = fld.add(base);
+        glob.fld = fld.add(base);
 
-        ctx.clearRect(-dx / 2, -dy / 2, 800, 500);
-        drawField(ctx, fld);
+        //drawField(ctx, fld);
     }
 
     document.getElementById('target').onmousemove = mousemove;
+    drawField();
 
 </script>
 </body>
