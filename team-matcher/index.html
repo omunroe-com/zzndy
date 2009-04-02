@@ -4,69 +4,136 @@
     <script type="text/javascript" src="script/jquery.js"></script>
     <script type="text/javascript" src="script/jquery-ui-core-draggable-droppable.js"></script>
     <style type="text/css">
-        .draggable {
-            width: 100px;
-            height: 70px;
-            border: 1px solid red;
+        html {
+            font: 12pt / 18pt Sans-serif;
+        }
+
+        td {
+            vertical-align: top;
         }
 
         .droppable {
-            width: 200px;
-            height: 100px;
-            border: 1px solid yellow;
+            border: .1em solid silver;
+            color: silver;
+            font-style: italic;
         }
 
-        .yabadoo {
-            background-color: gray;
+        .draggable {
+            border: .1em solid gray;
+            cursor: move;
+            color: inherit;
+            font-style: normal;
         }
+
+        .team {
+            min-width: 10em;
+            padding: 0 .5em;
+            margin: .4em 0;
+        }
+
+        .home .team {
+            text-align: right;
+            color: blue;
+        }
+
+        .dragging {
+            background-color: white;
+            opacity: .7;
+            -o-box-shadow: 0 .2em .3em rgba( 0, 0, 0, 0.7 );
+            -icab-box-shadow: 0 .2em .3em rgba( 0, 0, 0, 0.7 );
+            -khtml-box-shadow: 0 .2em .3em rgba( 0, 0, 0, 0.7 );
+            -moz-box-shadow: 0 .2em .3em rgba( 0, 0, 0, 0.7 );
+            -webkit-box-shadow: 0 .2em .3em rgba( 0, 0, 0, 0.7 );
+            box-shadow: 0 .2em .3em rgba( 0, 0, 0, 0.7 );
+        }
+
     </style>
     <script type="text/javascript">
         $(document).ready(function() {
+            var teams = ['team A', 'team B', 'team C', 'team D', 'team E'
+                , 'team F', 'team G', 'team H', 'team I', 'team J'];
+
+
+            var i = -1, n = teams.length;
+            while ( ++i < n ) {
+                $('#tray').append('<div class="team draggable droppable">' + teams[i] + '</div>');
+                if ( i < n / 2 )
+                {
+                    $('#home').append('<div class="team droppable">[Drag a team here]</div><input type="hidden" name="home-' + i + '"/>');
+                    $('#visitor').append('<div class="team droppable">[Drag a team here]</div><input type="hidden" name="visit-' + i + '"/>');
+                }
+            }
+
             $('.draggable').draggable({
-                revert:'invalid',
-                scope:'teams',
-                stop:handle_stop
+                revert: true,
+                revertDuration: 0,
+                helper: 'clone',
+                start:function( e, ui )
+                {
+                    $(ui.helper).addClass("dragging");
+                },
+                stop: function() {
+                    endDragging($(this));
+                }
             });
+
             $('.droppable').droppable({
-                scope:'teams',
-                drop:handle_drop,
-                hoverClass: 'yabadoo'
+                tolerance: 'intersect',
+                drop: changeDragAndDrop
             });
         });
 
-        function handle_stop( event, ui )
-        {
-            console.log(event, ui);
+        function endDragging( drag ) {
+            if ( drag.hasClass('droppable') ) {
+                if ( !drag.hasClass('draggable') )
+                    drag.draggable('destroy');
+                drag.droppable({
+                    tolerance: 'intersect',
+                    drop: changeDragAndDrop
+                });
+            }
         }
 
-        function handle_drop( event, ui )
-        {
-            console.log(event, ui);
-            //ui.draggable('revert');
+        function changeDragAndDrop( event, ui ) {
+            var drag = $(ui.draggable);
+            var drop = $(this);
+
+            var text = drag.text();
+            if ( !drop.hasClass('draggable') )
+                drag.removeClass('draggable').addClass('droppable');
+
+            // TODO: support correct state of hidden team fields.
+            drag.text(drop.text());
+            drop.next('input').val(text);
+            console.log(drag, drop);
+
+            drop.addClass('draggable').removeClass('droppable').text(text);
+
+            drop.draggable({
+                revert: true,
+                revertDuration: 0,
+                helper: 'clone',
+                start:function( e, ui )
+                {
+                    $(ui.helper).addClass("dragging");
+                },
+                stop: function() {
+                    endDragging($(this));
+                }
+            });
         }
+
     </script>
 </head>
-<body style="font-size:62.5%;">
+<body>
 
 <table>
     <tr>
-        <td>
-            <div class="draggable">alpha</div>
-            <div class="draggable">bravo</div>
-            <div class="draggable">charlie</div>
-            <div class="draggable">delta</div>
-            <div class="draggable">echo</div>
-            <div class="draggable">foxtrot</div>
+        <td id="tray">
         </td>
-        <td>
-            <div class="droppable"></div>
-            <div class="droppable"></div>
-            <div class="droppable"></div>
+        <td id="home">
         </td>
-        <td>
-            <div class="droppable"></div>
-            <div class="droppable"></div>
-            <div class="droppable"></div>
+        <td id="visitor">
         </td>
     </tr>
 </table>
