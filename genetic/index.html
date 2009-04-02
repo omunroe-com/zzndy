@@ -10,35 +10,34 @@
 <body>
 <script type="text/javascript">
 
-    var target = "Hello world";
+    var target = "Hello world!";
+    var chars = ' ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(),./';
 
-    var population = (20).times(function(i) {
-        var n = 15 + Math.floor(Math.random() * 10);
-        return String.fromCharCode(97 + i).x(20); 
+    var n = target.length;
+    var population = (2048).times(function( i ) {
         return n.times(function() {
             return chars[Math.floor(Math.random() * chars.length)];
         }).join('');
     });
 
-
     function fitness( a )
     {
         var i = -1, n = Math.min(target.length, a.length);
         var score = 0;
-        while ( ++i < n )
+        while( ++i < n )
         {
-            score += Math.abs(target.charCodeAt(i) - a.charCodeAt(i));
+            score += Math.abs(target.charCodeAt(i) - a.charCodeAt(i))*Math.abs(target.charCodeAt(i) - a.charCodeAt(i));
         }
 
-        score += Math.abs(target.length - a.length) * 10;
+        score += Math.abs(target.length - a.length) * 100;
         return score;
     }
 
-    var genetic = new Genetic(population, fitness, 40, 15);
-    while ( genetic.n < 30 )
+    var genetic = new Genetic(population, fitness, 10, 25);
+    while( genetic.n < 30)
     {
         genetic.run();
-        //console.log(genetic.best);
+        console.log(genetic.best);
     }
 
 
