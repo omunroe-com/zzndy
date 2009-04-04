@@ -14,7 +14,8 @@
     var chars = ' ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(),./';
 
     var n = target.length;
-    var population = (2048).times(function( i ) {
+    var population = (2048).times(function( ) {
+        var n = target.length - 10 + Math.floor(Math.random()*21);
         return n.times(function() {
             return chars[Math.floor(Math.random() * chars.length)];
         }).join('');
@@ -26,7 +27,7 @@
         var score = 0;
         while( ++i < n )
         {
-            score += Math.abs(target.charCodeAt(i) - a.charCodeAt(i))*Math.abs(target.charCodeAt(i) - a.charCodeAt(i));
+            score += Math.abs(target.charCodeAt(i) - a.charCodeAt(i));
         }
 
         score += Math.abs(target.length - a.length) * 100;
@@ -34,10 +35,10 @@
     }
 
     var genetic = new Genetic(population, fitness, 10, 25);
-    while( genetic.n < 30)
+    while( genetic.n < 50)
     {
         genetic.run();
-        console.log(genetic.best);
+        console.log(genetic.n, genetic.best);
     }
 
 
