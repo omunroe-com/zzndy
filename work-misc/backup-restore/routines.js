@@ -138,7 +138,33 @@ var sql = {
                     + '\t\t\t(\n'
                     + '\t\t\t\tSELECT {childId}\n'
                     + '\t\t\t\t\tFROM #TEMP_{childId}S\n'
-                    + '\t\t\t);'
+                    + '\t\t\t);'      ,
+    save_relation:
+            '\t\t--\n'
+                    + '\t\t-- Save link\n'
+                    + '\t\t--\n\n'
+                    + '\t\tSELECT {childTableId} INTO #TEMP_{childTable}_{childTableId}S\n'
+                    + '\t\t\tFROM {childTable}\n'
+                    + '\t\t\tWHERE {foreignId} = @{foreignId};\n'
+                    + '\n'
+                    + '\t\t--\n'
+                    + '\t\t-- Break link\n'
+                    + '\t\t--\n\n'
+                    + '\t\tUPDATE {childTable}\n'
+                    + '\t\t\tSET {foreignId} = NULL\n'
+                    + '\t\t\tWHERE {foreignId} = @{foreignId};',
+    restore_relation:
+            '\t\t--\n'
+                    + '\t\t-- Restore link \n'
+                    + '\t\t--\n\n'
+                    + '\t\tUPDATE {childTable}\n'
+                    + '\t\t\tSET {foreignId} = @{foreignId}\n'
+                    + '\t\t\tFROM {childTable}\n'
+                    + '\t\t\tINNER JOIN #TEMP_{childTable}_{childTableId}S\n'
+                    + '\t\t\tON #TEMP_{childTable}_{childTableId}S.{childTableId} = {childTable}.{childTableId};\n'
+                    + '\n'
+                    + '\t\tDROP TABLE #TEMP_{childTable}_{childTableId}S;'
+
 };
 
 var declares = {};
@@ -349,6 +375,10 @@ function make_restore_sql( name, id, tagged ) {
     if ( name in restore_before_delete )
         print(restore_before_delete[name]);
 
+    print(relations.map(function( rel ) {
+        return sql.save_relation.fmt(rel)
+    }));
+
     print(comment('Delete user version'));
     print(nodelist.map(to_sql(format_del)).map(del_path).flatten().reverse());
 
@@ -367,6 +397,9 @@ function make_restore_sql( name, id, tagged ) {
         print_path_insert(name);
     print(nodelist.map(to_sql(format_copy)).flatten());
 
+    print(relations.map(function( rel ) {
+        return sql.restore_relation.fmt(rel)
+    }));
 
     if ( name in restore_after_restore )
         print(restore_after_restore[name]);

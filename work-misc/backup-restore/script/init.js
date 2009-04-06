@@ -135,35 +135,7 @@ function init_complex()
 
     add_name('FIELD_COMPLEX', 'FIELD_COMPLEX_NAME');
 
-    restore_before_delete['COMPLEX'] =
-    '\t\t--\n'
-            + '\t\t-- Save fieds dependant on this complex\n'
-            + '\t\t--\n\n'
-            + '\t\tSELECT FIE_ID INTO #TEMP_FIELD_IDS\n'
-            + '\t\t\tFROM FIELD_ADDITIONAL\n'
-            + '\t\t\tWHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;\n'
-            + '\n'
-            + '\t\t--\n'
-            + '\t\t-- Unbind dependant fields\n'
-            + '\t\t--\n\n'
-            + '\t\tUPDATE FIELD_ADDITIONAL\n'
-            + '\t\t\tSET FIELD_COMPLEX_ID = NULL\n'
-            + '\t\t\tWHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;';
-    //            + '\t\t\tINNER JOIN #TEMP_FIELD_IDS\n'
-    //            + '\t\t\t\tON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;';
-
-    restore_after_restore['COMPLEX'] =
-    '\t\t--\n'
-            + '\t\t-- Restore link between fields and complex being restored\n'
-            + '\t\t--\n\n'
-            + '\t\tUPDATE FIELD_ADDITIONAL\n'
-            + '\t\t\tSET FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID\n'
-            + '\t\t\tFROM FIELD_ADDITIONAL\n'
-            + '\t\t\tINNER JOIN #TEMP_FIELD_IDS\n'
-            + '\t\t\tON #TEMP_FIELD_IDS.FIE_ID = FIELD_ADDITIONAL.FIE_ID;\n'
-            + '\n'
-            + '\t\tDROP TABLE #TEMP_FIELD_IDS;';
-
+    add_save_relation('FIELD_ADDITIONAL', 'FIE_ID', 'FIELD_COMPLEX_ID');
 }
 
 function init_globals()
@@ -221,4 +193,5 @@ function init_tax_system()
     node('TAX_SYSTEM_SHEETS', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
 
     add_name('TAX_SYSTEM', 'TAX_SYSTEM_NAME');
+    add_save_relation('TAX_NODE', 'TAX_NODE_ID', 'TAX_SYSTEM_ID');
 }

@@ -144,5 +144,6 @@ function get_operator(id)
 function clear_setup()
 {
     nodes = {};
+    relations = [];
     clear_fk_setup();
 }

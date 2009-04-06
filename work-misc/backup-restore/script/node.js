@@ -5,6 +5,7 @@
 var nodes = {};
 var uniqs = {};
 var names = {table:null, column:null};
+var relations = [];
 all_nodes = [];
 var tagged = [];
 
@@ -151,4 +152,9 @@ function add_name(table, column)
 function get_entity_name()
 {
     return names;
+}
+
+function add_save_relation(childTable, childTableId, foreignId)
+{
+    relations.push({childTable:childTable, childTableId:childTableId, foreignId:foreignId});
 }
