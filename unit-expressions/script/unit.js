@@ -81,9 +81,6 @@
 
     /**
      * Add new unit definition
-     * @param {String} name       unit whose conversions are already defined and whose group
-     *                            should be deduced automatically
-     * - or -
      * @param {String} name       default unit for given group
      * @param {String} group      unit group (e.g. lenght, time, velocit etc.)
      * - or -
@@ -98,12 +95,9 @@
         var name = arguments[0];
         var group = '', conversions = {};
 
-        if ( arguments.length == 1 ) {
-            group = deduce_group(name);
-        }
         if ( arguments.length == 2 ) {
             group = arguments[1];
-            if ( groups[group] === undefined ) groups[group] = {};
+            if ( groups[group] === undefined ) groups[group] = {base:name};
         }
         if ( arguments.length == 3 ) {
             var base = getUnit(arguments[2]);
@@ -176,7 +170,11 @@
         else {
             units[unit.name] = unit;
             systems[unit.system][unit.name] = unit;
-            groups[unit.group][unit.name] = unit;
+
+            var group = groups[unit.group];
+            group[unit.name] = unit;
+            if ( group.base == unit.name )
+                group.base = unit;
         }
     }
 

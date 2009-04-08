@@ -27,10 +27,17 @@
     Unit.add('m', 'length');
     Unit.add('km', 1000, 'm');
     Unit.add('cm', 0.01, 'm');
+    Unit.add('mm', 0.1, 'cm');
 
     Unit.add('s', 'time');
     Unit.add('min', 60, 's');
     Unit.add('h', 60, 'min');
+    Unit.add('day', 24, 'h');
+    Unit.add('year', 365.25, 'day');
+
+    Unit.add('m/s', 'velocity');
+    Unit.add('km/h', 10 / 36, 'm/s');
+
 
     Unit.system('imperial');
     Unit.add('in', 2.54, 'cm');
@@ -40,24 +47,18 @@
     Unit.add('yd', 91.44, 'cm');
     Unit.add('mile', 1609.344, 'm');
 
-    Unit.system('metric');
-    Unit.add('m/s', 'velocity');
-    Unit.add('kph', 10 / 36, 'm/s');
-
     Unit.system('imperial');
-    Unit.add('mph', 1.609344, 'kph');
-
-    Unit.system('metric');
+    Unit.add('mph', 1.609344, 'km/h');
 
     var v1 = new Amount('100 m/s');
     var v2 = new Amount('75 mph');
 
-    println(v1.as('kph'));
-    println(v2.as('kph'));
+    println(v1.as('km/h'));
+    println(v2.as('km/h'));
 
     var vs = v1.plus(v2);
-    println(vs.as('kph'));
-    println(vs.as('kph').as('m/s'));
+    println(vs.as('km/h'));
+    println(vs.as('km/h').as('m/s'));
 
     println(v1, '+', v2, '=', vs);
     // Excecting vs to be 133.52800 m/s
