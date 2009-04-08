@@ -2,47 +2,65 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title></title>
+    <title></title>
     <script type="text/javascript" src="script/expression.js"></script>
     <script type="text/javascript" src="script/unit.js"></script>
     <script type="text/javascript" src="script/amount.js"></script>
     <meta name="http-equiv" content="Content-type: text/html; charset=utf8"/>
 </head>
 <body>
+<pre id="out"></pre>
 <script type="text/javascript">
-		// Default Unit.system('metric')
-		Unit.add('m', 'length');
-		Unit.add('km', 1000, 'm');
-		Unit.add('cm', 0.01, 'm');
+    var out = document.getElementById('out');
 
-		Unit.add('m/s', 'velocity');
-        Unit.add('kph', 10/36, 'm/s');
+    function print( text )
+    {
+        out.innerHTML += [].join.call(arguments, '');
+    }
 
-        // Expecting these to be defined and aasigned to respective unit system automatically.
-        Unit.add('km/h');
-        Unit.add('mile/h');
+    function println( text )
+    {
+        out.innerHTML += [].join.call(arguments, '') + '\n';
+    }
 
-		Unit.add('s', 'time');
+    Unit.system('metric');
+    Unit.add('m', 'length');
+    Unit.add('km', 1000, 'm');
+    Unit.add('cm', 0.01, 'm');
 
-		Unit.system('imperial');
-		Unit.add('in', 2.54, 'cm');
-		Unit.add('ft', 12, 'in');
-		Unit.add('ft', 30.48, 'cm'); 
-		Unit.add('yd', 3, 'ft');
-		Unit.add('yd', 91.44, 'cm');
-		Unit.add('mile', 1609.344, 'm');
-		Unit.add('mph', 1.609344, 'kph');
+    Unit.add('s', 'time');
+    Unit.add('min', 60, 's');
+    Unit.add('h', 60, 'min');
 
-		Unit.system('metric');
-		Unit.add('m2', 'area'); // Expecting to have km2 defined as well.
-		Unit.add('m3', 'volume'); // Same as for areas 
+    Unit.system('imperial');
+    Unit.add('in', 2.54, 'cm');
+    Unit.add('ft', 12, 'in');
+    Unit.add('ft', 30.48, 'cm');
+    Unit.add('yd', 3, 'ft');
+    Unit.add('yd', 91.44, 'cm');
+    Unit.add('mile', 1609.344, 'm');
 
-		var v1 = new Amount('100 m/s');
-		var v2 = new Amount('75 mph');
+    Unit.system('metric');
+    Unit.add('m/s', 'velocity');
+    Unit.add('kph', 10 / 36, 'm/s');
 
-		var vs = v1.plus(v2);
-        console.log(v1, '+', v2, '=', vs);
-		// Excecting vs to be 133.52800 m/s
+    Unit.system('imperial');
+    Unit.add('mph', 1.609344, 'kph');
+
+    Unit.system('metric');
+
+    var v1 = new Amount('100 m/s');
+    var v2 = new Amount('75 mph');
+
+    println(v1.as('kph'));
+    println(v2.as('kph'));
+
+    var vs = v1.plus(v2);
+    println(vs.as('kph'));
+    println(vs.as('kph').as('m/s'));
+
+    println(v1, '+', v2, '=', vs);
+    // Excecting vs to be 133.52800 m/s
 
 </script>
 </body>
