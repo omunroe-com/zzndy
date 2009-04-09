@@ -62,8 +62,8 @@
     clear_setup();
 
     init_tax_system();
-    make_backup_sql('TAXSYSTEM', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
-    make_restore_sql('TAXSYSTEM', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
+    make_backup_sql('FISCAL_TERMS', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
+    make_restore_sql('FISCAL_TERMS', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
     clear_setup();
 
     //write_shadow_generation();

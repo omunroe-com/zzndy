@@ -9,23 +9,23 @@ var sql = {
     'del': "\t\tDELETE FROM {table} WHERE\n\t\t\t{idField}{op}{id};",
     'declare': '\t\tDECLARE @{varName} DECIMAL(12,0)',
     'set':'\t\tSET @{varName} = ?',
-    'sp_head':
-            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_{action}_{name}')\n"
-                    + '\tDROP PROCEDURE [SP_{action}_{name}]\nGO\n'
-                    + 'CREATE PROCEDURE [SP_{action}_{name}] @{id} DECIMAL (12,0)\nAS\nBEGIN\n'
+    'PROC_head':
+            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='PROC_{action}_{name}')\n"
+                    + '\tDROP PROCEDURE [PROC_{action}_{name}]\nGO\n'
+                    + 'CREATE PROCEDURE [PROC_{action}_{name}] @{id} DECIMAL (12,0)\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
-    'sp_copy_head':
-            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='SP_{action}_{name}')\n"
-                    + '\tDROP PROCEDURE [SP_{action}_{name}]\nGO\n'
-                    + 'CREATE PROCEDURE [SP_{action}_{name}] @{id} DECIMAL (12,0), @NEW_{id} DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
+    'PROC_copy_head':
+            "IF EXISTS (SELECT name FROM sys.objects WHERE type='P' AND name='PROC_{action}_{name}')\n"
+                    + '\tDROP PROCEDURE [PROC_{action}_{name}]\nGO\n'
+                    + 'CREATE PROCEDURE [PROC_{action}_{name}] @{id} DECIMAL (12,0), @NEW_{id} DECIMAL (12,0) OUTPUT\nAS\nBEGIN\n'
                     + '\tSET NOCOUNT ON',
-    'shadow': "EXEC SP_CREATE_SHADOW_TABLE '{table}';",
-    'sp_start':
+    'shadow': "EXEC PROC_CREATE_SHADOW_TABLE '{table}';",
+    'PROC_start':
             '\tDECLARE @ERROR_PROCEDURE NVARCHAR(255);\n\n'
                     + '\tDECLARE @ERROR_MESSAGE NVARCHAR(255);\n\n'
                     + '\tBEGIN TRY\n'
                     + '\t\tBEGIN TRANSACTION',
-    'sp_end':
+    'PROC_end':
             '\t\tCOMMIT TRANSACTION\n'
                     + '\tEND TRY\n\n'
                     + '\tBEGIN CATCH\n'
@@ -47,7 +47,7 @@ var sql = {
     'update_id': '\t\tUPDATE {table} SET {idField} = @NEW_{id} WHERE {idField}{op}{id};',
     'update_id_all': '\t\tUPDATE {table} SET {idField} = @NEW_{id};',
     'drop_table': '\t\tDROP TABLE {table};',
-    'grant_sp': 'GRANT EXEC ON [SP_{action}_{name}] TO [abu]\nGO',
+    'grant_sp': 'GRANT EXEC ON [PROC_{action}_{name}] TO [abu]\nGO',
     'iterate_ids':
             "\t\tDECLARE @NEW_{id} DECIMAL(12, 0);\n"
                     + "\n"
@@ -107,7 +107,7 @@ var sql = {
                     + '\t\t\n'
                     + '\t\tWHILE @@FETCH_STATUS = 0\n'
                     + '\t\tBEGIN\n'
-                    + '\t\t\tEXEC SP_CLONE_FIELD @FIE_ID, @NEW_FIE_ID OUTPUT;\n'
+                    + '\t\t\tEXEC PROC_CLONE_FIELD @FIE_ID, @NEW_FIE_ID OUTPUT;\n'
                     + '\t\t\tUPDATE FIELD_ADDITIONAL SET\n'
                     + '\t\t\t\tFIELD_COMPLEX_ID = @NEW_FIELD_COMPLEX_ID\n'
                     + '\t\t\t\tWHERE FIE_ID = @NEW_FIE_ID\n'
@@ -189,7 +189,7 @@ function make_backup_sql( name, id, tagged ) {
 
     objectName = name;
 
-    print(sql.sp_head.fmt({action:'BACKUP', name:name, id:id}));
+    print(sql.PROC_head.fmt({action:'BACKUP', name:name, id:id}));
 
     // Used to set owner to 'IHS'
     setup_restore();
@@ -204,7 +204,7 @@ function make_backup_sql( name, id, tagged ) {
         op: get_operator(id)}));
 
     // 1. Begin transaction
-    print(sql.sp_start);
+    print(sql.PROC_start);
 
     setup_backup();
 
@@ -245,7 +245,7 @@ function make_backup_sql( name, id, tagged ) {
         owner: owner,
         op: get_operator(id)}));
 
-    print(sql.sp_end);
+    print(sql.PROC_end);
     print(sql.grant_sp.fmt({action:'BACKUP', name:name}));
 
     setup_restore();
@@ -294,7 +294,7 @@ function print_path_insert( name )
 
 function make_shadow_sql( table )
 {
-    return "EXEC SP_CREATE_SHADOW_TABLE '{table}';\nGO".fmt({table:table});
+    return "EXEC PROC_CREATE_SHADOW_TABLE '{table}';\nGO".fmt({table:table});
 }
 
 function write_shadow_generation()
@@ -342,7 +342,7 @@ function make_restore_sql( name, id, tagged ) {
     objectName = name;
     var out = [];
 
-    print(sql.sp_head.fmt({action:'RESTORE', name:name, id:id}));
+    print(sql.PROC_head.fmt({action:'RESTORE', name:name, id:id}));
 
     setup_backup();
 
@@ -354,7 +354,7 @@ function make_restore_sql( name, id, tagged ) {
         owner: owner,
         op: get_operator(id)}));
 
-    print(sql.sp_start);
+    print(sql.PROC_start);
 
     setup_restore();
 
@@ -425,7 +425,7 @@ function make_restore_sql( name, id, tagged ) {
         owner: owner,
         op: get_operator(id)}));
 
-    print(sql.sp_end);
+    print(sql.PROC_end);
     print(out.join(statement_glue));
     print(sql.grant_sp.fmt({action:'RESTORE', name:name}));
     objectName = '<unset>';
@@ -468,8 +468,8 @@ function make_clone_sql( name, id, tagged ) {
     objectName = name;
     var out = [];
 
-    print(sql.sp_copy_head.fmt({action:'CLONE', name:name, id:id}));
-    print(sql.sp_start);
+    print(sql.PROC_copy_head.fmt({action:'CLONE', name:name, id:id}));
+    print(sql.PROC_start);
 
     setup_restore();
 
@@ -558,7 +558,7 @@ function make_clone_sql( name, id, tagged ) {
         print(sql.clone_fields);
     }
 
-    print(sql.sp_end);
+    print(sql.PROC_end);
     print(out.join(statement_glue));
     print(sql.grant_sp.fmt({action:'CLONE', name:name}));
     objectName = '<unset>';
@@ -572,8 +572,8 @@ function make_delete_sql( name, id/*, tagged*/ ) {
     objectName = name;
     var out = [];
 
-    print(sql.sp_head.fmt({action:'DELETE', name:name, id:id}));
-    print(sql.sp_start);
+    print(sql.PROC_head.fmt({action:'DELETE', name:name, id:id}));
+    print(sql.PROC_start);
 
     setup_restore();
 
@@ -592,7 +592,7 @@ function make_delete_sql( name, id/*, tagged*/ ) {
     print(comment('Delete data'));
     print(nodelist.map(to_sql(format_del)).flatten().reverse());
 
-    print(sql.sp_end);
+    print(sql.PROC_end);
     print(out.join(statement_glue));
     print(sql.grant_sp.fmt({action:'DELETE', name:name}));
     objectName = '<unset>';
