@@ -151,7 +151,7 @@ var sql = {
                     + '\t\t-- Break link\n'
                     + '\t\t--\n\n'
                     + '\t\tUPDATE {childTable}\n'
-                    + '\t\t\tSET {foreignId} = NULL\n'
+                    + '\t\t\tSET {foreignId} = {intermediateValue}\n'
                     + '\t\t\tWHERE {foreignId} = @{foreignId};',
     restore_relation:
             '\t\t--\n'

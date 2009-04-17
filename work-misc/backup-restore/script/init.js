@@ -193,5 +193,5 @@ function init_tax_system()
     node('TAX_SYSTEM_SHEETS', 'TAX_SYSTEM_ID', 'TAX_SYSTEM');
 
     add_name('TAX_SYSTEM', 'TAX_SYSTEM_NAME');
-    add_save_relation('TAX_NODE', 'TAX_NODE_ID', 'TAX_SYSTEM_ID');
+    add_save_relation('TAX_NODE', 'TAX_NODE_ID', 'TAX_SYSTEM_ID', '(SELECT TOP 1 TAX_SYSTEM_ID FROM TAX_SYSTEM WHERE TAX_SYSTEM_ID != @TAX_SYSTEM_ID)');
 }

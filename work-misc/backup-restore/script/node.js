@@ -154,7 +154,7 @@ function get_entity_name()
     return names;
 }
 
-function add_save_relation(childTable, childTableId, foreignId)
+function add_save_relation(childTable, childTableId, foreignId, intermediateValue)
 {
-    relations.push({childTable:childTable, childTableId:childTableId, foreignId:foreignId});
+    relations.push({childTable:childTable, childTableId:childTableId, foreignId:foreignId, intermediateValue:intermediateValue||'NULL'});
 }
