@@ -1,21 +1,50 @@
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
     <title>Genetic</title>
-    <link rel="stylesheet" href="../style/common.css"/>
     <script type="text/javascript" src="../script/util.js"></script>
     <script type="text/javascript" src="../script/canvas.js"></script>
     <script type="text/javascript" src="../script/domgen.js"></script>
     <script type="text/javascript" src="script/genetic.js"></script>
+    <style type="text/css">
+        #out
+        {
+            font-family:monospace;
+            font-size:90%;
+        }
+    </style>
 </head>
 <body>
+<div id="container">
+    <div class="content header">
+        <h1>Bezier Curves</h1>
+    </div>
+
+    <div class="content">
+        <div id="out"></div>
+
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
 <script type="text/javascript">
 
     var target = "Hello world!";
     var chars = ' ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(),./';
 
     var n = target.length;
-    var population = (2048).times(function( ) {
-        var n = target.length - 10 + Math.floor(Math.random()*21);
+
+    // Generate initial population
+    var population = (2048).times(function() {
+        var n = target.length - 10 + Math.floor(Math.random() * 21);
         return n.times(function() {
             return chars[Math.floor(Math.random() * chars.length)];
         }).join('');
@@ -34,13 +63,30 @@
         return score;
     }
 
-    var genetic = new Genetic(population, fitness, 10, 25);
-    while( genetic.n < 50)
+    var maxgen = 50;
+    var genetic = new Genetic(population, fitness, 10, 15);
+    function out()
     {
-        genetic.run();
-        console.log(genetic.n, genetic.best);
+        var obj = document.getElementById('out');
+        out = function()
+        {
+            obj.innerHTML += '<div>' + [].join.apply(arguments, ['']) + '</div>';
+        };
+
+        out.apply(arguments, arguments);
     }
 
+    function doit()
+    {
+        if( genetic.n < maxgen )
+        {
+            genetic.run();
+            out(genetic.n.pad(-2).replace(' ', '&nbsp;'), '. ', genetic.best);
+            window.setTimeout(doit, 50);
+        }
+    }
+
+    doit();
 
 </script>
 </body>
