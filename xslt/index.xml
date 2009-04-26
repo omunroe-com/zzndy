@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="style/common.xsl"?>
+
+<page lang="en_gb" name="XSL Web">
+    <script href="../script/util.js"/>
+    <style href="../style/canvas.css"/>
+    <script rel="foot" href="script/circle.js"/>
+</page>
