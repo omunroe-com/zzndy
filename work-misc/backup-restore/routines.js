@@ -524,6 +524,7 @@ function make_clone_sql( name, id, tagged ) {
     if ( name == 'BLOCK' ) {
         print('\t\tUPDATE #BLOCK_HEADER_BLOCK SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;');
         print('\t\tUPDATE #FIELD_CONTRACTS_BLOCKS_BLOCK SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;');
+        print('\t\tUPDATE #CONTRACT_HEADER_BLOCK SET PAR_ID = @NEW_PAR_ID WHERE PAR_ID = @PAR_ID');
     }
     else if ( name == 'FIELD' )
     {

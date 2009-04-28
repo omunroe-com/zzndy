@@ -98,7 +98,7 @@ BEGIN
 		SELECT @INV_ASS_REDIST_ID = INV_ASS_REDIST_ID FROM FIELD_ADDITIONAL WHERE FIE_ID = @FIE_ID;
 
 		--
-		-- 'Backup' specifyed object to temporaties
+		-- 'Backup' specified object to temporaties
 		--
 
 		INSERT INTO #FIELD_HEADER_FIELD
@@ -652,7 +652,7 @@ BEGIN
 		SELECT @EPC_ID = EPC_ID FROM BLOCK_HEADER WHERE GA_ID = @GA_ID;
 
 		--
-		-- 'Backup' specifyed object to temporaties
+		-- 'Backup' specified object to temporaties
 		--
 
 		INSERT INTO #GROUP_PARTNER_INTERESTS_BLOCK
@@ -734,6 +734,8 @@ BEGIN
 		UPDATE #BLOCK_HEADER_BLOCK SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;
 
 		UPDATE #FIELD_CONTRACTS_BLOCKS_BLOCK SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;
+
+		UPDATE #CONTRACT_HEADER_BLOCK SET PAR_ID = @NEW_PAR_ID WHERE PAR_ID = @PAR_ID;
 
 		--
 		-- 'Restore' copy
@@ -850,7 +852,7 @@ BEGIN
 		SELECT @INV_ASS_ID = INV_ASS_ID FROM FIELD_COMPLEX WHERE FIELD_COMPLEX_ID = @FIELD_COMPLEX_ID;
 
 		--
-		-- 'Backup' specifyed object to temporaties
+		-- 'Backup' specified object to temporaties
 		--
 
 		INSERT INTO #INV_ASS_COMPLEX
@@ -1031,7 +1033,7 @@ BEGIN
 		--
 
 		--
-		-- 'Backup' specifyed object to temporaties
+		-- 'Backup' specified object to temporaties
 		--
 
 		INSERT INTO #COMPANY_HEADER_COMPANY
@@ -1153,7 +1155,7 @@ BEGIN
 		--
 
 		--
-		-- 'Backup' specifyed object to temporaties
+		-- 'Backup' specified object to temporaties
 		--
 
 		INSERT INTO #TAX_SYSTEM_FISCAL_TERMS

@@ -20,7 +20,6 @@ var restore_after_restore = {};
 
 var paths = {};
 
-
 function init_field()
 {
     // FIELD
