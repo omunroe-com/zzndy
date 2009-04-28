@@ -491,9 +491,9 @@ function make_clone_sql( name, id, tagged ) {
     else
         print(nodelist.filter(not_id).map(to_sql(format_set)).flatten().uniq());
 
-    // 4. 'Backup' specifyed object to temporaties;
+    // 4. 'Backup' specified object to temporaties;
     setup_backup_temp();
-    print(comment("'Backup' specifyed object to temporaties"));
+    print(comment("'Backup' specified object to temporaties"));
     print(nodelist.map(to_sql(format_copy)).flatten());
 
     var entity_name = get_entity_name();
