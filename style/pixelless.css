@@ -2,9 +2,11 @@ html, body {
     padding: 0;
     margin: 0;
     height: 100%;
-    font: normal 9pt / 1.55em "Helvetica";
-    background-color: #262628;
-    color: #D7D7D7;
+    font: normal 10pt / 1.65em "Tahoma";
+    font-weight: 500;
+    /*background-color: #262628;*/
+    background-color: #003153;
+    color: #c7c5c5;
 }
 
 h1, h2, h3 {
@@ -29,11 +31,11 @@ input, textarea {
 }
 
 a {
-    color: #2189fc;
+    color: #67aefe;
 }
 
 a:visited {
-    color: #d91fff
+    color: #e66cff
 }
 
 a:hover {
@@ -41,7 +43,7 @@ a:hover {
 }
 
 a:hover:visited {
-    color: #ffff66
+    color: #fec1fe
 }
 
 pre a {
@@ -87,10 +89,15 @@ pre a {
     text-shadow: 0 .09em .1em #000;
 }
 
+#menu0, #menu1, #menu2
+{
+    -webkit-box-shadow: 0 .3em .6em rgba(0, 0, 0, .5);
+}
+
 #menu0 a, #menu1 a, #menu2 a {
     font-family: "Arial", sans-serif;
     display: inline-block;
-    font-size: 110%;
+    font-size: 100%;
     line-height: 2em;
     font-weight: bold;
     padding: 0 1em;
@@ -120,19 +127,19 @@ pre a {
 }
 
 #menu0 {
-    background-color: #bbb;
+    background-color: #a8a8a8;
     color: #111;
 }
 
 #menu1 {
-    border-top: .2ex solid #777;
-    background-color: #a8a8a8;
+    border-top: .2ex solid #003153;
+    background-color: #bbb;
     color: #222;
 }
 
 #menu2 {
-    border-top: .2ex solid #777;
-    background-color: #a0a0a0;
+    border-top: .2ex solid #003153;
+    background-color: #b8b8b8;
     color: #333;
 }
 
