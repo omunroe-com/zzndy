@@ -1,3 +1,9 @@
+function set_level_easy()
+{
+    default_mx = 12;
+    default_my = 14;
+}
+
 var default_mx = 32;
 var default_my = 24;
 var pad = .95;
@@ -43,8 +49,8 @@ F.renderCell = function( i, j )
             .translate(x + (i % 2 + 1) * this.dx / 2 + this.width * (1 - margin) / 2, this.height - this.height * (1 - margin ) / 2 - y - this.dy)
             .beginPath()
             .moveTo(- pad * this.dx / 2, 0)
-            .lineTo(0,  pad * this.dy)
-            .lineTo(pad *  this.dx / 2, 0)
+            .lineTo(0, pad * this.dy)
+            .lineTo(pad * this.dx / 2, 0)
             .lineTo(0, - pad * this.dy)
             .closePath()
             .fill();
