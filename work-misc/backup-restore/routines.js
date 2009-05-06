@@ -395,6 +395,7 @@ function make_restore_sql( name, id, tagged ) {
     print(comment('Restore data'));
     if ( name in paths )
         print_path_insert(name);
+
     print(nodelist.map(to_sql(format_copy)).flatten());
 
     print(relations.map(function( rel ) {
@@ -496,6 +497,19 @@ function make_clone_sql( name, id, tagged ) {
     print(comment("'Backup' specified object to temporaties"));
     print(nodelist.map(to_sql(format_copy)).flatten());
 
+    if ( name in paths )
+    {
+        print(paths[name].map(function( el )
+        {
+            var x = clone(el);
+
+            x.childTable = source_prefix + el.childTable + source_suffix;
+            x.mediumTable = source_prefix + el.mediumTable + source_suffix;
+
+            return '\t\tINSERT INTO #' + el.childTable + '_' + objectName + '\n' + sql.select_path.fmt(el);
+        }));
+    }
+
     var entity_name = get_entity_name();
     var entity_id = get_id(entity_name.table);
 
@@ -520,11 +534,16 @@ function make_clone_sql( name, id, tagged ) {
     print(comment('Update IDs'));
     print(nodelist.map(to_sql(format_update_id, prepare_parent_tee)).flatten().filter(is_valid_sql));
 
+    if ( name in clone_before_restore )
+    {
+        print(clone_before_restore[name]);
+    }
+
     // HARDCODE
     if ( name == 'BLOCK' ) {
         print('\t\tUPDATE #BLOCK_HEADER_BLOCK SET EPC_ID = @NEW_EPC_ID WHERE EPC_ID = @EPC_ID;');
         print('\t\tUPDATE #FIELD_CONTRACTS_BLOCKS_BLOCK SET GA_ID = @NEW_GA_ID WHERE EPC_ID = @EPC_ID;');
-        print('\t\tUPDATE #CONTRACT_HEADER_BLOCK SET PAR_ID = @NEW_PAR_ID WHERE PAR_ID = @PAR_ID');
+        print('\t\tUPDATE #CONTRACT_HEADER_BLOCK SET PAR_ID = @NEW_PAR_ID WHERE PAR_ID = @PAR_ID;');
     }
     else if ( name == 'FIELD' )
     {
@@ -538,6 +557,22 @@ function make_clone_sql( name, id, tagged ) {
 
     // 7. 'Restore' copy;
     print(comment("'Restore' copy"));
+
+
+    if ( name in paths )
+    {
+        print(paths[name].map(function( el ) {
+            var x = clone(el);
+
+            x.childTable = source_prefix + el.childTable + source_suffix;
+            x.mediumTable = source_prefix + el.mediumTable + source_suffix;
+            x.tmpSufix = '_' + objectName;
+            x.parentId = 'NEW_' + x.parentId;
+
+            return ('\t\tINSERT INTO ' + el.childTable + '\n' + sql.select_path).fmt(x);
+        }).reverse());
+    }
+
     print(nodelist.map(to_sql(format_copy)).flatten().map(ins_new_prefix));
 
     // 8. Drop temporaries;

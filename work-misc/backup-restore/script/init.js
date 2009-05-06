@@ -17,6 +17,7 @@ add_tagged('COMPANY_ADDITIONAL');
 
 var restore_before_delete = {};
 var restore_after_restore = {};
+var clone_before_restore = {};
 
 var paths = {};
 
@@ -103,6 +104,47 @@ function init_field()
 
             + '\t\tDROP TABLE #TEMP_INV_ASS_IDS;';
 
+    clone_before_restore['FIELD']
+            = '\n\t\t--\n\t\t-- Update phase to IA links\n\t\t--\n\n'
+            +'\t\tDECLARE @NEW_PHASE_INV_ASS DECIMAL(12, 0);\n'
+            + '\t\tDECLARE @PHASE_INV_ASS DECIMAL(12, 0);\n'
+            + '\n'
+            + '\t\tDECLARE CURS CURSOR\n'
+            + '\t\tFOR SELECT DISTINCT PHASE_ID\n'
+            + '\t\t\tFROM #FIELD_PHASE_DEVELOPMENT_FIELD\n'
+            + '\t\t\tWHERE FIE_ID = @NEW_FIE_ID;\n'
+            + '\n'
+            + '\t\tOPEN CURS;\n'
+            + '\n'
+            + '\t\tDECLARE @IA_PHASE_ID DECIMAL(12, 0);\n'
+            + '\n'
+            + '\t\tFETCH NEXT FROM CURS INTO @IA_PHASE_ID;\n'
+            + '\n'
+            + '\t\tWHILE @@FETCH_STATUS = 0\n'
+            + '\t\tBEGIN\n'
+            + "\t\t\tEXEC sp_GenerateNumericIdentity @NEW_PHASE_INV_ASS OUTPUT, 'INV_ASS', 'INV_ASS_ID';\n"
+            + '\n'
+            + '\t\t\tSELECT @PHASE_INV_ASS = INV_ASS FROM #FIELD_PHASE_DEVELOPMENT_FIELD\n'
+            + '\t\t\t\tWHERE PHASE_ID = @IA_PHASE_ID;\n'
+            + '\n'
+            + '\t\t\tUPDATE #FIELD_PHASE_DEVELOPMENT_FIELD\n'
+            + '\t\t\t\tSET INV_ASS = @NEW_PHASE_INV_ASS\n'
+            + '\t\t\t\tWHERE PHASE_ID = @IA_PHASE_ID;\n'
+            + '\n'
+            + '\t\t\tUPDATE #INV_ASS_FIELD\n'
+            + '\t\t\t\tSET INV_ASS_ID = @NEW_PHASE_INV_ASS\n'
+            + '\t\t\t\tWHERE INV_ASS_ID = @PHASE_INV_ASS;\n'
+            + '\n'
+            + '\t\t\tUPDATE #INV_ASS_TUPLE_DATA_FIELD\n'
+            + '\t\t\t\tSET INV_ASS_ID = @NEW_PHASE_INV_ASS\n'
+            + '\t\t\t\tWHERE INV_ASS_ID = @PHASE_INV_ASS;\n'
+            + '\n'
+            + '\t\t\tFETCH NEXT FROM CURS INTO @IA_PHASE_ID;\n'
+            + '\t\tEND\n'
+            + '\n'
+            + '\t\tCLOSE CURS;\n'
+            + '\t\tDEALLOCATE CURS;\n';
+
 }
 
 function init_block()
@@ -176,13 +218,19 @@ function init_globals()
 function init_company()
 {
     // COMPANY
-    node('COMPANY_HEADER');
-    node('COMPANY_ADDITIONAL', 'PU_ID', 'COMPANY_HEADER');
+    node('COMPANY_HEADER', 'PUH_ID');
+    node('COMPANY_ADDITIONAL', 'PUH_ID', 'COMPANY_HEADER');
 
     //add_where('COMPANY_HEADER', "LAST_STAGE_FLAG='Y'");
     //add_where('COMPANY_HEADER', "STAGE_VALIDITY_FLAG='Y'");
 
     add_name('COMPANY_HEADER', 'COMPANY_NAME');
+
+    clone_before_restore['COMPANY']
+            = '\t\tDECLARE @NEW_PU_ID DECIMAL(12, 0);\n\n'
+            + "\t\tEXEC sp_GenerateNumericIdentity @NEW_PU_ID OUTPUT, 'COMPANY_HEADER', 'PU_ID';\n\n"
+            + '\t\tUPDATE COMPANY_HEADER SET PU_ID = @NEW_PU_ID WHERE PUH_ID = @NEW_PUH_ID;\n\n'
+            + '\t\tUPDATE COMPANY_ADDITIONAL SET PU_ID = @NEW_PU_ID WHERE PUH_ID = @NEW_PUH_ID;';
 }
 
 function init_tax_system()
