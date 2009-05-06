@@ -60,6 +60,27 @@
     var filler = new Filler(canvas);
     filler.render();
 
+
+             var i=j=2;
+     var x = j * filler.dx;
+    var y = i * filler.dy;
+
+    filler.ctx.fillStyle = 'black';
+    filler.ctx.globalCompositeOperation     ='destination-out';
+
+    filler.ctx
+            .save()
+            .translate(x + (i % 2 + 1) * filler.dx / 2 + filler.width * (1 - margin) / 2, filler.height - filler.height * (1 - margin ) / 2 - y - filler.dy)
+            .beginPath()
+            .moveTo(- (1+pad * filler.dx) / 2, 0)
+            .lineTo(0,  (1+pad * filler.dy))
+            .lineTo((1+pad *  filler.dx) / 2, 0)
+            .lineTo(0, - (1+pad * filler.dy)    )
+            .closePath()
+            .fill()
+            .restore();
+
+
     var colors = document.getElementById('colors');
 
     filler.getColors().forEach(
