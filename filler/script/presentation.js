@@ -6,7 +6,7 @@ function set_level_easy()
 
 var default_mx = 32;
 var default_my = 24;
-var pad = .95;
+var pad = .945;
 var margin = 1;
 
 var shade_high = 'rgba(255, 255, 255, .25)';
@@ -21,6 +21,12 @@ function Filler( canvas, mx, my )
     this.dy = margin * canvas.height / (this.logic.my + 1);
     this.height = canvas.height;
     this.width = canvas.width;
+
+    this.render();
+    try
+    {
+    createCluster.call(this.logic, 0, 0);
+    }catch(ex){console.log(ex);}
 }
 
 var F = Filler.prototype;
@@ -71,9 +77,34 @@ F.renderCell = function( i, j )
     }
 
     this.ctx.restore();
+
+    return this;
+};
+
+F.clearCell = function( i, j )
+{
+    this.ctx
+            .save()
+            .globalCompositeOperation = 'destination-out';
+
+    var x = j * this.dx;
+    var y = i * this.dy;
+
+    this.ctx
+            .translate(x + (i % 2 + 1) * this.dx / 2 + this.width * (1 - margin) / 2, this.height - this.height * (1 - margin ) / 2 - y - this.dy)
+            .beginPath()
+            .moveTo(- (1 + pad * this.dx / 2), 0)
+            .lineTo(0, 1 + pad * this.dy)
+            .lineTo(1 + pad * this.dx / 2, 0)
+            .lineTo(0, - (1 + pad * this.dy))
+            .closePath()
+            .fill()
+            .restore();
+
+    return this;
 };
 
 F.getColors = function()
 {
     return this.logic.getColors();
-}
+};

@@ -16,17 +16,21 @@
         }
 
         #colors {
+            font-size: 170%;
             float: left;
-            width: 3.2em;
-            margin: 1em;
-            padding-top: .5em;
+            width: 3.5em;
         }
 
-        #colors input {
-            height: 3.2em;
-            width: 3.2em;
-            border: .2em solid;
-            margin-bottom: 1em; 
+        .color-control {
+            text-decoration: none;
+            height: 2.2em;
+            width: 2em;
+            display: inline-block;
+            padding-left: .2em;
+            color: #484848;
+            font-family: Tahoma, sans-serif;
+            border: .15em solid;
+            margin: .3em;
         }
 
     </style>
@@ -51,46 +55,42 @@
     </div>
 </div>
 <script type="text/javascript">
-    var styleTmp = 'background-color: {color}; border-color: {hi-col} {low-col} {low-col} {hi-col}';
-    var inputTmp = '<input type="button" class="color-control" id="color-{index}" style="{style}" value=""/>';
-
     var canvasId = 'main-filler-canvas';
     var canvas = document.getElementById(canvasId);
 
     var filler = new Filler(canvas);
-    filler.render();
+//    filler.render();
+
+    var control_holder = document.getElementById('colors');
+    var colors = filler.getColors();
+
+    var controlTmp = '<a href="#color{n}" class="color-control color-{n}">{n}</a>';
+    var styleTmp =
+            '.color-{n} {background-color: {color}; border-color: {light} {dark} {dark} {light}; color: {text-color}}\n'
+                    + '.color-{n}:hover, .color-{n}:visited, .color-{n}:visited:hover {color: {text-color}}\n'
+                    + '.color-{n}:hover, .color-{n}:visited:hover {background-color: {light}}';
+
+    function generateControl( colorStr, n )
+    {
+        return controlTmp.fmt({n:n + 1});
+    }
+
+    function generateStyle( colorStr, n )
+    {
+        var color = new Color(colorStr);
+        var textColor = ((color.red + color.green + color.blue) / 3 + 128) % 256 < 128 ? '#262626' : '#e0e0e0';
+        return styleTmp.fmt({n:n + 1, color:color.tint(-20), light:color.tint(40), dark:color.tint(-55), 'text-color':textColor});
+    }
+
+    control_holder.innerHTML =
+    [
+        '<style type="text/css">'
+        , colors.map(generateStyle).join('\n')
+        , '</style>'
+        , colors.map(generateControl).join('')
+    ].join('');
 
 
-             var i=j=2;
-     var x = j * filler.dx;
-    var y = i * filler.dy;
-
-    filler.ctx.fillStyle = 'black';
-    filler.ctx.globalCompositeOperation     ='destination-out';
-
-    filler.ctx
-            .save()
-            .translate(x + (i % 2 + 1) * filler.dx / 2 + filler.width * (1 - margin) / 2, filler.height - filler.height * (1 - margin ) / 2 - y - filler.dy)
-            .beginPath()
-            .moveTo(- (1+pad * filler.dx) / 2, 0)
-            .lineTo(0,  (1+pad * filler.dy))
-            .lineTo((1+pad *  filler.dx) / 2, 0)
-            .lineTo(0, - (1+pad * filler.dy)    )
-            .closePath()
-            .fill()
-            .restore();
-
-
-    var colors = document.getElementById('colors');
-
-    filler.getColors().forEach(
-            function( col, i )
-            {
-                var color = new Color(col);
-                var style= styleTmp.fmt({color:col, 'hi-col': color.tint(40), 'low-col':color.tint(-40)});
-                colors.innerHTML += inputTmp.fmt({index:i, style:style});
-            }
-    );
 </script>
 </body>
 </html>
