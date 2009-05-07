@@ -21,19 +21,29 @@
     };
 
     var C = Cluster.prototype;
+
+    /**
+     * Add adjacent cluster.
+     * @param {Cluster} cluster  neighbor cluster
+     * @return {Cluster}         this object for chaining.
+     */
     C.addAdj = function( cluster )
     {
-        function elEqClust( i ) {
-            return i == cluster;
-        }
-
-        if ( !this.neighbors.some(elEqClust) )
+        if ( this.neighbors.indexOf(cluster) == -1 )
         {
             this.neighbors.push(cluster);
             cluster.addAdj(this);
         }
+
+        return this;
     };
 
+    /**
+     * Add point to this cluster.
+     * @param {Number} i  point row coordinate
+     * @param {Number} j  point column coordiante
+     * @return {Cluster}  this object for chaining.
+     */
     C.add = function( i, j )
     {
         var point = [i,j];
@@ -46,22 +56,45 @@
         {
             this.points.push(point);
         }
+
+        return this;
     };
 
     C.replace = function( oldneighbor, newneighbor )
     {
-        if ( this.neighbors.length > 0 )
-        {
-            var oldidx = this.neighbors.indexOf(oldneighbor);
-            var newidx = this.neighbors.indexOf(newneighbor);
+        var oldidx = this.neighbors.indexOf(oldneighbor);
+        var newidx = this.neighbors.indexOf(newneighbor);
 
-            if ( oldidx != -1 ) {
-                if ( newidx == -1 )
-                    this.neighbors[oldidx] = newneighbor;
-                else
-                    this.neighbors.splice(oldidx, 1);
-            }
+        if ( newidx == -1 )
+            this.neighbors[oldidx] = newneighbor;
+        else
+            this.neighbors.splice(oldidx, 1);
+    };
+
+    /**
+     * Eat given cluster and write self onto it's place.
+     * @param {Cluster} neighbor  adjacent cluster to merge with
+     * @param {Array} tiles       field
+     * @return {Array}            array of new neighbors
+     */
+    C.eat = function( neighbor, tiles )
+    {
+        var j = -1, m = neighbor.neighbors.length, p;
+        while ( ++j < m )
+        {
+            var other = neighbor.neighbors[j];
+            other.replace(neighbor, this);
         }
+
+        j = -1,m = neighbor.points.length;
+        while ( ++j < m )
+        {
+            p = neighbor.points[j];
+            tiles[p[0]][p[1]] = this;
+            this.add(p[0], p[1]);
+        }
+
+        return neighbor.neighbors;
     };
 
     C.toString = function()
@@ -222,16 +255,20 @@
             throw new Error('Cannot change color to opponents color.');
 
         if ( color == this.p1color )
-            throw new Error('Cannot chnage color to same color.');
+            throw new Error('Must change color.');
 
         var cluster = clust || this.tiles[0][0];
         cluster.color = color;
 
+        // Get points to redraw
         var toredraw = cluster.points.clone();
-        var newneighbors = [];
-        var merged = [];
-        var neighbor;
 
+        // Cluster that will become adjacent after merge
+        var newneighbors = [];
+        // Merged (eaten) clusters
+        var merged = [];
+
+        var neighbor;
         var i = -1;
         while ( ++i < cluster.neighbors.length )
         {
@@ -241,7 +278,7 @@
                 neighbor = cluster.neighbors.splice(i--, 1)[0];
                 merged.push(neighbor);
 
-                newneighbors = newneighbors.concat(eat.call(this, cluster, neighbor));
+                newneighbors = newneighbors.concat(cluster.eat(neighbor, this.tiles));
             }
         }
 
@@ -252,12 +289,11 @@
         {
             newone = newneighbors[i];
 
-            if ( merged != cluster && merged.indexOf(newone) == -1 )
+            if ( newone != cluster && merged.indexOf(newone) == -1 )
                 cluster.addAdj(newone);
         }
 
         // Find surrounded clusters
-        newneighbors = [];
         i = -1;
         while ( ++i < cluster.neighbors.length )
         {
@@ -267,55 +303,26 @@
                 neighbor = cluster.neighbors.splice(i--, 1)[0];
                 merged.push(neighbor);
 
-                newneighbors = newneighbors.concat(eat.call(this, cluster, neighbor));
+                var j = -1, m = neighbor.points.length;
+                while ( ++j < m )
+                {
+                    var p = neighbor.points[j];
+
+                    function isPoint( e )
+                    {
+                        return e[0] == p[0] && e[1] == p[1];
+                    }
+
+                    if ( !toredraw.some(isPoint) )
+                        toredraw.push(p);
+                }
+
+                cluster.eat(neighbor, this.tiles);
             }
         }
-
-        // Merge surrounded clusters
-        i = -1;
-        while ( ++i < newneighbors.length )
-        {
-            newone = newneighbors[i];
-            var j = -1,m = newone.points.length;
-            while ( ++j < m )
-            {
-                var p = newone.points[j];
-                if ( toredraw.indexOf(p) == -1 )
-                    toredraw.push(p);
-            }
-
-            if ( merged != cluster && merged.indexOf(newone) == -1 )
-                cluster.addAdj(newone);
-        }
-
 
         return toredraw;
     };
-
-    function eat( cluster, neighbor )
-    {
-        var j = -1, m = neighbor.neighbors.length, p;
-        while ( ++j < m )
-        {
-            var other = neighbor.neighbors[j];
-            other.replace(neighbor, cluster);
-        }
-
-        j = -1,m = neighbor.points.length;
-        while ( ++j < m )
-        {
-            p = neighbor.points[j];
-            this.tiles[p[0]][p[1]] = cluster;
-        }
-
-        j = -1,m = neighbor.points.length;
-        while ( ++j < m ) {
-            p = neighbor.points[j];
-            cluster.add(p[0], p[1]);
-        }
-
-        return neighbor.neighbors;
-    }
 
     L.moveP2 = function()
     {
@@ -323,11 +330,16 @@
         var i = -1, n = cluster.neighbors.length;
         var max = 0, color = 0;
 
-        while ( color == cluster.color || color == this.p1color )++color;
+        // Set safe default column
+        while ( color == cluster.color || color == this.p1color )
+            ++color;
+
+        // Todo evaluate advancement, second step and player interference.
 
         while ( ++i < n )
         {
             var neighbor = cluster.neighbors[i];
+
             if ( neighbor.color != this.p1color && neighbor.color != cluster.color && neighbor.points.length > max )
             {
                 max = neighbor.points.length;
