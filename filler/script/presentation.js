@@ -9,7 +9,7 @@ var default_my = 24;
 var pad = .945;
 var margin = 1;
 
-var shade_high = 'rgba(255, 255, 255, .17)';
+var shade_high = 'rgba(255, 255, 255, .14)';
 var shade_left = 'rgba(0, 0, 0, .035)';
 var shade_bott = 'rgba(0, 0, 0, .15)';
 
@@ -28,6 +28,8 @@ var F = Filler.prototype;
 F.render = function()
 {
     var it = this;
+    this.ctx.clearRect(0, 0, this.width, this.height);
+
     range(it.logic.my).forEach(function( i ) {
         range(it.logic.mx).forEach(function( j )
         {
@@ -121,12 +123,12 @@ function redrawCluster( points )
 {
     function sort( p1, p2 )
     {
-        var a=p1[0] + p1[1];
-        var b= p2[0] + p2[1];
+        var a = p1[0] + p1[1];
+        var b = p2[0] + p2[1];
 
-        if(alter)
-        return a-b;
-        else return b-a;
+        if( alter )
+            return a - b;
+        else return b - a;
     }
 
     var it = this;
