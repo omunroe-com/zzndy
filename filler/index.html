@@ -86,9 +86,9 @@
 
     var controlTmp = '<a href="#color{n}" id="color-{n}" class="color-control color-{n}" onclick="setColor({n})">{sn}</a>';
     var styleTmp
-            = '.color-{n} {background-color: {color}; border-color: {light1} {dark1} {dark2} {light2}; color: {text-color}}\n'
-            + '.color-{n}:hover, .color-{n}:visited, .color-{n}:visited:hover {color: {text-color}}\n'
-            + '.color-{n}:hover, .color-{n}:visited:hover {background-color: {light2}}'
+            = '.color-{n} {background-color: {color}; border-color: {light1} {dark1} {dark2} {light2}; color: {text-color}}\n\n'
+            + '.color-{n}:hover, .color-{n}:visited, .color-{n}:visited:hover {color: {text-color}}\n\n'
+            + '.color-{n}:hover, .color-{n}:visited:hover {background-color: {light2}}\n'
             + '.color-{n}.disabled:hover, .color-{n}.disabled:visited, .color-{n}.disabled:hover:visited {background-color:transparent;color:#888;border-color:#888 } ';
 
 
@@ -104,13 +104,14 @@
         return styleTmp.fmt({n:n , color:color.tint(-20), light1:color.tint(80), light2:color.tint(30), dark1:color.tint(-55), dark2:color.tint(-90),'text-color':textColor});
     }
 
-    control_holder.innerHTML =
-    [
-        '<style type="text/css">'
-        , colors.map(generateStyle).join('\n')
-        , '</style>'
-        , colors.map(generateControl).join('')
-    ].join('');
+
+    var style = document.createElement('style');
+    style.setAttribute('type', 'text/css');
+    style.appendChild(document.createTextNode( colors.map(generateStyle).join('\n\n')));
+
+    document.getElementsByTagName('head')[0].appendChild(style);
+
+    control_holder.innerHTML = colors.map(generateControl).join('');
 
     function disableButton( i )
     {
