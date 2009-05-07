@@ -4,16 +4,20 @@
         ,'rgb(40, 205,  20)'  // green
         ,'rgb(48, 77, 200)'   // blue
         ,'rgb(105, 229, 235)' // cyan
-        ,'rgb(205, 0, 225)'   // magnra
+        ,'rgb(205, 0, 225)'   // magneta
         ,'rgb(180, 180, 180)' // gray
         ,'rgb(255, 215, 0)'   // yellow
     ];
 
+    var color_name = ['red', 'green', 'blue', 'cyan', 'magneta', 'gray', 'yellow'];
+
+    var clusterId = 0;
     Cluster = function( i, j, color )
     {
         this.color = color;
         this.points = [[i,j]];
         this.neighbors = [];
+        this.id = ++clusterId;
     };
 
     var C = Cluster.prototype;
@@ -23,9 +27,9 @@
             return i == cluster;
         }
 
-        if( !this.neighbors.some(elEqClust) )
+        if ( !this.neighbors.some(elEqClust) )
         {
-            this.neighbors.add(cluster);
+            this.neighbors.push(cluster);
             cluster.addAdj(this);
         }
     };
@@ -35,103 +39,46 @@
         var point = [i,j];
 
         function elEqPt( el ) {
-            return el == point;
+            return el[0] == point[0] && el[1] == point[1];
         }
 
-        if( !this.points.some(elEqPt) )
+        if ( !this.points.some(elEqPt) )
+        {
             this.points.push(point);
+        }
     };
+
+    C.replace = function( oldneighbor, newneighbor )
+    {
+        if ( this.neighbors.length > 0 )
+        {
+            var oldidx = this.neighbors.indexOf(oldneighbor);
+            var newidx = this.neighbors.indexOf(newneighbor);
+
+            if ( oldidx != -1 ) {
+                if ( newidx == -1 )
+                    this.neighbors[oldidx] = newneighbor;
+                else
+                    this.neighbors.splice(oldidx, 1);
+            }
+        }
+    };
+
+    C.toString = function()
+    {
+        return ['#' , this.id, ' (', color_name[this.color], ')'].join('');
+    }
 
     var prob = 0.4;
 
-    function findNeighbors( i, j )
-    {
-        var iu = i + 1;
-        var id = i - 1;
-        var jl = j - 1 + i % 2;
-        var jr = j + i % 2;
-
-        var rval = {clusters:[], points:[]};
-
-        if( iu < this.my )
-        {
-            if( jl >= 0 ) {
-                if( this.tiles[iu][jl] instanceof Cluster )
-                    rval.clusters.push(this.tiles[iu][jl]);
-                else
-                    rval.points.push([iu, jl, this.tiles[iu][jl]]);
-            }
-            if( jr < this.mx ) {
-                if( this.tiles[iu][jr] instanceof Cluster )
-                    rval.clusters.push(this.tiles[iu][jr]);
-                else
-                    rval.points.push([iu, jr, this.tiles[iu][jr]]);
-            }
-        }
-        if( id >= 0 )
-        {
-            if( jl >= 0 ) {
-                if( this.tiles[id][jl] instanceof Cluster )
-                    rval.clusters.push(this.tiles[id][jl]);
-                else
-                    rval.points.push([id, jl, this.tiles[id][jl]]);
-            }
-            if( jr < this.mx ) {
-                if( this.tiles[id][jr] instanceof Cluster )
-                    rval.clusters.push(this.tiles[id][jr]);
-                else
-                    rval.points.push([id, jr, this.tiles[id][jr]]);
-            }
-        }
-
-        console.log(['Point ', i, ', ', j,' has ', rval.points.length, ' neighbor points and ', rval.clusters.length, ' ajacent clustres.'].join(''));
-
-        return rval;
-    }
-
-    function processCell( i, j )
-    {
-        var colr = this.tiles[i][j];
-        var adj = findNeighbors.call(this, i, j);
-
-        var idx, cluster;
-
-        for( idx in adj.clusters )
-        {
-            cluster = adj.clusters[idx];
-            if( cluster.color == colr ) {
-                this.tiles[i][j] = cluster;
-                break;
-            }
-        }
-
-        if( colr == this.tiles[i][j] ) {
-            this.tiles[i][j] = new Cluster(colr);
-            for( idx in adj.clusters )
-            {
-                if( cluster instanceof Cluster ) {
-                    cluster = adj.clusters[idx];
-                    cluster.addAdj(this.tiles[i][j]);
-                }
-            }
-        }
-
-        for( idx in adj.points )
-        {
-            var point = adj.points[idx];
-            if( typeof point[0] == 'number' && typeof point[1] == 'number' )
-                processCell.call(this, point[0], point[1]);
-        }
-    }
-
     function findAdjacent( i, j, cluster )
     {
-        if( !(cluster instanceof Cluster) )
+        if ( !(cluster instanceof Cluster) )
             throw new Error('findAdjacent can only operate on clusters');
 
         var iu = i + 1;
         var id = i - 1;
-        var jl = j + i % 2-1;
+        var jl = j + i % 2 - 1;
         var jr = j + i % 2;
 
         var adj = [];
@@ -140,37 +87,40 @@
         function addAdj( i, j )
         {
             var cell = it.tiles[i][j];
-            console.log('cell',i,j,cell, 'adj', adj);
-            if( cell instanceof Cluster && cell != cluster )
+            if ( cell instanceof Cluster && cell != cluster )
             {
-                console.log('push cluster ar', i, j);
-                if(!cell.processed )
-                adj.push(cell);
+                if ( !cell.processed )
+                {
+                    //console.log('Found that cluster #{id1} ({col1}) is adjacent to #{id2} ({col2})'.fmt({id1:cell.id, col1:cell.color, id2:cluster.id, col2:cluster.color}));
+                    adj.push(cell);
+                }
             }
-            else if( cell == cluster.color )
+            else if ( cell == cluster.color )
             {
-                console.log('hit', i, j);
+                //console.log('Adding point {i}, {j} to cluster #{id} ({col})'.fmt({i:i, j:j, id:cluster.id, col:cluster.color}));
                 cluster.add(i, j);
                 it.tiles[i][j] = cluster;
+
+                adj = adj.concat(findAdjacent.call(it, i, j, cluster));
             }
-            else{
-                console.log('last case', i, j, '->', cell);
-                adj.push([i,j]);
-            }
+            else if ( cell != cluster ) {
+                    //console.log("Point {i}, {j} ({pcol}) is adjacent to cluster #{id} ({col})".fmt({pcol:cell, i:i, j:j, id:cluster.id, col:cluster.color}));
+                    adj.push([i,j]);
+                }
         }
 
-        if( iu < this.my )
+        if ( iu < this.my )
         {
-            if( jl >= 0 )
+            if ( jl >= 0 )
                 addAdj(iu, jl);
-            if( jr < this.mx )
+            if ( jr < this.mx )
                 addAdj(iu, jr);
         }
-        if( id >= 0 )
+        if ( id >= 0 )
         {
-            if( jl >= 0 )
+            if ( jl >= 0 )
                 addAdj(id, jl);
-            if( jr < this.mx )
+            if ( jr < this.mx )
                 addAdj(id, jr);
         }
 
@@ -178,38 +128,40 @@
 
         return adj;
     }
-    // TODO: Hide me
-    createCluster=function( i, j )
+
+    function createCluster( i, j )
     {
         var cluster;
-        console.log(i, j);
-        if( typeof this.tiles[i][j] == 'number' )
+        if ( typeof this.tiles[i][j] == 'number' )
             cluster = this.tiles[i][j] = new Cluster(i, j, this.tiles[i][j]);
         else
             throw new Error(['Point (', i, ', ', j,') is already in cluster'].join(''));
 
-        // find all adjacencies of same color and assign them to cluster
-        // all adjacencies of this cluster must be converted to clustres themselves
-        // or marked as neighbors
+        //console.log('New cluster #{id} ({col}) starts at {i}, {j}'.fmt({id:cluster.id, col:cluster.color, i:i,j:j}));
 
+        // Get all points (or clusters) adjacent to this cluster
         var adj = findAdjacent.call(this, i, j, cluster);
 
-        for( var idx in adj )
+        for ( var idx in adj )
         {
             var neighbor = adj[idx];
-            if( neighbor instanceof Cluster )
+            if ( neighbor instanceof Cluster )
             {
-                if( neighbor.color == cluster.color )
+                if ( neighbor.color == cluster.color )
                     throw new Error('Requested to adjacent two same colored clusters');
 
                 cluster.addAdj(neighbor);
+                //console.log('New neighbors: clusters #{cid1} (color {col1}) and #{cid2} ({col2})'.fmt({cid1:cluster.id, col1:cluster.color, cid2:neighbor.id, col2:neighbor.color}));
             }
-            else if( neighbor instanceof Array )
+            else if ( neighbor instanceof Array )
             {
-                console.log('Creating cluster at', neighbor[0], neighbor[1], '->', this.tiles[neighbor[0]][ neighbor[1]])
-                createCluster.call(this, neighbor[0], neighbor[1]);
+                if ( this.tiles[neighbor[0]][ neighbor[1]] instanceof Cluster )
+                    cluster.addAdj(this.tiles[neighbor[0]][ neighbor[1]]);
+                else
+                    cluster.addAdj(createCluster.call(this, neighbor[0], neighbor[1]));
             }
         }
+        return cluster;
     }
 
     FillerLogic = function( mx, my )
@@ -218,10 +170,10 @@
         this.my = my;
 
         this.tiles = [];
-        for( var i = 0; i < my; ++i )
+        for ( var i = 0; i < my; ++i )
         {
             this.tiles[i] = [];
-            for( var j = 0; j < mx; ++j )
+            for ( var j = 0; j < mx; ++j )
             {
                 this.tiles[i][j]
                         = (i == 0 || Math.random() > prob)
@@ -232,18 +184,158 @@
             }
         }
 
-//        createCluster.call(this, 0, 0);
+        createCluster.call(this, 0, 0);
     };
 
     var L = FillerLogic.prototype;
 
     L.getColor = function( i, j )
     {
-        return colors[(this.tiles[i][j] instanceof Cluster) ? this.tiles[i][j].color:this.tiles[i][j]];
+        return colors[(this.tiles[i][j] instanceof Cluster) ? this.tiles[i][j].color : this.tiles[i][j]];
     };
 
     L.getColors = function()
     {
         return colors.clone();
     };
+
+    L.__defineGetter__('p1color', function() {
+        return this.tiles[0][0].color;
+    });
+
+    L.__defineGetter__('p2color', function() {
+        return this.tiles[this.my - 1][this.mx - 1].color;
+    });
+
+    L.__defineGetter__('p1share', function() {
+        return (100 * this.tiles[0][0].points.length / (this.mx * this.my));
+    });
+
+    L.__defineGetter__('p2share', function() {
+        return (100 * this.tiles[this.my - 1][this.mx - 1].points.length / (this.mx * this.my));
+    });
+
+    L.setColor = function( color, clust )
+    {
+        // Check errors
+        if ( color == this.p2color )
+            throw new Error('Cannot change color to opponents color.');
+
+        if ( color == this.p1color )
+            throw new Error('Cannot chnage color to same color.');
+
+        var cluster = clust || this.tiles[0][0];
+        cluster.color = color;
+
+        var toredraw = cluster.points.clone();
+        var newneighbors = [];
+        var merged = [];
+        var neighbor;
+
+        var i = -1;
+        while ( ++i < cluster.neighbors.length )
+        {
+            neighbor = cluster.neighbors[i];
+            if ( neighbor.color == cluster.color )
+            {
+                neighbor = cluster.neighbors.splice(i--, 1)[0];
+                merged.push(neighbor);
+
+                newneighbors = newneighbors.concat(eat.call(this, cluster, neighbor));
+            }
+        }
+
+        // merge eaten neighbor clusters
+        var newone;
+        i = -1;
+        while ( ++i < newneighbors.length )
+        {
+            newone = newneighbors[i];
+
+            if ( merged != cluster && merged.indexOf(newone) == -1 )
+                cluster.addAdj(newone);
+        }
+
+        // Find surrounded clusters
+        newneighbors = [];
+        i = -1;
+        while ( ++i < cluster.neighbors.length )
+        {
+            neighbor = cluster.neighbors[i];
+            if ( neighbor.neighbors.length == 1 )
+            {
+                neighbor = cluster.neighbors.splice(i--, 1)[0];
+                merged.push(neighbor);
+
+                newneighbors = newneighbors.concat(eat.call(this, cluster, neighbor));
+            }
+        }
+
+        // Merge surrounded clusters
+        i = -1;
+        while ( ++i < newneighbors.length )
+        {
+            newone = newneighbors[i];
+            var j = -1,m = newone.points.length;
+            while ( ++j < m )
+            {
+                var p = newone.points[j];
+                if ( toredraw.indexOf(p) == -1 )
+                    toredraw.push(p);
+            }
+
+            if ( merged != cluster && merged.indexOf(newone) == -1 )
+                cluster.addAdj(newone);
+        }
+
+
+        return toredraw;
+    };
+
+    function eat( cluster, neighbor )
+    {
+        var j = -1, m = neighbor.neighbors.length, p;
+        while ( ++j < m )
+        {
+            var other = neighbor.neighbors[j];
+            other.replace(neighbor, cluster);
+        }
+
+        j = -1,m = neighbor.points.length;
+        while ( ++j < m )
+        {
+            p = neighbor.points[j];
+            this.tiles[p[0]][p[1]] = cluster;
+        }
+
+        j = -1,m = neighbor.points.length;
+        while ( ++j < m ) {
+            p = neighbor.points[j];
+            cluster.add(p[0], p[1]);
+        }
+
+        return neighbor.neighbors;
+    }
+
+    L.moveP2 = function()
+    {
+        var cluster = this.tiles[this.my - 1][this.mx - 1];
+        var i = -1, n = cluster.neighbors.length;
+        var max = 0, color = 0;
+
+        while ( color == cluster.color || color == this.p1color )++color;
+
+        while ( ++i < n )
+        {
+            var neighbor = cluster.neighbors[i];
+            if ( neighbor.color != this.p1color && neighbor.color != cluster.color && neighbor.points.length > max )
+            {
+                max = neighbor.points.length;
+                color = neighbor.color;
+            }
+        }
+
+        return this.setColor(color, cluster);
+    }
+
 })();

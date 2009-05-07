@@ -31,6 +31,22 @@
             font-family: Tahoma, sans-serif;
             border: .15em solid;
             margin: .3em;
+            border-radius: .4em;
+            -moz-border-radius: .4em;
+        }
+
+        #player, #computer {
+            font-size: 170%;
+            color: white;
+            font-weight: bold;
+        }
+
+        #player {
+            float: left;
+        }
+
+        #computer {
+            float: right;
         }
 
     </style>
@@ -43,7 +59,11 @@
 
     <div class="content">
         <div id="colors"></div>
-        <canvas id="main-filler-canvas" width="800px" height="500px"></canvas>
+        <div style="float:left;width:800px">
+            <canvas id="main-filler-canvas" width="800px" height="500px"></canvas>
+            <div id="player"></div>
+            <div id="computer"></div>
+        </div>
 
         <div class="emtpy_footer">
         </div>
@@ -59,27 +79,29 @@
     var canvas = document.getElementById(canvasId);
 
     var filler = new Filler(canvas);
-//    filler.render();
+    filler.render();
 
     var control_holder = document.getElementById('colors');
     var colors = filler.getColors();
 
-    var controlTmp = '<a href="#color{n}" class="color-control color-{n}">{n}</a>';
-    var styleTmp =
-            '.color-{n} {background-color: {color}; border-color: {light} {dark} {dark} {light}; color: {text-color}}\n'
-                    + '.color-{n}:hover, .color-{n}:visited, .color-{n}:visited:hover {color: {text-color}}\n'
-                    + '.color-{n}:hover, .color-{n}:visited:hover {background-color: {light}}';
+    var controlTmp = '<a href="#color{n}" id="color-{n}" class="color-control color-{n}" onclick="setColor({n})">{sn}</a>';
+    var styleTmp
+            = '.color-{n} {background-color: {color}; border-color: {light1} {dark1} {dark2} {light2}; color: {text-color}}\n'
+            + '.color-{n}:hover, .color-{n}:visited, .color-{n}:visited:hover {color: {text-color}}\n'
+            + '.color-{n}:hover, .color-{n}:visited:hover {background-color: {light2}}'
+            + '.color-{n}.disabled:hover, .color-{n}.disabled:visited, .color-{n}.disabled:hover:visited {background-color:transparent;color:#888;border-color:#888 } ';
+
 
     function generateControl( colorStr, n )
     {
-        return controlTmp.fmt({n:n + 1});
+        return controlTmp.fmt({n:n, sn:n + 1 });
     }
 
     function generateStyle( colorStr, n )
     {
         var color = new Color(colorStr);
         var textColor = ((color.red + color.green + color.blue) / 3 + 128) % 256 < 128 ? '#262626' : '#e0e0e0';
-        return styleTmp.fmt({n:n + 1, color:color.tint(-20), light:color.tint(40), dark:color.tint(-55), 'text-color':textColor});
+        return styleTmp.fmt({n:n , color:color.tint(-20), light1:color.tint(80), light2:color.tint(30), dark1:color.tint(-55), dark2:color.tint(-90),'text-color':textColor});
     }
 
     control_holder.innerHTML =
@@ -89,6 +111,60 @@
         , '</style>'
         , colors.map(generateControl).join('')
     ].join('');
+
+    function disableButton( i )
+    {
+        var button = document.getElementById('color-' + i);
+        button.className += ' disabled';
+    }
+
+    function enableButton( i )
+    {
+        var button = document.getElementById('color-' + i);
+        button.className = button.className.replace(/\bdisabled\b/, '');
+    }
+
+    disableButton(filler.p1color);
+    disableButton(filler.p2color);
+
+    function setColor( n )
+    {
+        var control = document.getElementById('color-' + n);
+        if ( !control.className.match(/disabled/) ) {
+            enableButton(filler.p1color);
+            enableButton(filler.p2color);
+
+            filler.setColor(n);
+            filler.moveP2();
+
+            disableButton(filler.p1color);
+            disableButton(filler.p2color);
+
+            var a = filler.logic.p1share;
+            var b = filler.logic.p2share;
+
+            document.getElementById('player').innerHTML = a.toFixed(2) + '%';
+            document.getElementById('computer').innerHTML = b.toFixed(2) + '%';
+
+            if ( a > 50 )gamover('You win!');
+            if ( b > 50 )gamover('You lose.');
+        }
+    }
+
+    function gamover( message )
+    {
+        range(7).forEach(disableButton);
+        if ( message.match(/win/) )
+            document.getElementById('player').innerHTML += ' ' + message;
+        else
+            document.getElementById('computer').innerHTML = message + ' ' + document.getElementById('computer').innerHTML;
+    }
+
+    window.onkeypress = function( e )
+    {
+        if ( e.charCode >= 49 && e.charCode <= 55 )
+            setColor(e.charCode - 49);
+    }
 
 
 </script>

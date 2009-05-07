@@ -9,9 +9,9 @@ var default_my = 24;
 var pad = .945;
 var margin = 1;
 
-var shade_high = 'rgba(255, 255, 255, .25)';
-var shade_left = 'rgba(0, 0, 0, .071)';
-var shade_bott = 'rgba(0, 0, 0, .25)';
+var shade_high = 'rgba(255, 255, 255, .17)';
+var shade_left = 'rgba(0, 0, 0, .035)';
+var shade_bott = 'rgba(0, 0, 0, .15)';
 
 function Filler( canvas, mx, my )
 {
@@ -21,12 +21,6 @@ function Filler( canvas, mx, my )
     this.dy = margin * canvas.height / (this.logic.my + 1);
     this.height = canvas.height;
     this.width = canvas.width;
-
-    this.render();
-    try
-    {
-    createCluster.call(this.logic, 0, 0);
-    }catch(ex){console.log(ex);}
 }
 
 var F = Filler.prototype;
@@ -108,3 +102,52 @@ F.getColors = function()
 {
     return this.logic.getColors();
 };
+
+F.setColor = function( color )
+{
+    var tr = this.logic.setColor(color);
+    redrawCluster.call(this, tr);
+};
+
+F.moveP2 = function()
+{
+    var tr = this.logic.moveP2();
+    redrawCluster.call(this, tr);
+}
+
+var alter = false;
+
+function redrawCluster( points )
+{
+    function sort( p1, p2 )
+    {
+        var a=p1[0] + p1[1];
+        var b= p2[0] + p2[1];
+
+        if(alter)
+        return a-b;
+        else return b-a;
+    }
+
+    var it = this;
+    alter = !alter;
+
+    points.sort(sort).forEach(function( i, n )
+    {
+        var fn = function()
+        {
+            it.clearCell(i[0], i[1]).renderCell(i[0], i[1]);
+        };
+
+        window.setTimeout(fn, n * 2);
+    });
+
+}
+
+F.__defineGetter__('p1color', function() {
+    return this.logic.p1color;
+});
+
+F.__defineGetter__('p2color', function() {
+    return this.logic.p2color;
+});
