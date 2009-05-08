@@ -42,18 +42,19 @@
     console.log(grid.cap)
     grid.strokeAll(ctx);
 
-    function getPos(e)
+    function getPos( e )
     {
         return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
     }
 
-    function click(e)
+    function click( e )
     {
         var pos = getPos(e);
 
         ctx.clearRect(-off.x, -off.y, 800, 500)
 
-        var [i, j] = grid.getAt(pos.x-off.x, pos.y-off.y);
+        var coords = grid.getAt(pos.x - off.x, pos.y - off.y);
+        var i = coords[0], j = coords[1];
         grid.fill(i, j, ctx)
         grid.strokeAll(ctx);
     }

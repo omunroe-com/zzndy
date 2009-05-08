@@ -24,13 +24,19 @@
         var ctx = document.createElement('canvas').getContext('2d');
         C = ctx.__proto__;
         G = ctx.createLinearGradient(0, 0, 0, 0).__proto__;
-        CanvasRenderingContext2D = {prototype:C};
-        CanvasGradient = {prototype:G};
+        delete ctx;
     }
     else
     {
         C = CanvasRenderingContext2D.prototype;
-        G = CanvasGradient.prototype;
+
+        if ( 'CanvasGradient' in this )
+            G = CanvasGradient.prototype;
+        else {
+            var ctx = document.createElement('canvas').getContext('2d');
+            G = ctx.createLinearGradient(0, 0, 0, 0).__proto__;
+            delete ctx;
+        }
     }
 
     // Make canvas' methods chainable
