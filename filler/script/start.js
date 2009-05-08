@@ -36,7 +36,7 @@ var canvasId = 'main-filler-canvas';
                 = '.color-{n} {background-color: {color}; border-color: {light1} {dark1} {dark2} {light2}; color: {text-color}}\n\n'
                 + '.color-{n}:hover, .color-{n}:visited, .color-{n}:visited:hover {color: {text-color}}\n\n'
                 + '.color-{n}:hover, .color-{n}:visited:hover {background-color: {light2}}\n'
-                + '.color-{n}.disabled:hover, .color-{n}.disabled:visited, .color-{n}.disabled:hover:visited {background-color:transparent;color:#888;border-color:#888 } ';
+                + '.color-{n}.disabled, .color-{n}.disabled:hover, .color-{n}.disabled:visited, .color-{n}.disabled:hover:visited {background-color:transparent;color:#888;border-color:#888 } ';
 
 
         function generateControl( colorStr, n )
