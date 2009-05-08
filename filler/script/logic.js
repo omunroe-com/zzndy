@@ -265,7 +265,8 @@
         if( color == this.p1color )
             throw new Error('Must change color.');
 
-        var cluster = clust || this.tiles[0][0];
+        var cluster = clust || this.p1cluster;
+        var other = clust == this.p2cluster ? this.p1cluster : this.p2cluster;
         cluster.color = color;
 
         // Get points to redraw
@@ -306,7 +307,7 @@
         while( ++i < cluster.neighbors.length )
         {
             neighbor = cluster.neighbors[i];
-            if( neighbor.neighbors.length == 1 )
+            if( neighbor.neighbors.length == 1 && neighbor != other )
             {
                 neighbor = cluster.neighbors.splice(i--, 1)[0];
                 merged.push(neighbor);
@@ -340,7 +341,7 @@
         while( color == cluster.color || color == this.p1color )
             ++color;
 
-        var variants = evaluateMoves(cluster, [this.p1color], 1, []);
+        var variants = evaluateMoves.call(this, cluster, [this.p1color], 1, []);
         console.log(variants.results);
         var max = 0;
         for( var col in variants.colors ) if( typeof variants.colors[col] != 'function' )
@@ -383,7 +384,14 @@
                         colors:[]
                     };
                 }
-                
+
+                var j = -1, m = neighbor.points.length;
+                while( ++j < m )
+                {
+                    var p = neighbor.points[j];
+                    results[otherColor].score += Math.min(this.mx - p[0] - 1, p[0]) + Math.min(this.my - p[1] - 1, p[1]);
+                }
+
                 results[otherColor].score += neighbor.points.length;
                 results[otherColor].neighbors = results[otherColor].neighbors.concat(neighbor.neighbors);
             }
