@@ -218,8 +218,8 @@ function init_globals()
 function init_company()
 {
     // COMPANY
-    node('COMPANY_HEADER', 'PUH_ID');
-    node('COMPANY_ADDITIONAL', 'PUH_ID', 'COMPANY_HEADER');
+    node('COMPANY_HEADER', 'PU_ID');
+    node('COMPANY_ADDITIONAL', 'PU_ID', 'COMPANY_HEADER');
 
     //add_where('COMPANY_HEADER', "LAST_STAGE_FLAG='Y'");
     //add_where('COMPANY_HEADER', "STAGE_VALIDITY_FLAG='Y'");
@@ -227,10 +227,10 @@ function init_company()
     add_name('COMPANY_HEADER', 'COMPANY_NAME');
 
     clone_before_restore['COMPANY']
-            = '\t\tDECLARE @NEW_PU_ID DECIMAL(12, 0);\n\n'
-            + "\t\tEXEC sp_GenerateNumericIdentity @NEW_PU_ID OUTPUT, 'COMPANY_HEADER', 'PU_ID';\n\n"
-            + '\t\tUPDATE COMPANY_HEADER SET PU_ID = @NEW_PU_ID WHERE PUH_ID = @NEW_PUH_ID;\n\n'
-            + '\t\tUPDATE COMPANY_ADDITIONAL SET PU_ID = @NEW_PU_ID WHERE PUH_ID = @NEW_PUH_ID;';
+            = '\t\tDECLARE @NEW_PUH_ID DECIMAL(12, 0);\n\n'
+            + "\t\tEXEC sp_GenerateNumericIdentity @NEW_PUH_ID OUTPUT, 'COMPANY_HEADER', 'PUH_ID';\n\n"
+            + '\t\tUPDATE COMPANY_HEADER SET PUH_ID = @NEW_PUH_ID WHERE PU_ID = @NEW_PU_ID;\n\n'
+            + '\t\tUPDATE COMPANY_ADDITIONAL SET PUH_ID = @NEWH_PU_ID WHERE PU_ID = @NEW_PU_ID;';
 }
 
 function init_tax_system()
