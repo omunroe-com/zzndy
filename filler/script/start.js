@@ -108,10 +108,14 @@ function setColor( n )
             ++playerwins;
             gamover('You win!');
         }
-        if( b > 50 ) {
+        else if( b > 50 ) {
             ++computerwins;
             gamover('You lose.');
         }
+        else if( a == b && a == 50 )
+            {
+                gamover('Tie.');
+            }
     }
 }
 
