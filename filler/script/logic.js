@@ -168,9 +168,7 @@
         if( typeof this.tiles[i][j] == 'number' )
             cluster = this.tiles[i][j] = new Cluster(i, j, this.tiles[i][j]);
         else
-            throw new Error(['Point (', i, ', ', j,') is already in cluster'].join(''));
-
-        //console.log('New cluster #{id} ({col}) starts at {i}, {j}'.fmt({id:cluster.id, col:cluster.color, i:i,j:j}));
+            throw new Error(['Point (', i, ', ', j,') is already in cluster ' + this.tiles[i][j]].join(''));
 
         // Get all points (or clusters) adjacent to this cluster
         var adj = findAdjacent.call(this, i, j, cluster);
@@ -184,16 +182,16 @@
                     throw new Error('Requested to adjacent two same colored clusters');
 
                 cluster.addAdj(neighbor);
-                //console.log('New neighbors: clusters #{cid1} (color {col1}) and #{cid2} ({col2})'.fmt({cid1:cluster.id, col1:cluster.color, cid2:neighbor.id, col2:neighbor.color}));
             }
             else if( neighbor instanceof Array )
             {
-                if( this.tiles[neighbor[0]][ neighbor[1]] instanceof Cluster )
-                    cluster.addAdj(this.tiles[neighbor[0]][ neighbor[1]]);
+                if( this.tiles[neighbor[0]][neighbor[1]] instanceof Cluster )
+                    cluster.addAdj(this.tiles[neighbor[0]][neighbor[1]]);
                 else
                     cluster.addAdj(createCluster.call(this, neighbor[0], neighbor[1]));
             }
         }
+
         return cluster;
     }
 
@@ -342,7 +340,6 @@
             ++color;
 
         var variants = evaluateMoves.call(this, cluster, [this.p1color], 1, []);
-        console.log(variants.results);
         var max = 0;
         for( var col in variants.colors ) if( typeof variants.colors[col] != 'function' )
         {
