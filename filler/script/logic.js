@@ -352,66 +352,94 @@
     {
         var cluster = this.p2cluster;
 
-        var color = 0;
+        var color = 0, max = 0;
         while( color == cluster.color || color == this.p1color )
-            ++color;
+            color = Math.floor(Math.random() * 7);
 
-        var variants = evaluateMoves.call(this, cluster, [this.p1color], 1, []);
-        var max = 0;
-        for( var col in variants.colors ) if( typeof variants.colors[col] != 'function' )
+        var scores = getScores.call(this, cluster.neighbors, [cluster], 3, cluster.color);
+        for( var col in scores )
         {
-            var newcolor = variants.colors[col];
-            var info = variants.results[newcolor];
-            if( info.score > max ) {
+            var info = scores[col];
+            if( info.score > max && col != cluster.color && col != this.p1color )
+            {
                 max = info.score;
-                color = newcolor;
+                color = col;
             }
         }
 
         return this.setColor(color, cluster);
     };
 
-    function evaluateMoves( cluster, invalidColors, recursions, ignore )
+    function getScores( clustres, ignore, nRecur, ignoreColor )
     {
-        var results = {};
-        var colors = [];
+        if( ignoreColor === undefined )
+            ignoreColor = -1;
 
-        if( ignore === undefined )
-            ignore = [];
-
-        var i = -1, n = cluster.neighbors.length;
+        var scores = {};
+        var i = -1, n = clustres.length;
         while( ++i < n )
         {
-            var neighbor = cluster.neighbors[i];
-            var otherColor = neighbor.color;
-
-            if( ignore.indexOf(neighbor) == -1 && invalidColors.indexOf(otherColor) == -1 )
+            var cluster = clustres[i];
+            var color = cluster.color;
+            function clustreMatch( other )
             {
-                if( colors.indexOf(otherColor) == -1 )
-                {
-                    colors.push(otherColor);
+                return cluster.id == other.id;
+            }
 
-                    results[otherColor] = {
-                        score:0 ,
-                        neighbors:[] ,
-                        results :{},
-                        colors:[]
-                    };
-                }
+            if( color != ignoreColor && !ignore.some(clustreMatch) )
+            {
+                if( !(color in scores) )
+                    scores[color] = {score:0, clusters:[]};
 
-                var j = -1, m = neighbor.points.length;
-                while( ++j < m )
-                {
-                    var p = neighbor.points[j];
-                    results[otherColor].score += Math.min(this.mx - p[0] - 1, p[0]) + Math.min(this.my - p[1] - 1, p[1]);
-                }
-
-                results[otherColor].score += neighbor.points.length;
-                results[otherColor].neighbors = results[otherColor].neighbors.concat(neighbor.neighbors);
+                scores[color].clusters.push(cluster);
             }
         }
 
-        return {results:results, colors:colors};
+        function getPoints( array, cluster )
+        {
+            return array.concat(cluster.points);
+        }
+
+        for( var col in scores )
+        {
+            var score = scores[col];
+            var points = score.clusters.reduce(getPoints, []);
+            score.score = measurePosition.call(this, points);
+        }
+
+        return scores;
     }
-})
-        ();
+
+    function measurePosition( points )
+    {
+        var it = this;
+        function measurePoint( sum, point ) {
+            var i = it.my - point[0] - 1;
+            var j = it.mx - point[1] - 1;
+            var t = (1 + tanh((32 / it.mx) * (j - it.mx / 2))) / 2;
+
+            var ci = Math.min(point[0], i);
+            var cj = Math.min(point[1], j);
+
+            // Transition from zero to one turns 0.5 at x=m and lasts n points
+            // (1+tanh((4/n)*(x-m)))/2
+            var score = 1 + 2 * ((ci + cj) * (1 - t) + t * j) / it.mx;
+
+            return sum + score;
+        }
+
+        return points.reduce(measurePoint, 0);
+    }
+
+    var exp = Math.exp;
+    function sinh( x ) {
+        return (exp(x) - exp(-x)) / 2
+    }
+    function cosh( x ) {
+        return (exp(x) + exp(-x)) / 2
+    }
+    function tanh( x ) {
+        return sinh(x) / cosh(x)
+    }
+
+})();
