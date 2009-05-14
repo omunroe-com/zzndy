@@ -25,17 +25,19 @@
     /**
      * Add adjacent cluster.
      * @param {Cluster} cluster  neighbor cluster
-     * @return {Cluster}         this object for chaining.
+     * @return {Boolean}         true if cluster was added
      */
     C.addAdj = function( cluster )
     {
-        if( this.neighbors.indexOf(cluster) == -1 )
+        var isNewAdjacent = this.neighbors.indexOf(cluster) == -1;
+
+        if( isNewAdjacent )
         {
             this.neighbors.push(cluster);
             cluster.addAdj(this);
         }
 
-        return this;
+        return isNewAdjacent;
     };
 
     /**
@@ -120,24 +122,20 @@
         function addAdj( i, j )
         {
             var cell = it.tiles[i][j];
+
             if( cell instanceof Cluster && cell != cluster )
             {
-                if( !cell.processed )
-                {
-                    //console.log('Found that cluster #{id1} ({col1}) is adjacent to #{id2} ({col2})'.fmt({id1:cell.id, col1:cell.color, id2:cluster.id, col2:cluster.color}));
-                    adj.push(cell);
-                }
+                adj.push(cell);
             }
             else if( cell == cluster.color )
             {
-                //console.log('Adding point {i}, {j} to cluster #{id} ({col})'.fmt({i:i, j:j, id:cluster.id, col:cluster.color}));
                 cluster.add(i, j);
                 it.tiles[i][j] = cluster;
 
                 adj = adj.concat(findAdjacent.call(it, i, j, cluster));
             }
-            else if( cell != cluster ) {
-                    //console.log("Point {i}, {j} ({pcol}) is adjacent to cluster #{id} ({col})".fmt({pcol:cell, i:i, j:j, id:cluster.id, col:cluster.color}));
+            else if( cell != cluster )
+                {
                     adj.push([i,j]);
                 }
         }
@@ -157,42 +155,7 @@
                 addAdj(id, jr);
         }
 
-        cluster.processed = true;
-
         return adj;
-    }
-
-    function createCluster( i, j )
-    {
-        var cluster;
-        if( typeof this.tiles[i][j] == 'number' )
-            cluster = this.tiles[i][j] = new Cluster(i, j, this.tiles[i][j]);
-        else
-            throw new Error(['Point (', i, ', ', j,') is already in cluster ' + this.tiles[i][j]].join(''));
-
-        // Get all points (or clusters) adjacent to this cluster
-        var adj = findAdjacent.call(this, i, j, cluster);
-
-        for( var idx in adj )
-        {
-            var neighbor = adj[idx];
-            if( neighbor instanceof Cluster )
-            {
-                if( neighbor.color == cluster.color )
-                    throw new Error('Requested to adjacent two same colored clusters');
-
-                cluster.addAdj(neighbor);
-            }
-            else if( neighbor instanceof Array )
-            {
-                if( this.tiles[neighbor[0]][neighbor[1]] instanceof Cluster )
-                    cluster.addAdj(this.tiles[neighbor[0]][neighbor[1]]);
-                else
-                    cluster.addAdj(createCluster.call(this, neighbor[0], neighbor[1]));
-            }
-        }
-
-        return cluster;
     }
 
     FillerLogic = function( mx, my )
@@ -215,8 +178,62 @@
             }
         }
 
-        createCluster.call(this, 0, 0);
+        makeClusters.call(this);
+        linkClusters.call(this);
     };
+
+    /**
+     * Transform grid of color cells into grid of clusters.
+     */
+    function makeClusters()
+    {
+        var points = [], p = [0,0];
+        do
+        {
+            var i = p[0],j = p[1];
+            if( typeof this.tiles[i][j] == 'number' ) {
+                var cluster = this.tiles[i][j] = new Cluster(i, j, this.tiles[i][j]);
+
+                // Get all points (or clusters) adjacent to this cluster
+                var adj = findAdjacent.call(this, i, j, cluster);
+                var neighbor;
+
+                while( neighbor = adj.pop() )
+                {
+                    if( neighbor instanceof Array && !(this.tiles[neighbor[0]][neighbor[1]] instanceof Cluster) )
+                        points.push(neighbor);
+                }
+            }
+        }
+        while( p = points.pop() );
+    }
+
+    /**
+     * Provided grid of clusters link adjacent clusters.
+     */
+    function linkClusters()
+    {
+        var clusters = [], cluster = this.tiles[0][0];
+        do
+        {
+            var k = -1, n = cluster.points.length;
+            var neighbors = [];
+            while( ++k < n )
+            {
+                var i = cluster.points[k][0], j = cluster.points[k][1];
+                var adj = findAdjacent.call(this, i, j, cluster);
+                neighbors = neighbors.concat(adj);
+            }
+
+            var neighbor;
+            while( neighbor = neighbors.pop() )
+            {
+                if( neighbor.addAdj(cluster) )
+                    clusters.push(neighbor);
+            }
+        }
+        while( cluster = clusters.pop() );
+    }
 
     var L = FillerLogic.prototype;
 
@@ -396,4 +413,5 @@
 
         return {results:results, colors:colors};
     }
-})();
+})
+        ();
