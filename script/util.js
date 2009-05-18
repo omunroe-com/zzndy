@@ -5,11 +5,11 @@
  */
 function clone( obj ) {
     var newOne = {};
-    for ( var i in obj ) {
+    for( var i in obj ) {
         var prop = obj[i];
-        if ( prop instanceof Array )
+        if( prop instanceof Array )
             prop = prop.clone();
-        else if ( typeof prop == 'object' )
+        else if( typeof prop == 'object' )
             prop = clone(prop);
         newOne[i] = prop;
     }
@@ -22,8 +22,8 @@ function clone( obj ) {
  */
 function extend() {
     var obj = arguments[0];
-    for ( var i = 1; i < arguments.length; ++i )
-        for ( var field in arguments[i] )
+    for( var i = 1; i < arguments.length; ++i )
+        for( var field in arguments[i] )
             obj[field] = arguments[i][field]
 
     return obj;
@@ -36,7 +36,7 @@ function extend() {
  */
 function toQueryString( obj ) {
     var res = [];
-    for ( var i in obj ) if ( typeof obj[i] != 'function' )
+    for( var i in obj ) if( typeof obj[i] != 'function' )
         res.push(encodeURIComponent(i) + '=' + encodeURIComponent(obj[i]));
     return res.join('&');
 }
@@ -64,14 +64,14 @@ function fromQueryString( string )
  */
 function toCssString( obj ) {
     var res = [];
-    for ( var i in obj ) if ( typeof obj[i] != 'function' )
+    for( var i in obj ) if( typeof obj[i] != 'function' )
         res.push(i + ':' + obj[i] + ((typeof obj[i] == 'number' && Math.abs(obj[i]) > 1) ? 'px' : ''));
     return res.join(';');
 }
 
 function range( n ) {
     var ar = [], i = -1;
-    while ( ++i < n ) ar.push(i);
+    while( ++i < n ) ar.push(i);
     return ar;
 }
 
@@ -133,29 +133,29 @@ function sqr( a ) {
 
     N.zf =
     N.zerofill = function( w, p ) {
-        if ( p ) return this.toFixed(p).pad(-w, '0');
+        if( p ) return this.toFixed(p).pad(-w, '0');
         return this.toString().pad(-w, '0');
     };
 
     N.pad = function( w, p, s ) {
-        if ( p ) return this.toFixed(p).pad(w, s);
+        if( p ) return this.toFixed(p).pad(w, s);
         return this.toString().pad(w, s);
     };
 
     N.times = function( fn, self ) {
         var res = [], k = -1;
 
-        if ( typeof fn == 'function' )
-            while ( ++k < this )
+        if( typeof fn == 'function' )
+            while( ++k < this )
                 res.push(fn.call(this, k, self));
-        else if ( fn instanceof Array )
-            while ( ++k < this )
+        else if( fn instanceof Array )
+            while( ++k < this )
                 res.push(fn.clone());
-        else if ( typeof fn == 'object' )
-                while ( ++k < this )
+        else if( typeof fn == 'object' )
+                while( ++k < this )
                     res.push(clone(fn));
             else
-                while ( ++k < this )
+                while( ++k < this )
                     res.push(fn);
 
         return res;
@@ -163,9 +163,9 @@ function sqr( a ) {
 
     N.within =
     N.constrain = function( min, max, bounce ) {
-        if ( bounce ) {
-            if ( this < min ) return (2 * min - this).constrain(min, max);
-            else if ( this > max ) return (2 * max - this).constrain(min, max);
+        if( bounce ) {
+            if( this < min ) return (2 * min - this).constrain(min, max);
+            else if( this > max ) return (2 * max - this).constrain(min, max);
         }
         return Math.min(Math.max(min, this), max);
     };
@@ -206,14 +206,14 @@ function sqr( a ) {
         function getValue( path ) {
             var prop = path.match(/^(\.?\w+|\[\d+\])(?=\.|$|\[\d+)/)[0];
             var rest = path.replace(prop, '');
-            if ( rest ) return getValue.call(this[prop.replace(/^\.|^\[|\]$/g, '')], rest);
+            if( rest ) return getValue.call(this[prop.replace(/^\.|^\[|\]$/g, '')], rest);
             else return this[prop.replace(/^\.|^\[|\]$/g, '')];
         }
 
         function simpleFormat( a ) {
             var r = this;
-            for ( var k in a ) {
-                if ( typeof a[k] == 'function' ) continue;
+            for( var k in a ) {
+                if( typeof a[k] == 'function' ) continue;
                 var rx = new RegExp('\\{' + k + '\\}', 'g');
                 r = r.replace(rx, a[k]);
             }
@@ -223,20 +223,20 @@ function sqr( a ) {
         var res = simpleFormat.call(this, fmtObj);
         var opts = '(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?';
 
-        for ( var name in fmtObj ) {
+        for( var name in fmtObj ) {
             var value, backUp = [];
             value = backUp[0] = fmtObj[name];
-            if ( typeof value == 'function' ) continue;
+            if( typeof value == 'function' ) continue;
             var rx = new RegExp('\\{(' + name + opts + ')?\\}');
             var num = backUp[1] = new Number(value), m;
-            while ( m = res.match(rx) ) {
+            while( m = res.match(rx) ) {
                 var match = m[0], path = m[1], align = m[2], width = m[3], deci = m[4], base = m[5];
                 var useBackup = !!(path || base);
-                if ( path ) {
+                if( path ) {
                     value = getValue.call(fmtObj, path);
                     num = new Number(value);
                 }
-                switch ( base ) {
+                switch( base ) {
                     case 'b': value = num.toString(2); break;
                     case 'o': value = num.toString(8); break;
                     case 'x': value = num.toString(16); break;
@@ -252,7 +252,7 @@ function sqr( a ) {
                     throw new Error('Undefined parameter ' + path + ' in template ' + this);
                 }
 
-                if ( useBackup ) {
+                if( useBackup ) {
                     value = backUp[0];
                     num = backUp[1];
                 }
@@ -262,33 +262,33 @@ function sqr( a ) {
     };
 
 
-    if ( !('reduce' in Array) )
+    if( !('reduce' in Array) )
         A.reduce = function( fn2, init ) {
             var i = 0;
-            if ( arguments.length < 2 ) init = this[++i];
+            if( arguments.length < 2 ) init = this[++i];
 
             var res = init, l = this.length;
-            for ( ; i < l; ++i ) res = fn2(res, this[i], i, this);
+            for( ; i < l; ++i ) res = fn2(res, this[i], i, this);
             return res;
         };
 
-    if ( !('flatten' in Array) )
+    if( !('flatten' in Array) )
         A.flatten = function()
         {
             function flatten( prev, current ) {
-                if ( current instanceof Array ) return current.reduce(flatten, prev);
+                if( current instanceof Array ) return current.reduce(flatten, prev);
                 prev.push(current);
                 return prev;
             }
             return this.reduce(flatten, []);
         };
 
-    if ( !('uniq' in Array) )
+    if( !('uniq' in Array) )
         A.uniq = function()
         {
             function uniq( prev, current )
             {
-                if ( prev.indexOf(current) == -1 )
+                if( prev.indexOf(current) == -1 )
                     prev.push(current);
 
                 return prev;
@@ -299,13 +299,13 @@ function sqr( a ) {
 
     A.delayedReduce = function( delay, fn2, init, callback ) {
         var i = 0;
-        if ( arguments.length < 2 ) init = this[++i];
+        if( arguments.length < 2 ) init = this[++i];
         var res = init, l = this.length;
         var fn = function( res, elt, idx, array ) {
             res = fn2(res, elt, idx, array);
-            if ( ++idx < l )
+            if( ++idx < l )
                 window.setTimeout(arguments.callee, delay, res, array[idx], idx, array);
-            else if ( callback ) callback(res);
+            else if( callback ) callback(res);
         };
 
         fn(res, this[i], i, this);
@@ -319,8 +319,8 @@ function sqr( a ) {
 
     A.clone = function() {
         return this.map(function( i ) {
-            if ( i instanceof Array )return i.clone();
-            else if ( typeof i == 'object' )return clone(i);
+            if( i instanceof Array )return i.clone();
+            else if( typeof i == 'object' )return clone(i);
             else return i;
         });
     };
@@ -330,13 +330,13 @@ function sqr( a ) {
      * @param {Number} n  number of items to pick
      */
     A.pick = function( n ) {
-        if ( n === undefined )return this[Math.floor(Math.random() * this.length)];
+        if( n === undefined )return this[Math.floor(Math.random() * this.length)];
         var picked = [];
         n = Math.floor(n) || 1;
         return n.map(function() {
-            if ( picked.length == this.length ) return undefined;
+            if( picked.length == this.length ) return undefined;
             do var i = Math.floor(Math.random() * this.length);
-            while ( i in picked );
+            while( i in picked );
             picked.push(i);
             return this[i];
         }, this);
@@ -344,7 +344,7 @@ function sqr( a ) {
 
     A.shuffle = function () {
         var i = -1, n = this.length;
-        while ( ++i < n ) {
+        while( ++i < n ) {
             var k = Math.floor(Math.random() * n);
             var tmp = this[i];
             this[i] = this[k];
@@ -384,27 +384,27 @@ function sqr( a ) {
     };
 
     N.map = function( fn, self ) {
-        if ( typeof fn != 'function' )
+        if( typeof fn != 'function' )
             throw new Error('Type error: map expecting first parameter to be a function not ' + typeof fn);
 
-        if ( self === undefined ) self = this;
+        if( self === undefined ) self = this;
 
         var ar = [];
-        for ( var i = 0; i < this; ++i )ar.push(fn.call(self, i, i, undefined))
+        for( var i = 0; i < this; ++i )ar.push(fn.call(self, i, i, undefined))
         return ar;
     };
 
     N.abbr = function() {
         var s = this.toString();
         var order = Math.floor((s.length - 1) / 3);
-        if ( order > 0 ) return s.substr(0, s.length - 3 * order) + [, 'K', 'M', 'B'][Math.min(3, order)];
+        if( order > 0 ) return s.substr(0, s.length - 3 * order) + [, 'K', 'M', 'B'][Math.min(3, order)];
         else return s;
     };
 
     N.toPos = function() {
         var s = this % 10, sfx = 'th', d;
-        if ( d = this % 100 - s == 10 ) return this + '-th';
-        switch ( s ) {
+        if( d = this % 100 - s == 10 ) return this + '-th';
+        switch( s ) {
             case 1: sfx = 'st'; break;
             case 2: sfx = 'nd'; break;
             case 3: sfx = 'rd'; break;
@@ -416,17 +416,17 @@ function sqr( a ) {
         var rn = ['IIII','V','XXXX','L','CCCC','D','MMMM'];
 
         return function( original ) {
-            if ( this < 1 || this > 4000 ) return this;
+            if( this < 1 || this > 4000 ) return this;
             var n = this, res = '';
             original = !!original;
-            for ( var i = 0, item; item = rn[i]; ++i ) {
+            for( var i = 0, item; item = rn[i]; ++i ) {
                 var x = item.length + 1;
                 var d = n % x;
                 res = rn[i].substr(0, d) + res;
                 n = (n - d) / x;
             }
 
-            if ( !original )
+            if( !original )
                 res = res.replace(/DCCCC/g, 'CM').replace(/CCCC/g, 'CD').replace(/LXXXX/g, 'XC')
                         .replace(/XXXX/g, 'XL').replace(/VIIII/g, 'IX').replace(/IIII/g, 'IV');
             return res;
@@ -443,8 +443,8 @@ function sqr( a ) {
 
         return function() {
             var interval = (Date.now() - this) / 1000, i, n;
-            for ( i = lengths.length - 1; i >= 0 && (n = Math.floor(interval / lengths[i])) < 1; --i );
-            if ( i == -1 || i == 0 && n < 20 ) return 'just now';
+            for( i = lengths.length - 1; i >= 0 && (n = Math.floor(interval / lengths[i])) < 1; --i );
+            if( i == -1 || i == 0 && n < 20 ) return 'just now';
 
             return (n > 1 ? n : 'a') + ' ' + periods[i] + (n > 1 ? 's' : '') + ' ago';
         };
@@ -458,11 +458,11 @@ function sqr( a ) {
     N.dev =
     N.deviate = function() {
         var upper, lower = arguments[0], relative = false;
-        switch ( arguments.length ) {
+        switch( arguments.length ) {
             case 0: throw new Error('To few arguments for deviate'); break;
             case 1: upper = lower; break;
             case 2:
-                if ( typeof arguments[1] == 'boolean' ) {
+                if( typeof arguments[1] == 'boolean' ) {
                     upper = lower;
                     relative = arguments[1];
                 }
@@ -474,7 +474,7 @@ function sqr( a ) {
                 relative = !!arguments[2];
                 break;
         }
-        if ( relative ) {
+        if( relative ) {
             upper = this * upper;
             lower = this * lower;
         }

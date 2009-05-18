@@ -73,6 +73,13 @@
             this.neighbors.splice(oldidx, 1);
     };
 
+    C.remove = function( neighbor )
+    {
+        var idx = this.neighbors.indexOf(neighbor);
+        if( idx != -1 )
+            this.neighbors.splice(idx, 1);
+    };
+
     /**
      * Eat given cluster and write self onto it's place.
      * @param {Cluster} neighbor  adjacent cluster to merge with
@@ -81,17 +88,18 @@
      */
     C.eat = function( neighbor, tiles )
     {
-        var j = -1, m = neighbor.neighbors.length, p;
-        while( ++j < m )
+        var p, i = -1, n = neighbor.neighbors.length;
+        while( ++i < n )
         {
-            var other = neighbor.neighbors[j];
-            other.replace(neighbor, this);
+            var other = neighbor.neighbors[i];
+            if( other == this )
+                this.remove(neighbor);
+            else
+                other.replace(neighbor, this);
         }
 
-        j = -1,m = neighbor.points.length;
-        while( ++j < m )
+        while( p = neighbor.points.pop() )
         {
-            p = neighbor.points[j];
             tiles[p[0]][p[1]] = this;
             this.add(p[0], p[1]);
         }
@@ -101,8 +109,8 @@
 
     C.toString = function()
     {
-        return ['#' , this.id, ' (', color_name[this.color], ')'].join('');
-    }
+        return ['#' , this.id, ' (', this.points.length, ' ', color_name[this.color], ')'].join('');
+    };
 
     var prob = 0.4;
 
@@ -318,35 +326,65 @@
         }
 
         // Find surrounded clusters
-        i = -1;
-        while( ++i < cluster.neighbors.length )
+        var surrounded = findSurroundedClusters.call(this, cluster);
+        while( neighbor = surrounded.pop() )
         {
-            neighbor = cluster.neighbors[i];
-            if( neighbor.neighbors.length == 1 && neighbor != other )
-            {
-                neighbor = cluster.neighbors.splice(i--, 1)[0];
-                merged.push(neighbor);
-
-                var j = -1, m = neighbor.points.length;
-                while( ++j < m )
-                {
-                    var p = neighbor.points[j];
-
-                    function isPoint( e )
-                    {
-                        return e[0] == p[0] && e[1] == p[1];
-                    }
-
-                    if( !toredraw.some(isPoint) )
-                        toredraw.push(p);
-                }
-
-                cluster.eat(neighbor, this.tiles);
-            }
+            toredraw = toredraw.concat(neighbor.points.clone());
+            cluster.eat(neighbor, this.tiles);
         }
 
         return toredraw;
     };
+
+    function findSurroundedClusters( origin )
+    {
+        var surrounded = [];
+        var processed = [];
+        var threads = [];
+        var enemy = origin == this.p1cluster ? this.p2cluster : this.p1cluster;
+
+        var i = -1,n = origin.neighbors.length;
+        while( ++i < n )
+        {
+            var threadstart = origin.neighbors[i];
+            if( threadstart != enemy )
+                threads.push([threadstart]);
+        }
+
+        var thread;
+        while( thread = threads.pop() )
+        {
+            var threadprocessed = [];
+            var threadEaten = true;
+
+            var cluster;
+            while( cluster = thread.pop() )
+            {
+                threadprocessed.push(cluster);
+                var j = -1, m = cluster.neighbors.length;
+                while( ++j < m )
+                {
+                    var neighbor = cluster.neighbors[j];
+
+                    // only work on new non processed non surrounded neighbors
+                    if( neighbor != origin && threadprocessed.indexOf(neighbor) == -1 && surrounded.indexOf(neighbor) == -1 )
+                    {
+                        if( neighbor == enemy || processed.indexOf(neighbor) != -1 )
+                            threadEaten = false;
+                        else
+                            thread.push(neighbor);
+                    }
+                }
+            }
+
+            if( threadEaten )
+                surrounded = surrounded.concat(threadprocessed).uniq();
+            else
+                processed = processed.concat(threadprocessed).uniq();
+        }
+
+        return surrounded;
+    }
 
     L.moveP2 = function()
     {

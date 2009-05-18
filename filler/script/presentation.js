@@ -115,7 +115,7 @@ F.moveP2 = function()
 {
     var tr = this.logic.moveP2();
     redrawCluster.call(this, tr);
-}
+};
 
 var alter = false;
 
@@ -141,9 +141,8 @@ function redrawCluster( points )
             it.clearCell(i[0], i[1]).renderCell(i[0], i[1]);
         };
 
-        window.setTimeout(fn, n * 2);
+        window.setTimeout(fn, n * 1.3);
     });
-
 }
 
 F.__defineGetter__('p1color', function() {
