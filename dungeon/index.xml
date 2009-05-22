@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="style/common.xsl"?>
+
+<page lang="en_gb" name="Dungeon generation">
+    <script src="util.js" common="yes"/>
+    <script src="dng.js"/>
+    <script src="make-dng.js" bottom="yes"/>
+    <style src="dng.css"/>
+    <content>
+        <div id="dng"></div>
+    </content>
+    <copy>Vynogradov 2009</copy>
+</page>
