@@ -1,3 +1,5 @@
+try
+{
 var out = document.getElementById('dng');
 
 function renderDng( dng )
@@ -9,12 +11,17 @@ function renderDng( dng )
         var j = -1, m = dng[i].length;
         while( ++j < m )
         {
-            txt.push(dng[i][j] ? '#' : '.');
+            txt.push(dng[i][j] ? '[]' : ' .');
         }
         txt.push('\n');
     }
     out.innerHTML = txt.join('');
 }
 
-var dng = makeDng(30, 10);
+var dng = makeDng(40, 65);
 renderDng(dng);
+}
+catch( ex )
+{
+    console.log(ex);
+}
