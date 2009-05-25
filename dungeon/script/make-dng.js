@@ -1,25 +1,25 @@
 try
 {
-var out = document.getElementById('dng');
+    var out = document.getElementById('dng');
 
-function renderDng( dng )
-{
-    var txt = [];
-    var i = -1, n = dng.length;
-    while( ++i < n )
+    function renderDng( dng )
     {
-        var j = -1, m = dng[i].length;
-        while( ++j < m )
+        var txt = [];
+        var i = -1, n = dng.length;
+        while( ++i < n )
         {
-            txt.push(dng[i][j] ? '[]' : ' .');
+            var j = -1, m = dng[i].length;
+            while( ++j < m )
+            {
+                txt.push(dng[i][j] ? '#' : ' ');
+            }
+            txt.push('\n');
         }
-        txt.push('\n');
+        out.innerHTML = txt.join('');
     }
-    out.innerHTML = txt.join('');
-}
 
-var dng = makeDng(40, 65);
-renderDng(dng);
+    var dng = makeDng(26, 80);
+    renderDng(dng);
 }
 catch( ex )
 {

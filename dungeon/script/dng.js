@@ -1,5 +1,7 @@
 try
 {
+    var regionId = 0
+
     function Region( x, y, w, h )
     {
         this.x = x;
@@ -7,7 +9,13 @@ try
         this.w = w;
         this.h = h;
         this.tries = 0;
+        this.id = ++regionId;
     }
+
+    Region.prototype.toString = function()
+    {
+        return ['#', this.id, ' (', this.x, ', ', this.y, ') ', this.w, 'x', this.h].join('');
+    };
 
     function makeDng( h, w )
     {
@@ -18,58 +26,64 @@ try
             dng[i] = [];
             j = -1;
             while( ++j < w )
-            {
-                var val = i == 0 || j == 0 || i == h - 1 || j == w - 1;
-                dng[i][j] = val;
-            }
+                dng[i][j] = true;
         }
 
-        var mw = 4, mh = 4;
+        var shrinkPos = .35;
+        var mw = w / 14, mh = h / 11;
         var regions = [new Region(1, 1, w - 2, h - 2)];
         var r, r1, r2;
         while( r = regions.pop() )
         {
             var len = regions.length;
+            if( (r.w > r.h ? 1 : 2.2) * Math.random() < shrinkPos && r.w > mw )
+            {
+                --r.w;
+                ++r.x;
+            }
+            else if( (r.w > r.h ? 1 : 2.2) * Math.random() < shrinkPos && r.w > mw )
+            {
+                --r.w;
+            }
+
+            if( (r.w < r.h ? 1 : 2.5) * Math.random() < shrinkPos && r.h > mh )
+            {
+                --r.h;
+                ++r.y;
+            }
+            else if( (r.w < r.h ? 1 : 2.5) * Math.random() < shrinkPos && r.h > mh )
+            {
+                --r.h;
+            }
+
             if( Math.random() < .5 )
             {
-                wall = r.x + divide(r.w, .13, mw);
-                if( wall != null )
+                wall = divide(r.w, .1, mw);
+
+                if( !isNaN(wall) )
                 {
-                    i = -1;
-                    while( ++i < r.h )
-                    {
-                        console.log(r.y, i, r.y + i);
-                        dng[r.y + i][wall] = !dng[r.y + i][wall];
-                    }
+                    r1 = new Region(r.x, r.y, wall, r.h);
+                    r2 = new Region(r.x + wall + 1, r.y, r.w - wall - 1, r.h);
 
-                    r1 = new Region(r.x, r.y, wall  - r.x, r.h);
-                    r2 = new Region(wall + 1, r.y, r.w - (wall - 1 - r.x), r.h);
-
-                    if( r1.w > mw && r2.w > mw )
+                    if( r1.w >= mw && r2.w >= mw )
                     {
                         regions.push(r1);
-                        //regions.push(r2);
+                        regions.push(r2);
                     }
                 }
-
             }
             else
             {
-                wall = r.y + divide(r.h, .13, mh);
-                if( wall != null )
+                wall = divide(r.h, .13, mh);
+                if( !isNaN(wall) )
                 {
-                    j = -1;
-                    while( ++j < r.w )
-                    {
-                        dng[wall][r.x + j] = !dng[wall][r.x + j];
-                    }
-                    r1 = new Region(r.x, r.y, r.w, wall  - r.y);
-                    r2 = new Region(r.x, wall + 1, r.w, r.h - (wall - 1 - r.y));
+                    r1 = new Region(r.x, r.y, r.w, wall);
+                    r2 = new Region(r.x, r.y + wall + 1, r.w, r.h - wall - 1);
 
-                    if( r1.h > mh && r2.h > mh )
+                    if( r1.h >= mh && r2.h >= mh )
                     {
                         regions.push(r1);
-                        //regions.push(r2);
+                        regions.push(r2);
                     }
                 }
             }
@@ -79,8 +93,18 @@ try
                 if( r.tries++ < 3 )
                     regions.push(r);
                 else
-                    console.log('saving', r);
+                {
+                    i = -1;
+                    while( ++i < r.h ) {
+                        j = -1;
+                        while( ++j < r.w )
+                            dng[r.y + i][r.x + j] = !dng[r.y + i][r.x + j];
+                    }
+                }
+
             }
+
+
         }
 
         return dng;
@@ -95,11 +119,11 @@ try
             m = Math.floor(width / 2 - r + Math.random() * (r * 2 + 1));
             if( ++t > 10 )
             {
-                m = null;
+                m = NaN;
                 break;
             }
         }
-        while( m < min || m > width - min );
+        while( m < min || m >= width - min );
 
         return m;
     }
