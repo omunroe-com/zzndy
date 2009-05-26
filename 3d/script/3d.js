@@ -14,6 +14,12 @@ function len( v )
     return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
+function norm( v )
+{
+    var d = len(v);
+    return [v[0] / d, v[1] / d,v[2] / d];
+}
+
 function angle( v1, v2 )
 {
     return acos(dot(v1, v2) / (len(v1) * len(v2)));

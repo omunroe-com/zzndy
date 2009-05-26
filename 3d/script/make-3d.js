@@ -35,14 +35,28 @@ var canvas1 = document.getElementById('canvas1');
 var ctx1 = canvas1.getContext('2d');
 
 setupCtx(ctx1, canvas1);
+var theta = 0;
+var elev = 5;
 
-render(ctx1, eg);
+loop();
+
+function loop()
+{
+    ctx1.camera = [4 / 5 * elev * cos(theta),4 / 5 * elev * sin(theta),4 / 5 * elev];
+    ctx1.cameraTarget = [elev * cos(theta),elev * sin(theta),elev];
+
+    theta += 2 * deg;
+    ctx1.clearRect(-400, -250, 800, 500);
+    render(ctx1, eg);
+    window.setTimeout(loop, 50);
+}
+
 
 function setupCtx( ctx, canvas )
 {
     ctx.translate(parseInt(canvas.width) / 2, parseInt(canvas.height) / 2);
     ctx.scale3d = 10;
-    ctx.camera = [3, 3, 3];
+    ctx.camera = [4, 4, 4];
     ctx.cameraTarget = [5,5,5];
     ctx.strokeStyle = '#c7c5c5';
 }
