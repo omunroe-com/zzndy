@@ -36,13 +36,14 @@ var ctx1 = canvas1.getContext('2d');
 
 setupCtx(ctx1, canvas1);
 var theta = 0;
-var elev = 5;
+var elev =7;
 
 loop();
 
 function loop()
 {
-    ctx1.camera = [4 / 5 * elev * cos(theta),4 / 5 * elev * sin(theta),4 / 5 * elev];
+    var tario =5/5;
+    ctx1.camera = [tario * elev * cos(theta),tario * elev * sin(theta),tario * elev];
     ctx1.cameraTarget = [elev * cos(theta),elev * sin(theta),elev];
 
     theta += 2 * deg;
@@ -67,7 +68,7 @@ function render( ctx, edges )
     {
         var edge = edges[i];
         if( edge.length == 3 )
-            console.log(edge[2]),ctx.strokeStyle = edge[2];
+            ctx.strokeStyle = edge[2];
         ctx.line3d(edge[0], edge[1]);
         if( edge.length == 2 )
             ctx.strokeStyle = '#c7c5c5';
