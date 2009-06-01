@@ -1,76 +1,65 @@
-// vertices
-var vx =
-        [
-            [1, -1, 1]
-            ,[1, 1, 1]
-            ,[-1, 1, 1]
-            ,[-1,-1, 1]
-            ,[1, -1, -1]
-            ,[1, 1, -1]
-            ,[-1, 1, -1]
-            ,[-1, -1, -1]
-        ];
+var ctx = getContext('canvas');
+var camera = new Obj(0, 0, 0, 0, 45 * deg, 0);
 
-// edges
-var eg = [
-    [vx[0], vx[1]]
-    ,[vx[1], vx[2]]
-    ,[vx[2], vx[3]]
-    ,[vx[3], vx[0]]
-    ,[vx[4], vx[5]]
-    ,[vx[5], vx[6]]
-    ,[vx[6], vx[7]]
-    ,[vx[7], vx[4]]
-    ,[vx[0], vx[4]]
-    ,[vx[1], vx[5]]
-    ,[vx[2], vx[6]]
-    ,[vx[3], vx[7]]
-    ,[[0,0,0], [4, 0 ,0], 'red']
-    ,[[0,0,0], [0,4,0], 'green']
-    ,[[0,0,0], [0,0,4], 'blue']
-];
+var grid = newPlane(10, 10, .5, .5);
+var xcube = newRect(5, 1, 1);
+var ycube = newRect(1,1,5);
+var zcube = newRect(1,5,1);
 
-var canvas1 = document.getElementById('canvas1');
+xcube.pos = [2.5, 0, 0];
+ycube.pos = [0, 2.5, 0];
+zcube.pos = [0, 0, 2.5];
 
-var ctx1 = canvas1.getContext('2d');
+xcube.color = 'red';
+ycube.color = 'green';
+zcube.color = 'blue';
 
-setupCtx(ctx1, canvas1);
-var theta = 0;
-var elev =7;
 
-loop();
+var deflt = new Color('#c7c5c5');
+var b =deflt.tint(-100);
+b.alpha=.3;
+grid.color = b.toString();
 
-function loop()
+objects = [grid, xcube, ycube, zcube];
+
+rotate();
+camera.alpha = -20*deg;
+
+function rotate()
 {
-    var tario =5/5;
-    ctx1.camera = [tario * elev * cos(theta),tario * elev * sin(theta),tario * elev];
-    ctx1.cameraTarget = [elev * cos(theta),elev * sin(theta),elev];
+    ctx.clearRect(-400, -250, 800, 500);
 
-    theta += 2 * deg;
-    ctx1.clearRect(-400, -250, 800, 500);
-    render(ctx1, eg);
-    window.setTimeout(loop, 50);
+    var i=-1, n=objects.length;
+    while(++i<n)
+    renderObj(objects[i]);
+
+    camera.beta += 2 * deg;
+
+    window.setTimeout(rotate, 20);
 }
 
-
-function setupCtx( ctx, canvas )
+function renderObj( cube )
 {
-    ctx.translate(parseInt(canvas.width) / 2, parseInt(canvas.height) / 2);
-    ctx.scale3d = 10;
-    ctx.camera = [4, 4, 4];
-    ctx.cameraTarget = [5,5,5];
-    ctx.strokeStyle = '#c7c5c5';
-}
-
-function render( ctx, edges )
-{
-    for( var i = 0; i < edges.length; ++i )
+    var i = -1, n = cube.edgs.length;
+    while( ++i < n )
     {
-        var edge = edges[i];
-        if( edge.length == 3 )
-            ctx.strokeStyle = edge[2];
-        ctx.line3d(edge[0], edge[1]);
-        if( edge.length == 2 )
+        var edge = cube.edgs[i];
+        if( cube.color )
+            ctx.strokeStyle = cube.color;
+        else
             ctx.strokeStyle = '#c7c5c5';
+        ctx.line3d(cube.pts[edge[0]], cube.pts[edge[1]], mm(camera.worldMatrix, cube.worldMatrix));
     }
+}
+
+function getContext( canvasId )
+{
+    var canvas = document.getElementById(canvasId);
+    var ctx = canvas.getContext('2d');
+    ctx.translate(parseInt(canvas.width, 10) / 2, parseInt(canvas.height, 10) / 2);
+
+    ctx.scale = 30;
+    ctx.strokeStyle = '#c7c5c5';
+
+    return ctx;
 }
