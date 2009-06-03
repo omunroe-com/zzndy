@@ -1,0 +1,40 @@
+.unary, .binary, .placeholder {
+    display: inline-block;
+    height: 1.7em;
+    text-align: center;
+}
+
+.binary, .unary, .query {
+    padding: 0 .5em;
+    border: 1px solid silver;
+    min-width: 5em;
+    
+    -moz-border-radius: .2em;
+    color:white;
+    background-color: #181818;
+    margin: .2em;
+}
+
+.query
+{
+    height: 1.7em;
+    padding:0;
+}
+
+.placeholder {
+    margin: 0 1ex;
+}
+
+.query .binary, .query .unary
+{
+    border-top: none;
+    border-bottom: none;
+    margin-top:0;
+    margin-bottom:0;
+}
+
+.ui-draggable-dragging
+{
+    background-color: rgba(24, 24, 24, .6);
+    
+}
