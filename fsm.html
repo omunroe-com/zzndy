@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="script/util.js"></script>
+    <title>Finite State Automata</title>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Finite State Automata</h1>
+    </div>
+
+    <div class="content">
+
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    function Fsm( state )
+    {
+        this.transitions = {};
+        this.handlers = {};
+
+        this.current = state;
+        this.previous = null;
+
+        this.state = {};
+    }
+
+    Fsm.prototype.addTransition = function( from, to, event )
+    {
+        if( !(from in this.transitions) )
+            this.transitions[from] = {};
+
+        if( event in this.transitions[from] && this.transitions[from][event] != to )
+            throw new Error('Cannot add conflicting transition.');
+
+        this.transitions[from][event] = to;
+
+
+    };
+
+    Fsm.prototype.turnFrom = function( state )
+    {
+        return new TransitionHint(this, state);
+    };
+
+    Fsm.prototype.on = function( state, handler )
+    {
+        this.handlers[state] = handler;
+    };
+
+    Fsm.prototype.handle = function( event )
+    {
+        if( event in this.transitions[this.current] )
+        {
+
+            this.previous = this.current;
+            this.current = this.transitions[this.current][event];
+
+            if( this.current in this.handlers )
+            {
+                try {
+                    this.handlers[this.current].call(this.state, this.state);
+                }
+                catch( ex )
+                {
+                    if( console !== null )console.log(ex);
+                }
+            }
+        }
+    };
+
+    function TransitionHint( fsm, state )
+    {
+        this.fsm = fsm;
+        this.startState = state;
+    }
+
+    TransitionHint.prototype.to = function( state )
+    {
+        return new Transition(this.fsm, this.startState, state);
+    };
+
+    function Transition( fsm, startState, endState )
+    {
+        this.fsm = fsm;
+        this.startState = startState;
+        this.endState = endState;
+    }
+
+    Transition.prototype.on = function( event )
+    {
+        this.fsm.addTransition(this.startState, this.endState, event);
+        return new TransitionHint(this.fsm, this.endState);
+    };
+
+    var bot = new Fsm('seeking');
+
+    bot.turnFrom('seeking')
+            .to('attacking').on('target_encountered')
+            .to('fleing').on('health_low');
+
+    bot.on('attacking', function( state ) {
+        if( this != state )
+            console.log('noooooo');
+        else
+            console.log('yes.');
+    });
+
+    bot.handle('target_encountered');
+
+</script>
+</body>
+</html>
