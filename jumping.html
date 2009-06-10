@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="script/util.js"></script>
+    <title>Jumping cube</title>
+    <style type="text/css">
+        .jumping
+        {
+        }
+
+        .jumping td
+        {
+            font-size: 14pt;
+            font-weight: bold;
+            font-family: Verdana, sans-serif;
+            width: 3em;
+            height: 3em;
+            padding: 0 .1em .1em 0;
+
+            text-align: center;
+            vertical-align: middle;
+
+            border: 1px solid transparent;
+            -moz-border-radius: .3em;
+            background-color:gray;
+            color: #262626;
+        }
+
+        .jumping td:hover
+        {
+                   border-color:silver;
+        }
+
+        .jumping td.red.level-1 {color:#888;background-color:#b04444;}
+        .jumping td.red.level-2 {color:#bbb;background-color:#cc4444;}
+        .jumping td.red.level-3 {color:#ddd;background-color:#e04444;}
+        .jumping td.red.level-4 {color:#fff;background-color:#ff4444;}
+
+        .jumping td.blue.level-1 {color:#888;background-color:#4444b0;}
+        .jumping td.blue.level-2 {color:#bbb;background-color:#4444cc;}
+        .jumping td.blue.level-3 {color:#ddd;background-color:#4444e0}
+        .jumping td.blue.level-4 {color:#fff;background-color:#4444ff;}
+    </style>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Jumping cube</h1>
+    </div>
+
+    <div class="content">
+        <div id="target"></div>
+
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    var target = document.getElementById('target');
+    var html = ['<table class="jumping">'];
+
+    var SIZE = 7;
+    var n = 7;
+
+   var i = -1;
+    while(++i<n)
+    {
+        html.push('<tr>');
+        var j = -1;
+        while(++j<n)
+        {
+            var v = Math.round(Math.random()*10);
+            v = 1;
+            html.push('<td onclick="switchColor();addPoint('+i+','+j+')" class="level-'+v+'" id="btn-' + i +'-'+j+'">●</td>');
+        }
+        html.push('</tr>');
+    }
+    html.push('</table>');
+
+    target.innerHTML = html.join('');
+
+    var oldColor = '';
+    var color = 'red';
+
+
+    function switchColor()
+    {
+        oldColor = color;
+
+        if(color == 'red')
+        color = 'blue'   ;
+        else color = 'red';
+    }
+
+    function addPoint(i, j)
+    {
+
+        var point = document.getElementById('btn-'+i+'-'+j);
+        point.className = color;
+
+        var val = point.innerHTML.match(/●/g).length;
+        var n = getNeighbors(i, j);
+
+        if(val + 1 > n.length)
+        {
+            val = 1;
+
+            point.className += ' level-' + (4-n.length + 1);
+            point.innerHTML = '●';
+
+
+            n.map(function(e){
+                var f = function()
+                {
+                addPoint(e[0], e[1]);
+                }
+
+                window.setTimeout(f, 50);
+
+            });
+        }
+        else
+        {
+            var x = '●';
+
+            switch(val+1)
+                    {
+
+            case 2:x= '&nbsp;&nbsp;&nbsp;●<br/>●&nbsp;&nbsp;&nbsp;';break;
+            case 3:x='●<br/>●&nbsp; ●';break;
+            case 4:x = '●&nbsp; ●<br/>●&nbsp; ●';break;
+            default:x = '● '.x(val+1);
+            }
+
+            point.innerHTML = x
+            point.className += ' level-'+(4-n.length +val+ 1);
+        }
+    }
+
+    function getNeighbors(i, j)
+    {
+        var n = [];
+        if(i>0)n.push([i-1, j]);
+        if(i<SIZE-1)n.push([i+1, j]);
+        if(j>0)n.push([i,j-1]);
+        if(j<SIZE-1)n.push([i,j+1]);
+
+        return n;
+    }
+
+</script>
+</body>
+</html>
