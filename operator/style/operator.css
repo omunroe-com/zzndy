@@ -17,20 +17,36 @@
 
 .query
 {
-    height: 1.7em;
+    min-height: 1.7em;
     padding:0;
 }
 
 .placeholder {
     margin: 0 1ex;
+    padding: 0 .4em;
+}
+
+.query .placeholder
+{
+    background-color: rgba(128,128,128, .1);
 }
 
 .query .binary, .query .unary
 {
-    border-top: none;
-    border-bottom: none;
     margin-top:0;
     margin-bottom:0;
+    background: none;
+    border: none;
+}
+
+.query.receiving
+{
+    background-color: gray;
+}
+
+.placeholder.receiving
+{
+    background-color: silver;
 }
 
 .ui-draggable-dragging
