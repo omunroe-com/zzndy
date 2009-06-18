@@ -2,6 +2,10 @@ try
 {
     var out = document.getElementById('dng');
 
+    var cl = ' ';
+    var cm = '~';
+    var ct = '$';
+
     function renderDng( dng )
     {
         var txt = [];
@@ -11,14 +15,20 @@ try
             var j = -1, m = dng[i].length;
             while( ++j < m )
             {
-                txt.push(dng[i][j] ? '#' : ' ');
+                txt.push(dng[i][j] ? ct : cl);
             }
             txt.push('\n');
         }
         out.innerHTML = txt.join('');
     }
 
-    var dng = makeDng(26, 80);
+    var width = 120;
+    var height = 40;
+    var minDim = 3; // minimal room width or height
+    var maxAsp = 2; // maximum room aspect
+    var passage = 2; // passage width;
+
+    var dng = makeDng(width, height, minDim, maxAsp, passage);
     renderDng(dng);
 }
 catch( ex )
