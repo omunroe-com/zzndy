@@ -1,0 +1,7 @@
+CLICK TOOLBAR ACTION "Query"
+FORM APPEARS NAMED "Query" DUBBED $Q1
+
+SWITCH TO $Q1
+SELECT "Field" IN "domainObjectComboBox"
+SELECT "Field/FieldName" IN "treeView"
+CLICK CLOSE
