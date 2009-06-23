@@ -1,0 +1,13 @@
+%lexer
+
+CLICK           %ClickAction
+SELECT          %SelectAction
+SWITCH          %SwitchAction
+FORM APPEARS    %FormExpectation
+TOOLBAR ACTION  %ActionType
+NAMED           %NameAssertion
+DUBBED          %Aliasing
+\$\w+           %Alias
+".+"            %StringValue
+CLOSE           %CloseAlias
+IN              %ControlSpecification
