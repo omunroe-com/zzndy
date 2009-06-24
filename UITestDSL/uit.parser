@@ -1,3 +1,24 @@
-Expr        :   SelectExpr | SwitchExpr | ClickExpr
-ClickExpr   :   %ClickAction %ActionType %StringValue
-TODO FINISH THIS
+%token CLICKACTION
+%token TYPETOOLBAR
+%token NEWFORMACTION
+%token NAMEASSERT
+%token VARDECL
+%token SWITCHCTX
+%token SELECTACTION
+%token LISTRESOLUTION
+%token CLOSEALIAS
+%token STRING
+
+%%
+
+Expr:
+    ClickAction | SwitchAction | SelectAction;
+
+ClickAction:
+    CLICKACTION TYPETOOLBAR STRING { Add<ClickAction>( $3 ); };
+
+SelectAction:
+    SELECTACTION STRING LISTRESOLUTION STRING { Add<SelectAction>( $2, $4 ); };
+
+SwitchAction:
+    SWITCHCTX STRING { Add<SwitchAction>( $2 ); };

@@ -1,0 +1,1 @@
+bin\gplex.exe uit.lexer 

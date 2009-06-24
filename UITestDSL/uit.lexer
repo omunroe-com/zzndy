@@ -1,13 +1,19 @@
-%lexer
+%namespace UITestDslLexer
 
-CLICK           %ClickAction
-SELECT          %SelectAction
-SWITCH          %SwitchAction
-FORM APPEARS    %FormExpectation
-TOOLBAR ACTION  %ActionType
-NAMED           %NameAssertion
-DUBBED          %Aliasing
-\$\w+           %Alias
-".+"            %StringValue
-CLOSE           %CloseAlias
-IN              %ControlSpecification
+%%
+
+CLICK               { return CLICKACTION; }
+TOOLBAR\s+ACTION    { return TYPETOOLBAR; }
+FORM\s+APPEARS      { return NEWFORMACTION; }
+NAMED               { return NAMEASSERT; }
+DUBBED              { return VARDECL; }
+SWITCH\s+TO         { return SWITCHCTX; }
+SELECT              { return SELECTACTION; }
+IN                  { return LISTRESOLUTION; }
+CLOSE               { return CLOSEALIAS; }
+\"[^"]+\"           {
+                        yylval.value = yytext;
+                        return STRING;
+                    }
+
+%%
