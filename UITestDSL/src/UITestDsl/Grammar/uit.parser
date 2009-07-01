@@ -1,24 +1,40 @@
-%token CLICKACTION
-%token TYPETOOLBAR
-%token NEWFORMACTION
-%token NAMEASSERT
-%token VARDECL
-%token SWITCHCTX
-%token SELECTACTION
-%token LISTRESOLUTION
-%token CLOSEALIAS
-%token STRING
+%namespace UITestDsl
+%using UITestDsl
+%partial
+
+%union {
+    public string identifier;
+}
+
+%token CLICK, TOOLBAR, APPEARS, NAMED, DUBBED, SWITCH
+%token SELECT, IN, CLOSE, TO, FORM, ACTION
+%token <identifier> STRING, ID
 
 %%
 
+File:
+    Expr | File Expr; 
+
 Expr:
-    ClickAction | SwitchAction | SelectAction;
+    ClickAction | SwitchAction | SelectAction | NewFormExpectation;
+
+NewFormExpectation:
+    FORM APPEARS NAMED STRING DUBBED ID { AddNewFormExpectation( $4, $6 ); };
 
 ClickAction:
-    CLICKACTION TYPETOOLBAR STRING { Add<ClickAction>( $3 ); };
+    CLICK ClickTarget;
+
+ClickTarget:
+    ToolbarButton | Alias;
+    
+ToolbarButton:    
+    TOOLBAR ACTION STRING { AddClickAction( $3 ); };
+    
+Alias:
+    CLOSE { AddClickAction( "x" ); };
 
 SelectAction:
-    SELECTACTION STRING LISTRESOLUTION STRING { Add<SelectAction>( $2, $4 ); };
+    SELECT STRING IN STRING { AddSelectAction( $2, $4 ); };
 
 SwitchAction:
-    SWITCHCTX STRING { Add<SwitchAction>( $2 ); };
+    SWITCH TO ID { AddSwitchAction( $3 ); };

@@ -7,5 +7,11 @@ namespace UITestDsl
 {
     public class SwitchAction:Action
     {
+        private readonly string _name;
+
+        public SwitchAction( string name )
+        {
+            _name = name;
+        }
     }
 }

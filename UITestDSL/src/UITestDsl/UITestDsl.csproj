@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Action.cs" />
     <Compile Include="ClickAction.cs" />
+    <Compile Include="ErrorHandlingScanner.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserImpl.cs" />
     <Compile Include="Program.cs" />

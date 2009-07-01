@@ -8,4 +8,4 @@ echo ===================
 echo  Generating Parser
 echo ===================
 
-..\..\bin\gppg.exe /nolines Grammar\uit.parser > Parser.cs
+..\..\bin\gppg.exe /nolines /gplex Grammar\uit.parser > Parser.cs

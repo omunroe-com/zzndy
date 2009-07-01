@@ -7,5 +7,11 @@ namespace UITestDsl
 {
     public class ClickAction : Action
     {
+        private readonly string _name;
+
+        public ClickAction( string name )
+        {
+            _name = name;
+        }
     }
 }

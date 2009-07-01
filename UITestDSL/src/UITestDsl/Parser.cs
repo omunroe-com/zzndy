@@ -4,23 +4,38 @@
 
 // GPPG version 1.3.5.190
 // Machine:  EPUAKYIW0416
-// DateTime: 6/25/2009 5:47:17 PM
+// DateTime: 7/1/2009 3:51:45 PM
 // UserName: Andriy_Vynogradov
 // Input file <Grammar\uit.parser>
 
-// options: no-lines
+// options: no-lines gplex
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using QUT.Gppg;
+using UITestDsl;
 
+namespace UITestDsl
+{
 public enum Tokens {
-    error=1,EOF=2,CLICKACTION=3,TYPETOOLBAR=4,NEWFORMACTION=5,NAMEASSERT=6,
-    VARDECL=7,SWITCHCTX=8,SELECTACTION=9,LISTRESOLUTION=10,CLOSEALIAS=11,STRING=12};
+    error=1,EOF=2,CLICK=3,TOOLBAR=4,APPEARS=5,NAMED=6,
+    DUBBED=7,SWITCH=8,SELECT=9,IN=10,CLOSE=11,TO=12,
+    FORM=13,ACTION=14,STRING=15,ID=16};
 
-public class Parser: ShiftReduceParser<int, LexLocation>
+public partial struct ValueType
+{
+    public string identifier;
+}
+// Abstract base class for GPLEX scanners
+public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
+  private LexLocation __yylloc = new LexLocation();
+  public override LexLocation yylloc { get { return __yylloc; } set { __yylloc = value; } }
+  protected virtual bool yywrap() { return true; }
+}
+
+public partial class Parser: ShiftReduceParser<ValueType, LexLocation>
 {
 #pragma warning disable 649
     private Dictionary<int, string> aliasses;
@@ -30,49 +45,79 @@ public class Parser: ShiftReduceParser<int, LexLocation>
   {
     this.InitSpecialTokens((int)Tokens.error, (int)Tokens.EOF);
 
-    this.InitStateTable(15);
-    AddState(0,new State(new int[]{3,4,8,8,9,11},new int[]{-1,1,-3,3,-4,7,-5,10}));
-    AddState(1,new State(new int[]{2,2}));
+    this.InitStateTable(30);
+    AddState(0,new State(new int[]{3,5,8,14,9,18,13,23},new int[]{-1,1,-3,29,-4,4,-5,13,-6,17,-7,22}));
+    AddState(1,new State(new int[]{2,2,3,5,8,14,9,18,13,23},new int[]{-3,3,-4,4,-5,13,-6,17,-7,22}));
     AddState(2,new State(-1));
-    AddState(3,new State(-2));
-    AddState(4,new State(new int[]{4,5}));
-    AddState(5,new State(new int[]{12,6}));
-    AddState(6,new State(-5));
-    AddState(7,new State(-3));
-    AddState(8,new State(new int[]{12,9}));
-    AddState(9,new State(-7));
-    AddState(10,new State(-4));
-    AddState(11,new State(new int[]{12,12}));
-    AddState(12,new State(new int[]{10,13}));
-    AddState(13,new State(new int[]{12,14}));
-    AddState(14,new State(-6));
+    AddState(3,new State(-3));
+    AddState(4,new State(-4));
+    AddState(5,new State(new int[]{4,8,11,12},new int[]{-8,6,-9,7,-10,11}));
+    AddState(6,new State(-9));
+    AddState(7,new State(-10));
+    AddState(8,new State(new int[]{14,9}));
+    AddState(9,new State(new int[]{15,10}));
+    AddState(10,new State(-12));
+    AddState(11,new State(-11));
+    AddState(12,new State(-13));
+    AddState(13,new State(-5));
+    AddState(14,new State(new int[]{12,15}));
+    AddState(15,new State(new int[]{16,16}));
+    AddState(16,new State(-15));
+    AddState(17,new State(-6));
+    AddState(18,new State(new int[]{15,19}));
+    AddState(19,new State(new int[]{10,20}));
+    AddState(20,new State(new int[]{15,21}));
+    AddState(21,new State(-14));
+    AddState(22,new State(-7));
+    AddState(23,new State(new int[]{5,24}));
+    AddState(24,new State(new int[]{6,25}));
+    AddState(25,new State(new int[]{15,26}));
+    AddState(26,new State(new int[]{7,27}));
+    AddState(27,new State(new int[]{16,28}));
+    AddState(28,new State(-8));
+    AddState(29,new State(-2));
 
-    Rule[] rules=new Rule[8];
+    Rule[] rules=new Rule[16];
     rules[1]=new Rule(-2, new int[]{-1,2});
     rules[2]=new Rule(-1, new int[]{-3});
-    rules[3]=new Rule(-1, new int[]{-4});
-    rules[4]=new Rule(-1, new int[]{-5});
-    rules[5]=new Rule(-3, new int[]{3,4,12});
-    rules[6]=new Rule(-5, new int[]{9,12,10,12});
-    rules[7]=new Rule(-4, new int[]{8,12});
+    rules[3]=new Rule(-1, new int[]{-1,-3});
+    rules[4]=new Rule(-3, new int[]{-4});
+    rules[5]=new Rule(-3, new int[]{-5});
+    rules[6]=new Rule(-3, new int[]{-6});
+    rules[7]=new Rule(-3, new int[]{-7});
+    rules[8]=new Rule(-7, new int[]{13,5,6,15,7,16});
+    rules[9]=new Rule(-4, new int[]{3,-8});
+    rules[10]=new Rule(-8, new int[]{-9});
+    rules[11]=new Rule(-8, new int[]{-10});
+    rules[12]=new Rule(-9, new int[]{4,14,15});
+    rules[13]=new Rule(-10, new int[]{11});
+    rules[14]=new Rule(-6, new int[]{9,15,10,15});
+    rules[15]=new Rule(-5, new int[]{8,12,16});
     this.InitRules(rules);
 
-    this.InitNonTerminals(new string[] {"", "Expr", "$accept", "ClickAction", 
-      "SwitchAction", "SelectAction", });
+    this.InitNonTerminals(new string[] {"", "File", "$accept", "Expr", "ClickAction", 
+      "SwitchAction", "SelectAction", "NewFormExpectation", "ClickTarget", "ToolbarButton", 
+      "Alias", });
   }
 
   protected override void DoAction(int action)
   {
     switch (action)
     {
-      case 5: // ClickAction -> CLICKACTION, TYPETOOLBAR, STRING
-{ Add<ClickAction>( ValueStack[ValueStack.Depth-1] ); }
+      case 8: // NewFormExpectation -> FORM, APPEARS, NAMED, STRING, DUBBED, ID
+{ AddNewFormExpectation( ValueStack[ValueStack.Depth-3].identifier, ValueStack[ValueStack.Depth-1].identifier ); }
         break;
-      case 6: // SelectAction -> SELECTACTION, STRING, LISTRESOLUTION, STRING
-{ Add<SelectAction>( ValueStack[ValueStack.Depth-3], ValueStack[ValueStack.Depth-1] ); }
+      case 12: // ToolbarButton -> TOOLBAR, ACTION, STRING
+{ AddClickAction( ValueStack[ValueStack.Depth-1].identifier ); }
         break;
-      case 7: // SwitchAction -> SWITCHCTX, STRING
-{ Add<SwitchAction>( ValueStack[ValueStack.Depth-1] ); }
+      case 13: // Alias -> CLOSE
+{ AddClickAction( "x" ); }
+        break;
+      case 14: // SelectAction -> SELECT, STRING, IN, STRING
+{ AddSelectAction( ValueStack[ValueStack.Depth-3].identifier, ValueStack[ValueStack.Depth-1].identifier ); }
+        break;
+      case 15: // SwitchAction -> SWITCH, TO, ID
+{ AddSwitchAction( ValueStack[ValueStack.Depth-1].identifier ); }
         break;
     }
   }
@@ -87,4 +132,5 @@ public class Parser: ShiftReduceParser<int, LexLocation>
         return CharToString((char)terminal);
   }
 
+}
 }
