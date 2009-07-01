@@ -11,6 +11,10 @@ namespace UITestDsl
             Scanner scanner = new Scanner(file);
             Parser parser = new Parser( scanner );
             bool res = parser.Parse();
+
+
+            Tester.RanorexMain( new string[] { } );
+            
         }
     }
 }

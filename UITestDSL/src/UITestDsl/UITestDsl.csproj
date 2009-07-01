@@ -35,6 +35,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\QUT.ShiftReduceParser.dll</HintPath>
     </Reference>
+    <Reference Include="RanorexNet, Version=1.5.1.3482, Culture=neutral, PublicKeyToken=24c2d826cd608828, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\RanorexNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -52,10 +56,12 @@
     <Compile Include="Action.cs" />
     <Compile Include="ClickAction.cs" />
     <Compile Include="ErrorHandlingScanner.cs" />
+    <Compile Include="MenuClick.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserImpl.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tester.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="SelectAction.cs" />
     <Compile Include="SwitchAction.cs" />
@@ -76,6 +82,10 @@
   <PropertyGroup>
     <PreBuildEvent>pushd $(ProjectDir)
 Makes\make-lexer-and-parser.bat
-popd</PreBuildEvent>
+popd
+
+</PreBuildEvent>
+    <PostBuildEvent>echo Putting RanorexCore.dll into $(ConfigurationName) folder
+xcopy $(ProjectDir)..\..\bin\RanorexCore.dll $(TargetDir) /R /D</PostBuildEvent>
   </PropertyGroup>
 </Project>
