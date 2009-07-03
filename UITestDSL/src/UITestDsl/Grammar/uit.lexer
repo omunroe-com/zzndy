@@ -2,34 +2,59 @@
 %tokentype Tokens
 %scanbasetype ErrorHandlingScanner
 
-alpha  [[:IsLetter:]]|_
-id     {alpha}({alpha}|[[:IsDigit:]])+
+alpha   [[:IsLetter:]]|_
+id      {alpha}({alpha}|[[:IsDigit:]])+
 
+run     [Rr][Uu][Nn]
+click   [Cc][Ll][Ii][Cc][Kk]
+toolb   [Tt][Oo][Oo][Ll][Bb][Aa][Rr]
+act     [Aa][Cc][Tt][Ii][Oo][Nn]
+form    [Ff][Oo][Rr][Mm]
+appears [Aa][Pp][Pp][Ee][Aa][Rr][Ss]
+named   [Nn][Aa][Mm][Ee][Dd]
+dubbed  [Dd][Uu][Bb][Bb][Ee][Dd]
+switch  [Ss][Ww][Ii][Tt][Cc][Hh]
+to      [Tt][Oo]
+in      [Ii][Nn]
+select  [Ss][Ee][Ll][Ee][Cc][Tt]
+close   [Cc][Ll][Oo][Ss][Ee]
+comm    #.+$
 
 %%
 
-CLICK               { trace("click"); return (int)Tokens.CLICK; }
-TOOLBAR             { trace("toolbar"); return (int)Tokens.TOOLBAR; }
-ACTION              { trace("action"); return (int)Tokens.ACTION; }
-FORM                { trace("form"); return (int)Tokens.FORM; }
-APPEARS             { trace("appears"); return (int)Tokens.APPEARS; }
-NAMED               { trace("named"); return (int)Tokens.NAMED; }
-DUBBED              { trace("dubbed"); return (int)Tokens.DUBBED; }
-SWITCH              { trace("switch"); return (int)Tokens.SWITCH; }
-TO                  { trace("to"); return (int)Tokens.TO; }
-SELECT              { trace("select"); return (int)Tokens.SELECT; }
-IN                  { trace("in"); return (int)Tokens.IN; }
-CLOSE               { trace("close"); return (int)Tokens.CLOSE; }
+
+{comm}              {}                    
+{run}               { trace("run"); return (int)Tokens.RUN; }
+{click}             { trace("click"); return (int)Tokens.CLICK; }
+{toolb}             { trace("toolbar"); return (int)Tokens.TOOLBAR; }
+{act}               { trace("action"); return (int)Tokens.ACTION; }
+{form}              { trace("form"); return (int)Tokens.FORM; }
+{appears}           { trace("appears"); return (int)Tokens.APPEARS; }
+{named}             { trace("named"); return (int)Tokens.NAMED; }
+{dubbed}            { trace("dubbed"); return (int)Tokens.DUBBED; }
+{switch}            { trace("switch"); return (int)Tokens.SWITCH; }
+{to}                { trace("to"); return (int)Tokens.TO; }
+{select}            { trace("select"); return (int)Tokens.SELECT; }
+{in}                { trace("in"); return (int)Tokens.IN; }
+{close}             { trace("close"); return (int)Tokens.CLOSE; }
 
 \${id}              { 
                         trace("id " + yytext); 
-                        yylval.identifier = yytext.Substring(1); 
+                        yylval.identifier = yytext.Substring( 1 ); 
                         return (int)Tokens.ID;
                     }
+                    
 \"[^\"]*\"          {
                         trace("string " + yytext); 
-                        yylval.identifier = yytext.Trim('"');
+                        yylval.identifier = yytext.Trim( '"' );
                         return (int)Tokens.STRING; 
                     }
+                    
+(([C-Z]\:)|\\|\.\.?)[^\r\n]+   {
+                        trace("path " + yytext);
+                        yylval.identifier = yytext;
+                        return (int)Tokens.PATH; 
+                    }
+                   
 
 %%

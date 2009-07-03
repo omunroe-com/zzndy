@@ -7,13 +7,19 @@
 }
 
 %token CLICK, TOOLBAR, APPEARS, NAMED, DUBBED, SWITCH
-%token SELECT, IN, CLOSE, TO, FORM, ACTION
-%token <identifier> STRING, ID
+%token SELECT, IN, CLOSE, TO, FORM, ACTION, RUN
+%token <identifier> STRING, ID, PATH
 
 %%
 
 File:
-    Expr | File Expr; 
+    RunExpr Rules | Rules;
+    
+Rules:
+    Expr | Rules Expr;    
+
+RunExpr:
+    RUN PATH { RunApplication( $2 ); };
 
 Expr:
     ClickAction | SwitchAction | SelectAction | NewFormExpectation;
@@ -28,10 +34,10 @@ ClickTarget:
     ToolbarButton | Alias;
     
 ToolbarButton:    
-    TOOLBAR ACTION STRING { AddClickAction( $3 ); };
+    TOOLBAR ACTION STRING { AddClickToolbarAction( $3 ); };
     
 Alias:
-    CLOSE { AddClickAction( "x" ); };
+    CLOSE { AddClickSpecialAction( "X" ); };
 
 SelectAction:
     SELECT STRING IN STRING { AddSelectAction( $2, $4 ); };

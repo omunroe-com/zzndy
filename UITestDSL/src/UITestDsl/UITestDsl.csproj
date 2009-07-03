@@ -53,9 +53,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Action.cs" />
-    <Compile Include="ClickAction.cs" />
+    <Compile Include="Actions\Action.cs" />
+    <Compile Include="Actions\AssertFormAction.cs" />
+    <Compile Include="Actions\ClickAction.cs" />
+    <Compile Include="Actions\RunAppAction.cs" />
+    <Compile Include="Actions\SelectAction.cs" />
+    <Compile Include="Actions\SwitchAction.cs" />
     <Compile Include="ErrorHandlingScanner.cs" />
+    <Compile Include="Exceptions\ButtonNotFoundException.cs" />
+    <Compile Include="Exceptions\FormNotFoundException.cs" />
+    <Compile Include="Exceptions\ToolbarButtonNotFoundException.cs" />
+    <Compile Include="Exceptions\UitException.cs" />
+    <Compile Include="IContext.cs" />
     <Compile Include="MenuClick.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserImpl.cs" />
@@ -63,8 +72,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tester.cs" />
     <Compile Include="Scanner.cs" />
-    <Compile Include="SelectAction.cs" />
-    <Compile Include="SwitchAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Grammar\uit.lexer" />
@@ -80,12 +87,30 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>pushd $(ProjectDir)
-Makes\make-lexer-and-parser.bat
-popd
+    <PreBuildEvent>@echo off
 
+pushd $(ProjectDir)
+
+REM Generate Scanner and Parser only if grammar has changed.
+REM Compare timestamp yousing xcopy trick. 
+attrib +r Scanner.cs
+xcopy /Y /D Grammar\uit.lexer Scanner.cs &gt;nul 2&gt;&amp;1
+IF errorlevel 1 (set FileModified=1) ELSE (set FileModified=)
+attrib -r Scanner.cs
+
+IF NOT DEFINED FileModified (
+    attrib +r Parser.cs
+    xcopy /Y /D Grammar\uit.parser Parser.cs &gt;nul 2&gt;&amp;1
+    IF errorlevel 1 (set FileModified=1) ELSE (set FileModified=)
+    attrib -r Parser.cs
+)
+
+IF DEFINED FileModified (Makes\make-lexer-and-parser.bat) ELSE (echo Scanner and Parser are up to date.)
+
+popd
 </PreBuildEvent>
-    <PostBuildEvent>echo Putting RanorexCore.dll into $(ConfigurationName) folder
+    <PostBuildEvent>@echo off
+echo Putting RanorexCore.dll into $(ConfigurationName) folder
 xcopy $(ProjectDir)..\..\bin\RanorexCore.dll $(TargetDir) /R /D</PostBuildEvent>
   </PropertyGroup>
 </Project>

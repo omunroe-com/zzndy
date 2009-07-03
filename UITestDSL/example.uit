@@ -1,7 +1,9 @@
-CLICK TOOLBAR ACTION "Query91"
-FORM APPEARS NAMED "Query2" DUBBED $Q1
+RUn D:\workspace\enerdeq-tfs\branches\AssetBank_2.1_C7\AssetBank\build\bin\Debug\Enerdeq.exe
+
+cliCK TOOLBAR ACTION "Query"
+FORM APPEARS NAMED "Query - Query" DUBBED $Q1
 
 SWITCH TO $Q1
-SELECT "Field" IN "domainObjectComboBox"
-SELECT "Field/FieldName" IN "treeView"
+#SELECT "Field" IN "domainObjectComboBox"
+#SELECT "Field/FieldName" IN "treeView"
 CLICK CLOSE

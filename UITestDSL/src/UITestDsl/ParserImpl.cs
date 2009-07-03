@@ -3,6 +3,8 @@ using System.Diagnostics;
 
 using QUT.Gppg;
 
+using UITestDsl.Actions;
+
 namespace UITestDsl
 {
 
@@ -15,9 +17,14 @@ namespace UITestDsl
         {
         }
 
-        private void AddClickAction( string buttonName )
+        private void AddClickToolbarAction( string buttonName )
         {
             _actions.Enqueue( new ClickAction( buttonName ) );
+        }
+
+        private void AddClickSpecialAction( string name )
+        {
+            _actions.Enqueue( new ClickAction( name ) );
         }
 
         private void AddSwitchAction( string formName )
@@ -32,7 +39,12 @@ namespace UITestDsl
 
         private void AddNewFormExpectation( string name, string var)
         {
-            
+            _actions.Enqueue( new AssertFormAction(name, var) );
+        }
+
+        private void RunApplication(string path)
+        {
+            _actions.Enqueue( new RunAppAction(path) );
         }
 
         private void trace (string msg)
@@ -40,5 +52,9 @@ namespace UITestDsl
             Trace.WriteLine( msg );
         }
 
+        public Queue<Action> GetActions()
+        {
+            return _actions;
+        }
     }
 }
