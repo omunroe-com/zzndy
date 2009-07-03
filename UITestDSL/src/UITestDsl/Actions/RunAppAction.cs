@@ -6,7 +6,7 @@ using Ranorex;
 
 namespace UITestDsl.Actions
 {
-    internal class RunAppAction : Action
+    internal class RunAppAction : BaseAction
     {
         private readonly string _fileDir;
         private readonly string _fileName;

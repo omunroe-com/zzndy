@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-using Action=UITestDsl.Actions.Action;
+using UITestDsl.Actions;
 
 namespace UITestDsl
 {
@@ -19,7 +19,7 @@ namespace UITestDsl
 
             if ( res )
             {
-                Queue<Action> actions = parser.GetActions();
+                Queue<BaseAction> actions = parser.GetActions();
                 Tester tester = new Tester(actions);
                 tester.RunScript();
 

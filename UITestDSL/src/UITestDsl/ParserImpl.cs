@@ -7,10 +7,9 @@ using UITestDsl.Actions;
 
 namespace UITestDsl
 {
-
     public partial class Parser : ShiftReduceParser<ValueType, LexLocation>
     {
-        readonly Queue<Action> _actions = new Queue<Action>();
+        private readonly Queue<BaseAction> _actions = new Queue<BaseAction>();
 
         public Parser( AbstractScanner<ValueType, LexLocation> scanner )
             : base( scanner )
@@ -19,12 +18,12 @@ namespace UITestDsl
 
         private void AddClickToolbarAction( string buttonName )
         {
-            _actions.Enqueue( new ClickAction( buttonName ) );
+            _actions.Enqueue( new ToolbarClickAction( buttonName ) );
         }
 
-        private void AddClickSpecialAction( string name )
+        private void AddClickSpecialAction( ESpecialAction action )
         {
-            _actions.Enqueue( new ClickAction( name ) );
+            _actions.Enqueue( new SpecialAction( action ) );
         }
 
         private void AddSwitchAction( string formName )
@@ -37,22 +36,32 @@ namespace UITestDsl
             _actions.Enqueue( new SelectAction( listItem, listName ) );
         }
 
-        private void AddNewFormExpectation( string name, string var)
+        private void AddNewFormExpectation( string name, string var )
         {
-            _actions.Enqueue( new AssertFormAction(name, var) );
+            _actions.Enqueue( new AssertFormAction( name, var ) );
         }
 
-        private void RunApplication(string path)
+        private void RunApplication( string path )
         {
-            _actions.Enqueue( new RunAppAction(path) );
+            _actions.Enqueue( new RunAppAction( path ) );
         }
 
-        private void trace (string msg)
+        private void AddWaitAction( int timeout )
+        {
+            _actions.Enqueue( new WaitAction( timeout ) );
+        }
+
+        private void AddCloseAction( string formId )
+        {
+            _actions.Enqueue( new CloseAction( formId ) );
+        }
+
+        private void trace( string msg )
         {
             Trace.WriteLine( msg );
         }
 
-        public Queue<Action> GetActions()
+        public Queue<BaseAction> GetActions()
         {
             return _actions;
         }

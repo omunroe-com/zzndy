@@ -4,11 +4,11 @@ using UITestDsl.Exceptions;
 
 namespace UITestDsl.Actions
 {
-    public class ClickAction : Action
+    public class ToolbarClickAction : BaseAction
     {
         private readonly string _name;
 
-        public ClickAction( string name )
+        public ToolbarClickAction( string name )
         {
             _name = name;
         }
@@ -20,20 +20,9 @@ namespace UITestDsl.Actions
 
         public override void Execute( IContext ctx )
         {
-            Element x = null;
+            Control toolbar = ctx.Form.FindControlName( "Standard" );
 
-            switch ( _name )
-            {
-                case "X":
-                    x = ctx.Form.FindButton( 5 ).Element;
-                    break;
-
-                default:
-                    Control toolbar = ctx.Form.FindControlName( "Standard" );
-                    x = toolbar.Element.FindChild( Role.PushButton, _name );
-                    break;
-            }
-
+            Element x = toolbar.Element.FindChild( Role.PushButton, _name );
 
             if ( x == null )
             {

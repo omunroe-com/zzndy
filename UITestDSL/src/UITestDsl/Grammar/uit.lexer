@@ -19,6 +19,8 @@ in      [Ii][Nn]
 select  [Ss][Ee][Ll][Ee][Cc][Tt]
 close   [Cc][Ll][Oo][Ss][Ee]
 comm    #.+$
+wait    [Ww][Aa][Ii][Tt]
+num     [[:IsDigit:]]+
 
 %%
 
@@ -37,6 +39,12 @@ comm    #.+$
 {select}            { trace("select"); return (int)Tokens.SELECT; }
 {in}                { trace("in"); return (int)Tokens.IN; }
 {close}             { trace("close"); return (int)Tokens.CLOSE; }
+{wait}              { trace("wait"); return (int)Tokens.WAIT; }
+{num}               { 
+                        trace("number " + yytext);
+                        yylval.number = Int32.Parse( yytext );
+                        return (int)Tokens.NUM;
+                    }
 
 \${id}              { 
                         trace("id " + yytext); 

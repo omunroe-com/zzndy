@@ -1,14 +1,16 @@
 %namespace UITestDsl
-%using UITestDsl
+%using UITestDsl.Actions;
 %partial
 
 %union {
     public string identifier;
+    public int number;
 }
 
 %token CLICK, TOOLBAR, APPEARS, NAMED, DUBBED, SWITCH
-%token SELECT, IN, CLOSE, TO, FORM, ACTION, RUN
+%token SELECT, IN, CLOSE, TO, FORM, ACTION, RUN, WAIT
 %token <identifier> STRING, ID, PATH
+%token <number> NUM
 
 %%
 
@@ -22,7 +24,7 @@ RunExpr:
     RUN PATH { RunApplication( $2 ); };
 
 Expr:
-    ClickAction | SwitchAction | SelectAction | NewFormExpectation;
+    ClickAction | SwitchAction | SelectAction | NewFormExpectation | WaitAction | CloseAction;
 
 NewFormExpectation:
     FORM APPEARS NAMED STRING DUBBED ID { AddNewFormExpectation( $4, $6 ); };
@@ -37,10 +39,16 @@ ToolbarButton:
     TOOLBAR ACTION STRING { AddClickToolbarAction( $3 ); };
     
 Alias:
-    CLOSE { AddClickSpecialAction( "X" ); };
+    CLOSE { AddClickSpecialAction( ESpecialAction.Close ); };
 
 SelectAction:
     SELECT STRING IN STRING { AddSelectAction( $2, $4 ); };
 
 SwitchAction:
     SWITCH TO ID { AddSwitchAction( $3 ); };
+    
+WaitAction:
+    WAIT NUM { AddWaitAction( $2 ); };    
+    
+CloseAction:
+    CLOSE ID { AddCloseAction( $2 ); };

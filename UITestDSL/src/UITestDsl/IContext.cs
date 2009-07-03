@@ -9,6 +9,8 @@ namespace UITestDsl
         /// </summary>
         Form Form { get; }
 
+        int Timeout { get; }
+
         /// <summary>
         /// Add <see cref="Ranorex.Form"/> provided to the form stack and sets it as current.
         /// </summary>

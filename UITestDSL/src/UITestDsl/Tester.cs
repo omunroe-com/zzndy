@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 using Ranorex;
 
-using Action=UITestDsl.Actions.Action;
+using UITestDsl.Actions;
 
 namespace UITestDsl
 {
     public class Tester : IContext
     {
-        private readonly Queue<Action> _actions;
+        private readonly Queue<BaseAction> _actions;
         private readonly Stack<Form> _forms;
         private readonly Dictionary<string, Form> _aliases;
+        private int _timeout = 200;
 
         public void RunScript()
         {
-            foreach ( Action action in _actions )
+            foreach ( BaseAction action in _actions )
             {
                 action.Execute( this );
+                Thread.Sleep( _timeout );
             }
 
             if ( Form != null )
@@ -27,7 +30,7 @@ namespace UITestDsl
             }
         }
 
-        public Tester( Queue<Action> actions )
+        public Tester( Queue<BaseAction> actions )
         {
             _actions = actions;
             _forms = new Stack<Form>();
@@ -117,6 +120,14 @@ namespace UITestDsl
             get
             {
                 return _forms.Peek();
+            }
+        }
+
+        public int Timeout
+        {
+            get
+            {
+                return _timeout;
             }
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace UITestDsl.Actions
 {
-    public class SwitchAction:Action
+    public class SwitchAction:BaseAction
     {
         private readonly string _name;
 

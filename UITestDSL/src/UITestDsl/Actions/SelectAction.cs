@@ -2,7 +2,7 @@
 
 namespace UITestDsl.Actions
 {
-    public class SelectAction : Action
+    public class SelectAction : BaseAction
     {
         private readonly string _item;
         private readonly string _name;
