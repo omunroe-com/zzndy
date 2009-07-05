@@ -1,0 +1,20 @@
+<projectDescription>
+  <id>1246649250074</id>
+  <name>ga-flash-car</name>
+  <asVersion>0</asVersion>
+  <boundTemplate>file:///C|/Users/Andy/AppData/Local/Adobe/Flash CS4/en/Configuration/Project/templates/boundClass_as3.as</boundTemplate>
+  <classTemplate>file:///C|/Users/Andy/AppData/Local/Adobe/Flash CS4/en/Configuration/Project/templates/standardClass_as3.as</classTemplate>
+  <classPath>.</classPath>
+  <defaultApp/>
+  <rootURI>file:///D|/workspace/playground/ga-flash-car/</rootURI>
+  <flexSDK/>
+  <sources editable="false"/>
+  <libraries editable="false"/>
+  <externalLibraries editable="false"/>
+  <compileList editable="false"/>
+  <recentFiles editable="false">
+    <uri label="Demo.as">file:///D|/workspace/playground/ga-flash-car/Demo.as</uri>
+    <uri label="Car.as">file:///D|/workspace/playground/ga-flash-car/Car.as</uri>
+  </recentFiles>
+  <locations editable="false"/>
+</projectDescription>
