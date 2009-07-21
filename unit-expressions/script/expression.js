@@ -67,7 +67,6 @@
      * @param {Object} right     right argument, Expression or value
      */
     Expression = function() {
-        console.log(arguments);
         switch ( arguments.length ) {
             case 1: // infix string
                 var postfix = infix2postfix(tokenize(arguments[0]));

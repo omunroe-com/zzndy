@@ -2,66 +2,116 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title></title>
+    <title>Expressions</title>
     <script type="text/javascript" src="script/expression.js"></script>
     <script type="text/javascript" src="script/unit.js"></script>
     <script type="text/javascript" src="script/amount.js"></script>
     <meta name="http-equiv" content="Content-type: text/html; charset=utf8"/>
+    <link rel="stylesheet" type="text/css" href="../style/pixelless.css"/>
 </head>
 <body>
-<pre id="out"></pre>
+<div id="container">
+    <div class="content header">
+        <h1>Expressions</h1>
+    </div>
+
+    <div class="content">
+        <pre id="out"></pre>
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Vynogradov 2008-2009
+    </div>
+</div>
 <script type="text/javascript">
-    var out = document.getElementById('out');
+    var out = document.getElementById ( 'out' );
 
     function print( text )
     {
-        out.innerHTML += [].join.call(arguments, '');
+        out.innerHTML += [].join.call ( arguments, '' );
     }
 
     function println( text )
     {
-        out.innerHTML += [].join.call(arguments, '') + '\n';
+        out.innerHTML += [].join.call ( arguments, '' ) + '\n';
     }
 
-    Unit.system('metric');
-    Unit.add('m', 'length');
-    Unit.add('km', 1000, 'm');
-    Unit.add('cm', 0.01, 'm');
-    Unit.add('mm', 0.1, 'cm');
 
-    Unit.add('s', 'time');
-    Unit.add('min', 60, 's');
-    Unit.add('h', 60, 'min');
-    Unit.add('day', 24, 'h');
-    Unit.add('year', 365.25, 'day');
+    Unit.system ( 'metric' );
 
-    Unit.add('m/s', 'velocity');
-    Unit.add('km/h', 10 / 36, 'm/s');
+    Unit.system ( 'metric' )
+            .base ( 'lenght' ).unit ( 'm' )
+            .unit ( 'km' ).equals ( 1000, 'm' )
+            .base ( 'time' ).unit ( 's' )
+            .base ( 'velocity' ).unit ( 'm/s' )
+            .unit ( 'cm' ).equals ( 0.01, 'm' )
+            .unit ( 'mm' ).equals ( 0.001, 'cm' )
+            .unit ( 'min' ).equals ( 60, 's' )
+            .unit ( 'min' ).equals ( 60, 's' )
+            .unit ( 'h' ).equals ( 60, 'min' )
+            .unit ( 'day' ).equals ( 24, 'h' )
+            .unit ( 'year' ).equals ( 365.25, 'day' )
+            .unit ( 'km/h' ).equals ( 10 / 36, 'm/s' )
+            .base ( 'time squared' ).unit ( 's2' )
+            .alias ( 's*s' )
+
+            .system ( 'imperial' )
+            .unit ( 'in' ).equals ( 2.54, 'cm' )
+            .unit ( 'ft' ).equals ( 12, 'in' )
+            .unit ( 'ft' ).equals ( 30.48, 'cm' )
+            .unit ( 'yd' ).equals ( 3, 'ft' )
+            .unit ( 'yd' ).equals ( 91.44, 'cm' )
+            .unit ( 'mile' ).equals ( 1609.344, 'm' )
+            .unit ( 'mph' ).equals ( 1.609344, 'km/h' );
+
+    /*
+     Unit.add ( 'm', 'length' );
+     Unit.add ( 'km', 1000, 'm' );
+     Unit.add ( 'cm', 0.01, 'm' );
+     Unit.add ( 'mm', 0.1, 'cm' );
+
+     Unit.add ( 's', 'time' );
+     Unit.add ( 'min', 60, 's' );
+     Unit.add ( 'h', 60, 'min' );
+     Unit.add ( 'day', 24, 'h' );
+     Unit.add ( 'year', 365.25, 'day' );
+
+     Unit.add ( 'm/s', 'velocity' );
+     Unit.add ( 'km/h', 10 / 36, 'm/s' );
 
 
-    Unit.system('imperial');
-    Unit.add('in', 2.54, 'cm');
-    Unit.add('ft', 12, 'in');
-    Unit.add('ft', 30.48, 'cm');
-    Unit.add('yd', 3, 'ft');
-    Unit.add('yd', 91.44, 'cm');
-    Unit.add('mile', 1609.344, 'm');
+     Unit.system ( 'imperial' );
+     Unit.add ( 'in', 2.54, 'cm' );
+     Unit.add ( 'ft', 12, 'in' );
+     Unit.add ( 'ft', 30.48, 'cm' );
+     Unit.add ( 'yd', 3, 'ft' );
+     Unit.add ( 'yd', 91.44, 'cm' );
+     Unit.add ( 'mile', 1609.344, 'm' );
 
-    Unit.system('imperial');
-    Unit.add('mph', 1.609344, 'km/h');
+     Unit.system ( 'imperial' );
+     Unit.add ( 'mph', 1.609344, 'km/h' );
+     */
 
-    var v1 = new Amount('100 m/s');
-    var v2 = new Amount('75 mph');
+    var v1 = new Amount ( '100 m/s' );
+    var v2 = new Amount ( '75 mph' );
 
-    println(v1.as('km/h'));
-    println(v2.as('km/h'));
+    println ( 'v1 = ', v1.as ( 'km/h' ) );
+    println ( 'v2 = ', v2.as ( 'km/h' ) );
 
-    var vs = v1.plus(v2);
-    println(vs.as('km/h'));
-    println(vs.as('km/h').as('m/s'));
+    var vs = v1.plus ( v2 );
+    println ( 'v1 + v2 = ', vs.as ( 'km/h' ) );
+    println ( ' in m/s ', vs.as ( 'km/h' ).as ( 'm/s' ) );
 
-    println(v1, '+', v2, '=', vs);
-    // Excecting vs to be 133.52800 m/s
+    println ( v1, ' + ', v2, ' = ', vs );
+    println ( 'Expected value 133.52800 m/s' );
+
+    var l = new Amount ( '9.8 m' );
+    var t = new Amount ( '1 s' );
+
+    println ( l, ' / (', t, ' * ', t, ') = ', l.div ( t.mul ( t ) ) );
 
 </script>
 </body>

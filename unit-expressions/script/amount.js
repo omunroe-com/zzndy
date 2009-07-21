@@ -27,6 +27,16 @@
         return new Amount(this.value + Unit.convert(amount.value, amount.unit, this.unit), this.unit);
     };
 
+    A.minus = function(amount)
+    {
+        return new Amount(this.value - Unit.convert(amount.value, amount.unit, this.unit), this.unit);
+    };
+
+    A.mul = function(amount)
+    {
+        return new Amount(this.value * amount.value, Unit.get((new Expression('*', this.unit.name, amount.unit.name))));
+    };
+
     A.as = function( unit )
     {
         return new Amount(this.unit.show(this.value, unit), unit);
