@@ -9,18 +9,20 @@
     <script type="text/javascript" src="../script/canvas.js"></script>
     <script type="text/javascript" src="../script/domgen.js"></script>
     <script type="text/javascript" src="script/genetic.js"></script>
+    <script type="text/javascript" src="script/ga.js"></script>
+    <script type="text/javascript" src="../unit-expressions/script/expression.js"></script>
     <style type="text/css">
-        #out
-        {
-            font-family:monospace;
-            font-size:90%;
+        #out {
+            font-family: monospace;
+            font-size: 90%;
+            -moz-column-width: 13em;
         }
     </style>
 </head>
 <body>
 <div id="container">
     <div class="content header">
-        <h1>Bezier Curves</h1>
+        <h1>Genetic</h1>
     </div>
 
     <div class="content">
@@ -32,62 +34,152 @@
 </div>
 <div id="footer">
     <div class="content">
-        &copy; Copyright
+        &copy; Vynogradov 2008-2009
     </div>
 </div>
 <script type="text/javascript">
 
+    var alphabeth = "0123456789+-*/";
+
+    function getRandomChar( alphabeth )
+    {
+        return function() {
+            return alphabeth[Math.floor ( Math.random ( ) * alphabeth.length )];
+        };
+    }
+
+    function makeRandomCalculationIndividual()
+    {
+        var len = 5 + Math.floor ( Math.random ( ) * 6 );
+        return len.times ( getRandomChar ( alphabeth ) ).join ( '' );
+    }
+    function evaluate( expr )
+    {
+        if ( !(expr instanceof Expression) ) {
+
+            if ( expr.match ( /^\s*[0-9]+\s*$/ ) )return parseInt ( expr, 10 );
+            try {
+                expr = new Expression ( expr );
+            }
+            catch( ex )
+            {
+                return NaN;
+            }
+        }
+
+        if ( expr.right == null && expr.left == null )
+            return null;
+        else if ( expr.left == null )
+            return evaluate ( expr.right );
+        else if ( expr.right == null )
+                return evaluate ( expr.left );
+            else {
+                var left = (expr.left instanceof Expression) ? evaluate ( expr.left ) : parseInt ( expr.left );
+                var right = (expr.right instanceof Expression) ? evaluate ( expr.right ) : parseInt ( expr.right );
+                var op = add;
+                switch ( expr.op ) {
+                    case '*': op = mul;
+                        break;
+
+                    case '-': op = sub;
+                        break;
+
+                    case '/': op = div;
+                        break;
+                }
+
+                var val = left == null ? right : right == null ? left : op ( left, right );
+                return val;
+            }
+    }
+
+    var populationCount = 20;
+
+    var initialPopulation = populationCount.times ( makeRandomCalculationIndividual );
+
+    initialPopulation.map ( function( ind ) {
+        out ( ind, '&nbsp;=&gt;&nbsp;', evaluate ( ind ).toFixed ( 2 ) );
+    } );
+
+    function fitnessFunction( individual )
+    {
+        var val = evaluate ( individual );
+        if ( val == Infinity || val == -Infinity || isNaN ( val ) )
+            return Infinity;
+
+        var dif = Math.abs ( 42 - val );
+        return dif * dif;
+    }
+
+    var elitism = 10;
+    var mutationRate = 5;
+    var maxGeneration = 20;
+
+    var ga = new GeneticAlgorithm ( initialPopulation, fitnessFunction, elitism, mutationRate, alphabeth );
+
+    function evolve()
+    {
+        while ( ga.generation < maxGeneration )
+        {
+            ga.nextGeneration ( );
+            out ( ga.generation.pad ( -2 ).replace ( ' ', '&nbsp;' ), '. ', ga.best );
+            window.setTimeout ( evolve, 50 );
+        }
+    }
+
+    evolve ( );
+
+
     var target = "Hello world!";
-    var chars = ' ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(),./';
+    var chars = 'Hello world!';
 
     var n = target.length;
 
     // Generate initial population
-    var population = (2048).times(function() {
-        var n = target.length - 10 + Math.floor(Math.random() * 21);
-        return n.times(function() {
-            return chars[Math.floor(Math.random() * chars.length)];
-        }).join('');
-    });
+    var population = (2048).times ( function() {
+        var n = target.length - 10 + Math.floor ( Math.random ( ) * 21 );
+        return n.times ( function() {
+            return chars[Math.floor ( Math.random ( ) * chars.length )];
+        } ).join ( '' );
+    } );
 
     function fitness( a )
     {
-        var i = -1, n = Math.min(target.length, a.length);
+        var i = -1, n = Math.min ( target.length, a.length );
         var score = 0;
-        while( ++i < n )
+        while ( ++i < n )
         {
-            score += Math.abs(target.charCodeAt(i) - a.charCodeAt(i));
+            score += Math.abs ( target.charCodeAt ( i ) - a.charCodeAt ( i ) );
         }
 
-        score += Math.abs(target.length - a.length) * 100;
+        score += Math.abs ( target.length - a.length ) * 100;
         return score;
     }
 
     var maxgen = 50;
-    var genetic = new Genetic(population, fitness, 10, 15);
+    var genetic = new Genetic ( population, fitness, 10, 15 );
     function out()
     {
-        var obj = document.getElementById('out');
+        var obj = document.getElementById ( 'out' );
         out = function()
         {
-            obj.innerHTML += '<div>' + [].join.apply(arguments, ['']) + '</div>';
+            obj.innerHTML += '<div>' + [].join.apply ( arguments, [''] ) + '</div>';
         };
 
-        out.apply(arguments, arguments);
+        out.apply ( arguments, arguments );
     }
 
     function doit()
     {
-        if( genetic.n < maxgen )
+        if ( genetic.n < maxgen )
         {
-            genetic.run();
-            out(genetic.n.pad(-2).replace(' ', '&nbsp;'), '. ', genetic.best);
-            window.setTimeout(doit, 50);
+            genetic.run ( );
+            out ( genetic.n.pad ( -2 ).replace ( ' ', '&nbsp;' ), '. ', genetic.best );
+            window.setTimeout ( doit, 50 );
         }
     }
 
-    doit();
-
+    doit ( );
 </script>
 </body>
 </html>
