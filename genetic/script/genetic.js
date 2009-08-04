@@ -1,8 +1,8 @@
 /**
  * @description
- * A gene is an ascii letter
+ * A gene is an ASCII letter
  *
- * Alorithm:
+ * Algorithm:
  *     1. Prepare initial generation;
  *     2. Select using fitness function;
  *     3. Breed via crossover and mutation;
@@ -15,7 +15,7 @@
      *
      * @param {Array} population            initial population
      * @param {Function} fitness            fitnes function
-     * @param {Number} elitism        percent of instances selected for breeding
+     * @param {Number} elitism              percent of instances selected for breeding
      * @param {Number} mutationProbability  possibility of gene mutation
      */
     Genetic = function( population, fitness, elitism, mutationProbability )

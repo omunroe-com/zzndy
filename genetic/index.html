@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html>
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
@@ -53,6 +52,7 @@
         var len = 5 + Math.floor ( Math.random ( ) * 6 );
         return len.times ( getRandomChar ( alphabeth ) ).join ( '' );
     }
+
     function evaluate( expr )
     {
         if ( !(expr instanceof Expression) ) {
@@ -96,10 +96,6 @@
     var populationCount = 20;
 
     var initialPopulation = populationCount.times ( makeRandomCalculationIndividual );
-
-    initialPopulation.map ( function( ind ) {
-        out ( ind, '&nbsp;=&gt;&nbsp;', evaluate ( ind ).toFixed ( 2 ) );
-    } );
 
     function fitnessFunction( individual )
     {

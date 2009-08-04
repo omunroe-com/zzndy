@@ -39,7 +39,7 @@
     ctx.strokeStyle = '#D7D7D7';
     ctx.fillStyle = '#D7D7D7';
 
-    var n = 25, m = 40;
+    var n = 25, m = 45;
     var dx = 800 / m, dy = 500 / n;
     var offset = new Point(dx / 2 + .5, dy / 2 + .5);
 
@@ -84,7 +84,7 @@
                 if ( potentialRenderable )
                     ctx.fillCircle(j * dx, i * dy, 1.5)
                             .moveTo(j * dx, i * dy)
-                            .lineTo((j + glob.fld.body[i][j].x ) * dx, (i + glob.fld.body[i][j].y) * dy)
+                            .lineTo((j + glob.fld.body[i][j].x/2 ) * dx, (i + glob.fld.body[i][j].y/2 ) * dy)
                             .stroke();
             }
 
