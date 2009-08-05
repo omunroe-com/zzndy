@@ -4,6 +4,7 @@ GeneticAlgorithm = function( initialPopulation, fitnessFunction, elitism, mutati
 {
     this.ff = fitnessFunction;
     this.elitism = elitism;
+    this.probf = makeprobability(elitism);
     this.mr = mutationRate;
     this.alphabeth = alphabeth || clone(defaultalphabeth);
 
@@ -33,8 +34,8 @@ GA.nextGeneration = function()
     var npop = 0, newpop = [];
     while( ++npop < this.pop.lenght )
     {
-        var parenta = this.pop[selectone(this.scores, this.elitism)];
-        var parentb = this.pop[selectone(this.scores, this.elitism)];
+        var parenta = this.pop[selectone(this.scores, this.probf)];
+        var parentb = this.pop[selectone(this.scores, this.probf)];
         newpop.push(crossover(parenta, parentb));
     }
 
@@ -45,12 +46,78 @@ GA.nextGeneration = function()
     return this;
 };
 
-function selectone( weighed, elitism )
+/**
+ * Perform generic crossover of two parents.
+ * @param p1 first parent
+ * @param p2 second parent
+ */
+function crossover( p1, p2 )
 {
+
+
+    var d1, d2;
+    var d = Math.abs(Math.floor((p2.length - p1.length) / 2));
+    var x = 1 + Math.floor(Math.random() * (Math.min(p1.length, p2.length) - 1));
+    var r = [];
+
+    if( p1.length < p2.length )
+    {
+        d1 = 0;
+        d2 = d;
+    }
+    else
+    {
+        d2 = 0;
+        d1 = d;
+    }
+
+    var c1 = p1.clone();
+    var c2 = p2.clone();
+    var e1 = c1.splice(0, d1 + x);
+    var e2 = c2.splice(0, d2 + x);
+    r = [c1.concat(e2),c2.concat(e1)];
+    
+    return r[Math.round(Math.random())];
+}
+
+function makeprobability( elitism )
+{
+    var m = elitism;
+    var w = .1;
+    var a = .05;
+    var s = 1 - a;
+    var tpw = 2 * Math.PI / w;
+
     // the formula is
     // (1-tanh(2*pi*x/w-m*2*pi/w))/2;
     // where w is front length
     // and m is the x coordinate where function equals 0.5
+    // like this
+    // .95*(1-tanh(2*pi*x/.1-.2*2*pi/.1))/2-x*.05+.05
+    return function( x )
+    {
+        return s * (1 - tanh(tpw * ( x - m ))) / 2 - x * a + a;
+    };
+}
+
+function rnd( probf )
+{
+    var xi, fi, y;
+    do
+    {
+        xi = Math.random();
+        fi = probf(xi);
+        y = Math.random();
+    }
+    while( fi < y );
+
+    return xi;
+}
+;
+
+function selectone( weighed, probf )
+{
+    return weighed[Math.floor(weighed.length * rnd(probf))];
 }
 
 /**
