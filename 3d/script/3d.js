@@ -185,7 +185,7 @@ function angle( v1, v2 )
 function convert3dTo2d( p, worldMatrix )
 {
     var pos = mm(worldMatrix, [[p[0]], [p[1]], [p[2]], [1]]);
-    return [pos[0][0], pos[1][0]];
+    return [pos[0][0], pos[1][0], pos[2][0]];
 }
 
 CanvasRenderingContext2D.prototype.line3d = function( p1, p2, worldMatrix )
@@ -197,6 +197,30 @@ CanvasRenderingContext2D.prototype.line3d = function( p1, p2, worldMatrix )
             .moveTo(cp1[0] * this.scale, -cp1[1] * this.scale)
             .lineTo(cp2[0] * this.scale, -cp2[1] * this.scale)
             .stroke();
+};
+
+CanvasRenderingContext2D.prototype.path3d = function( shape, worldMatrix )
+{
+    var i = -1, n = shape.length;
+
+    var point = convert3dTo2d(shape[n - 1], worldMatrix);
+
+    ctx.moveTo(point[0] * this.scale, -point[1] * this.scale);
+    while( ++i < n )
+    {
+        var p = shape[i];
+        point = convert3dTo2d(p, worldMatrix);
+        if( p.length == 3 ) {
+            ctx.lineTo(point[0] * this.scale, -point[1] * this.scale);
+        }
+        else if( p.length == 6 )
+        {
+            var control = convert3dTo2d([p[3],p[4],p[5]], worldMatrix);
+            ctx.quadraticCurveTo(control[0] * this.scale, -control[1] * this.scale, point[0] * this.scale, -point[1] * this.scale);
+        }
+    }
+
+    return this;
 };
 
 function perspectiveTransform( fov, aspect, near, far )
