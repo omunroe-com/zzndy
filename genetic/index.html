@@ -49,12 +49,13 @@
 
     function makeRandomCalculationIndividual()
     {
-        var len = 5 + Math.floor ( Math.random ( ) * 6 );
-        return len.times ( getRandomChar ( alphabeth ) ).join ( '' );
+        var len = 10 + Math.floor ( Math.random ( ) * 6 );
+        return len.times ( getRandomChar ( alphabeth ) );
     }
 
     function evaluate( expr )
     {
+        if(expr instanceof Array) expr = expr.join('');
         if ( !(expr instanceof Expression) ) {
 
             if ( expr.match ( /^\s*[0-9]+\s*$/ ) )return parseInt ( expr, 10 );
@@ -93,7 +94,7 @@
             }
     }
 
-    var populationCount = 20;
+    var populationCount = 200;
 
     var initialPopulation = populationCount.times ( makeRandomCalculationIndividual );
 
@@ -101,24 +102,26 @@
     {
         var val = evaluate ( individual );
         if ( val == Infinity || val == -Infinity || isNaN ( val ) )
-            return Infinity;
+            return 0;
 
-        var dif = Math.abs ( 42 - val );
-        return dif * dif;
+        var t = 42;
+
+        if(val > t)return t/val;
+        else return val / t;
     }
 
-    var elitism = 10;
+    var elitism = .1;
     var mutationRate = 5;
-    var maxGeneration = 20;
+    var maxGeneration = 50;
 
     var ga = new GeneticAlgorithm ( initialPopulation, fitnessFunction, elitism, mutationRate, alphabeth );
 
     function evolve()
     {
-        while ( ga.generation < maxGeneration )
+        while ( ga.generation < maxGeneration && (1-ga.bestScore)>.0001)
         {
             ga.nextGeneration ( );
-            out ( ga.generation.pad ( -2 ).replace ( ' ', '&nbsp;' ), '. ', ga.best );
+            out ( ga.generation.pad ( -2 ).replace ( ' ', '&nbsp;' ), '. ', ga.best.join(''), ' = ', evaluate(ga.best).toFixed(2) );
             window.setTimeout ( evolve, 50 );
         }
     }

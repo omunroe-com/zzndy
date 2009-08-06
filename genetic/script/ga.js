@@ -10,17 +10,19 @@ GeneticAlgorithm = function( initialPopulation, fitnessFunction, elitism, mutati
 
     this.generation = 0;
 
-
     this.pop = initialPopulation;
 
     assessgeneration.call(this);
-
 };
 
+/**
+ * Rate current generation and select the best.
+ */
 function assessgeneration()
 {
-    this.scores = range(this.pop, this.ff);
+    this.scores = rangepopulation(this.pop, this.ff);
     this.best = this.pop[this.scores[0][1]];
+    this.bestScore = this.scores[0][0];
 }
 
 var GA = GeneticAlgorithm.prototype;
@@ -32,11 +34,11 @@ var GA = GeneticAlgorithm.prototype;
 GA.nextGeneration = function()
 {
     var npop = 0, newpop = [];
-    while( ++npop < this.pop.lenght )
+    while( npop++ < this.pop.length )
     {
-        var parenta = this.pop[selectone(this.scores, this.probf)];
-        var parentb = this.pop[selectone(this.scores, this.probf)];
-        newpop.push(crossover(parenta, parentb));
+        var p1 = this.pop[selectone(this.scores, this.probf)[1]];
+        var p2 = this.pop[selectone(this.scores, this.probf)[1]];
+        newpop.push(crossover(p1, p2));
     }
 
     ++this.generation;
@@ -53,8 +55,6 @@ GA.nextGeneration = function()
  */
 function crossover( p1, p2 )
 {
-
-
     var d1, d2;
     var d = Math.abs(Math.floor((p2.length - p1.length) / 2));
     var x = 1 + Math.floor(Math.random() * (Math.min(p1.length, p2.length) - 1));
@@ -123,10 +123,10 @@ function selectone( weighed, probf )
 /**
  * Range population by fitness function.
  * @param {Array} population  population to range
- * @oaram {Function} ff       fitness function
+ * @param {Function} ff       fitness function
  * @return {Array} of pairs (score, index) sorted by score.
  */
-function range( population, ff )
+function rangepopulation( population, ff )
 {
     function makepair( value, i )
     {
@@ -135,7 +135,7 @@ function range( population, ff )
 
     function pairsort( a, b )
     {
-        return a[0] - b[0];
+        return b[0] - a[0];
     }
 
     return population.map(makepair).sort(pairsort);
