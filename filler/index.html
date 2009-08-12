@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html>
 <head>
     <title>JavaScript Filler</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <meta name="keywords" content="filler, 7 colors, 7colors, javascript, game"/>
+    <meta name="keywords" content="filler, 7colors, javascript, game"/>
 
-    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+    <link rel="stylesheet" href="style/common/pixelless.css" type="text/css"/>
     <link rel="stylesheet" href="style/filler.css" type="text/css"/>
 
-    <script type="text/javascript" src="../script/util.js"></script>
-    <script type="text/javascript" src="../script/canvas.js"></script>
-    <script type="text/javascript" src="../script/color.js"></script>
+    <script type="text/javascript" src="script/common/util.js"></script>
+    <script type="text/javascript" src="script/common/canvas.js"></script>
+    <script type="text/javascript" src="script/common/color.js"></script>
     <script type="text/javascript" src="script/logic.js"></script>
     <script type="text/javascript" src="script/presentation.js"></script>
     <link rel="shortcut icon" href="img/filler-24.png" type="image/png" />
@@ -23,6 +22,7 @@
     </div>
 
     <div class="content">
+        <div id="menu"><a href="#multiplayer" onclick="choosemultiplayer();return false;">Start mutliplayer</a></div>
         <div id="colors"></div>
         <div style="float:left;width:800px">
             <canvas id="main-filler-canvas" width="800px" height="500px"></canvas>
@@ -39,6 +39,14 @@
     <div class="content">
         &copy;
         <script type="text/javascript">
+            var menu = document.getElementById('menu');
+            var menuHtml = menu.innerHTML;
+
+            function choosemultiplayer()
+            {
+                menu.innerHTML = '<a href="#start">Start a new game</a> or <a href="#join">join</a>?';
+            }
+
             var a = ['and', 'mail'].join('y@g');
             var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
             document.write(b.join(''));

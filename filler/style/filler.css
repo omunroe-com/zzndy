@@ -37,3 +37,11 @@
 #message {
     text-align: center;
 }
+
+#menu {
+    line-height: 3em;
+    text-align: right;
+    margin-top: -5em;
+    margin-bottom: 2em;
+    padding: 0 4em;
+}
