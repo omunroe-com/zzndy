@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
@@ -12,6 +11,7 @@
     <style type="text/css">
         canvas {
             border: 1px solid;
+            cursor: none;
         }
     </style>
 </head>
@@ -22,8 +22,8 @@
     </div>
 
     <div class="content">
-        <canvas id="target" width="800px" height="500px">Convas is not supported in this browser.</canvas>
-        <div class="emtpy_footer">
+        <div id="target"></div>
+        <div class="empty_footer">
         </div>
     </div>
 </div>
@@ -32,137 +32,141 @@
         &copy; Copyright
     </div>
 </div>
-<script type="text/javascript" language="JavaScript">
-    var potentialRenderable = false;
-
-    var ctx = document.getElementById('target').getContext('2d');
-    ctx.strokeStyle = '#D7D7D7';
-    ctx.fillStyle = '#D7D7D7';
-
-    var n = 25, m = 45;
-    var dx = 800 / m, dy = 500 / n;
-    var offset = new Point(dx / 2 + .5, dy / 2 + .5);
-
-    ctx.translate(offset.x, offset.y);
-
-    var obj = {
-        pos: new Point(5, 5),
-        dir: new Vector(3, 0)
-    };
-
-    function drawField( /* ctx, fld */ )
+<script type="text/javascript">
+    // init
+    function makeCanvas(w, h, at)
     {
-        var i = -1;
-        var verticalGridDrawn = false;
+        var canvas = document.createElement('canvas');
+        canvas.setAttribute('width', w + 'px');
+        canvas.setAttribute('height', h + 'px');
+        canvas.setAttribute('id', at);
+        canvas.appendChild(document.createTextNode('Canvas is not supported in this browser.'));
 
-        ctx.clearRect(-dx / 2, -dy / 2, 800, 500);
+        var target = document.getElementById(at);
+        target.parentNode.replaceChild(canvas, target);
 
-        while ( potentialRenderable && ++i < glob.fld.rows )
+        return canvas.getContext('2d').translate(-.5, h - .5).scale(1, -1);
+    }
+
+    function mouseToCanvas(e)
+    {
+        var x = 0,y = 0;
+
+        if (!e)
         {
-            ctx.strokeStyle = 'rgba(0, 128, 255, .1)';
-            if ( !(i % 4) )
-                ctx.strokeStyle = 'rgba(0, 200, 255, .25)';
-            ctx.moveTo(0, i * dy)
-                    .lineTo((glob.fld.cols - 1) * dx, i * dy)
-                    .stroke()
-                    .strokeStyle = '#D7D7D7';
+            e = window.event;
+            x = e.offsetX;
+            y = e.offsetY;
+        }
+        else // we assume DOM modeled javascript
+        {
+            var elt = e.target ;
+            var left = 0;
+            var top = 0 ;
 
-            var j = -1;
-            while ( ++j < glob.fld.cols )
+            while (elt.offsetParent)
             {
-                if ( !verticalGridDrawn )
-                {
-                    ctx.strokeStyle = 'rgba(0, 128, 255, .1)';
-                    if ( !(j % 4) )
-                        ctx.strokeStyle = 'rgba(0, 200, 255, .25)';
-                    ctx.moveTo(j * dx, 0)
-                            .lineTo(j * dx, (glob.fld.rows - 1) * dy)
-                            .stroke()
-                            .strokeStyle = '#D7D7D7';
-                }
-
-                if ( potentialRenderable )
-                    ctx.fillCircle(j * dx, i * dy, 1.5)
-                            .moveTo(j * dx, i * dy)
-                            .lineTo((j + glob.fld.body[i][j].x/2 ) * dx, (i + glob.fld.body[i][j].y/2 ) * dy)
-                            .stroke();
+                left += elt.offsetLeft;
+                top += elt.offsetTop;
+                elt = elt.offsetParent;
             }
 
-            verticalGridDrawn = true;
+            x = e.pageX - left;
+            y = e.pageY - top;
         }
 
-        obj.dir = obj.dir.add(glob.fld.getVector(obj.pos.x, obj.pos.y)).div(2);
-
-        obj.pos.x += obj.dir.x;
-        obj.pos.y += obj.dir.y;
-
-        ctx.save()
-                .translate(obj.pos.x * dx, obj.pos.y * dx)
-                .rotate(obj.dir.angle)
-                .fillRect(-5, -5, 10, 10)
-                .restore();
-
-        window.setTimeout(drawField, 1000/25);
+        mouse = new Point(x, height - y);
     }
+
+    function putPointer()
+    {
+        ctx
+            .clearRect(0, 0, width, height)
+            .beginPath()
+            .moveTo(mouse.x, mouse.y - 5)
+            .lineTo(mouse.x, mouse.y + 5)
+            .stroke()
+            .beginPath()
+            .moveTo(mouse.x - 5, mouse.y)
+            .lineTo(mouse.x + 5, mouse.y)
+            .stroke();
+
+        prev = mouse;
+
+
+            field = new PotentialField(n, m);
+            field.apply((mouse.x - sx / 2) / sx, (mouse.y - sy / 2) / sy, mouseCharge);
+
+        obj.vel = obj.vel.add(field.getForce(obj.pos.x, obj.pos.y)).div(2);
+        obj.pos.x += obj.vel.x;
+        obj.pos.y += obj.vel.y;
+
+        renderField();
+    }
+
+    var mouse = new Point(5.5, 6.6);
+    var prev = mouse;
+
+    var width = 800;
+    var height = 500;
+    var ctx = makeCanvas(width, height, 'target');
+    ctx.fillStyle = ctx.strokeStyle = '#D7D7D7';
+
+
+    var mul = 3;
+    var m = 8 * mul, n = 5 * mul;
+    var sx = width / m, sy = height / n;
 
     var base = new PotentialField(n, m);
-    var mouse = new Charge(19.3, 10.8, -1.5, 18);
-    var wall0 = new Wall(-.5, -.5, m, -.5, 2, 5);
-    var wall1 = new Wall(m, -.5, m, n, 2, 5);
-    var wall2 = new Wall(-.5, n, m, n, 2, 5);
-    var wall3 = new Wall(-.5, -.5, -.5, n, 2, 5);
+    var field;
+    var mouseCharge = new Charge(-.3, 5);
 
-    base.apply(wall0)
-            .apply(wall1)
-            .apply(wall2)
-            .apply(wall3);
-
-    var glob =
-    {
-        ctx:ctx,
-        fld:null
+    var obj = {
+        pos:new Point(m / 2, n / 2),
+        vel:new Vector(0, 0)
     };
 
-
-    glob.fld = new PotentialField(n, m);
-    glob.fld.apply(mouse);
-    glob.fld = glob.fld.add(base);
-
-    //drawField(ctx, fld);
-
-    function getPos( e )
+    function renderField()
     {
-        return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
+        if (!(field instanceof PotentialField)) return;
+
+        ctx.save().translate(sx / 2, sy / 2);
+        var i = -1, n = field.rows;
+        while (++i < n)
+        {
+            var j = -1, m = field.cols;
+            while (++j < m)
+            {
+                var f = field.getForce(j, i);
+
+                ctx
+                    .save()
+                    .translate(j * sx, i * sy)
+                    .strokeCircle(0, 0, 1)
+                    .beginPath()
+                    .moveTo(0, 0)
+                    .lineTo(f.x * sx, f.y * sy)
+                    .stroke()
+                    .restore();
+            }
+        }
+
+        ctx
+            .save()
+            .translate(obj.pos.x * sx, obj.pos.y * sy)
+            .rotate(obj.vel.angle)
+            .fillRect(-2.5, -2.5, 5, 5)
+            .beginPath()
+            .moveTo(0, 0)
+            .lineTo(obj.vel.abs * sx*2, 0)
+            .stroke()
+            .restore();
+
+        ctx.restore();
     }
 
-    function getFieldPos( domPos )
-    {
-        return new Point((domPos.x - offset.x) / dx, (domPos.y - offset.y) / dy);
-    }
-
-    function getDomPos( fldPos )
-    {
-        return new Point(fldPos.x * dx + offset.x, fldPos.y * dy + offset.y);
-    }
-
-    function mousemove( e )
-    {
-        var pos = getPos(e);
-        var fldPos = getFieldPos(pos);
-
-        var fld = new PotentialField(n, m);
-
-        mouse.x = fldPos.x;
-        mouse.y = fldPos.y;
-
-        fld.apply(mouse);
-        glob.fld = fld.add(base);
-
-        //drawField(ctx, fld);
-    }
-
-    document.getElementById('target').onmousemove = mousemove;
-    drawField();
+    window.setInterval(putPointer, 40);
+    document.getElementById('target').onmousemove = mouseToCanvas;
 
 </script>
 </body>

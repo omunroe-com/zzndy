@@ -69,7 +69,7 @@ pre a {
     text-align: center;
 }
 
-.emtpy_footer {
+.empty_footer {
     clear: both;
     height: 2.5em; /*$footer-height*/
 }

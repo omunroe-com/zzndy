@@ -1,8 +1,28 @@
 /**
- * @class PotentialField
+ * @class ForceObj - abstract base force object
+ * @constructor
  */
+ForceObj = function() {
+};
 
-function PotentialField( rows, cols )
+/**
+ * Get force at these coordinates.
+ * @param {Number} x
+ * @param {Number} y
+ */
+ForceObj.prototype.getForce = function(x, y)
+{
+    throw new Error('ForceObj is abstract');
+};
+
+
+/**
+ * @class PotentialField
+ * @constructor PotentialField - initializes an instance of potential field
+ * @param {Number} rows - number of rows
+ * @param {Number} cols - number of cols
+ */
+function PotentialField(rows, cols)
 {
     this.rows = rows;
     this.cols = cols;
@@ -11,22 +31,28 @@ function PotentialField( rows, cols )
     }));
 }
 
-var PF = PotentialField.prototype;
+var PF = PotentialField.prototype = new ForceObj;
+PF.base = ForceObj.prototype;
 
-PF.add = function( other )
+/**
+ * Create a sum of two potential fields.
+ * @param {PotentialField} other other potential field
+ * @return {PotentialField} sum of this and other potential fields.
+ */
+PF.add = function(other)
 {
-    if ( !(other instanceof PotentialField) )
+    if (!(other instanceof PotentialField))
         throw new Error("Can only add potential field to another potential field.");
 
-    if ( other.rows != this.rows || other.cols != this.cols )
+    if (other.rows != this.rows || other.cols != this.cols)
         throw new Error("Cannot add potetntial fields with different dimentions.");
 
     var res = new PotentialField(this.rows, this.cols);
     var i = -1;
-    while ( ++i < this.rows )
+    while (++i < this.rows)
     {
         var j = -1;
-        while ( ++j < this.cols )
+        while (++j < this.cols)
         {
             res.body[i][j] = this.body[i][j].add(other.body[i][j]);
         }
@@ -35,100 +61,108 @@ PF.add = function( other )
     return res;
 };
 
-PF.apply = function( charge )
+/**
+ * Save given charge influence in the field.
+ * @param {Number} x
+ * @param {Number} y
+ * @param {ForceObj} charge
+ */
+PF.apply = function(x, y, charge)
 {
+    if (!(charge instanceof ForceObj))
+        throw new Error('Cannot apply non force object to potential field.');
+
     var i = -1;
-    while ( ++i < this.rows )
+    while (++i < this.rows)
     {
         var j = -1;
-        while ( ++j < this.cols )
+        while (++j < this.cols)
         {
-            this.body[i][j] = this.body[i][j].add(charge.getVector(j, i));
+            this.body[i][j] = this.body[i][j].add(charge.getForce(x, y, j, i));
         }
     }
 
     return this;
 };
 
-PF.getVector = function( x, y )
+/**
+ * Get force at these coordinates.
+ * @param {Number} x
+ * @param {Number} y
+ */
+PF.getForce = function(x, y)
 {
     var x0 = Math.floor(x);
     var x1 = Math.ceil(x);
     var y0 = Math.floor(y);
     var y1 = Math.ceil(y);
 
-    var p = new Point(x, y);
-    var p0 = new Force(new Point(x0, y0), new Vector(0, 0));
-    var p1 = new Force(new Point(x0, y1), new Vector(0, 0));
-    var p2 = new Force(new Point(x1, y0), new Vector(0, 0));
-    var p3 = new Force(new Point(x1, y1), new Vector(0, 0));
+    var a = 0;
+    var force = new Vector(0, 0);
 
-    if ( x0 >= 0 && x0 < this.cols ) {
-        if ( y0 >= 0 && y0 < this.rows ) {
-            p0.vector.x = this.body[y0][x0].x;
-            p0.vector.y = this.body[y0][x0].y;
+    if (x0 >= 0 && x0 < this.cols) {
+        if (y0 >= 0 && y0 < this.rows) {
+            a = (1-(x - x0)) * (1-(y - y0));
+            force = force.add(this.body[y0][x0].mul(a));
         }
 
-        if ( y1 >= 0 && y1 < this.rows ) {
-            p2.vector.x = this.body[y1][x0].x;
-            p2.vector.y = this.body[y1][x0].y;
+        if (y0!=y1&&y1 >= 0 && y1 < this.rows) {
+            a = (1-(x - x0)) *(1- (y1 - y));
+            force = force.add(this.body[y1][x0].mul(a));
         }
     }
 
-    if ( x1 >= 0 && x1 < this.cols ) {
-        if ( y0 >= 0 && y0 < this.rows ) {
-            p1.vector.x = this.body[y0][x1].x;
-            p1.vector.y = this.body[y0][x1].y;
+    if (x0!=x1 && x1 >= 0 && x1 < this.cols) {
+        if (y0 >= 0 && y0 < this.rows) {
+            a = (1-(x1 - x)) * (1-(y - y0));
+            force = force.add(this.body[y0][x1].mul(a));
         }
 
-        if ( y1 >= 0 && y1 < this.rows ) {
-            p3.vector.x = this.body[y1][x1].x;
-            p3.vector.y = this.body[y1][x1].y;
+        if (y0!=y1&&y1 >= 0 && y1 < this.rows) {
+            a = (1-(x1 - x)) * (1-(y1 - y));
+            force = force.add(this.body[y1][x1].mul(a));
         }
     }
 
-    return p0.vector.add(p1.vector.add(p2.vector.add(p3.vector))).div(4);
-
-//
-//    var d0 = p.dist(p0.point);
-//    var d1 = p.dist(p1.point);
-//    var d2 = p.dist(p2.point);
-//    var d3 = p.dist(p3.point);
-//
-//    console.log([p0.point, p1.point, p2.point, p3.point].join('" - "'));
+    return force;
 };
 
-function Charge( x, y, magnitude, reach )
+/**
+ * Create a charge object
+ * @param {Number} centerforce force magnitude at the centre
+ * @param {Number} zeroradius radius (in cells) at which force magnitude is 0.
+ * @constructor
+ */
+function Charge(centerforce, zeroradius)
 {
-    this.x = x;
-    this.y = y;
-    this.m = magnitude;
-    this.reach = reach || this.m * 10;
-    this.r2 = this.reach * this.reach;
+    this.centerforce = centerforce;
+    this.zeroradius = zeroradius;
+    this.r2 = zeroradius * zeroradius;
 }
 
-var C = Charge.prototype;
-C.getVector = function( x, y )
+var C = Charge.prototype = new ForceObj;
+C.base = ForceObj.prototype;
+
+C.getForce = function(x0, y0, x, y)
 {
-    var dx = this.x - x, dy = this.y - y;
+    var dx = x0 - x, dy = y0 - y;
     var d2 = dx * dx + dy * dy;
 
-    var v;
-    if ( d2 > this.r2 )
+    var force;
+    if (d2 >= this.r2)
     {
-        v = new Vector(0, 0);
+        force = new Vector(0, 0);
     }
-    else
-    {
+    else {
         var ang = Math.atan2(dy, dx);
-        var k = this.m * (this.r2 - d2) / this.r2;
-        v = new Vector(k * Math.cos(ang), k * Math.sin(ang));
+        var k = this.centerforce * (this.r2 - d2) / this.r2;
+        force = new Vector(k * Math.cos(ang), k * Math.sin(ang));
     }
 
-    return v;
+    return force;
 };
 
-function Wall( x1, y1, x2, y2, magnitude, reach )
+function Wall(x1, y1, x2, y2, magnitude, reach)
 {
     this.x1 = x1;
     this.x2 = x2;
@@ -144,8 +178,10 @@ function Wall( x1, y1, x2, y2, magnitude, reach )
     this.dy = y2 - y1;
 }
 
-var W = Wall.prototype;
-W.getVector = function( x, y )
+var W = Wall.prototype = new ForceObj;
+W.base = ForceObj.prototype;
+
+W.getForce = function(x, y)
 {
     var A = x - this.x1;
     var B = y - this.y1;
@@ -154,7 +190,7 @@ W.getVector = function( x, y )
     s = s >= 0 ? 1 : -1;
 
     var v;
-    if ( d > this.reach ) {
+    if (d > this.reach) {
         v = new Vector(0, 0);
     }
     else {

@@ -60,7 +60,7 @@
                     <div class="content">
                         <xsl:copy-of select="/page/content"/>
 
-                        <div class="emtpy_footer">
+                        <div class="empty_footer">
                         </div>
                     </div>
                 </div>

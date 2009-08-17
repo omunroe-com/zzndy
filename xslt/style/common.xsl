@@ -33,7 +33,7 @@
                     <div class="content">
                         <canvas id="target" width="800px" height="500px">Convas is not supported in this browser.
                         </canvas>
-                        <div class="emtpy_footer">
+                        <div class="empty_footer">
                         </div>
                     </div>
                 </div>
