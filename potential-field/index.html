@@ -94,8 +94,10 @@
         prev = mouse;
 
 
-            field = new PotentialField(n, m);
-            field.apply((mouse.x - sx / 2) / sx, (mouse.y - sy / 2) / sy, mouseCharge);
+        field = new PotentialField(n, m);
+        field.apply(mouseCharge, (mouse.x - sx / 2) / sx, (mouse.y - sy / 2) / sy);
+        field = base.add(field);
+
 
         obj.vel = obj.vel.add(field.getForce(obj.pos.x, obj.pos.y)).div(2);
         obj.pos.x += obj.vel.x;
@@ -120,6 +122,14 @@
     var base = new PotentialField(n, m);
     var field;
     var mouseCharge = new Charge(-.3, 5);
+    var vwall = new Wall(0, n, .5, 2);
+    var hwall = new Wall(m, 0, .5, 2);
+    var bar = new Wall(m/2,0, .5,2);
+
+    base.apply(vwall, -.01, 0);
+    base.apply(vwall, m-.99 , 0);
+    base.apply(hwall, 0, -.01);
+    base.apply(hwall, 0, n-.99);
 
     var obj = {
         pos:new Point(m / 2, n / 2),
@@ -158,7 +168,7 @@
             .fillRect(-2.5, -2.5, 5, 5)
             .beginPath()
             .moveTo(0, 0)
-            .lineTo(obj.vel.abs * sx*2, 0)
+            .lineTo(obj.vel.abs * sx * 2, 0)
             .stroke()
             .restore();
 

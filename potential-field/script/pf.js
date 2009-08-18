@@ -63,11 +63,11 @@ PF.add = function(other)
 
 /**
  * Save given charge influence in the field.
+ * @param {ForceObj} charge
  * @param {Number} x
  * @param {Number} y
- * @param {ForceObj} charge
  */
-PF.apply = function(x, y, charge)
+PF.apply = function(charge, x, y)
 {
     if (!(charge instanceof ForceObj))
         throw new Error('Cannot apply non force object to potential field.');
@@ -78,7 +78,7 @@ PF.apply = function(x, y, charge)
         var j = -1;
         while (++j < this.cols)
         {
-            this.body[i][j] = this.body[i][j].add(charge.getForce(x, y, j, i));
+            this.body[i][j] = this.body[i][j].add(charge.getForce(j, i, x, y));
         }
     }
 
@@ -102,24 +102,24 @@ PF.getForce = function(x, y)
 
     if (x0 >= 0 && x0 < this.cols) {
         if (y0 >= 0 && y0 < this.rows) {
-            a = (1-(x - x0)) * (1-(y - y0));
+            a = (1 - (x - x0)) * (1 - (y - y0));
             force = force.add(this.body[y0][x0].mul(a));
         }
 
-        if (y0!=y1&&y1 >= 0 && y1 < this.rows) {
-            a = (1-(x - x0)) *(1- (y1 - y));
+        if (y0 != y1 && y1 >= 0 && y1 < this.rows) {
+            a = (1 - (x - x0)) * (1 - (y1 - y));
             force = force.add(this.body[y1][x0].mul(a));
         }
     }
 
-    if (x0!=x1 && x1 >= 0 && x1 < this.cols) {
+    if (x0 != x1 && x1 >= 0 && x1 < this.cols) {
         if (y0 >= 0 && y0 < this.rows) {
-            a = (1-(x1 - x)) * (1-(y - y0));
+            a = (1 - (x1 - x)) * (1 - (y - y0));
             force = force.add(this.body[y0][x1].mul(a));
         }
 
-        if (y0!=y1&&y1 >= 0 && y1 < this.rows) {
-            a = (1-(x1 - x)) * (1-(y1 - y));
+        if (y0 != y1 && y1 >= 0 && y1 < this.rows) {
+            a = (1 - (x1 - x)) * (1 - (y1 - y));
             force = force.add(this.body[y1][x1].mul(a));
         }
     }
@@ -143,8 +143,10 @@ function Charge(centerforce, zeroradius)
 var C = Charge.prototype = new ForceObj;
 C.base = ForceObj.prototype;
 
-C.getForce = function(x0, y0, x, y)
+C.getForce = function(x, y, x0, y0)
 {
+    x0 = x0 || 0;
+    y0 = y0 || 0;
     var dx = x0 - x, dy = y0 - y;
     var d2 = dx * dx + dy * dy;
 
@@ -162,40 +164,36 @@ C.getForce = function(x0, y0, x, y)
     return force;
 };
 
-function Wall(x1, y1, x2, y2, magnitude, reach)
+Wall = function(dx, dy, centerforce, zeroradius)
 {
-    this.x1 = x1;
-    this.x2 = x2;
-    this.y1 = y1;
-    this.y2 = y2;
-
-    this.m = magnitude;
-    this.reach = reach || this.m * 10;
-    this.r2 = this.reach * this.reach;
-    this.len = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-
-    this.dx = x2 - x1;
-    this.dy = y2 - y1;
-}
+    this.dx = dx;
+    this.dy = dy;
+    this.centerforce = centerforce;
+    this.zeroradius = zeroradius;
+    this.len = Math.sqrt(dx*dx+dy*dy);
+};
 
 var W = Wall.prototype = new ForceObj;
 W.base = ForceObj.prototype;
 
-W.getForce = function(x, y)
+W.getForce = function(x, y, x0, y0)
 {
-    var A = x - this.x1;
-    var B = y - this.y1;
+    x0 = x0 || 0;
+    y0 = y0 || 0;
+
+    var A = x - x0;
+    var B = y - y0;
     var s = A * this.dy - this.dx * B;
     var d = Math.abs(s) / this.len;
     s = s >= 0 ? 1 : -1;
 
     var v;
-    if (d > this.reach) {
+    if (d > this.zeroradius) {
         v = new Vector(0, 0);
     }
     else {
         var ang = Math.atan2(this.dy, this.dx) - s * Math.PI / 2;
-        var k = this.m * (this.reach - d) / this.reach;
+        var k = this.centerforce * (this.zeroradius - d) / this.zeroradius;
         v = new Vector(k * Math.cos(ang), k * Math.sin(ang));
     }
     return v;
