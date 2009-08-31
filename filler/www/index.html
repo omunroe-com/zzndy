@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Filler</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <meta name="keywords" content="filler, 7colors, javascript, game"/>
+
+    <link rel="stylesheet" href="style/common/pixelless.css" type="text/css"/>
+    <link rel="stylesheet" href="style/filler.css" type="text/css"/>
+
+    <script type="text/javascript" src="script/common/util.js"></script>
+    <script type="text/javascript" src="script/common/domgen.js"></script>
+    <script type="text/javascript" src="script/common/canvas.js"></script>
+    <script type="text/javascript" src="script/common/color.js"></script>
+    <script type="text/javascript" src="script/logic.js"></script>
+    <script type="text/javascript" src="script/presentation.js"></script>
+    <link rel="shortcut icon" href="img/filler-24.png" type="image/png"/>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1 title="7colors game">JavaScript Filler</h1>
+    </div>
+
+    <div class="content">
+        <div class="menu" id="prompt-multiplayer">
+            <a name="multiplayer" href="index.html#multiplayer" onclick="toggleMultiplayerMenu();return false;">Start
+                mutliplayer</a>
+        </div>
+        <div class="menu" id="choose-multiplayer" style="display:none">
+            <a name="start" href="index.html#start" onclick="create();return false;">Start a new game</a>
+            or
+            <a name="join" href="index.html#join" onclick="join();return false;">join</a>?
+        </div>
+
+        <div style="float:left;width:800px;padding-left:2em">
+            <canvas id="main-filler-canvas" width="800px" height="500px"></canvas>
+            <div id="player"></div>
+            <div id="computer"></div>
+            <div id="message"></div>
+        </div>
+        <div id="colors"></div>
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy;
+        <script type="text/javascript">
+            var menu1 = document.getElementById('prompt-multiplayer');
+            var menu2 = document.getElementById('choose-multiplayer');
+
+            function toggleMultiplayerMenu(displayRoot)
+            {
+                menu1.style.display = displayRoot ? 'block' : 'none';
+                menu2.style.display = displayRoot ? 'none' : 'block';
+            }
+
+            initDomGen(['div','p','a']);
+
+            var comet = null;
+            var popup = null;
+
+            function create()
+            {
+                popup = $div({'class':'popup'}, [
+                    $div({'class':'content'}, [
+                        $div({'class':'title', 'id':'title'}, 'Starting new multiplayer game ...'),
+                        $p({'class':'message','id':'msg'}, 'Please wait ...'),
+                        $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')])
+                    ])]);
+
+                comet = Comet.open('push.php', {a:'start'});
+                document.body.appendChild(popup);
+            }
+
+            function cancel()
+            {
+                remove(popup);
+                remove(comet);
+                toggleMultiplayerMenu(true);
+            }
+
+            function remove(el)
+            {
+                if (el != null)
+                {
+                    el.parentNode.removeChild(el);
+                    el = null;
+                }
+            }
+
+            function reportCode(code)
+            {
+                var e = document.getElementById('msg');
+                e.innerHTML = 'Game key is <b title="' + code.toUpperCase() + ' - case insensitive">' + code.toUpperCase() + '</b>. Share this key with another party to play with them.';
+
+                e = document.getElementById('title');
+                e.innerHTML = e.innerHTML.replace(/ \.{3}$/, '');
+            }
+
+            function join()
+            {
+            }
+
+            var a = ['and', 'mail'].join('y@g');
+            var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
+            document.write(b.join(''));
+        </script>
+        2009
+    </div>
+</div>
+<script type="text/javascript" src="script/start.js"></script>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+    _uacct = "UA-1627745-1";
+    urchinTracker();
+</script>
+</body>
+</html>
