@@ -184,7 +184,7 @@ function sqr( a ) {
     };
 
     /**
-     * Format is {name[:{-|0}[width[.decimal]][base]]}
+     * Format is {name[:{-|0}[width[.decimal]][base]][casing]}
      * where
      *  name        name of a field, can also be in form "property[10].another.prop[10][11].length"
      *     -           forces right align *
@@ -197,6 +197,9 @@ function sqr( a ) {
      *         b            binary
      *         n            verbose `base`, converts 1 to 1-st, 2 to 2-nd and so on
      *         r            roman numerals
+     * casing       enforce character casing
+     *         u            uppercase
+     *         l            lowercase
      *
      * *  - useless w/o width
      * ** - for numbers only
@@ -214,23 +217,23 @@ function sqr( a ) {
             var r = this;
             for( var k in a ) {
                 if( typeof a[k] == 'function' ) continue;
-                var rx = new RegExp('\\{' + k + '\\}', 'g');
+                var rx = new RegExp('\\$?\\{' + k + '\\}', 'g');
                 r = r.replace(rx, a[k]);
             }
             return r;
         }
 
         var res = simpleFormat.call(this, fmtObj);
-        var opts = '(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?';
+        var opts = '(?:\\.|\\[\\d+\\])?[\\w\\[\\]\\.]*)(?::(?:(-|0)?(\\d+)(?:\\.(\\d+))?)?(r|n|x|o|b)?(u|l)?';
 
         for( var name in fmtObj ) {
             var value, backUp = [];
             value = backUp[0] = fmtObj[name];
             if( typeof value == 'function' ) continue;
-            var rx = new RegExp('\\{(' + name + opts + ')?\\}');
+            var rx = new RegExp('\\$?\\{(' + name + opts + ')?\\}');
             var num = backUp[1] = new Number(value), m;
             while( m = res.match(rx) ) {
-                var match = m[0], path = m[1], align = m[2], width = m[3], deci = m[4], base = m[5];
+                var match = m[0], path = m[1], align = m[2], width = m[3], deci = m[4], base = m[5], casing = m[6];
                 var useBackup = !!(path || base);
                 if( path ) {
                     value = getValue.call(fmtObj, path);
@@ -242,6 +245,10 @@ function sqr( a ) {
                     case 'x': value = num.toString(16); break;
                     case 'n': value = num.toPos(); break;
                     case 'r': value = num.toRoman(); break;
+                }
+                switch (casing)                        {
+                case 'u':value = value.toUpperCase();break;
+                case 'l':value = value.toLowerCase();break;
                 }
 
                 try {
