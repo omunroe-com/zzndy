@@ -59,7 +59,7 @@
 .popup .content
 {
     width: 400pt;
-    padding: 11em 2em 2em 2em;
+    padding: 11em 2em 3em 2em;
     background-color: rgba(0,0,0,.6);
     -moz-border-radius: 0 0 1em 1em;
     -webkit-border-radius: 0 0 1em 1em;
@@ -76,6 +76,14 @@
     font-family:monospace;
 }
 
+.popup input
+{
+    color:white;
+    font-family:monospace;
+    background-color: rgba(0,0,0,.5);
+    border-color: rgba(255, 255, 255, .2) rgba(255, 255, 255, .2) rgba(255, 255, 255, .6) rgba(255, 255, 255, .2)
+}
+
 .popup .title
 {
     font-size: 130%;
@@ -84,7 +92,16 @@
     margin-bottom: 1em;
 }
 
-.popup .cancel
+.popup .ok, .popup .cancel
 {
     text-align:right;
+    float:right;
+    margin-left: 2em;
+}
+
+.popup .ok.disabled a
+{
+    opacity: .3;
+    cursor:default;
+    color:silver; 
 }

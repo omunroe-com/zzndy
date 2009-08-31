@@ -9,9 +9,9 @@ var default_my = 24;
 var pad = .945;
 var margin = 1;
 
-var shade_high = 'rgba(255, 255, 255, .14)';
-var shade_left = 'rgba(0, 0, 0, .035)';
-var shade_bott = 'rgba(0, 0, 0, .15)';
+var shade_high = 'rgba(255, 255, 255, .12)';
+var shade_left = 'rgba(0, 0, 0, .05)';
+var shade_bott = 'rgba(0, 0, 0, .1)';
 
 function Filler(canvas, mx, my)
 {

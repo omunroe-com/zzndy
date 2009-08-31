@@ -57,13 +57,15 @@
                 menu2.style.display = displayRoot ? 'none' : 'block';
             }
 
-            initDomGen(['div','p','a']);
+            initDomGen(['div','p','a', 'input']);
 
             var comet = null;
             var popup = null;
 
             function create()
             {
+                comet = Comet.open('push.php', {a:'start'});
+
                 popup = $div({'class':'popup'}, [
                     $div({'class':'content'}, [
                         $div({'class':'title', 'id':'title'}, 'Starting new multiplayer game ...'),
@@ -71,7 +73,7 @@
                         $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')])
                     ])]);
 
-                comet = Comet.open('push.php', {a:'start'});
+
                 document.body.appendChild(popup);
             }
 
@@ -102,6 +104,58 @@
 
             function join()
             {
+                popup = $div({'class':'popup'}, [
+                    $div({'class':'content'}, [
+                        $div({'class':'title', 'id':'title'}, 'Enter game key'),
+                        $p({'class':'message','id':'msg'}, ['The shared key is ',
+                            $input({'id':'key', 'type':'text', 'maxlength':5,'style':'width:8ex', 'onkeypress':'disableEvent(event)', 'onkeyup':'updateOkLink()'})
+                        ]),
+                        $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')]),
+                        $div({'class':'ok disabled'}, [$a({'id':'join-ok', 'href':'#ok','onclick':'ok();return false;'}, 'Ok')])
+                    ])]);
+
+                document.body.appendChild(popup);
+                document.getElementById("key").focus();
+            }
+
+            function disableEvent(e)
+            {
+                e.cancelBubble = true;
+            }
+
+            function updateOkLink()
+            {
+                var key = document.getElementById("key");
+                okLinkClass((key.value.length == 5) ? 'ok' : 'ok disabled');
+            }
+
+            function okLinkClass(value)
+            {
+                var link = document.getElementById("join-ok");
+                if (link != null)
+                {
+                    var parent = link.parentNode;
+                    if (parent != null)
+                    {
+                        if (value !== undefined)
+                            parent.className = value;
+                        return parent.className;
+                    }
+                }
+                return null;
+            }
+
+            function ok()
+            {
+                var cls = okLinkClass();
+                if (cls == null || cls.match(/\bdisabled\b/)) return;
+                
+                okLinkClass('ok disabled');
+
+                var e = document.getElementById('msg');
+                e.innerHTML = 'The shared key is <b>${key:u}</b>. Waiting for the server ...'.fmt({'key':document.getElementById("key").value});
+
+                // TODO: Send join request
             }
 
             var a = ['and', 'mail'].join('y@g');
