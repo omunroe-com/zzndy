@@ -682,94 +682,6 @@ Module FISCAL1B
 
         '-----------------------------------------------------------------------
         'THIS IS A GOSUB
-7000:   'THIS SUBROUTINE CALCULATES DEPLETION
-7010:   ReDim DPC(LG)
-7020:   If DLT = 0 Then
-            GoTo 7290
-        End If
-7030:   iXY = 0
-        TP1 = 0
-        TP2 = 0
-
-7040:   iXY = iXY + 1
-7050:   If iXY > DLT Then GoTo 7290
-7060:   If FVAR(iX) = sDL(iXY) Then GoTo 7080
-7070:   GoTo 7040
-
-
-
-7080:   'FOUND A MATCH
-
-        Dim bOil As Boolean
-        Dim bGas As Boolean
-
-        bOil = False
-        bGas = False
-
-        If TD(iX, 2) = "ALL" Then
-            bOil = True
-            bGas = True
-        ElseIf TD(iX, 2) = "OIL" Then
-            bOil = True
-        ElseIf TD(iX, 2) = "GAS" Then
-            bGas = True
-        End If
-
-
-7090:   For ixz = 1 To LG
-7100:       If DL(iXY, 2) = 1 Then TP1 = REV(ixz) * (DL(iXY, 1) / 100)
-7110:       If DL(iXY, 2) = 2 Then TP1 = (REV(ixz) - DDT(ixz, 0)) * (DL(iXY, 1) / 100)
-7120:       If DL(iXY, 2) = 3 Then TP1 = DL(iXY, 1) * PCE(ixz) * (1 - PARTRATE(ixz)) * WIN(ixz)
-            If DL(iXY, 2) = 16 Then TP1 = EquivalencyVolumeProduction(ixz, bOil, bGas) * (DL(iXY, 1) / 100)
-
-7130:       If DL(iXY, 5) = 1 Then TP2 = REV(ixz) * (DL(iXY, 4) / 100)
-7140:       If DL(iXY, 5) = 2 Then TP2 = (REV(ixz) - DDT(ixz, 0)) * (DL(iXY, 4) / 100)
-7150:       If DL(iXY, 5) = 3 Then TP2 = DL(iXY, 4) * PCE(ixz) * (1 - PARTRATE(ixz)) * WIN(ixz)
-            If DL(iXY, 5) = 16 Then TP2 = EquivalencyVolumeProduction(ixz, bOil, bGas) * (DL(iXY, 4) / 100)
-
-
-
-7200:       If DL(iXY, 3) = 1 Then GoTo 7250
-
-7210:       'USE GREATER OF TWO
-7220:       If TP1 >= TP2 Then DPC(ixz) = TP1
-7230:       If TP2 > TP1 Then DPC(ixz) = TP2
-7240:       GoTo 7275
-
-7250:       'USED LESSER OF TWO
-7260:       If TP1 <= TP2 Then DPC(ixz) = TP1
-7270:       If TP2 < TP1 Then DPC(ixz) = TP2
-7275:       If DPC(ixz) < 0 Then DPC(ixz) = 0
-7280:   Next ixz
-
-        Dim RECOUP(LG) As Single
-
-        ' CHECK FOR RECOUPMENT
-        If DL(iXY, 6) > 0.0! Then
-            iPeriod = Int(DL(iXY, 8))
-            If iPeriod <= 0.0! Then
-                iPeriod = 1
-            End If
-            For ixz = 1 To LG
-                AMTPER = (DPC(ixz) * (DL(iXY, 6) / 100)) / iPeriod
-                iBGYE = ixz + Int(DL(iXY, 7))
-                iENYE = iBGYE + iPeriod - 1
-                For iXZA = iBGYE To iENYE
-                    If iXZA <= LG Then
-                        RECOUP(iXZA) = RECOUP(iXZA) + AMTPER
-                    Else
-                        RECOUP(LG) = RECOUP(LG) + AMTPER
-                    End If
-                Next iXZA
-            Next ixz
-            For ixz = 1 To LG
-                DPC(ixz) = DPC(ixz) - RECOUP(ixz)
-            Next ixz
-        End If
-        'UPGRADE_NOTE: Erase was upgraded to System.Array.Clear. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
-        System.Array.Clear(RECOUP, 0, RECOUP.Length)
-7290:   'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        Return
         '--------------------------------------------------------------------
 10000:  ' LOOP THRU TD$() AND PROCESS DATA
 
@@ -961,7 +873,7 @@ Module FISCAL1B
 
         If TD(iX, 15) <> "" Then 'USE CALC COLUMNS INSTEAD OF STANDARD METHOD
             'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-			GoSub 28000 'SET OTHER VARIABLES SO VARIABLE PAGE WILL LOOK OK
+            x28000(iX) 'SET OTHER VARIABLES SO VARIABLE PAGE WILL LOOK OK
 
             'If bDebugging Then
             '  Open "calc.log" For Append As #17
@@ -2182,7 +2094,7 @@ ReEnterWIN:
         ' Check to see if this variable is ring fenced
         ' and branch to the ring fence routine if it is.
         'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-		GoSub FiscalDef_VariableIsRingFencedCheck
+        l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
         If l_FiscalVariableIsRingFenced = True Then GoTo 10220
         ' End (C0640)
 
@@ -2288,7 +2200,7 @@ ReEnterWIN:
                     ' Check to see if this variable is ring fenced
                     ' and branch to the ring fence routine if it is.
                     'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-					GoSub FiscalDef_VariableIsRingFencedCheck
+                    l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
                     If l_FiscalVariableIsRingFenced = True Then GoTo 10220
                     ' End (C0640)
                     CalcUKRoyLiability(iX)
@@ -2298,7 +2210,7 @@ ReEnterWIN:
                     ' Check to see if this variable is ring fenced
                     ' and branch to the ring fence routine if it is.
                     'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-					GoSub FiscalDef_VariableIsRingFencedCheck
+                    l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
                     If l_FiscalVariableIsRingFenced = True Then GoTo 10220
                     ' End (C0640)
                     CalcUKRoyaltyPaid(iX)
@@ -2308,7 +2220,7 @@ ReEnterWIN:
                     ' Check to see if this variable is ring fenced
                     ' and branch to the ring fence routine if it is.
                     'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-					GoSub FiscalDef_VariableIsRingFencedCheck
+                    l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
                     If l_FiscalVariableIsRingFenced = True Then GoTo 10220
                     ' End (C0640)
                     CalcPRTPaid(iX)
@@ -2318,7 +2230,7 @@ ReEnterWIN:
                     ' Check to see if this variable is ring fenced
                     ' and branch to the ring fence routine if it is.
                     'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-					GoSub FiscalDef_VariableIsRingFencedCheck
+                    l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
                     If l_FiscalVariableIsRingFenced = True Then GoTo 10220
                     ' End (C0640)
                     CalcPRTInterest(iX)
@@ -2345,7 +2257,7 @@ ReEnterWIN:
             ' Check to see if this variable is ring fenced
             ' and branch to the ring fence routine if it is.
             'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-			GoSub FiscalDef_VariableIsRingFencedCheck
+            l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
             If l_FiscalVariableIsRingFenced = True Then GoTo 10220
             ' End (C0640)
 
@@ -2358,7 +2270,7 @@ ReEnterWIN:
             ' End If
 
             'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-			GoSub 28000 'SET OTHER VARIABLES SO VARIABLE PAGE WILL LOOK OK
+            x28000(iX) 'SET OTHER VARIABLES SO VARIABLE PAGE WILL LOOK OK
 
             ReDim DDT(LG, 6) '0-5 is all we need
             ReDim Lcf(LG)
@@ -2382,7 +2294,7 @@ ReEnterWIN:
         If IsVariableLinked(TD(iX, 1)) Then
 
             'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-			GoSub FiscalDef_VariableIsRingFencedCheck
+            l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
             If l_FiscalVariableIsRingFenced = True Then GoTo 10220
 
             wksCurrent = LoadExcelWorksheet(TD(iX, 1))
@@ -2946,7 +2858,96 @@ ReEnterWIN:
 
             If TD(iX, i + 7) = "DPL" Then 'CALCULATE DEPLETION
                 'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-				GoSub 7000
+                'GoSub 7000
+
+7000:           'THIS SUBROUTINE CALCULATES DEPLETION
+7010:           ReDim DPC(LG)
+7020:           If DLT = 0 Then
+                    GoTo 7290
+                End If
+7030:           iXY = 0
+                TP1 = 0
+                TP2 = 0
+
+7040:           iXY = iXY + 1
+7050:           If iXY > DLT Then GoTo 7290
+7060:           If FVAR(iX) = sDL(iXY) Then GoTo 7080
+7070:           GoTo 7040
+
+
+
+7080:           'FOUND A MATCH
+
+                Dim bOil As Boolean
+                Dim bGas As Boolean
+
+                bOil = False
+                bGas = False
+
+                If TD(iX, 2) = "ALL" Then
+                    bOil = True
+                    bGas = True
+                ElseIf TD(iX, 2) = "OIL" Then
+                    bOil = True
+                ElseIf TD(iX, 2) = "GAS" Then
+                    bGas = True
+                End If
+
+
+7090:           For ixz = 1 To LG
+7100:               If DL(iXY, 2) = 1 Then TP1 = REV(ixz) * (DL(iXY, 1) / 100)
+7110:               If DL(iXY, 2) = 2 Then TP1 = (REV(ixz) - DDT(ixz, 0)) * (DL(iXY, 1) / 100)
+7120:               If DL(iXY, 2) = 3 Then TP1 = DL(iXY, 1) * PCE(ixz) * (1 - PARTRATE(ixz)) * WIN(ixz)
+                    If DL(iXY, 2) = 16 Then TP1 = EquivalencyVolumeProduction(ixz, bOil, bGas) * (DL(iXY, 1) / 100)
+
+7130:               If DL(iXY, 5) = 1 Then TP2 = REV(ixz) * (DL(iXY, 4) / 100)
+7140:               If DL(iXY, 5) = 2 Then TP2 = (REV(ixz) - DDT(ixz, 0)) * (DL(iXY, 4) / 100)
+7150:               If DL(iXY, 5) = 3 Then TP2 = DL(iXY, 4) * PCE(ixz) * (1 - PARTRATE(ixz)) * WIN(ixz)
+                    If DL(iXY, 5) = 16 Then TP2 = EquivalencyVolumeProduction(ixz, bOil, bGas) * (DL(iXY, 4) / 100)
+
+
+
+7200:               If DL(iXY, 3) = 1 Then GoTo 7250
+
+7210:               'USE GREATER OF TWO
+7220:               If TP1 >= TP2 Then DPC(ixz) = TP1
+7230:               If TP2 > TP1 Then DPC(ixz) = TP2
+7240:               GoTo 7275
+
+7250:               'USED LESSER OF TWO
+7260:               If TP1 <= TP2 Then DPC(ixz) = TP1
+7270:               If TP2 < TP1 Then DPC(ixz) = TP2
+7275:               If DPC(ixz) < 0 Then DPC(ixz) = 0
+7280:           Next ixz
+
+                Dim RECOUP(LG) As Single
+
+                ' CHECK FOR RECOUPMENT
+                If DL(iXY, 6) > 0.0! Then
+                    iPeriod = Int(DL(iXY, 8))
+                    If iPeriod <= 0.0! Then
+                        iPeriod = 1
+                    End If
+                    For ixz = 1 To LG
+                        AMTPER = (DPC(ixz) * (DL(iXY, 6) / 100)) / iPeriod
+                        iBGYE = ixz + Int(DL(iXY, 7))
+                        iENYE = iBGYE + iPeriod - 1
+                        For iXZA = iBGYE To iENYE
+                            If iXZA <= LG Then
+                                RECOUP(iXZA) = RECOUP(iXZA) + AMTPER
+                            Else
+                                RECOUP(LG) = RECOUP(LG) + AMTPER
+                            End If
+                        Next iXZA
+                    Next ixz
+                    For ixz = 1 To LG
+                        DPC(ixz) = DPC(ixz) - RECOUP(ixz)
+                    Next ixz
+                End If
+                'UPGRADE_NOTE: Erase was upgraded to System.Array.Clear. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
+                System.Array.Clear(RECOUP, 0, RECOUP.Length)
+7290:
+                'end gosub 7000
                 For j = 1 To LG
                     DDT(j, i) = DPC(j)
                     DDT(j, 0) = DDT(j, 0) + DDT(j, i)
@@ -3219,7 +3220,7 @@ ReEnterWIN:
 3121:       TAX(j) = VarRates(j)
         Next j
 23609:  'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-		GoSub finishit
+        finishit(iX, l_CeilingAmounts, param, GTax, TAX, VarRates, IncDedBlank, cdt, ald, Lcf, losscf, LCT, ipxy, iBGN, iENDE, TMA, itl, num, DUMC, DUMD, DUME, iFirstLoop)
         '-------------------------------------------------------------------------
         '3-9-93 OXY Database item
         If FVAR(iX) = "UST" Then
@@ -3228,337 +3229,7 @@ ReEnterWIN:
 
         '-------------------------------------------------------------------------
 
-        GoTo 25000
-
-        '--------------------------------------------------------------------
-finishit:
-
-        ' 19 Nov 2002 JWD (C0633)
-        ' See if a ceiling on loss carry forward is defined
-        ' for the variable.
-
-        l_CeilingIsDefined = zzzGetCeilingAmounts(iX, l_CeilingAmounts)
-
-        If Not l_CeilingIsDefined Then
-            ' If no ceiling, clear any data that might
-            ' be in the ceiling amounts vector
-            For j = 1 To LG
-                l_CeilingAmounts(j) = 0
-            Next j
-        End If
-
-        ' End (C0633)
-
-
-        ' NOW CALCULATE NET AMOUNTS
-        Dim l_MaxReducibleAmount As Single
-        For j = 1 To LG
-            'If param% >= 59 And param% <= 61 Then       ' for IRR
-            ' 27 May 2003 JWD (C0700) Replace numbers with symbols
-            If param >= gc_nRtPrmRTO And param <= gc_nRtPrmIRR Then ' for IRR
-                GTax(j) = VarRates(j)
-                '           Rev(j) = INC1(j)
-                '           Ddt(j, 1) = DED1(j)
-                '           FOR jk = 2 TO 5
-                '              Ddt(j, jk) = 0
-                '           NEXT jk
-                '- 6-4-92 ---------------------
-11116:
-                If IncDedBlank = -1 Then 'set before call to RateCalc
-11117:              REV(j) = inc1(j)
-11118:              DDT(j, 1) = ded1(j)
-                    For jk = 2 To 5
-11119:                  DDT(j, jk) = 0
-                    Next jk
-                End If
-
-
-24040:          ''6-4-92 RLD(j) = INC1(j) - DED1(j)
-
-24050:          If RLD(j) <> 0 Then
-24060:              TAX(j) = (GTax(j) / RLD(j)) * 100
-                Else
-24070:              TAX(j) = 0
-                End If
-            Else ' normal calculations
-24080:          GTax(j) = RLD(j) * (TAX(j) / 100)
-                'If bDebugging Then
-                '  Open "calc.log" For Append As #17
-                '  Print #17, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-                '  Print #17, "   24080 year = "; j; "RLD("; j; ") = "; RLD(j); "  Tax = "; TAX(j); "   GTax(j) = "; GTax(j)
-                '  Close #17
-                'End If
-
-            End If
-
-            ' 29 May 2003 JWD (C0703)
-            ' Change to unconditionally deduct the
-            ' credits. Test for cost recovery situation
-            ' is now done after line 23010. This test
-            ' prevented certain legitimate credits from
-            ' reducing the amount.
-24352:      'If Not bDPCR Then
-            '   GTax(j) = GTax(j) - cdt(j)
-            'End If
-            GTax(j) = GTax(j) - cdt(j)
-24360:      ald(j) = 0
-            Lcf(j) = 0
-            RVN(j, iX) = GTax(j)
-            If iX = 4 Or iX = 3 Then
-                Debug.Print("RVN(j, iX) = GTax(j) = " & iX & " = " & RVN(ipxy, iX))
-            End If
-
-24362:      If losscf < 0 Then GoTo 24450
-
-24364:      'THIS IS FOR LOSS CARRY FORWARDS
-24366:      If losscf >= LG Then
-                LCT = LG
-24368:      ElseIf losscf < LG Then
-                LCT = Int(losscf)
-            End If
-24370:      If LCT > 0 Then GoTo 24378
-24372:      Lcf(j) = 0
-24374:      If RVN(j, iX) < 0 Then RVN(j, iX) = 0
-24376:      GoTo 24432
-
-24378:      If RVN(j, iX) >= 0 Then GoTo 24388
-24380:      'THERE IS A TAX LOSS
-24382:      ald(j) = 0.0! - RVN(j, iX)
-24384:      RVN(j, iX) = 0
-24386:      GoTo 24416
-
-24388:      'THERE IS A POSITVE TAX THIS YEAR, CHECK FOR PRIOR YEAR LCF
-24390:      iBGN = j - LCT
-24392:      If iBGN < 1 Then iBGN = 1
-24394:      iENDE = j - 1
-24396:      If j = 1 Then GoTo 24432
-
-            ' 19 Nov 2002 JWD (C0633) Add block to apply ceiling on
-            ' loss carry forward.
-            ' Did it this way to minimize impact on existing code.
-            ' If no ceiling definition, the normal path is followed.
-            If l_CeilingIsDefined Then
-                ' Determine maximum reduction of current year tax
-                TMA = RVN(j, iX) - l_CeilingAmounts(j)
-                If TMA > 0 Then
-                    ' Ceiling is in effect, only some tax can be offset
-                    l_MaxReducibleAmount = l_CeilingAmounts(j)
-                    ' Go ahead and reduce the tax by the maximum
-                    RVN(j, iX) = TMA
-                Else
-                    ' Didn't hit the ceiling, all tax may be offset
-                    l_MaxReducibleAmount = RVN(j, iX)
-                    ' Go ahead and reduce the tax
-                    RVN(j, iX) = 0
-                    If iX = 4 Or iX = 3 Then
-                        Debug.Print("RVN(j, iX) = GTax(j) = " & iX & " = " & RVN(ipxy, iX))
-                    End If
-                End If
-
-                For js = iBGN To iENDE
-                    ' Check each year prior to this for losses
-                    ' that can be used to reduce the current year
-                    ' tax.
-                    If l_MaxReducibleAmount > 0 Then
-                        ' Still have some tax that can be reduced
-                        If ald(js) > 0 Then
-                            ' Still have some prior year loss to offset with
-                            TMA = l_MaxReducibleAmount - ald(js)
-                            If TMA > 0 Then
-                                ' All of the prior year's loss is used to reduce tax...
-                                ald(js) = 0
-                                ' ... and some tax remains.
-                                l_MaxReducibleAmount = TMA
-                            Else
-                                ' All of the current year tax is reduced
-                                ' by the prior year loss, and still some
-                                ' prior year loss remains.
-                                ald(js) = 0 - TMA
-                                l_MaxReducibleAmount = 0
-                            End If
-                        End If
-                    End If
-                Next js
-
-                ' At this point, if any reducible amount remains,
-                ' it is added back to any tax that was not reducible
-                ' (due to imposition of the ceiling).
-                If l_MaxReducibleAmount > 0 Then
-                    RVN(j, iX) = RVN(j, iX) + l_MaxReducibleAmount
-                    If iX = 4 Or iX = 3 Then
-                        Debug.Print("RVN(j, iX) = RVN(j, iX) + l_MaxReducibleAmount = " & iX & " = " & RVN(ipxy, iX))
-                    End If
-                End If
-
-                ' Bypass normal block to go to loop accumulating
-                ' current period's amount that is carried forward.
-                GoTo 24416
-            End If
-            ' End (C0633)
-
-24398:      For js = iBGN To iENDE
-24400:          If RVN(j, iX) = 0 Then GoTo 24414
-24402:          If ald(js) <= 0 Then GoTo 24414
-24404:          TMA = RVN(j, iX) - ald(js)
-24406:          If TMA >= 0 Then GoTo 24412
-24408:          ald(js) = 0.0! - TMA : RVN(j, iX) = 0
-                Debug.Print("ald(js) = 0! - TMA: RVN(j, iX) = 0")
-                Debug.Print(RVN(j, iX))
-24410:          GoTo 24414
-24412:          ald(js) = 0 : RVN(j, iX) = TMA
-                Debug.Print("ald(js) = 0: RVN(j, iX) = TMA")
-                Debug.Print(RVN(j, iX))
-24414:      Next js
-
-24416:      'TOTAL THE LOSS CARRY FORWARDS FOR THIS YEAR
-24418:      iBGN = j - LCT + 1
-24420:      If iBGN < 1 Then iBGN = 1
-            For js = iBGN To j
-24424:          If itl <= 1 Then GoTo 24428
-24426:          ald(js) = ald(js) * (1 + (Inflate(j, PPR) / 100)) ' this inflates tax losses
-24428:          Lcf(j) = Lcf(j) + ald(js)
-24430:      Next js
-24432:      GoTo 24470
-
-24450:      'CREDIT TAXES CURRENTLY
-24460:      Lcf(j) = 0
-            RVN(j, iX) = GTax(j)
-24470:  Next j
-        '--------------------------------------------------------------------
-        'Prepaid / Deferred Tax section
-
-        'search PD() for the current FVAR$()
-        num = 0
-        For iQ = 1 To PDTT
-            If sPDV(iQ) = FVAR(iX) Then
-                num = iQ
-                Exit For
-            End If
-        Next iQ
-        If num = 0 Or num > PDTT Then
-            GoTo 24480 'var not in PD()
-        End If
-
-        'num% now points to PD() rec that matches
-        If PD(num, 1) <= 0 Or PD(num, 2) <= 0 Then '0 prepaid
-            ReDim DUMC(LG)
-            ReDim DUMD(LG)
-            ReDim DUME(LG)
-            If PD(num, 4) > 0 And PD(num, 5) > 0 Then 'deferred% > 0 & years > 0
-                'we do this part if there is NO prepaid % and there is
-                '  a deferred % and deferred years
-                For j = 1 To LG
-                    TEMP = RVN(j, iX) * ((100 - PD(num, 4)) / 100) 'amount of current year liability that is NOT deferred
-                    If (j + Int(PD(num, 5))) > LG Then
-                        DUMC(LG) = DUMC(LG) + (RVN(j, iX) - TEMP) 'amount of current year liability that IS deferred
-                    Else
-                        DUMC(j + Int(PD(num, 5))) = DUMC(j + Int(PD(num, 5))) + (RVN(j, iX) - TEMP)
-                    End If
-                    RVN(j, iX) = DUMC(j) + TEMP
-                Next j
-            End If
-        Else 'use prepaid and deferred
-            'DUMC() is the annual payments (prepaid $)
-            'DUMD() is amount (subject to deferral) paid this year
-            'DUME() array of deferred Balances
-            ReDim DUMC(LG)
-            ReDim DUMD(LG)
-            ReDim DUME(LG)
-
-            For j = 1 To LG
-                oblig = 0 'current year obligation (before prepayment or deferral)
-                SumTax = 0 'total tax liability for prior n years
-                avgtax = 0 'average tax liability for prior n years
-                prepaid = 0 'prepaid amount for the current year
-                balance = 0 'deferred amount from current year
-                balcur = 0
-                baldef = 0
-                defyear = 0
-
-                'determine average tax
-                If PD(num, 3) = 1 Then 'YES
-                    iFirstLoop = j - Int(PD(num, 2)) + 1
-                    iEndLoop = j
-                Else 'NO
-                    iFirstLoop = j - Int(PD(num, 2))
-                    iEndLoop = j - 1
-                End If
-                If iFirstLoop <= 1 Then
-                    iFirstLoop = 1
-                End If
-
-                'oblig is the $ due if no deferral or prepayment is done
-                oblig = RVN(j, iX)
-
-                'sumtax is total obligation for the years to be averaged
-                SumTax = 0
-                If iEndLoop >= iFirstLoop Then
-                    For jj = iFirstLoop To iEndLoop
-                        SumTax = SumTax + RVN(jj, iX)
-                    Next jj
-                Else
-                    SumTax = 0
-                End If
-
-                'avgtax is average obligation of the years specified
-                avgtax = 0
-                If PD(num, 2) > 0 Then
-                    avgtax = SumTax / (Int(PD(num, 2))) 'Average Tax for Prepaid
-                End If
-
-                'prepaid is $ of current obligation paid in the current year
-                prepaid = avgtax * (PD(num, 1) / 100) 'Amount of Tax Paid in Current Year
-
-                'DUMC() is the annual payments (prepaid $)
-                DUMC(j) = prepaid
-
-                'balance is amount subject to deferral
-                'OLD  Balance = AvgTax - prepaid
-                balance = oblig - prepaid
-
-                'balcur is amount (subject to deferral) paid this year
-                balcur = balance * (1 - (PD(num, 4) / 100))
-
-                'DUMD() is amount (subject to deferral) paid this year
-                DUMD(j) = balcur
-
-                'Balance deferred TO A LATER PERIOD
-                baldef = balance - balcur
-
-                'Defyear is the project year when the balance is to be paid
-                defyear = j + Int(PD(num, 5)) 'Year in which deferred balance is placed
-                If defyear > LG Then
-                    defyear = LG
-                End If
-
-                'DUME() array of deferred Balances
-                DUME(defyear) = baldef
-            Next j
-
-            TaxTot = 0
-            DefTot = 0
-            For j = 1 To LG
-                TaxTot = TaxTot + RVN(j, iX) 'sum of unadjusted Tax
-                RVN(j, iX) = DUMC(j) + DUMD(j) + DUME(j)
-                DefTot = DefTot + RVN(j, iX) 'sum of adjusted Tax
-            Next j
-            RVN(LG, iX) = RVN(LG, iX) + TaxTot - DefTot 'place leftovers in last year
-        End If
-
-        'we are through with prepaid / deferred taxes
-        '--------------------------------------------------------------------
-24480:  'CALCULATE NET AMOUNT AND VOLUME
-        For j = 1 To LG
-            If PCE(j) <> 0 Then
-                VLM(j, iX) = RVN(j, iX) / PCE(j)
-            ElseIf PCE(j) = 0 Then
-                VLM(j, iX) = 0
-            End If
-        Next j
-        'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        Return  'end of gosub finishit
-
-        '=======================================================================
+     
 25000:  ' THIS PRINTS VARIABLE REPORT
         'Giant 5.4 start --------------------
         'If we are in an iteration loop, we will end up here once for each
@@ -3801,8 +3472,434 @@ finishit:
 
         '=======================================================================
 
-28000:  ' THIS IS CALLED IF CALC VALUES ARE ENTERED
 
+
+
+        '=======================================================================
+
+35000:  ' Error Handler
+
+        ' 9 Feb 2004 JWD (C0779) Replace with re-raise of error to caller
+        Err.Raise(Err.Number) ' TerminateExecution
+
+
+        ' 5 Dec 2002 JWD (C0640) Add next routine to test to see
+        ' if a variable is ring-fenced.
+        ' The exit sub is added before the routine to ensure that
+        ' if there is a return from the above call (there should
+        ' not be) the program will exit this procedure, and not
+        ' fall through the following subroutine.
+
+        Exit Sub
+
+
+        ' End (C0640)
+
+        ' 5 Dec 2002 JWD (C0640)
+        ' Check to see if this variable is ring fenced
+        ' and branch to the ring fence routine if it is.
+        'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
+        l_FiscalVariableIsRingFenced = FiscalDef_VariableIsRingFencedCheck(iX)
+        If l_FiscalVariableIsRingFenced = True Then GoTo 10220
+        ' End (C0640)
+
+    End Sub
+    Sub finishit(ByVal iX As Short, ByRef l_CeilingAmounts As Single(), ByRef param As Single, ByRef GTax() As Single, ByRef TAX() As Single, ByRef VarRates() As Single, ByRef IncDedBlank As Short, ByRef cdt As Object, ByRef ald As Object, ByRef Lcf As Object, ByVal losscf As Short, ByRef LCT As Short, ByVal ipxy As Object, ByRef iBGN As Object, ByRef iENDE As Integer, ByRef TMA As Object, ByVal itl As Object, ByRef num As Object, ByRef DUMC() As Single, ByRef DUMD() As Single, ByRef DUME() As Single, ByRef iFirstLoop As Object)
+
+        ' 19 Nov 2002 JWD (C0633)
+        ' See if a ceiling on loss carry forward is defined
+        ' for the variable.
+
+        Dim l_CeilingIsDefined As Boolean
+        l_CeilingIsDefined = zzzGetCeilingAmounts(iX, l_CeilingAmounts)
+
+        Dim j As Short
+        Dim jk As Short
+        Dim js As Short
+        Dim iQ As Short
+
+        If Not l_CeilingIsDefined Then
+            ' If no ceiling, clear any data that might
+            ' be in the ceiling amounts vector
+            For j = 1 To LG
+                l_CeilingAmounts(j) = 0
+            Next j
+        End If
+
+        ' End (C0633)
+
+
+        ' NOW CALCULATE NET AMOUNTS
+        Dim l_MaxReducibleAmount As Single
+        For j = 1 To LG
+            'If param% >= 59 And param% <= 61 Then       ' for IRR
+            ' 27 May 2003 JWD (C0700) Replace numbers with symbols
+            If param >= gc_nRtPrmRTO And param <= gc_nRtPrmIRR Then ' for IRR
+                GTax(j) = VarRates(j)
+                '           Rev(j) = INC1(j)
+                '           Ddt(j, 1) = DED1(j)
+                '           FOR jk = 2 TO 5
+                '              Ddt(j, jk) = 0
+                '           NEXT jk
+                '- 6-4-92 ---------------------
+11116:
+                If IncDedBlank = -1 Then 'set before call to RateCalc
+11117:              REV(j) = inc1(j)
+11118:              DDT(j, 1) = ded1(j)
+                    For jk = 2 To 5
+11119:                  DDT(j, jk) = 0
+                    Next jk
+                End If
+
+
+24040:          ''6-4-92 RLD(j) = INC1(j) - DED1(j)
+
+24050:          If RLD(j) <> 0 Then
+24060:              TAX(j) = (GTax(j) / RLD(j)) * 100
+                Else
+24070:              TAX(j) = 0
+                End If
+            Else ' normal calculations
+24080:          GTax(j) = RLD(j) * (TAX(j) / 100)
+                'If bDebugging Then
+                '  Open "calc.log" For Append As #17
+                '  Print #17, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+                '  Print #17, "   24080 year = "; j; "RLD("; j; ") = "; RLD(j); "  Tax = "; TAX(j); "   GTax(j) = "; GTax(j)
+                '  Close #17
+                'End If
+
+            End If
+
+            ' 29 May 2003 JWD (C0703)
+            ' Change to unconditionally deduct the
+            ' credits. Test for cost recovery situation
+            ' is now done after line 23010. This test
+            ' prevented certain legitimate credits from
+            ' reducing the amount.
+24352:      'If Not bDPCR Then
+            '   GTax(j) = GTax(j) - cdt(j)
+            'End If
+            GTax(j) = GTax(j) - cdt(j)
+24360:      ald(j) = 0
+            Lcf(j) = 0
+            RVN(j, iX) = GTax(j)
+            If iX = 4 Or iX = 3 Then
+                Debug.Print("RVN(j, iX) = GTax(j) = " & iX & " = " & RVN(ipxy, iX))
+            End If
+
+24362:      If losscf < 0 Then GoTo 24450
+
+24364:      'THIS IS FOR LOSS CARRY FORWARDS
+24366:      If losscf >= LG Then
+                LCT = LG
+24368:      ElseIf losscf < LG Then
+                LCT = Int(losscf)
+            End If
+24370:      If LCT > 0 Then GoTo 24378
+24372:      Lcf(j) = 0
+24374:      If RVN(j, iX) < 0 Then RVN(j, iX) = 0
+24376:      GoTo 24432
+
+24378:      If RVN(j, iX) >= 0 Then GoTo 24388
+24380:      'THERE IS A TAX LOSS
+24382:      ald(j) = 0.0! - RVN(j, iX)
+24384:      RVN(j, iX) = 0
+24386:      GoTo 24416
+
+24388:      'THERE IS A POSITVE TAX THIS YEAR, CHECK FOR PRIOR YEAR LCF
+24390:      iBGN = j - LCT
+24392:      If iBGN < 1 Then iBGN = 1
+24394:      iENDE = j - 1
+24396:      If j = 1 Then GoTo 24432
+
+            ' 19 Nov 2002 JWD (C0633) Add block to apply ceiling on
+            ' loss carry forward.
+            ' Did it this way to minimize impact on existing code.
+            ' If no ceiling definition, the normal path is followed.
+            If l_CeilingIsDefined Then
+                ' Determine maximum reduction of current year tax
+                TMA = RVN(j, iX) - l_CeilingAmounts(j)
+                If TMA > 0 Then
+                    ' Ceiling is in effect, only some tax can be offset
+                    l_MaxReducibleAmount = l_CeilingAmounts(j)
+                    ' Go ahead and reduce the tax by the maximum
+                    RVN(j, iX) = TMA
+                Else
+                    ' Didn't hit the ceiling, all tax may be offset
+                    l_MaxReducibleAmount = RVN(j, iX)
+                    ' Go ahead and reduce the tax
+                    RVN(j, iX) = 0
+                    If iX = 4 Or iX = 3 Then
+                        Debug.Print("RVN(j, iX) = GTax(j) = " & iX & " = " & RVN(ipxy, iX))
+                    End If
+                End If
+
+                For js = iBGN To iENDE
+                    ' Check each year prior to this for losses
+                    ' that can be used to reduce the current year
+                    ' tax.
+                    If l_MaxReducibleAmount > 0 Then
+                        ' Still have some tax that can be reduced
+                        If ald(js) > 0 Then
+                            ' Still have some prior year loss to offset with
+                            TMA = l_MaxReducibleAmount - ald(js)
+                            If TMA > 0 Then
+                                ' All of the prior year's loss is used to reduce tax...
+                                ald(js) = 0
+                                ' ... and some tax remains.
+                                l_MaxReducibleAmount = TMA
+                            Else
+                                ' All of the current year tax is reduced
+                                ' by the prior year loss, and still some
+                                ' prior year loss remains.
+                                ald(js) = 0 - TMA
+                                l_MaxReducibleAmount = 0
+                            End If
+                        End If
+                    End If
+                Next js
+
+                ' At this point, if any reducible amount remains,
+                ' it is added back to any tax that was not reducible
+                ' (due to imposition of the ceiling).
+                If l_MaxReducibleAmount > 0 Then
+                    RVN(j, iX) = RVN(j, iX) + l_MaxReducibleAmount
+                    If iX = 4 Or iX = 3 Then
+                        Debug.Print("RVN(j, iX) = RVN(j, iX) + l_MaxReducibleAmount = " & iX & " = " & RVN(ipxy, iX))
+                    End If
+                End If
+
+                ' Bypass normal block to go to loop accumulating
+                ' current period's amount that is carried forward.
+                GoTo 24416
+            End If
+            ' End (C0633)
+
+24398:      For js = iBGN To iENDE
+24400:          If RVN(j, iX) = 0 Then GoTo 24414
+24402:          If ald(js) <= 0 Then GoTo 24414
+24404:          TMA = RVN(j, iX) - ald(js)
+24406:          If TMA >= 0 Then GoTo 24412
+24408:          ald(js) = 0.0! - TMA : RVN(j, iX) = 0
+                Debug.Print("ald(js) = 0! - TMA: RVN(j, iX) = 0")
+                Debug.Print(RVN(j, iX))
+24410:          GoTo 24414
+24412:          ald(js) = 0 : RVN(j, iX) = TMA
+                Debug.Print("ald(js) = 0: RVN(j, iX) = TMA")
+                Debug.Print(RVN(j, iX))
+24414:      Next js
+
+24416:      'TOTAL THE LOSS CARRY FORWARDS FOR THIS YEAR
+24418:      iBGN = j - LCT + 1
+24420:      If iBGN < 1 Then iBGN = 1
+            For js = iBGN To j
+24424:          If itl <= 1 Then GoTo 24428
+24426:          ald(js) = ald(js) * (1 + (Inflate(j, PPR) / 100)) ' this inflates tax losses
+24428:          Lcf(j) = Lcf(j) + ald(js)
+24430:      Next js
+24432:      GoTo 24470
+
+24450:      'CREDIT TAXES CURRENTLY
+24460:      Lcf(j) = 0
+            RVN(j, iX) = GTax(j)
+24470:  Next j
+        '--------------------------------------------------------------------
+        'Prepaid / Deferred Tax section
+
+        'search PD() for the current FVAR$()
+        num = 0
+        For iQ = 1 To PDTT
+            If sPDV(iQ) = FVAR(iX) Then
+                num = iQ
+                Exit For
+            End If
+        Next iQ
+        If num = 0 Or num > PDTT Then
+            GoTo 24480 'var not in PD()
+        End If
+
+        'num% now points to PD() rec that matches
+        If PD(num, 1) <= 0 Or PD(num, 2) <= 0 Then '0 prepaid
+            ReDim DUMC(LG)
+            ReDim DUMD(LG)
+            ReDim DUME(LG)
+            If PD(num, 4) > 0 And PD(num, 5) > 0 Then 'deferred% > 0 & years > 0
+                'we do this part if there is NO prepaid % and there is
+                '  a deferred % and deferred years
+                For j = 1 To LG
+                    Dim TEMP As Single
+                    TEMP = RVN(j, iX) * ((100 - PD(num, 4)) / 100) 'amount of current year liability that is NOT deferred
+                    If (j + Int(PD(num, 5))) > LG Then
+                        DUMC(LG) = DUMC(LG) + (RVN(j, iX) - TEMP) 'amount of current year liability that IS deferred
+                    Else
+                        DUMC(j + Int(PD(num, 5))) = DUMC(j + Int(PD(num, 5))) + (RVN(j, iX) - TEMP)
+                    End If
+                    RVN(j, iX) = DUMC(j) + TEMP
+                Next j
+            End If
+        Else 'use prepaid and deferred
+            'DUMC() is the annual payments (prepaid $)
+            'DUMD() is amount (subject to deferral) paid this year
+            'DUME() array of deferred Balances
+            ReDim DUMC(LG)
+            ReDim DUMD(LG)
+            ReDim DUME(LG)
+
+            For j = 1 To LG
+                Dim oblig As Single
+                oblig = 0
+                'current year obligation (before prepayment or deferral)
+
+                Dim SumTax As Single
+                SumTax = 0
+                'total tax liability for prior n years
+
+                Dim avgtax As Single
+                avgtax = 0
+                'average tax liability for prior n years
+
+                Dim prepaid As Single
+                prepaid = 0
+                'prepaid amount for the current year
+
+                Dim balance As Single
+                balance = 0
+                'deferred amount from current year
+
+                Dim balcur As Single
+                balcur = 0
+                Dim baldef As Single
+                baldef = 0
+                Dim defyear As Single
+                defyear = 0
+
+                'determine average tax
+
+                Dim iEndLoop As Object
+                If PD(num, 3) = 1 Then 'YES
+                    iFirstLoop = j - Int(PD(num, 2)) + 1
+                    iEndLoop = j
+                Else 'NO
+                    iFirstLoop = j - Int(PD(num, 2))
+                    iEndLoop = j - 1
+                End If
+                If iFirstLoop <= 1 Then
+                    iFirstLoop = 1
+                End If
+
+                'oblig is the $ due if no deferral or prepayment is done
+                oblig = RVN(j, iX)
+
+                Dim jj As Short
+                'sumtax is total obligation for the years to be averaged
+                SumTax = 0
+                If iEndLoop >= iFirstLoop Then
+                    For jj = iFirstLoop To iEndLoop
+                        SumTax = SumTax + RVN(jj, iX)
+                    Next jj
+                Else
+                    SumTax = 0
+                End If
+
+                'avgtax is average obligation of the years specified
+                avgtax = 0
+                If PD(num, 2) > 0 Then
+                    avgtax = SumTax / (Int(PD(num, 2))) 'Average Tax for Prepaid
+                End If
+
+                'prepaid is $ of current obligation paid in the current year
+                prepaid = avgtax * (PD(num, 1) / 100) 'Amount of Tax Paid in Current Year
+
+                'DUMC() is the annual payments (prepaid $)
+                DUMC(j) = prepaid
+
+                'balance is amount subject to deferral
+                'OLD  Balance = AvgTax - prepaid
+                balance = oblig - prepaid
+
+                'balcur is amount (subject to deferral) paid this year
+                balcur = balance * (1 - (PD(num, 4) / 100))
+
+                'DUMD() is amount (subject to deferral) paid this year
+                DUMD(j) = balcur
+
+                'Balance deferred TO A LATER PERIOD
+                baldef = balance - balcur
+
+                'Defyear is the project year when the balance is to be paid
+                defyear = j + Int(PD(num, 5)) 'Year in which deferred balance is placed
+                If defyear > LG Then
+                    defyear = LG
+                End If
+
+                'DUME() array of deferred Balances
+                DUME(defyear) = baldef
+            Next j
+
+            Dim TaxTot As Object
+            TaxTot = 0
+            Dim DefTot As Object
+            DefTot = 0
+            For j = 1 To LG
+                TaxTot = TaxTot + RVN(j, iX) 'sum of unadjusted Tax
+                RVN(j, iX) = DUMC(j) + DUMD(j) + DUME(j)
+                DefTot = DefTot + RVN(j, iX) 'sum of adjusted Tax
+            Next j
+            RVN(LG, iX) = RVN(LG, iX) + TaxTot - DefTot 'place leftovers in last year
+        End If
+
+        'we are through with prepaid / deferred taxes
+        '--------------------------------------------------------------------
+24480:  'CALCULATE NET AMOUNT AND VOLUME
+        For j = 1 To LG
+            If PCE(j) <> 0 Then
+                VLM(j, iX) = RVN(j, iX) / PCE(j)
+            ElseIf PCE(j) = 0 Then
+                VLM(j, iX) = 0
+            End If
+        Next j
+
+    End Sub
+
+    Function FiscalDef_VariableIsRingFencedCheck(ByVal iX As Short)
+        ' Test to see if variable is ring fenced
+        ' Set flag accordingly.
+
+        Dim l_FiscalVariableIsRingFenced As Boolean
+        l_FiscalVariableIsRingFenced = False
+
+        ' The following 3 tests are identical to the ones at
+        ' line number 10220 (except for the action taken
+        ' when the expression is true.)
+
+        ' Note: RF$(8) contains the concatenated string of fiscal variables to read in
+        ' If the run file param 5 has nothing in then skip the read
+        'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
+        If Len(Trim(RF(8))) = 0 Then Return l_FiscalVariableIsRingFenced
+
+        ' If param 5 doesn't contain the current fiscal variable then skip read
+        'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
+        If InStr(1, Trim(RF(8)), Left(TD(iX, 1), 3), CompareMethod.Text) Mod 3 <> 1 Then Return l_FiscalVariableIsRingFenced
+
+        ' or if the file doesn't exist
+        ' 12 Mar 2004 JWD Now it always exists If Len(Dir$(fRingFence$)) = 0 Then Return  'does not exist
+
+        ' At this point,
+        ' 1) the run file defines a list of fiscal variable codes
+        '    that have been ring-fenced, AND
+        ' 2) the current fiscal variable code is in the list of
+        '    variables, AND
+        ' 3) the ring-fence values data file actually exists,
+        '
+        ' THEREFORE...
+        '    this fiscal variable is ring fenced. Set flag
+        '    accordingly and return.
+        l_FiscalVariableIsRingFenced = True
+        Return l_FiscalVariableIsRingFenced
+    End Function
+
+    Sub x28000(ByVal iX As Short)  ' THIS IS CALLED IF CALC VALUES ARE ENTERED
+        Dim j As Short
         Dim Dennis(LG) As Single
         CalcValues(iX, TD(iX, 15), TD(iX, 16), Trim(TD(iX, 17)), Dennis)
         For j = 1 To LG
@@ -3828,74 +3925,6 @@ finishit:
                 VLM(j, iX) = 0
             End If
         Next j
-
-28420:  'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        Return
-
-        '=======================================================================
-
-35000:  ' Error Handler
-
-        ' 9 Feb 2004 JWD (C0779) Replace with re-raise of error to caller
-        Err.Raise(Err.Number) ' TerminateExecution
-
-
-        ' 5 Dec 2002 JWD (C0640) Add next routine to test to see
-        ' if a variable is ring-fenced.
-        ' The exit sub is added before the routine to ensure that
-        ' if there is a return from the above call (there should
-        ' not be) the program will exit this procedure, and not
-        ' fall through the following subroutine.
-
-        Exit Sub
-
-FiscalDef_VariableIsRingFencedCheck:
-        ' Test to see if variable is ring fenced
-        ' Set flag accordingly.
-
-        l_FiscalVariableIsRingFenced = False
-
-        ' The following 3 tests are identical to the ones at
-        ' line number 10220 (except for the action taken
-        ' when the expression is true.)
-
-        ' Note: RF$(8) contains the concatenated string of fiscal variables to read in
-        ' If the run file param 5 has nothing in then skip the read
-        'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        If Len(Trim(RF(8))) = 0 Then Return
-
-        ' If param 5 doesn't contain the current fiscal variable then skip read
-        'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        If InStr(1, Trim(RF(8)), Left(TD(iX, 1), 3), CompareMethod.Text) Mod 3 <> 1 Then Return
-
-        ' or if the file doesn't exist
-        ' 12 Mar 2004 JWD Now it always exists If Len(Dir$(fRingFence$)) = 0 Then Return  'does not exist
-
-        ' At this point,
-        ' 1) the run file defines a list of fiscal variable codes
-        '    that have been ring-fenced, AND
-        ' 2) the current fiscal variable code is in the list of
-        '    variables, AND
-        ' 3) the ring-fence values data file actually exists,
-        '
-        ' THEREFORE...
-        '    this fiscal variable is ring fenced. Set flag
-        '    accordingly and return.
-        l_FiscalVariableIsRingFenced = True
-
-        'UPGRADE_WARNING: Return has a new behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        Return
-
-        ' End (C0640)
-
-        ' 5 Dec 2002 JWD (C0640)
-        ' Check to see if this variable is ring fenced
-        ' and branch to the ring fence routine if it is.
-        'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
-		GoSub FiscalDef_VariableIsRingFencedCheck
-        If l_FiscalVariableIsRingFenced = True Then GoTo 10220
-        ' End (C0640)
-
     End Sub
 
     Sub WriteRingfenceVar()
@@ -3942,152 +3971,152 @@ FiscalDef_VariableIsRingFencedCheck:
         End With
 
     End Sub
-	
-	'
-	' 19 Nov 2002 JWD (C0633)
-	'
-	' Modifications:
-	'
-	' This routine returns any ceiling amounts defined for
-	' the specified variable. The function value is true
-	' if a ceiling was defined for the variable, and false
-	' if not. If the function returns true, CeilingAmounts()
-	' contains the calculated CeilingAmounts().
-	'
-	' This code is a copy of code in Depreciation() that
-	' determines ceiling amounts used in Cost Recovery
-	' calculations. (Line numbers 4000-4806)
-	'
-	' Parameters:
-	' VarIndex is index of FVAR$, this points to the current
-	' fiscal variable being calculated. This is the variable
-	' for which the ceilings are desired.
-	' CeilingAmounts() is the annual array of ceiling amounts
-	' for the variable. The values in this array are valid
-	' only when a ceiling definition for the variable
-	' identified by VarIndex exists.
-	'
-	Private Function zzzGetCeilingAmounts(ByVal VarIndex As Short, ByRef CeilingAmounts() As Single) As Boolean
-		
-		' In this routine, references to the global variable
-		' symbol clngs() are replaced by references to the
-		' local variable symbol clngy(). References to the
-		' local symbol clngx() are replaced by the formal
-		' parameter symbol CeilingAmounts().
-		
-		Dim clngy() As Single
-		Dim CLRA() As Single
-		
-		Dim j As Short
-		Dim iX As Short
-		Dim iYP As Short
-		Dim iPX As Short
-		Dim iPY As Short
-		Dim iML As Short
-		Dim CLEX As String
-		Dim Fd As Short
-		Dim Ratetot As Short
-		
-		Dim DefAmount As Single
-		Dim Numvar As Short
-		Dim searcher As String
-		Dim param As Short
-		
-		Dim matcher() As String
+
+    '
+    ' 19 Nov 2002 JWD (C0633)
+    '
+    ' Modifications:
+    '
+    ' This routine returns any ceiling amounts defined for
+    ' the specified variable. The function value is true
+    ' if a ceiling was defined for the variable, and false
+    ' if not. If the function returns true, CeilingAmounts()
+    ' contains the calculated CeilingAmounts().
+    '
+    ' This code is a copy of code in Depreciation() that
+    ' determines ceiling amounts used in Cost Recovery
+    ' calculations. (Line numbers 4000-4806)
+    '
+    ' Parameters:
+    ' VarIndex is index of FVAR$, this points to the current
+    ' fiscal variable being calculated. This is the variable
+    ' for which the ceilings are desired.
+    ' CeilingAmounts() is the annual array of ceiling amounts
+    ' for the variable. The values in this array are valid
+    ' only when a ceiling definition for the variable
+    ' identified by VarIndex exists.
+    '
+    Private Function zzzGetCeilingAmounts(ByVal VarIndex As Short, ByRef CeilingAmounts() As Single) As Boolean
+
+        ' In this routine, references to the global variable
+        ' symbol clngs() are replaced by references to the
+        ' local variable symbol clngy(). References to the
+        ' local symbol clngx() are replaced by the formal
+        ' parameter symbol CeilingAmounts().
+
+        Dim clngy() As Single
+        Dim CLRA() As Single
+
+        Dim j As Short
+        Dim iX As Short
+        Dim iYP As Short
+        Dim iPX As Short
+        Dim iPY As Short
+        Dim iML As Short
+        Dim CLEX As String
+        Dim Fd As Short
+        Dim Ratetot As Short
+
+        Dim DefAmount As Single
+        Dim Numvar As Short
+        Dim searcher As String
+        Dim param As Short
+
+        Dim matcher() As String
         Dim ratein(,) As Single
-		Dim sRateInV() As String
-		Dim VarRates() As Single
-		
-		Dim l_result As Boolean
-		
-		l_result = False
-		iX = VarIndex
-		
-4020: ReDim clngy(LG)
-		ReDim CeilingAmounts(LG)
-		ReDim CLRA(LG)
-4030: iYP = 0
-		CLEX = "Y"
-		Fd = 0
-		
-4040: iYP = iYP + 1
-4048: If iYP > CLGTT Then CLEX = "N"
-4050: If iYP > CLGTT Then GoTo 4472
-4060: If FVAR(iX) = CLG(iYP, 1) Then
-			Fd = 1
-			l_result = True
-			GoTo 4080
-		End If
-4070: GoTo 4040
-		
-4080: ' LOOP THRU INCOME
-		ReDim matcher(10)
-		ReDim clngy(LG)
-		For iPY = 1 To 10
-			matcher(iPY) = CLG(iYP, iPY)
-		Next iPY
-		
-		CeilDef("DEPREC", iX, matcher, clngy)
-		
-4472: 'when the user did not specify a ceiling def then GRP
-		If Fd <> 1 Then 'fd is basically found%  1=true   0=not found
-			For iML = 1 To LG
-				'***s/b total rev not prim rev
-				' GDP 20 Jan 2003
-				' Use constant for offset
-				clngy(iML) = clngy(iML) + (A(iML, PPR) * A(iML, PPR + gc_nAPRICEOFFSET)) * (1 - PARTRATE(iML)) * WIN(iML)
-			Next iML
-		End If
-		
-4480: ' NOW DETERMINE CEILING RATES IN CGR()
-		If CGRT > 0 Then GoTo contin
-		Fd = 0
-		GoTo default_Renamed
-		
-contin: 
-		Fd = 1
-		Ratetot = CGRT
-		
-		ReDim sRateInV(Ratetot)
-		ReDim ratein(Ratetot, 6)
-		ReDim VarRates(LG)
-		
-		For iPX = 1 To Ratetot
-			sRateInV(iPX) = sCGR(iPX)
-			ratein(iPX, 1) = CGR(iPX, 1)
-			ratein(iPX, 2) = CGR(iPX, 2)
-			ratein(iPX, 3) = CGR(iPX, 3)
-			ratein(iPX, 4) = CGR(iPX, 4)
-			ratein(iPX, 5) = CGR(iPX, 5)
-			ratein(iPX, 6) = CGR(iPX, 6)
-		Next iPX
-		
-		DefAmount = 100
-		Numvar = iX
-		searcher = FVAR(iX)
-		
-		RateCalc(Numvar, "DEPREC", searcher, DefAmount, sRateInV, ratein, Ratetot, param, VarRates)
-		
-		For j = 1 To LG
-			CLRA(j) = VarRates(j)
-		Next j
-		
-		GoTo 4800
-		
-default_Renamed: 
-		'when the user did not specify the ceiling rates then
-		If Fd <> 1 Then
-			For iML = 1 To LG
-				CLRA(iML) = 100
-			Next iML
-		End If
-		
-4800: ' NOW COMPUTE CEILING
-		For iML = 1 To LG
-			CeilingAmounts(iML) = clngy(iML) * (CLRA(iML) / 100)
-		Next iML
-		
-		zzzGetCeilingAmounts = l_result
-		
-	End Function
+        Dim sRateInV() As String
+        Dim VarRates() As Single
+
+        Dim l_result As Boolean
+
+        l_result = False
+        iX = VarIndex
+
+4020:   ReDim clngy(LG)
+        ReDim CeilingAmounts(LG)
+        ReDim CLRA(LG)
+4030:   iYP = 0
+        CLEX = "Y"
+        Fd = 0
+
+4040:   iYP = iYP + 1
+4048:   If iYP > CLGTT Then CLEX = "N"
+4050:   If iYP > CLGTT Then GoTo 4472
+4060:   If FVAR(iX) = CLG(iYP, 1) Then
+            Fd = 1
+            l_result = True
+            GoTo 4080
+        End If
+4070:   GoTo 4040
+
+4080:   ' LOOP THRU INCOME
+        ReDim matcher(10)
+        ReDim clngy(LG)
+        For iPY = 1 To 10
+            matcher(iPY) = CLG(iYP, iPY)
+        Next iPY
+
+        CeilDef("DEPREC", iX, matcher, clngy)
+
+4472:   'when the user did not specify a ceiling def then GRP
+        If Fd <> 1 Then 'fd is basically found%  1=true   0=not found
+            For iML = 1 To LG
+                '***s/b total rev not prim rev
+                ' GDP 20 Jan 2003
+                ' Use constant for offset
+                clngy(iML) = clngy(iML) + (A(iML, PPR) * A(iML, PPR + gc_nAPRICEOFFSET)) * (1 - PARTRATE(iML)) * WIN(iML)
+            Next iML
+        End If
+
+4480:   ' NOW DETERMINE CEILING RATES IN CGR()
+        If CGRT > 0 Then GoTo contin
+        Fd = 0
+        GoTo default_Renamed
+
+contin:
+        Fd = 1
+        Ratetot = CGRT
+
+        ReDim sRateInV(Ratetot)
+        ReDim ratein(Ratetot, 6)
+        ReDim VarRates(LG)
+
+        For iPX = 1 To Ratetot
+            sRateInV(iPX) = sCGR(iPX)
+            ratein(iPX, 1) = CGR(iPX, 1)
+            ratein(iPX, 2) = CGR(iPX, 2)
+            ratein(iPX, 3) = CGR(iPX, 3)
+            ratein(iPX, 4) = CGR(iPX, 4)
+            ratein(iPX, 5) = CGR(iPX, 5)
+            ratein(iPX, 6) = CGR(iPX, 6)
+        Next iPX
+
+        DefAmount = 100
+        Numvar = iX
+        searcher = FVAR(iX)
+
+        RateCalc(Numvar, "DEPREC", searcher, DefAmount, sRateInV, ratein, Ratetot, param, VarRates)
+
+        For j = 1 To LG
+            CLRA(j) = VarRates(j)
+        Next j
+
+        GoTo 4800
+
+default_Renamed:
+        'when the user did not specify the ceiling rates then
+        If Fd <> 1 Then
+            For iML = 1 To LG
+                CLRA(iML) = 100
+            Next iML
+        End If
+
+4800:   ' NOW COMPUTE CEILING
+        For iML = 1 To LG
+            CeilingAmounts(iML) = clngy(iML) * (CLRA(iML) / 100)
+        Next iML
+
+        zzzGetCeilingAmounts = l_result
+
+    End Function
 End Module

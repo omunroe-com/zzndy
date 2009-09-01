@@ -182,9 +182,7 @@ RowTitle_Error:
 		' Load the row text map data.
 		' Map data is an integer array, but is returned as bytes
         ' from resource file.
-
-        ' TODO: Check this out
-        'map_dat = My.Resources.fmt1024
+        map_dat = My.Resources.fmt10_1024
 
 		'UPGRADE_WARNING: Lower bound of array zzz_map was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
 		ReDim zzz_map(((UBound(map_dat) - LBound(map_dat) + 1) / 2))
@@ -205,7 +203,7 @@ RowTitle_Error:
 		sCR = Chr(10)
 		
 		For i = 1 To UBound(zzz_OT, 2)
-			s = My.Resources.ResourceManager.GetString("str" + CStr(i + id_base))
+            s = My.Resources.ResourceManager.GetString("str" + CStr(i + id_base))
 			
 			sA = Split(s, sCR)
 			zzz_OT(1, i) = sA(0)
