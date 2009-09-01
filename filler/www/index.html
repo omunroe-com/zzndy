@@ -102,6 +102,12 @@
                 e.innerHTML = e.innerHTML.replace(/ \.{3}$/, '');
             }
 
+            function istart(flag)
+            {
+                var e = document.getElementById('msg');
+                e.innerHTML = e.innerHTML.replace(/Waiting for the server \.{3}/, (flag ? 'Your move.' : 'The other party has first move.'));
+            }
+
             function join()
             {
                 popup = $div({'class':'popup'}, [
@@ -151,11 +157,12 @@
                 if (cls == null || cls.match(/\bdisabled\b/)) return;
                 
                 okLinkClass('ok disabled');
+                var key = document.getElementById("key").value;
 
                 var e = document.getElementById('msg');
-                e.innerHTML = 'The shared key is <b>${key:u}</b>. Waiting for the server ...'.fmt({'key':document.getElementById("key").value});
+                e.innerHTML = 'The shared key is <b>${key:u}</b>. Waiting for the server ...'.fmt({'key':key});
 
-                // TODO: Send join request
+                comet = Comet.open('push.php', {a:'join', k: key});
             }
 
             var a = ['and', 'mail'].join('y@g');

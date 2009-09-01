@@ -11,6 +11,8 @@ function start_multiplayer()
 
 function join_multiplayer($code)
 {
+    $fl = new FillerGame($code);
 
+    $fl->begin();
+    $fl->wait();
 }
-
