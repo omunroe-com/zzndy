@@ -1,0 +1,469 @@
+﻿<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <MyType>Windows</MyType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69783EA9-1006-4095-96C3-FD894CDFDE50}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyName>IAMPEEngine</AssemblyName>
+    <OutputType>Library</OutputType>
+    <StartupObject>IAMPEEngine.MDLL1000</StartupObject>
+    <AssemblyMajorVersion>1</AssemblyMajorVersion>
+    <AssemblyMinorVersion>3</AssemblyMinorVersion>
+    <AssemblyRevisionNumber>10</AssemblyRevisionNumber>
+    <GenerateRevisionNumber>False</GenerateRevisionNumber>
+    <AssemblyCompanyName>IHS</AssemblyCompanyName>
+    <StartWithIE>2</StartWithIE>
+    <RootNamespace>IAMPEEngine</RootNamespace>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>.\bin\</OutputPath>
+    <DocumentationFile>IAMPEEngine.xml</DocumentationFile>
+    <DebugSymbols>True</DebugSymbols>
+    <DefineDebug>True</DefineDebug>
+    <DefineTrace>True</DefineTrace>
+    <DefineConstants>NODONG = 1 : Win32=True</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+    <NoWarn>42016,42017,42018,42019,42032</NoWarn>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>.\bin\</OutputPath>
+    <DocumentationFile>IAMPEEngine.xml</DocumentationFile>
+    <DebugSymbols>False</DebugSymbols>
+    <DefineDebug>False</DefineDebug>
+    <DefineTrace>True</DefineTrace>
+    <DefineConstants>NODONG = 1 : Win32=True</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+    <NoWarn>42016,42017,42018,42019,42032</NoWarn>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic.Compatibility">
+      <Name>Microsoft.VisualBasic.Compatibility</Name>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.XML">
+      <Name>System.XML</Name>
+    </Reference>
+    <COMReference Include="ASPEEngineExTypeLib">
+      <Guid>{8A0E0BDF-DD4D-451C-BF3A-9CF5A5638E8C}</Guid>
+      <Lcid>0</Lcid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <WrapperTool>tlbimp</WrapperTool>
+    </COMReference>
+    <COMReference Include="MainexecTypeLib">
+      <Guid>{A01B2468-B017-4D3B-B8B3-D898A3442E03}</Guid>
+      <Lcid>0</Lcid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <WrapperTool>tlbimp</WrapperTool>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="Microsoft.VisualBasic.Compatibility" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AMPEEngine.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ArrayConst.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.vb" />
+    <Compile Include="BONUS01A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CASHFLO1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CASHFLO2.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CCMGiantRunSummarySeqA.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CCMGiantRunSummarySeqB.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDArray1DDblA.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDASPEAmountsSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDASPENamesSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDGiantRptPageMapSeqA.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDGiantRptPageMapSeqB.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDGiantRptPageMapSeqC.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDGiantRptPageMapSeqD.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CDPersistFormatDummy.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CEFSFileSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CEFSFileSpec.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CFmtGntRptPgAToASPENames.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CFmtGntRptPgDToASPENames.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CFmtGntRptPgGToASPENames.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CFmtGntRptPgHToASPENames.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantReport1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageA1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageB1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageC1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageD1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageE1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageF1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageG1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageH1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageHdr1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageHdrFormatSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageIndFormatSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPagePRTFormatSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageStdFormatASPEAmts.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageStdFormatASPEInts.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CGiantRptPageStdFormatSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CReportText1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CSFGiantRunSummarySeqA.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CSFGiantRunSummarySeqB.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CTY1000A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CTY1210A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CTY2000A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CTYIN1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CURRENCY.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CXFileSystemDisk1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CXFileSystemMem1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CXFSFileSeqMemVnt.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DEPREC.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DLL1000A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DTA2000A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DTREECON.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="excel.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EXE1000A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FISCAL1B.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FORECAST.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GNTCON.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GROSSRPT.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDGiantRptPageD.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDGiantRptPageG.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDGiantRptPageH.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDGiantRptPageInd.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDGiantRptPageStd.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDGiantRunSummaryA.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDPersistClassMap.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDPersistFormat.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDPersistObject.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDPersistObjectTable.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDStore.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IDStoreSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IEFSFile.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IEFSFileSeq.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IEFSFileSeqIn.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IEFSFileSeqOut.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IGiantRptPageAssignStd.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IGiantRptPageAssignSub.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ITFileSystem1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IVariableTitlesA.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LOAN.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MAbandonment.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MCapExp1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MCPXConvert2.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MEFSNameUtil1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MFiscalEngineEx.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MGiantReport1.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PARTIC.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PGM9010A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PGM9900B.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PRT.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="REPAY.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RUN0100B.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RUN0200C.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RVSCON.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTBDA.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTBNS.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTCDREC.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTCLD.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTCLR.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTCMP.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTCPX.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTDEF.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTDPL.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTDPR.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTEBL.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTEXB.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTGNL.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTMRP.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTPARM.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTPDC.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTPDT.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTPRC.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTPRM.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTPRR.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTPRT.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTRN.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTRTE.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTSAL.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UDTTTL.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UTIL5A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VENFEE1A.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

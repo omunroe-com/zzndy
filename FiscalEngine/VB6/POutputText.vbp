@@ -1,0 +1,40 @@
+Type=Exe
+Module=MOutputText; MOutputText2.bas
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\WINNT\system32\stdole2.tlb#OLE Automation
+Startup="Sub Main"
+HelpFile=""
+Title="POutputText"
+ExeName32="POutputText.exe"
+Command32=""
+Name="POutputText"
+HelpContextID="0"
+Description="Generate resource file source text"
+CompatibleMode="0"
+MajorVer=1
+MinorVer=1
+RevisionVer=0
+AutoIncrementVer=0
+ServerSupportFiles=0
+VersionComments="Build date 11 Jan 2005 (BSN=002)"
+VersionCompanyName="IHS Energy"
+VersionFileDescription="Generate Resource Source files for AS$ET fiscal engine"
+VersionLegalCopyright="Copyright © 2003-2005 IHS Energy"
+VersionProductName="AS$ET"
+CompilationType=-1
+OptimizationType=0
+FavorPentiumPro(tm)=0
+CodeViewDebugInfo=0
+NoAliasing=0
+BoundsCheck=0
+OverflowCheck=0
+FlPointCheck=0
+FDIVCheck=0
+UnroundedFP=0
+StartMode=0
+Unattended=0
+Retained=0
+ThreadPerObject=0
+MaxNumberOfThreads=1
+
+[MS Transaction Server]
+AutoRefresh=1

@@ -1,0 +1,1929 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="str1025" xml:space="preserve">
+    <value>
+FIELD GROSS INCOME
+</value>
+  </data>
+  <data name="str1026" xml:space="preserve">
+    <value>
+EQUIVALENT INCOME AND OPERATING EXPENSES
+</value>
+  </data>
+  <data name="str1027" xml:space="preserve">
+    <value>
+EXPLORATION CAPITAL
+</value>
+  </data>
+  <data name="str1028" xml:space="preserve">
+    <value>
+DEVELOPMENT CAPITAL
+</value>
+  </data>
+  <data name="str1029" xml:space="preserve">
+    <value>
+TOTAL CAPITAL EXPENDITURES
+</value>
+  </data>
+  <data name="str1030" xml:space="preserve">
+    <value>
+GROUP EXPENDITURES
+</value>
+  </data>
+  <data name="str1031" xml:space="preserve">
+    <value>
+COST RECOVERY SCHEDULE FOR |1|
+</value>
+  </data>
+  <data name="str1032" xml:space="preserve">
+    <value>
+DEPRECIATION SCHEDULE FOR |1|
+</value>
+  </data>
+  <data name="str1033" xml:space="preserve">
+    <value>
+GOVERNMENT REPAYMENT &amp; PARTNER REIMBURSEMENT
+</value>
+  </data>
+  <data name="str1034" xml:space="preserve">
+    <value>
+AFTER TAX CASH FLOW
+</value>
+  </data>
+  <data name="str1035" xml:space="preserve">
+    <value>
+ECONOMIC INDICATORS
+</value>
+  </data>
+  <data name="str1036" xml:space="preserve">
+    <value>
+|1|
+</value>
+  </data>
+  <data name="str1037" xml:space="preserve">
+    <value>
+DEFLATED CASH FLOW
+</value>
+  </data>
+  <data name="str1038" xml:space="preserve">
+    <value>
+LOAN SCHEDULE
+</value>
+  </data>
+  <data name="str1039" xml:space="preserve">
+    <value>
+|1|
+</value>
+  </data>
+  <data name="str1040" xml:space="preserve">
+    <value>
+|1|
+</value>
+  </data>
+  <data name="str1041" xml:space="preserve">
+    <value>
+|1|
+</value>
+  </data>
+  <data name="str1042" xml:space="preserve">
+    <value>
+RATE OF RETURN BASED WORKSHEET FOR |1|
+</value>
+  </data>
+  <data name="str1043" xml:space="preserve">
+    <value>
+RATE OF RETURN BASED WORKSHEET FOR |1|
+</value>
+  </data>
+  <data name="str1044" xml:space="preserve">
+    <value>
+RATIO BASED WORKSHEET FOR |1|
+</value>
+  </data>
+  <data name="str1045" xml:space="preserve">
+    <value>
+RATIO BASED WORKSHEET FOR |1|
+</value>
+  </data>
+  <data name="str1046" xml:space="preserve">
+    <value>&lt;OIL&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1047" xml:space="preserve">
+    <value>&lt;OPC&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1048" xml:space="preserve">
+    <value>&lt;REV|OIL&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1049" xml:space="preserve">
+    <value>&lt;GAS&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1050" xml:space="preserve">
+    <value>&lt;GPC&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1051" xml:space="preserve">
+    <value>&lt;REV|GAS&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1052" xml:space="preserve">
+    <value>&lt;OV1&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1053" xml:space="preserve">
+    <value>&lt;OP1&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1054" xml:space="preserve">
+    <value>&lt;REV|OV1&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1055" xml:space="preserve">
+    <value>&lt;OV2&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1056" xml:space="preserve">
+    <value>&lt;OP2&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1057" xml:space="preserve">
+    <value>&lt;REV|OV2&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1058" xml:space="preserve">
+    <value>&lt;OV3&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1059" xml:space="preserve">
+    <value>&lt;OP3&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1060" xml:space="preserve">
+    <value>&lt;REV|OV3&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1061" xml:space="preserve">
+    <value>&lt;OV4&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1062" xml:space="preserve">
+    <value>&lt;OP4&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1063" xml:space="preserve">
+    <value>&lt;REV|OV4&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1064" xml:space="preserve">
+    <value>&lt;OV5&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1065" xml:space="preserve">
+    <value>&lt;OP5&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1066" xml:space="preserve">
+    <value>&lt;REV|OV5&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1067" xml:space="preserve">
+    <value>&lt;OV6&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1068" xml:space="preserve">
+    <value>&lt;OP6&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1069" xml:space="preserve">
+    <value>&lt;REV|OV6&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1070" xml:space="preserve">
+    <value>&lt;OV7&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1071" xml:space="preserve">
+    <value>&lt;OP7&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1072" xml:space="preserve">
+    <value>&lt;REV|OV7&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1073" xml:space="preserve">
+    <value>&lt;OV8&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1074" xml:space="preserve">
+    <value>&lt;OP8&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1075" xml:space="preserve">
+    <value>&lt;REV|OV8&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1076" xml:space="preserve">
+    <value>&lt;OV9&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1077" xml:space="preserve">
+    <value>&lt;OP9&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1078" xml:space="preserve">
+    <value>&lt;REV|OV9&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1079" xml:space="preserve">
+    <value>&lt;OV0&gt;
+|1|
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1080" xml:space="preserve">
+    <value>&lt;OP0&gt;
+|1|
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1081" xml:space="preserve">
+    <value>&lt;REV|OV0&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1082" xml:space="preserve">
+    <value>
+Equivalent Volume Production
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1083" xml:space="preserve">
+    <value>
+Equivalent Revenue Production
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1084" xml:space="preserve">
+    <value>
+Equivalent Price
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1085" xml:space="preserve">
+    <value>
+Equivalent Revenue
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1086" xml:space="preserve">
+    <value>&lt;OX1&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1087" xml:space="preserve">
+    <value>&lt;OX2&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1088" xml:space="preserve">
+    <value>&lt;OX3&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1089" xml:space="preserve">
+    <value>&lt;OX4&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1090" xml:space="preserve">
+    <value>&lt;OX5&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1091" xml:space="preserve">
+    <value>&lt;OX6&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1092" xml:space="preserve">
+    <value>&lt;OX7&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1093" xml:space="preserve">
+    <value>&lt;OX8&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1094" xml:space="preserve">
+    <value>&lt;OX9&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1095" xml:space="preserve">
+    <value>&lt;OX0&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1096" xml:space="preserve">
+    <value>&lt;O11&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1097" xml:space="preserve">
+    <value>&lt;O12&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1098" xml:space="preserve">
+    <value>&lt;O13&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1099" xml:space="preserve">
+    <value>&lt;O14&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1100" xml:space="preserve">
+    <value>&lt;O15&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1101" xml:space="preserve">
+    <value>&lt;O16&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1102" xml:space="preserve">
+    <value>&lt;O17&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1103" xml:space="preserve">
+    <value>&lt;O18&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1104" xml:space="preserve">
+    <value>&lt;O19&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1105" xml:space="preserve">
+    <value>&lt;O20&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1106" xml:space="preserve">
+    <value>
+Total Gross Operating Expenses
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1107" xml:space="preserve">
+    <value>&lt;GEO&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1108" xml:space="preserve">
+    <value>&lt;EDH&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1109" xml:space="preserve">
+    <value>&lt;EDS&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1110" xml:space="preserve">
+    <value>&lt;ADH&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1111" xml:space="preserve">
+    <value>&lt;ASC&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1112" xml:space="preserve">
+    <value>
+Total Exploration Capital
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1113" xml:space="preserve">
+    <value>&lt;DNP&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1114" xml:space="preserve">
+    <value>&lt;DVP&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1115" xml:space="preserve">
+    <value>&lt;PLF&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1116" xml:space="preserve">
+    <value>&lt;FCL&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1117" xml:space="preserve">
+    <value>&lt;TRN&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1118" xml:space="preserve">
+    <value>&lt;EOR&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1119" xml:space="preserve">
+    <value>
+Total Development Capital
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1120" xml:space="preserve">
+    <value>
+Signature Bonus
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1121" xml:space="preserve">
+    <value>
+Discovery Bonus
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1122" xml:space="preserve">
+    <value>
+Production Bonus
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1123" xml:space="preserve">
+    <value>&lt;BNS&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1124" xml:space="preserve">
+    <value>&lt;LSE&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1125" xml:space="preserve">
+    <value>&lt;REN&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1126" xml:space="preserve">
+    <value>
+Total Exploration 
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1127" xml:space="preserve">
+    <value>
+Total Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1128" xml:space="preserve">
+    <value>&lt;CP1&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1129" xml:space="preserve">
+    <value>&lt;CP2&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1130" xml:space="preserve">
+    <value>&lt;CP3&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1131" xml:space="preserve">
+    <value>&lt;CP4&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1132" xml:space="preserve">
+    <value>&lt;CP5&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1133" xml:space="preserve">
+    <value>&lt;CP6&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1134" xml:space="preserve">
+    <value>&lt;CP7&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1135" xml:space="preserve">
+    <value>&lt;CP8&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1136" xml:space="preserve">
+    <value>&lt;CP9&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1137" xml:space="preserve">
+    <value>&lt;ABN&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1138" xml:space="preserve">
+    <value>&lt;AB1&gt;
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1139" xml:space="preserve">
+    <value>
+Total Capital Expenditures
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1140" xml:space="preserve">
+    <value>
+Group Rental
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1141" xml:space="preserve">
+    <value>
+Group Exploration
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1142" xml:space="preserve">
+    <value>
+Group Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1143" xml:space="preserve">
+    <value>
+Group Other
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1144" xml:space="preserve">
+    <value>
+Group Total
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1145" xml:space="preserve">
+    <value>
+Base Rental
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1146" xml:space="preserve">
+    <value>
+Base Exploration
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1147" xml:space="preserve">
+    <value>
+Base Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1148" xml:space="preserve">
+    <value>
+Base Other
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1149" xml:space="preserve">
+    <value>
+Base Operating Expense
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1150" xml:space="preserve">
+    <value>
+Base Total
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1151" xml:space="preserve">
+    <value>
+Recovery Rental
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1152" xml:space="preserve">
+    <value>
+Recovery Exploration
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1153" xml:space="preserve">
+    <value>
+Recovery Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1154" xml:space="preserve">
+    <value>
+Recovery Other
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1155" xml:space="preserve">
+    <value>
+Recovery Operating Expense
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1156" xml:space="preserve">
+    <value>
+Recovery Total
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1157" xml:space="preserve">
+    <value>
+Recovery Ceiling
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1158" xml:space="preserve">
+    <value>
+Base Rental
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1159" xml:space="preserve">
+    <value>
+Base Exploration
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1160" xml:space="preserve">
+    <value>
+Base Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1161" xml:space="preserve">
+    <value>
+Base Other
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1162" xml:space="preserve">
+    <value>
+Base Total
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1163" xml:space="preserve">
+    <value>
+Depreciation Rental
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1164" xml:space="preserve">
+    <value>
+Depreciation Exploration
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1165" xml:space="preserve">
+    <value>
+Depreciation Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1166" xml:space="preserve">
+    <value>
+Depreciation Other
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1167" xml:space="preserve">
+    <value>
+Depreciation Total
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1168" xml:space="preserve">
+    <value>
+Government Rental
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1169" xml:space="preserve">
+    <value>
+Government Exploration
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1170" xml:space="preserve">
+    <value>
+Government Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1171" xml:space="preserve">
+    <value>
+Government Other
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1172" xml:space="preserve">
+    <value>
+Government Total Repayment
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1173" xml:space="preserve">
+    <value>
+Partner Rental
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1174" xml:space="preserve">
+    <value>
+Partner Exploration
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1175" xml:space="preserve">
+    <value>
+Partner Development
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1176" xml:space="preserve">
+    <value>
+Partner Other
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1177" xml:space="preserve">
+    <value>
+Partner Total Reimbursement
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1178" xml:space="preserve">
+    <value>
+Government Repayment
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1179" xml:space="preserve">
+    <value>
+Financing
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1180" xml:space="preserve">
+    <value>
+Positive Cash Flow Total
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1181" xml:space="preserve">
+    <value>
+Capital Expenditure
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1182" xml:space="preserve">
+    <value>
+Operating Expense
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1183" xml:space="preserve">
+    <value>
+Negative Cash Flow Total
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1184" xml:space="preserve">
+    <value>
+Net Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1185" xml:space="preserve">
+    <value>
+|1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1186" xml:space="preserve">
+    <value>
+Company Income
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1187" xml:space="preserve">
+    <value>
+Company Operating Costs
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1188" xml:space="preserve">
+    <value>
+Company Capital
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1189" xml:space="preserve">
+    <value>
+Company Royalty/Tax
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1190" xml:space="preserve">
+    <value>
+Company Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1191" xml:space="preserve">
+    <value>
+Company Payout
+Years</value>
+  </data>
+  <data name="str1192" xml:space="preserve">
+    <value>
+Company Risk Return Ratio
+</value>
+  </data>
+  <data name="str1193" xml:space="preserve">
+    <value>
+Company Profitability Index
+</value>
+  </data>
+  <data name="str1194" xml:space="preserve">
+    <value>
+Company Government Take
+%</value>
+  </data>
+  <data name="str1195" xml:space="preserve">
+    <value>
+Company State Take
+%</value>
+  </data>
+  <data name="str1196" xml:space="preserve">
+    <value>
+3rd Party Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1197" xml:space="preserve">
+    <value>
+3rd Party Payout
+Years</value>
+  </data>
+  <data name="str1198" xml:space="preserve">
+    <value>
+3rd Party Risk Return Ratio
+</value>
+  </data>
+  <data name="str1199" xml:space="preserve">
+    <value>
+3rd Party Profitability Index
+</value>
+  </data>
+  <data name="str1200" xml:space="preserve">
+    <value>
+NOC Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1201" xml:space="preserve">
+    <value>
+NOC Payout
+Years</value>
+  </data>
+  <data name="str1202" xml:space="preserve">
+    <value>
+NOC Risk Return Ratio
+</value>
+  </data>
+  <data name="str1203" xml:space="preserve">
+    <value>
+NOC Profitability Index
+</value>
+  </data>
+  <data name="str1204" xml:space="preserve">
+    <value>
+Government Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1205" xml:space="preserve">
+    <value>
+Government Payout
+Years</value>
+  </data>
+  <data name="str1206" xml:space="preserve">
+    <value>
+Government Risk Return Ratio
+</value>
+  </data>
+  <data name="str1207" xml:space="preserve">
+    <value>
+Government Profitability Index
+</value>
+  </data>
+  <data name="str1208" xml:space="preserve">
+    <value>
+Production
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1209" xml:space="preserve">
+    <value>
+Price
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1210" xml:space="preserve">
+    <value>
+Income
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1211" xml:space="preserve">
+    <value>
+Dedn. |1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1212" xml:space="preserve">
+    <value>
+Dedn. |1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1213" xml:space="preserve">
+    <value>
+Dedn. |1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1214" xml:space="preserve">
+    <value>
+Dedn. |1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1215" xml:space="preserve">
+    <value>
+Dedn. |1|
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1216" xml:space="preserve">
+    <value>
+Total Deductions
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1217" xml:space="preserve">
+    <value>
+Income less Deductions
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1218" xml:space="preserve">
+    <value>
+Rate
+%</value>
+  </data>
+  <data name="str1219" xml:space="preserve">
+    <value>
+Gross Amount
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1220" xml:space="preserve">
+    <value>
+Loss Carry-Forward
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1221" xml:space="preserve">
+    <value>
+Net Amount
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1222" xml:space="preserve">
+    <value>
+LCF Ceiling
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1223" xml:space="preserve">
+    <value>
+Deflator
+%</value>
+  </data>
+  <data name="str1224" xml:space="preserve">
+    <value>
+Company Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1225" xml:space="preserve">
+    <value>
+Company Cumulative Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1226" xml:space="preserve">
+    <value>
+Company Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1227" xml:space="preserve">
+    <value>
+Company Cumulative Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1228" xml:space="preserve">
+    <value>
+3rd Party Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1229" xml:space="preserve">
+    <value>
+3rd Party Cumulative Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1230" xml:space="preserve">
+    <value>
+3rd Party Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1231" xml:space="preserve">
+    <value>
+3rd Party Cumulative Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1232" xml:space="preserve">
+    <value>
+NOC Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1233" xml:space="preserve">
+    <value>
+NOC Cumulative Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1234" xml:space="preserve">
+    <value>
+NOC Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1235" xml:space="preserve">
+    <value>
+NOC Cumulative Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1236" xml:space="preserve">
+    <value>
+Government Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1237" xml:space="preserve">
+    <value>
+Government Cumulative Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1238" xml:space="preserve">
+    <value>
+Government Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1239" xml:space="preserve">
+    <value>
+Government Cumulative Discounted Cash Flow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1240" xml:space="preserve">
+    <value>
+Loan Amount
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1241" xml:space="preserve">
+    <value>
+Loan Balance
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1242" xml:space="preserve">
+    <value>
+Principal
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1243" xml:space="preserve">
+    <value>
+Interest Payments
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1244" xml:space="preserve">
+    <value>
+Total Payments
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1245" xml:space="preserve">
+    <value>
+Cash flow Effect
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1246" xml:space="preserve">
+    <value>OIL
+Oil Production
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1247" xml:space="preserve">
+    <value>GAS
+Gas Production
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1248" xml:space="preserve">
+    <value>OV1
+Other Volume 1
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1249" xml:space="preserve">
+    <value>OV2
+Other Volume 2
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1250" xml:space="preserve">
+    <value>OV3
+Other Volume 3
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1251" xml:space="preserve">
+    <value>OV4
+Other Volume 4
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1252" xml:space="preserve">
+    <value>OV5
+Other Volume 5
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1253" xml:space="preserve">
+    <value>OV6
+Other Volume 6
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1254" xml:space="preserve">
+    <value>OV7
+Other Volume 7
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1255" xml:space="preserve">
+    <value>OV8
+Other Volume 8
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1256" xml:space="preserve">
+    <value>OV9
+Other Volume 9
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1257" xml:space="preserve">
+    <value>OV0
+Other Volume 10
+&lt;VOL&gt;</value>
+  </data>
+  <data name="str1258" xml:space="preserve">
+    <value>OPC
+Oil Price
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1259" xml:space="preserve">
+    <value>GPC
+Gas Price
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1260" xml:space="preserve">
+    <value>OP1
+Other Price 1
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1261" xml:space="preserve">
+    <value>OP2
+Other Price 2
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1262" xml:space="preserve">
+    <value>OP3
+Other Price 3
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1263" xml:space="preserve">
+    <value>OP4
+Other Price 4
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1264" xml:space="preserve">
+    <value>OP5
+Other Price 5
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1265" xml:space="preserve">
+    <value>OP6
+Other Price 6
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1266" xml:space="preserve">
+    <value>OP7
+Other Price 7
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1267" xml:space="preserve">
+    <value>OP8
+Other Price 8
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1268" xml:space="preserve">
+    <value>OP9
+Other Price 9
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1269" xml:space="preserve">
+    <value>OP0
+Other Price 10
+&lt;PRC&gt;</value>
+  </data>
+  <data name="str1270" xml:space="preserve">
+    <value>REV
+|1| Revenues
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1271" xml:space="preserve">
+    <value>PRD
+Total Revenues
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1272" xml:space="preserve">
+    <value>OX1
+Operating Expense 1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1273" xml:space="preserve">
+    <value>OX2
+Operating Expense 2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1274" xml:space="preserve">
+    <value>OX3
+Operating Expense 3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1275" xml:space="preserve">
+    <value>OX4
+Operating Expense 4
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1276" xml:space="preserve">
+    <value>OX5
+Operating Expense 5
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1277" xml:space="preserve">
+    <value>OX6
+Operating Expense 6
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1278" xml:space="preserve">
+    <value>OX7
+Operating Expense 7
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1279" xml:space="preserve">
+    <value>OX8
+Operating Expense 8
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1280" xml:space="preserve">
+    <value>OX9
+Operating Expense 9
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1281" xml:space="preserve">
+    <value>OX0
+Operating Expense 10
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1282" xml:space="preserve">
+    <value>O11
+Operating Expense 11
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1283" xml:space="preserve">
+    <value>O12
+Operating Expense 12
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1284" xml:space="preserve">
+    <value>O13
+Operating Expense 13
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1285" xml:space="preserve">
+    <value>O14
+Operating Expense 14
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1286" xml:space="preserve">
+    <value>O15
+Operating Expense 15
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1287" xml:space="preserve">
+    <value>O16
+Operating Expense 16
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1288" xml:space="preserve">
+    <value>O17
+Operating Expense 17
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1289" xml:space="preserve">
+    <value>O18
+Operating Expense 18
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1290" xml:space="preserve">
+    <value>O19
+Operating Expense 19
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1291" xml:space="preserve">
+    <value>O20
+Operating Expense 20
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1292" xml:space="preserve">
+    <value>OPX
+Total Operating Expense
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1293" xml:space="preserve">
+    <value>BNS
+Bonus
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1294" xml:space="preserve">
+    <value>LSE
+Leasehold Acquisition
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1295" xml:space="preserve">
+    <value>REN
+Rentals
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1296" xml:space="preserve">
+    <value>GEO
+Geological &amp; Geophysical
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1297" xml:space="preserve">
+    <value>EDH
+Exploration Dry Hole
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1298" xml:space="preserve">
+    <value>EDS
+Exploration Discovery
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1299" xml:space="preserve">
+    <value>ADH
+Appraisal Dry Hole
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1300" xml:space="preserve">
+    <value>ASC
+Appraisal Success
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1301" xml:space="preserve">
+    <value>DNP
+Development Non-Producing
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1302" xml:space="preserve">
+    <value>DVP
+Development Producing
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1303" xml:space="preserve">
+    <value>PLF
+Platform &amp; Design
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1304" xml:space="preserve">
+    <value>FCL
+Facilities
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1305" xml:space="preserve">
+    <value>TRN
+Transportation
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1306" xml:space="preserve">
+    <value>EOR
+Enhanced Recovery
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1307" xml:space="preserve">
+    <value>CP1
+Other Capital 1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1308" xml:space="preserve">
+    <value>CP2
+Other Capital 2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1309" xml:space="preserve">
+    <value>CP3
+Other Capital 3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1310" xml:space="preserve">
+    <value>CP4
+Other Capital 4
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1311" xml:space="preserve">
+    <value>CP5
+Other Capital 5
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1312" xml:space="preserve">
+    <value>CP6
+Other Capital 6
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1313" xml:space="preserve">
+    <value>CP7
+Other Capital 7
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1314" xml:space="preserve">
+    <value>CP8
+Other Capital 8
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1315" xml:space="preserve">
+    <value>CP9
+Other Capital 9
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1316" xml:space="preserve">
+    <value>ABN
+Abandonment
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1317" xml:space="preserve">
+    <value>AB1
+Abandonment - Cash Expenditure
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1318" xml:space="preserve">
+    <value>AB2
+Abandonment - Accrual Entry
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1319" xml:space="preserve">
+    <value>CPX
+Total Capital Expenditure
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1320" xml:space="preserve">
+    <value>EXP
+Total Exploration Capital
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1321" xml:space="preserve">
+    <value>DEV
+Total Development Capital
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1322" xml:space="preserve">
+    <value>BAL
+Balance 1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1323" xml:space="preserve">
+    <value>BL1
+Balance 2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1324" xml:space="preserve">
+    <value>BL2
+Balance 3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1325" xml:space="preserve">
+    <value>OT1
+Other 1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1326" xml:space="preserve">
+    <value>OT2
+Other 2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1327" xml:space="preserve">
+    <value>OT3
+Other 3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1328" xml:space="preserve">
+    <value>OT4
+Other 4
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1329" xml:space="preserve">
+    <value>OT5
+Other 5
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1330" xml:space="preserve">
+    <value>AJ1
+Adjustment 1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1331" xml:space="preserve">
+    <value>AJ2
+Adjustment 2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1332" xml:space="preserve">
+    <value>AJ3
+Adjustment 3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1333" xml:space="preserve">
+    <value>AJ4
+Adjustment 4
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1334" xml:space="preserve">
+    <value>AJ5
+Adjustment 5
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1335" xml:space="preserve">
+    <value>DPL
+Depletion
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1336" xml:space="preserve">
+    <value>DPR
+Depreciation
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1337" xml:space="preserve">
+    <value>INT
+Interest on Loan
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1338" xml:space="preserve">
+    <value>
+Primary Cashflow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1339" xml:space="preserve">
+    <value>
+Subseq Cashflow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1340" xml:space="preserve">
+    <value>
+Adjusted Cashflow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1341" xml:space="preserve">
+    <value>
+Base #1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1342" xml:space="preserve">
+    <value>
+Tax #1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1343" xml:space="preserve">
+    <value>
+Base #2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1344" xml:space="preserve">
+    <value>
+Tax #2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1345" xml:space="preserve">
+    <value>
+Base #3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1346" xml:space="preserve">
+    <value>
+Tax #3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1347" xml:space="preserve">
+    <value>
+Tax Rate
+%</value>
+  </data>
+  <data name="str1348" xml:space="preserve">
+    <value>
+Total Tax
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1349" xml:space="preserve">
+    <value>
+Primary Cashflow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1350" xml:space="preserve">
+    <value>
+Subseq Cashflow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1351" xml:space="preserve">
+    <value>
+Adjusted Cashflow
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1352" xml:space="preserve">
+    <value>
+Base #1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1353" xml:space="preserve">
+    <value>
+Reduct #1
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1354" xml:space="preserve">
+    <value>
+Base #2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1355" xml:space="preserve">
+    <value>
+Reduct #2
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1356" xml:space="preserve">
+    <value>
+Base #3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1357" xml:space="preserve">
+    <value>
+Reduct #3
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1358" xml:space="preserve">
+    <value>
+Reduct Rate
+%</value>
+  </data>
+  <data name="str1359" xml:space="preserve">
+    <value>
+Total Reduct
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1360" xml:space="preserve">
+    <value>
+Avail Pft Share
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1361" xml:space="preserve">
+    <value>
+Pft Shr Rate
+%</value>
+  </data>
+  <data name="str1362" xml:space="preserve">
+    <value>
+Net Pft Share
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1363" xml:space="preserve">
+    <value>
+Primary Numerator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1364" xml:space="preserve">
+    <value>
+Primary Denominator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1365" xml:space="preserve">
+    <value>
+Subseq Numerator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1366" xml:space="preserve">
+    <value>
+Subseq Denominator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1367" xml:space="preserve">
+    <value>
+Final Numerator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1368" xml:space="preserve">
+    <value>
+Final Denominator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1369" xml:space="preserve">
+    <value>
+Ratio
+%</value>
+  </data>
+  <data name="str1370" xml:space="preserve">
+    <value>
+Taxable Income
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1371" xml:space="preserve">
+    <value>
+Tax Rate
+%</value>
+  </data>
+  <data name="str1372" xml:space="preserve">
+    <value>
+Total Tax
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1373" xml:space="preserve">
+    <value>
+Primary Numerator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1374" xml:space="preserve">
+    <value>
+Primary Denominator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1375" xml:space="preserve">
+    <value>
+Subseq Numerator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1376" xml:space="preserve">
+    <value>
+Subseq Denominator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1377" xml:space="preserve">
+    <value>
+Final Numerator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1378" xml:space="preserve">
+    <value>
+Final Denominator
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1379" xml:space="preserve">
+    <value>
+Ratio
+%</value>
+  </data>
+  <data name="str1380" xml:space="preserve">
+    <value>
+Adjusted Profit Share
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1381" xml:space="preserve">
+    <value>
+Pft Shr Reduct
+%</value>
+  </data>
+  <data name="str1382" xml:space="preserve">
+    <value>
+Total Reduct
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1383" xml:space="preserve">
+    <value>
+Avail Pft Share
+&lt;CUR&gt;</value>
+  </data>
+  <data name="str1384" xml:space="preserve">
+    <value>
+Pft Share Rate
+%</value>
+  </data>
+  <data name="str1385" xml:space="preserve">
+    <value>
+Net Pft Share
+&lt;CUR&gt;</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="fmt10_1024" type="System.Byte[], mscorlib">
+    <value>FQA5AFIAWABfAHMAeACFAI8AmQChALcAxgDXAN0AOQE5ATkBRAFSAVwBaQE=</value>
+  </data>
+</root>
