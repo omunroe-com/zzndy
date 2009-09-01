@@ -5,14 +5,29 @@ require_once 'comet.php';
 
 function start_multiplayer()
 {
-    $fl = new FillerGame();
-    Comet::push("top.reportCode('{$fl->getCode()}')");
+    try{
+        $fl = new FillerGame();
+        Comet::push("top.reportCode('{$fl->getCode()}')");
+
+        $fl->wait();
+        $fl->enter();
+    }
+    catch(FillerException $ex)
+    {
+        Comet::push("top.nogame()");
+    }
 }
 
 function join_multiplayer($code)
 {
-    $fl = new FillerGame($code);
+    try{
+        $fl = new FillerGame(strtolower($code));
 
-    $fl->begin();
-    $fl->wait();
+        $fl->begin();
+        $fl->wait();
+    }
+    catch(FillerException $ex)
+    {
+        Comet::push("top.nogame('$code')");
+    }
 }

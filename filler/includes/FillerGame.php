@@ -15,7 +15,7 @@ class FillerGame {
     }
 
     private $code = null;
-    private $fd = -1;
+    private $fd = FALSE;
     private $fname = '';
     private $mtime;
 
@@ -23,6 +23,10 @@ class FillerGame {
     {
         $this->fname = FillerGame::getFileName($this->code);
         $this->fd = fopen($this->fname, $mode);
+        if($this->fd === FALSE)
+        {
+            throw new FillerException();
+        }
     }
 
     public function __construct($code = null)
@@ -38,15 +42,35 @@ class FillerGame {
 
     public function __destruct()
     {
-        fclose($this->fd);
+        if($this->fd !== FALSE)
+        {
+            fclose($this->fd);
+        }
     }
 
     public function getCode()
     {
         if(is_null($this->code))
         {
-            $this->code = FillerGame::makeCode();
-            $this->init('x+');
+            $i = 0;
+            do{
+                $this->code = FillerGame::makeCode();
+
+                try{
+                    $this->init('x+');
+                }
+                catch(FillerException $ex)
+                {
+                    $this->code = null;
+                    $this->fd = FALSE;
+                }
+            }
+            while(++$i < 3 && $this->fd === FALSE);
+
+            if($this->fd == FALSE)
+            {
+                throw new FillerException();
+            }
 
             $this->write('START');
         }
@@ -82,13 +106,26 @@ class FillerGame {
 
     public function wait()
     {
-        while($this->mtime < $this->getMTime())
+        while($this->mtime <= $this->getMTime())
         {
             sleep(1);
         }
+    }
+
+    public function enter()
+    {
+        $x = file  ( $this->fname);
+            echo 'hello';
+        print_r($x);
+        flush();
     }
 }
 
 function rand_bool($chance = 50) {
     return (rand(1,100) <= $chance);
+}
+
+class FillerException extends Exception
+    {
+
 }

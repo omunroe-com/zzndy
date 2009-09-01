@@ -14,6 +14,7 @@
     <script type="text/javascript" src="script/common/color.js"></script>
     <script type="text/javascript" src="script/logic.js"></script>
     <script type="text/javascript" src="script/presentation.js"></script>
+    <script type="text/javascript" src="script/multiplayer.js"></script>
     <link rel="shortcut icon" href="img/filler-24.png" type="image/png"/>
 </head>
 <body>
@@ -48,123 +49,6 @@
     <div class="content">
         &copy;
         <script type="text/javascript">
-            var menu1 = document.getElementById('prompt-multiplayer');
-            var menu2 = document.getElementById('choose-multiplayer');
-
-            function toggleMultiplayerMenu(displayRoot)
-            {
-                menu1.style.display = displayRoot ? 'block' : 'none';
-                menu2.style.display = displayRoot ? 'none' : 'block';
-            }
-
-            initDomGen(['div','p','a', 'input']);
-
-            var comet = null;
-            var popup = null;
-
-            function create()
-            {
-                comet = Comet.open('push.php', {a:'start'});
-
-                popup = $div({'class':'popup'}, [
-                    $div({'class':'content'}, [
-                        $div({'class':'title', 'id':'title'}, 'Starting new multiplayer game ...'),
-                        $p({'class':'message','id':'msg'}, 'Please wait ...'),
-                        $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')])
-                    ])]);
-
-
-                document.body.appendChild(popup);
-            }
-
-            function cancel()
-            {
-                remove(popup);
-                remove(comet);
-                toggleMultiplayerMenu(true);
-            }
-
-            function remove(el)
-            {
-                if (el != null)
-                {
-                    el.parentNode.removeChild(el);
-                    el = null;
-                }
-            }
-
-            function reportCode(code)
-            {
-                var e = document.getElementById('msg');
-                e.innerHTML = 'Game key is <b title="' + code.toUpperCase() + ' - case insensitive">' + code.toUpperCase() + '</b>. Share this key with another party to play with them.';
-
-                e = document.getElementById('title');
-                e.innerHTML = e.innerHTML.replace(/ \.{3}$/, '');
-            }
-
-            function istart(flag)
-            {
-                var e = document.getElementById('msg');
-                e.innerHTML = e.innerHTML.replace(/Waiting for the server \.{3}/, (flag ? 'Your move.' : 'The other party has first move.'));
-            }
-
-            function join()
-            {
-                popup = $div({'class':'popup'}, [
-                    $div({'class':'content'}, [
-                        $div({'class':'title', 'id':'title'}, 'Enter game key'),
-                        $p({'class':'message','id':'msg'}, ['The shared key is ',
-                            $input({'id':'key', 'type':'text', 'maxlength':5,'style':'width:8ex', 'onkeypress':'disableEvent(event)', 'onkeyup':'updateOkLink()'})
-                        ]),
-                        $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')]),
-                        $div({'class':'ok disabled'}, [$a({'id':'join-ok', 'href':'#ok','onclick':'ok();return false;'}, 'Ok')])
-                    ])]);
-
-                document.body.appendChild(popup);
-                document.getElementById("key").focus();
-            }
-
-            function disableEvent(e)
-            {
-                e.cancelBubble = true;
-            }
-
-            function updateOkLink()
-            {
-                var key = document.getElementById("key");
-                okLinkClass((key.value.length == 5) ? 'ok' : 'ok disabled');
-            }
-
-            function okLinkClass(value)
-            {
-                var link = document.getElementById("join-ok");
-                if (link != null)
-                {
-                    var parent = link.parentNode;
-                    if (parent != null)
-                    {
-                        if (value !== undefined)
-                            parent.className = value;
-                        return parent.className;
-                    }
-                }
-                return null;
-            }
-
-            function ok()
-            {
-                var cls = okLinkClass();
-                if (cls == null || cls.match(/\bdisabled\b/)) return;
-                
-                okLinkClass('ok disabled');
-                var key = document.getElementById("key").value;
-
-                var e = document.getElementById('msg');
-                e.innerHTML = 'The shared key is <b>${key:u}</b>. Waiting for the server ...'.fmt({'key':key});
-
-                comet = Comet.open('push.php', {a:'join', k: key});
-            }
-
             var a = ['and', 'mail'].join('y@g');
             var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
             document.write(b.join(''));
