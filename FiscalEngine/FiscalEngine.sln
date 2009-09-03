@@ -1,9 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FiscalEngine", "src/FiscalEngine/FiscalEngine.vbproj", "{69783EA9-1006-4095-96C3-FD894CDFDE50}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FiscalEngine", "src\FiscalEngine\FiscalEngine.vbproj", "{69783EA9-1006-4095-96C3-FD894CDFDE50}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EF4F848-2FC0-446D-8893-D051F228892E}"
+	ProjectSection(SolutionItems) = preProject
+		FiscalEngine.vsmdi = FiscalEngine.vsmdi
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_FiscalEngine", "test\Test_FiscalEngine\Test_FiscalEngine.csproj", "{88BD1134-D291-4FDF-8CA1-3222E9AE0B0D}"
 EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = FiscalEngine.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -13,6 +24,10 @@ Global
 		{69783EA9-1006-4095-96C3-FD894CDFDE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69783EA9-1006-4095-96C3-FD894CDFDE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69783EA9-1006-4095-96C3-FD894CDFDE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88BD1134-D291-4FDF-8CA1-3222E9AE0B0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88BD1134-D291-4FDF-8CA1-3222E9AE0B0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88BD1134-D291-4FDF-8CA1-3222E9AE0B0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88BD1134-D291-4FDF-8CA1-3222E9AE0B0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

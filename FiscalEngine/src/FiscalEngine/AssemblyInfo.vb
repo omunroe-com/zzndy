@@ -31,3 +31,5 @@ Imports System.Runtime.InteropServices
 <Assembly:  AssemblyVersion("1.3.*")>
 
 
+
+<Assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Test_FiscalEngine")> 
