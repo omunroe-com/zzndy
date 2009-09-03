@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FiscalEngine", "FiscalEngine/FiscalEngine.vbproj", "{69783EA9-1006-4095-96C3-FD894CDFDE50}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FiscalEngine", "src/FiscalEngine/FiscalEngine.vbproj", "{69783EA9-1006-4095-96C3-FD894CDFDE50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
