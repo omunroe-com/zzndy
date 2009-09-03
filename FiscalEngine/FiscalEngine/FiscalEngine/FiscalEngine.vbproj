@@ -21,7 +21,7 @@
     </FileUpgradeFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>.\bin\</OutputPath>
+    <OutputPath>..\..\build\bin\Debug\</OutputPath>
     <DocumentationFile>IAMPEEngine.xml</DocumentationFile>
     <DebugSymbols>True</DebugSymbols>
     <DefineDebug>True</DefineDebug>
@@ -32,7 +32,7 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>.\bin\</OutputPath>
+    <OutputPath>..\..\build\bin\Release\</OutputPath>
     <DocumentationFile>IAMPEEngine.xml</DocumentationFile>
     <DebugSymbols>False</DebugSymbols>
     <DefineDebug>False</DefineDebug>
