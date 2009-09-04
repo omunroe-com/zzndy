@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 using IAMPEEngine;
@@ -15,9 +16,7 @@ namespace Test_FiscalEngine
     public class GeneralCalculationTest
     {
         private TestContext testContextInstance;
-        private const string pathDotnet = "dotnet";
-        private const string pathOriginal = "original";
-
+       
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
@@ -55,61 +54,18 @@ namespace Test_FiscalEngine
         [TestInitialize]
         public void MyTestInitialize()
         {
-            string dataPath = Path.GetFullPath( Path.Combine( Environment.CurrentDirectory, @"..\..\..\data" ) );
-            string dataIn = Path.Combine( dataPath, "in" );
-            string dataOut = Path.Combine( dataPath, "out" );
 
-            Assert.IsTrue( Directory.Exists( dataPath ), "Data folder not found." );
-            Assert.IsTrue( Directory.Exists( dataIn ), "Data input folder not found." );
-            Assert.IsTrue( Directory.Exists( dataOut ), "Data output folder not found." );
+            string dataPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\data"));
+            string workingPath = Path.GetFullPath(Environment.CurrentDirectory);
 
+            CalculationConfigManager ccm = new CalculationConfigManager(dataPath, workingPath);
 
-            if ( Directory.Exists( pathDotnet ) )
-            {
-                Directory.Delete( pathDotnet );
-            }
-            if ( Directory.Exists( pathOriginal ) )
-            {
-                Directory.Delete( pathOriginal );
-            }
+            ccm.SetupConfigs();
 
-            Assert.IsFalse( Directory.Exists( pathDotnet ), "Cannot setup fresh output folder for dotnet engine." );
-            Assert.IsFalse( Directory.Exists( pathOriginal ), "Cannot setup fresh output folder for original engine." );
-
-            Directory.CreateDirectory( pathDotnet );
-            Directory.CreateDirectory( pathOriginal );
-
-            Assert.IsTrue( Directory.Exists( pathDotnet ), "Failed to create working folder for dotnet engine." );
-            Assert.IsTrue( Directory.Exists( pathOriginal ), "Failed to create working folder for original engine." );
-
-            CopyDir( dataIn, pathDotnet );
-            CopyDir( dataIn, pathOriginal );
+            testContextInstance.Properties.Add( "ccm", ccm );
         }
 
-        private static void CopyDir( string src, string dst )
-        {
-            if ( !Directory.Exists( dst ) )
-            {
-                Directory.CreateDirectory( dst );
-            }
-
-            foreach ( string file in Directory.GetFiles( src ) )
-            {
-                string filename = Path.GetFileName( file );
-                File.Copy( file, Path.Combine( dst, filename ) );
-            }
-
-            foreach ( string dir in Directory.GetDirectories( src ) )
-            {
-                string dirname = Path.GetFileName( dir );
-                if ( dirname.StartsWith( "." ) )
-                {
-                    continue;
-                }
-
-                CopyDir( dir, Path.Combine( dst, dirname ) );
-            }
-        }
+       
 
         //Use TestCleanup to run code after each test has run
         //[TestCleanup()]
@@ -126,19 +82,23 @@ namespace Test_FiscalEngine
         [TestMethod]
         public void CompareCalculationTest()
         {
+            var ccm = testContextInstance.Properties[ "ccm" ] as CalculationConfigManager;
+            if(ccm==null)Assert.Fail("Configuration management was not correctly set up.");
+
             FiscalEngine.FiscalEngine dotnet = new FiscalEngine.FiscalEngine();
             AMPEEngine original = new AMPEEngine();
 
-            foreach ( string directory in Directory.GetDirectories( pathDotnet ) )
+            foreach ( CalculationCase calculationCase in ccm )
             {
-                string file = Path.GetFullPath( Path.Combine( directory, "~gnt1f.tmp" ) );
-                dotnet.AsIMainexec.CalculateEconomics( file );
-            }
-
-            foreach ( string directory in Directory.GetDirectories( pathOriginal ) )
-            {
-                string file = Path.GetFullPath( Path.Combine( directory, "~gnt1f.tmp" ) );
-                original.AsIMainexec.CalculateEconomics( file );
+                switch ( calculationCase.Type )
+                {
+                    case ECalculationCaseType.DotNet:
+                        dotnet.AsIMainexec.CalculateEconomics( calculationCase.StartFile );
+                        break;
+                    case ECalculationCaseType.Vb6:
+                        original.AsIMainexec.CalculateEconomics(calculationCase.StartFile);
+                        break;
+                }
             }
         }
     }

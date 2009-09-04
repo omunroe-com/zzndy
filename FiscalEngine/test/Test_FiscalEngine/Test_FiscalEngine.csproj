@@ -44,6 +44,8 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalculationCase.cs" />
+    <Compile Include="CalculationConfigManager.cs" />
     <Compile Include="GeneralCalculationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
