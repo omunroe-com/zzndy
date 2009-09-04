@@ -1,9 +1,9 @@
 Option Strict Off
 Option Explicit On
-<System.Runtime.InteropServices.ProgId("AMPEEngine_NET.AMPEEngine")> Public Class AMPEEngine
+<System.Runtime.InteropServices.ProgId("AMPEEngine_NET.FiscalEngine")> Public Class FiscalEngine
 	Implements ASPEEngineExTypeLib.ASPEEngineEx
 	Implements MainexecTypeLib.IMainexec
-	' Name:         AMPEEngine.cls
+	' Name:         FiscalEngine.cls
 	' Function:     AS$ET Fiscal Model Engine
 	' Date:         10 Jan 2005 JWD
 	'---------------------------------------------------------
