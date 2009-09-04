@@ -9,9 +9,10 @@ require_once INCL . 'multiplayer-logic.php';
 
 
 $action = $_GET['a'];
-if($action == 'start')
+if($action == 'start' && isset($_GET['f']))
 {
-    start_multiplayer();
+    list($w, $h, $f) = split('-', $_GET['f']);
+    start_multiplayer($w, $h, $f);
 }
 else if($action == 'join' && isset($_GET['k']))
 {

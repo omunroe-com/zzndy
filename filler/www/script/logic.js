@@ -12,10 +12,12 @@
     var color_name = ['red', 'green', 'blue', 'cyan', 'magneta', 'gray', 'yellow'];
 
     var clusterId = 0;
-    Cluster = function( i, j, color )
+    Cluster = function(i, j, color)
     {
         this.color = color;
-        this.points = [[i,j]];
+        this.points = [
+            [i,j]
+        ];
         this.neighbors = [];
         this.id = ++clusterId;
     };
@@ -27,11 +29,11 @@
      * @param {Cluster} cluster  neighbor cluster
      * @return {Boolean}         true if cluster was added
      */
-    C.addAdj = function( cluster )
+    C.addAdj = function(cluster)
     {
         var isNewAdjacent = this.neighbors.indexOf(cluster) == -1;
 
-        if( isNewAdjacent )
+        if (isNewAdjacent)
         {
             this.neighbors.push(cluster);
             cluster.addAdj(this);
@@ -46,15 +48,15 @@
      * @param {Number} j  point column coordiante
      * @return {Cluster}  this object for chaining.
      */
-    C.add = function( i, j )
+    C.add = function(i, j)
     {
         var point = [i,j];
 
-        function elEqPt( el ) {
+        function elEqPt(el) {
             return el[0] == point[0] && el[1] == point[1];
         }
 
-        if( !this.points.some(elEqPt) )
+        if (!this.points.some(elEqPt))
         {
             this.points.push(point);
         }
@@ -62,21 +64,21 @@
         return this;
     };
 
-    C.replace = function( oldneighbor, newneighbor )
+    C.replace = function(oldneighbor, newneighbor)
     {
         var oldidx = this.neighbors.indexOf(oldneighbor);
         var newidx = this.neighbors.indexOf(newneighbor);
 
-        if( newidx == -1 )
+        if (newidx == -1)
             this.neighbors[oldidx] = newneighbor;
         else
             this.neighbors.splice(oldidx, 1);
     };
 
-    C.remove = function( neighbor )
+    C.remove = function(neighbor)
     {
         var idx = this.neighbors.indexOf(neighbor);
-        if( idx != -1 )
+        if (idx != -1)
             this.neighbors.splice(idx, 1);
     };
 
@@ -86,19 +88,19 @@
      * @param {Array} tiles       field
      * @return {Array}            array of new neighbors
      */
-    C.eat = function( neighbor, tiles )
+    C.eat = function(neighbor, tiles)
     {
         var p, i = -1, n = neighbor.neighbors.length;
-        while( ++i < n )
+        while (++i < n)
         {
             var other = neighbor.neighbors[i];
-            if( other == this )
+            if (other == this)
                 this.remove(neighbor);
             else
                 other.replace(neighbor, this);
         }
 
-        while( p = neighbor.points.pop() )
+        while (p = neighbor.points.pop())
         {
             tiles[p[0]][p[1]] = this;
             this.add(p[0], p[1]);
@@ -114,9 +116,9 @@
 
     var prob = 0.4;
 
-    function findAdjacent( i, j, cluster )
+    function findAdjacent(i, j, cluster)
     {
-        if( !(cluster instanceof Cluster) )
+        if (!(cluster instanceof Cluster))
             throw new Error('findAdjacent can only operate on clusters');
 
         var iu = i + 1;
@@ -127,55 +129,55 @@
         var adj = [];
         var it = this;
 
-        function addAdj( i, j )
+        function addAdj(i, j)
         {
             var cell = it.tiles[i][j];
 
-            if( cell instanceof Cluster && cell != cluster )
+            if (cell instanceof Cluster && cell != cluster)
             {
                 adj.push(cell);
             }
-            else if( cell == cluster.color )
+            else if (cell == cluster.color)
             {
                 cluster.add(i, j);
                 it.tiles[i][j] = cluster;
 
                 adj = adj.concat(findAdjacent.call(it, i, j, cluster));
             }
-            else if( cell != cluster )
-                {
-                    adj.push([i,j]);
-                }
+            else if (cell != cluster)
+            {
+                adj.push([i,j]);
+            }
         }
 
-        if( iu < this.my )
+        if (iu < this.my)
         {
-            if( jl >= 0 )
+            if (jl >= 0)
                 addAdj(iu, jl);
-            if( jr < this.mx )
+            if (jr < this.mx)
                 addAdj(iu, jr);
         }
-        if( id >= 0 )
+        if (id >= 0)
         {
-            if( jl >= 0 )
+            if (jl >= 0)
                 addAdj(id, jl);
-            if( jr < this.mx )
+            if (jr < this.mx)
                 addAdj(id, jr);
         }
 
         return adj;
     }
 
-    FillerLogic = function( mx, my )
+    FillerLogic = function(mx, my)
     {
         this.mx = mx;
         this.my = my;
 
         this.tiles = [];
-        for( var i = 0; i < my; ++i )
+        for (var i = 0; i < my; ++i)
         {
             this.tiles[i] = [];
-            for( var j = 0; j < mx; ++j )
+            for (var j = 0; j < mx; ++j)
             {
                 this.tiles[i][j]
                         = (i == 0 || Math.random() > prob)
@@ -199,21 +201,21 @@
         do
         {
             var i = p[0],j = p[1];
-            if( typeof this.tiles[i][j] == 'number' ) {
+            if (typeof this.tiles[i][j] == 'number') {
                 var cluster = this.tiles[i][j] = new Cluster(i, j, this.tiles[i][j]);
 
                 // Get all points (or clusters) adjacent to this cluster
                 var adj = findAdjacent.call(this, i, j, cluster);
                 var neighbor;
 
-                while( neighbor = adj.pop() )
+                while (neighbor = adj.pop())
                 {
-                    if( neighbor instanceof Array && !(this.tiles[neighbor[0]][neighbor[1]] instanceof Cluster) )
+                    if (neighbor instanceof Array && !(this.tiles[neighbor[0]][neighbor[1]] instanceof Cluster))
                         points.push(neighbor);
                 }
             }
         }
-        while( p = points.pop() );
+        while (p = points.pop());
     }
 
     /**
@@ -226,7 +228,7 @@
         {
             var k = -1, n = cluster.points.length;
             var neighbors = [];
-            while( ++k < n )
+            while (++k < n)
             {
                 var i = cluster.points[k][0], j = cluster.points[k][1];
                 var adj = findAdjacent.call(this, i, j, cluster);
@@ -234,18 +236,18 @@
             }
 
             var neighbor;
-            while( neighbor = neighbors.pop() )
+            while (neighbor = neighbors.pop())
             {
-                if( neighbor.addAdj(cluster) )
+                if (neighbor.addAdj(cluster))
                     clusters.push(neighbor);
             }
         }
-        while( cluster = clusters.pop() );
+        while (cluster = clusters.pop());
     }
 
     var L = FillerLogic.prototype;
 
-    L.getColor = function( i, j )
+    L.getColor = function(i, j)
     {
         return colors[(this.tiles[i][j] instanceof Cluster) ? this.tiles[i][j].color : this.tiles[i][j]];
     };
@@ -279,13 +281,13 @@
         return (100 * this.tiles[this.my - 1][this.mx - 1].points.length / (this.mx * this.my));
     });
 
-    L.setColor = function( color, clust )
+    L.setColor = function(color, clust)
     {
         // Check errors
-        if( color == this.p2color )
+        if (color == this.p2color)
             throw new Error('Cannot change color to opponents color.');
 
-        if( color == this.p1color )
+        if (color == this.p1color)
             throw new Error('Must change color.');
 
         var cluster = clust || this.p1cluster;
@@ -302,10 +304,10 @@
 
         var neighbor;
         var i = -1;
-        while( ++i < cluster.neighbors.length )
+        while (++i < cluster.neighbors.length)
         {
             neighbor = cluster.neighbors[i];
-            if( neighbor.color == cluster.color )
+            if (neighbor.color == cluster.color)
             {
                 neighbor = cluster.neighbors.splice(i--, 1)[0];
                 merged.push(neighbor);
@@ -317,17 +319,17 @@
         // merge eaten neighbor clusters
         var newone;
         i = -1;
-        while( ++i < newneighbors.length )
+        while (++i < newneighbors.length)
         {
             newone = newneighbors[i];
 
-            if( newone != cluster && merged.indexOf(newone) == -1 )
+            if (newone != cluster && merged.indexOf(newone) == -1)
                 cluster.addAdj(newone);
         }
 
         // Find surrounded clusters
         var surrounded = findSurroundedClusters.call(this, cluster);
-        while( neighbor = surrounded.pop() )
+        while (neighbor = surrounded.pop())
         {
             toredraw = toredraw.concat(neighbor.points.clone());
             cluster.eat(neighbor, this.tiles);
@@ -336,7 +338,7 @@
         return toredraw;
     };
 
-    function findSurroundedClusters( origin )
+    function findSurroundedClusters(origin)
     {
         var surrounded = [];
         var processed = [];
@@ -344,32 +346,32 @@
         var enemy = origin == this.p1cluster ? this.p2cluster : this.p1cluster;
 
         var i = -1,n = origin.neighbors.length;
-        while( ++i < n )
+        while (++i < n)
         {
             var threadstart = origin.neighbors[i];
-            if( threadstart != enemy )
+            if (threadstart != enemy)
                 threads.push([threadstart]);
         }
 
         var thread;
-        while( thread = threads.pop() )
+        while (thread = threads.pop())
         {
             var threadprocessed = [];
             var threadEaten = true;
 
             var cluster;
-            while( cluster = thread.pop() )
+            while (cluster = thread.pop())
             {
                 threadprocessed.push(cluster);
                 var j = -1, m = cluster.neighbors.length;
-                while( ++j < m )
+                while (++j < m)
                 {
                     var neighbor = cluster.neighbors[j];
 
                     // only work on new non processed non surrounded neighbors
-                    if( neighbor != origin && threadprocessed.indexOf(neighbor) == -1 && surrounded.indexOf(neighbor) == -1 )
+                    if (neighbor != origin && threadprocessed.indexOf(neighbor) == -1 && surrounded.indexOf(neighbor) == -1)
                     {
-                        if( neighbor == enemy || processed.indexOf(neighbor) != -1 )
+                        if (neighbor == enemy || processed.indexOf(neighbor) != -1)
                             threadEaten = false;
                         else
                             thread.push(neighbor);
@@ -377,7 +379,7 @@
                 }
             }
 
-            if( threadEaten )
+            if (threadEaten)
                 surrounded = surrounded.concat(threadprocessed).uniq();
             else
                 processed = processed.concat(threadprocessed).uniq();
@@ -391,14 +393,14 @@
         var cluster = this.p2cluster;
 
         var color = 0, max = 0;
-        while( color == cluster.color || color == this.p1color )
+        while (color == cluster.color || color == this.p1color)
             color = Math.floor(Math.random() * 7);
 
         var scores = getScores.call(this, cluster.neighbors, [cluster], 3, cluster.color);
-        for( var col in scores )
+        for (var col in scores)
         {
             var info = scores[col];
-            if( info.score > max && col != cluster.color && col != this.p1color )
+            if (info.score > max && col != cluster.color && col != this.p1color)
             {
                 max = info.score;
                 color = col;
@@ -408,37 +410,38 @@
         return this.setColor(color, cluster);
     };
 
-    function getScores( clustres, ignore, nRecur, ignoreColor )
+    function getScores(clustres, ignore, nRecur, ignoreColor)
     {
-        if( ignoreColor === undefined )
+        if (ignoreColor === undefined)
             ignoreColor = -1;
 
         var scores = {};
         var i = -1, n = clustres.length;
-        while( ++i < n )
+        while (++i < n)
         {
             var cluster = clustres[i];
             var color = cluster.color;
-            function clustreMatch( other )
+
+            function clustreMatch(other)
             {
                 return cluster.id == other.id;
             }
 
-            if( color != ignoreColor && !ignore.some(clustreMatch) )
+            if (color != ignoreColor && !ignore.some(clustreMatch))
             {
-                if( !(color in scores) )
+                if (!(color in scores))
                     scores[color] = {score:0, clusters:[]};
 
                 scores[color].clusters.push(cluster);
             }
         }
 
-        function getPoints( array, cluster )
+        function getPoints(array, cluster)
         {
             return array.concat(cluster.points);
         }
 
-        for( var col in scores )
+        for (var col in scores)
         {
             var score = scores[col];
             var points = score.clusters.reduce(getPoints, []);
@@ -448,10 +451,11 @@
         return scores;
     }
 
-    function measurePosition( points )
+    function measurePosition(points)
     {
         var it = this;
-        function measurePoint( sum, point ) {
+
+        function measurePoint(sum, point) {
             var i = it.my - point[0] - 1;
             var j = it.mx - point[1] - 1;
             var t = (1 + tanh((32 / it.mx) * (j - it.mx / 2))) / 2;
@@ -469,14 +473,56 @@
         return points.reduce(measurePoint, 0);
     }
 
+    L.serialize = function()
+    {
+        var buf = [this.mx,'-', this.my,'-'];
+        var prev = [];
+        var i = -1;
+        while (++i < this.my)
+        {
+            var j = -1;
+            while (++j < this.mx)
+            {
+                if (prev.length < 2)
+                {
+                    prev.push(this.tiles[i][j].color);
+                }
+                else
+                {
+                    buf.push(to49(prev[0], prev[1]));
+                    prev = [];
+                }
+            }
+        }
+
+
+        return buf.join('');
+    };
+
+    /**
+     * Converts two base 7 numbers into one base 49 number.
+     * @param a
+     * @param b
+     */
+    function to49(a, b)
+    {
+        var l = (a * 7 + b);
+        if (l > 35)l += 13;
+        else if (l > 9)l += 7;
+        return String.fromCharCode(48 + l);
+    }
+
     var exp = Math.exp;
-    function sinh( x ) {
+
+    function sinh(x) {
         return (exp(x) - exp(-x)) / 2
     }
-    function cosh( x ) {
+
+    function cosh(x) {
         return (exp(x) + exp(-x)) / 2
     }
-    function tanh( x ) {
+
+    function tanh(x) {
         return sinh(x) / cosh(x)
     }
 

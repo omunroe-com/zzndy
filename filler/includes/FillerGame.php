@@ -1,5 +1,8 @@
 <?php
 
+//32x24
+
+
 class FillerGame {
     protected static function makeCode()
     {
@@ -40,6 +43,10 @@ class FillerGame {
         }
     }
 
+    /**
+     * Destructor, closes file descriptor if any.
+     *
+     */
     public function __destruct()
     {
         if($this->fd !== FALSE)
@@ -104,6 +111,11 @@ class FillerGame {
         }
     }
 
+    public function setup($w, $h, $f)
+    {
+        $this->write("$w $h $f");
+    }
+
     public function wait()
     {
         while($this->mtime <= $this->getMTime())
@@ -114,8 +126,8 @@ class FillerGame {
 
     public function enter()
     {
-        $x = file  ( $this->fname);
-            echo 'hello';
+        $x = file($this->fname);
+        echo 'hello';
         print_r($x);
         flush();
     }

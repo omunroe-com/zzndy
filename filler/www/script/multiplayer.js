@@ -1,3 +1,17 @@
+Comet = {
+    open : function(url, args)
+    {
+        var ifr = document.createElement('iframe');
+
+        ifr.setAttribute('src', url + '?' + toQueryString(args));
+        ifr.setAttribute('style', 'display:none');
+
+        document.body.appendChild(ifr);
+
+        return ifr;
+    }
+};
+
 /**
  * Toggle multiplayer menu options.
  * @param {Boolean} displayRoot - if true display root menu option

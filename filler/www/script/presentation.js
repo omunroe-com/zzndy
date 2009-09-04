@@ -153,16 +153,3 @@ F.__defineGetter__('p2color', function() {
     return this.logic.p2color;
 });
 
-Comet = {};
-
-Comet.open = function(url, args)
-{
-    var ifr = document.createElement('iframe');
-
-    ifr.setAttribute('src', url + '?' + toQueryString(args));
-    ifr.setAttribute('style', 'display:none');
-
-    document.body.appendChild(ifr);
-
-    return ifr;
-};

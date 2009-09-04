@@ -22,6 +22,11 @@ class Comet
         flush();
     }
 
+    public static function log($text)
+    {
+        Comet::push('console.log("'.$text.'")');
+    }
+
     public static function close()
     {
         echo self::$footer;

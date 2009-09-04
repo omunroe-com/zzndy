@@ -3,12 +3,21 @@
 require_once 'FillerGame.php';
 require_once 'comet.php';
 
-function start_multiplayer()
+/**
+ * @param {int} $w    - field width
+ * @param {int} $h    - field height
+ * @param {string} $f - encoded field configuration
+ * @return
+ *
+ */
+function start_multiplayer($w, $h, $f)
 {
     try{
         $fl = new FillerGame();
         Comet::push("top.reportCode('{$fl->getCode()}')");
 
+        // TODO: Check that $w and $h are in range
+        $fl->setup($w, $h, $f);
         $fl->wait();
         $fl->enter();
     }
