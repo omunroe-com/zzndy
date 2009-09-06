@@ -13,12 +13,10 @@
         open : function(url, args)
         {
             var ifr = document.createElement('iframe');
-            ifr.setAttribute('src', url + '?' + toQueryString(args));
             ifr.setAttribute('style', 'display:none');
 
-            console.log(ifr);
-
             document.body.appendChild(ifr);
+            ifr.src = url + '?' + toQueryString(args); 
 
             return ifr;
         }
@@ -30,7 +28,7 @@
     function reportCode(code)
     {
         console.log('Received code: ' + code);
-        Comet.open('push.php', {a:'join', k:code});
+        window.setTimeout(function(){Comet.open('push.php', {a:'join', k:code})}, 500);
     }
 
     function istart(itsMyTurn)

@@ -25,6 +25,21 @@ function Filler(canvas, mx, my)
 
 var F = Filler.prototype;
 
+F.makeNext = function(mx, my)
+{
+    this.next = new FillerLogic(mx || default_mx, my || default_my);
+};
+
+F.activateNext = function()
+{
+    this.logic = this.next;
+    this.dx = margin * canvas.width / (this.logic.mx + .5);
+    this.dy = margin * canvas.height / (this.logic.my + 1);
+
+    this.next = null;
+    this.render();
+};
+
 F.render = function()
 {
     var it = this;

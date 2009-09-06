@@ -7,17 +7,24 @@ require_once 'comet.php';
  * @param {int} $w    - field width
  * @param {int} $h    - field height
  * @param {string} $f - encoded field configuration
- * @return
- *
  */
 function start_multiplayer($w, $h, $f)
 {
     try{
         $fl = new FillerGame();
+
+
+        try{
+            $fl->setup($w, $h, $f);
+        }
+        catch(FillerException $ex)
+        {
+            $fl->cleanup();
+            return false;
+        }
+
         Comet::push("top.reportCode('{$fl->getCode()}')");
 
-        // TODO: Check that $w and $h are in range
-        $fl->setup($w, $h, $f);
         $fl->wait();
         $fl->enter();
     }
@@ -25,18 +32,21 @@ function start_multiplayer($w, $h, $f)
     {
         Comet::push("top.nogame()");
     }
+
+    return true;
 }
 
 function join_multiplayer($code)
 {
     try{
         $fl = new FillerGame(strtolower($code));
-
         $fl->begin();
-        $fl->wait();
+    //$fl->wait();
     }
     catch(FillerException $ex)
     {
         Comet::push("top.nogame('$code')");
     }
+
+    return true;
 }

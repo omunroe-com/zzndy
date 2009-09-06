@@ -24,7 +24,7 @@ class Comet
 
     public static function log($text)
     {
-        Comet::push('console.log("'.$text.'")');
+        Comet::push('console.log("'.str_replace("\n", '\n', $text).'")');
     }
 
     public static function close()

@@ -2,11 +2,10 @@ Comet = {
     open : function(url, args)
     {
         var ifr = document.createElement('iframe');
-
-        ifr.setAttribute('src', url + '?' + toQueryString(args));
         ifr.setAttribute('style', 'display:none');
 
         document.body.appendChild(ifr);
+        ifr.src = url + '?' + toQueryString(args);
 
         return ifr;
     }
@@ -38,7 +37,8 @@ var popup = null;
 
 function create()
 {
-    comet = Comet.open('push.php', {a:'start'});
+    filler.makeNext();
+    comet = Comet.open('push.php', {a:'start', f:filler.next.serialize()});
 
     popup = $div({'class':'popup'}, [
         $div({'class':'content'}, [

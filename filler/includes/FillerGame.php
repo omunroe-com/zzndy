@@ -12,10 +12,15 @@ class FillerGame {
         return str_replace(array('0', 'o'), array('y', 'z'), $code);
     }
 
-    protected static function getFileName($code)
+    private static function getFileName($code)
     {
         return sys_get_temp_dir() . '7col-' . $code . '.game';
     }
+
+    private static $minw = 10;
+    private static $maxw = 45;
+    private static $minh = 5;
+    private static $maxh = 25;
 
     private $code = null;
     private $fd = FALSE;
@@ -25,7 +30,7 @@ class FillerGame {
     private function init($mode)
     {
         $this->fname = FillerGame::getFileName($this->code);
-        $this->fd = fopen($this->fname, $mode);
+        $this->fd = @fopen($this->fname, $mode);
         if($this->fd === FALSE)
         {
             throw new FillerException();
@@ -85,10 +90,16 @@ class FillerGame {
         return $this->code;
     }
 
+    private function read()
+    {
+        return fgets($this->fd);
+    }
+
     private function write($str)
     {
+        fseek($this->fd, 0, SEEK_END);
         fwrite($this->fd, time() . "\t" . $str . "\n");
-        flush($this->fd);
+        fflush($this->fd);
         $this->mtime = $this->getMTime();
     }
 
@@ -101,8 +112,15 @@ class FillerGame {
     public function begin()
     {
         $i_start = rand_bool();
-        if(!$i_start)                 {
+
+        list($ts, $line) = split("\t", $this->read());
+        list($ts, $w, $h, $f) = split("\t", $this->read());
+
+        if(!$i_start) {
+            if($ts == time())
+            sleep(1);
             $this->write('PASS');
+            Comet::log($this->getMTime());
             Comet::push("top.istart(false)");
         }
         else
@@ -113,23 +131,41 @@ class FillerGame {
 
     public function setup($w, $h, $f)
     {
-        $this->write("$w $h $f");
+        if(FillerGame::dimensionsOk($w, $h))
+        {
+            $this->write("$w\t$h\t$f");
+        }
+        else
+        {
+            throw new FillerException();
+        }
     }
 
     public function wait()
     {
-        while($this->mtime <= $this->getMTime())
+
+        while($this->mtime >= $this->getMTime())
         {
+            Comet::log('failed: '.$this->mtime.' >= '.$this->getMTime() );
             sleep(1);
         }
+
+        Comet::log('No more wating');
     }
 
     public function enter()
     {
-        $x = file($this->fname);
-        echo 'hello';
-        print_r($x);
-        flush();
+        Comet::log('start');
+    }
+
+    protected static function dimensionsOk($w, $h)
+    {
+        return $w>=FillerGame::$minw && $w <= FillerGame::$maxw && $h>=FillerGame::$minh && $h <= FillerGame::$maxh;
+    }
+
+    public function cleanup()
+    {
+        unlink($this->fname);
     }
 }
 
