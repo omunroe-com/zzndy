@@ -214,103 +214,103 @@ Module MLoan
 1555: Fed = "Y"
 1560: MLO = my3(XM, 2)
 1580: End If
-1590: ElseIf EXPLOAN(YM, 2) = 4 Then  'LIF         ''''said 4 OK
-1595: Fed = "Y"
-1600: MLO = my3(XM, 2)
-1620: End If
-1630: 
-1635: 'check delay
-1640: If Fed = "Y" Then
-1650: PRIN = (EXPLOAN(YM, 3) / 100) * my3(XM, 5) * GPRATE(XM) * WINC(XM)
-1660: If EXPLOAN(YM, 4) = -989 Then 'DIS
-1670: TempYr = (Y2 - YLO) * 12
-1680: TempMo = M2 - MLO
-1690: delay = TempYr + TempMo
-1700: ElseIf EXPLOAN(YM, 4) = -987 Then  'PRD
-1710: TempYr = (Y1 - YLO) * 12
-1720: TempMo = M1 - MLO
-1730: delay = TempYr + TempMo
-1740: Else
-1750: delay = EXPLOAN(YM, 4)
-1760: End If
-					'If delay < 0 set delay = 0. This occurs when loan
-					'  repayment delay says PRD or DIS and the loan occurs
-					'  after that date (i.e. capital spent after prod start. In
-					'  prior versions of GIANT, this resulted in loan repayment
-					'  beginning BEFORE the loan receipt.  This would also happen
-					'  if user entered a negative number in delay column.
-					If delay < 0 Then
-						delay = 0
-					End If
-					
-1785: Call LoanCalc(YR, LG, MLO, YLO, PRIN, EXPLOAN(YM, 6), EXPLOAN(YM, 7), delay, EXPLOAN(YM, 5), EXPLOAN(YM, 8), L, LO, LT)
-1790: 
-1800: 'summing the results
-1810: For N = 1 To LG
-1820: LOAN(N) = LOAN(N) + LO(N)
-1830: For j = 1 To 5
-1840: lot(N, j) = lot(N, j) + LT(N, j)
-1850: Next j
-1860: Next N
-1870: 'erase array for next calculation
-					
-					
-					
-1880: 
-					Mos = (LG + 2) * 12
-					ReDim L(Mos, 4)
-					ReDim LO(LG)
-					ReDim LT(LG, 5) 'REDIM L(200, 4), LO(LG), LT(LG, 5)
-					
-1881: MLO = 0 'reset month, year, principal, delay
-1882: YLO = 0
-1883: PRIN = 0
-1884: delay = 0
-1890: 
-1900: End If
-1910: 
-1920: Next XM
-1930: 
-1940: End If
-		
-		For x = 1 To LG
-			lot(x, 5) = LOAN(x) - lot(x, 4)
-		Next x
-		
-		For x = 1 To LG
-			PRINC(x) = lot(x, 2)
-			INTRST(x) = lot(x, 3)
-			FINANCE(x) = lot(x, 5)
-		Next x
-		
+1590:           ElseIf EXPLOAN(YM, 2) = 4 Then  'LIF         ''said 4 OK
+1595:               Fed = "Y"
+1600:               MLO = my3(XM, 2)
+1620:           End If
+1630:
+1635:           'check delay
+1640:           If Fed = "Y" Then
+1650:               PRIN = (EXPLOAN(YM, 3) / 100) * my3(XM, 5) * GPRATE(XM) * WINC(XM)
+1660:               If EXPLOAN(YM, 4) = -989 Then 'DIS
+1670:                   TempYr = (Y2 - YLO) * 12
+1680:                   TempMo = M2 - MLO
+1690:                   delay = TempYr + TempMo
+1700:               ElseIf EXPLOAN(YM, 4) = -987 Then  'PRD
+1710:                   TempYr = (Y1 - YLO) * 12
+1720:                   TempMo = M1 - MLO
+1730:                   delay = TempYr + TempMo
+1740:               Else
+1750:                   delay = EXPLOAN(YM, 4)
+1760:               End If
+                    'If delay < 0 set delay = 0. This occurs when loan
+                    '  repayment delay says PRD or DIS and the loan occurs
+                    '  after that date (i.e. capital spent after prod start. In
+                    '  prior versions of GIANT, this resulted in loan repayment
+                    '  beginning BEFORE the loan receipt.  This would also happen
+                    '  if user entered a negative number in delay column.
+                    If delay < 0 Then
+                        delay = 0
+                    End If
+
+1785:               Call LoanCalc(YR, LG, MLO, YLO, PRIN, EXPLOAN(YM, 6), EXPLOAN(YM, 7), delay, EXPLOAN(YM, 5), EXPLOAN(YM, 8), L, LO, LT)
+1790:
+1800:               'summing the results
+1810:               For N = 1 To LG
+1820:                   LOAN(N) = LOAN(N) + LO(N)
+1830:                   For j = 1 To 5
+1840:                       lot(N, j) = lot(N, j) + LT(N, j)
+1850:                   Next j
+1860:               Next N
+1870:               'erase array for next calculation
+
+
+
+1880:
+                    Mos = (LG + 2) * 12
+                    ReDim L(Mos, 4)
+                    ReDim LO(LG)
+                    ReDim LT(LG, 5) 'REDIM L(200, 4), LO(LG), LT(LG, 5)
+
+1881:               MLO = 0 'reset month, year, principal, delay
+1882:               YLO = 0
+1883:               PRIN = 0
+1884:               delay = 0
+1890:
+1900:           End If
+1910:
+1920:       Next XM
+1930:
+1940:   End If
+
+        For x = 1 To LG
+            lot(x, 5) = LOAN(x) - lot(x, 4)
+        Next x
+
+        For x = 1 To LG
+            PRINC(x) = lot(x, 2)
+            INTRST(x) = lot(x, 3)
+            FINANCE(x) = lot(x, 5)
+        Next x
+
         Dim oPg1 As IGiantRptPageAssignStd
-		If RF(5) = "ALL" Or RF(5) = "VAR" Then 'print loan schedule
+        If RF(5) = "ALL" Or RF(5) = "VAR" Then 'print loan schedule
             ColumnNm(1) = ("LOANAMT")
             ColumnNm(2) = ("LOANBAL")
             ColumnNm(3) = ("PRINCIP")
             ColumnNm(4) = ("INTPAYM")
             ColumnNm(5) = ("TOTPAYM")
             ColumnNm(6) = ("CFEFFEC")
-			'Page type, Start Year, Page counter, life of field, number of columns, page title, column length
-			'''       WRITE #5, 14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, WINT, PRTA, sCur
-			''''Write #5, 14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, FinalWin, FINALPARTIC, sCur
-			
-			
-			
-			''''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6)
-			oPg1 = g_oReport.NewStandardRptPage
-			oPg1.SetPageHeader(14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, FinalWin, FINALPARTIC, sCur)
-			oPg1.SetProfileHeaders(ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6))
-			For x = 1 To LG
-				''''Write #5, LOAN(x), lot(x, 1), lot(x, 2), lot(x, 3), lot(x, 4), lot(x, 5)
-				oPg1.SetProfileValues(x, LOAN(x), lot(x, 1), lot(x, 2), lot(x, 3), lot(x, 4), lot(x, 5))
-			Next x
-		End If
-		
-	End Sub
-	
-	' $subtitle: 'LoanCalc'
-	' $Page:
+            'Page type, Start Year, Page counter, life of field, number of columns, page title, column length
+            ''       WRITE #5, 14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, WINT, PRTA, sCur
+            ''Write #5, 14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, FinalWin, FINALPARTIC, sCur
+
+
+
+            ''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6)
+            oPg1 = g_oReport.NewStandardRptPage
+            oPg1.SetPageHeader(14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, FinalWin, FINALPARTIC, sCur)
+            oPg1.SetProfileHeaders(ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6))
+            For x = 1 To LG
+                ''Write #5, LOAN(x), lot(x, 1), lot(x, 2), lot(x, 3), lot(x, 4), lot(x, 5)
+                oPg1.SetProfileValues(x, LOAN(x), lot(x, 1), lot(x, 2), lot(x, 3), lot(x, 4), lot(x, 5))
+            Next x
+        End If
+
+    End Sub
+
+    ' $subtitle: 'LoanCalc'
+    ' $Page:
     Sub LoanCalc(ByRef YR As Single, ByRef LG As Short, ByRef MLO As Single, ByRef YLO As Single, ByRef PRIN As Single, ByRef EFFINTR As Single, ByRef PERIOD As Single, ByRef delay As Single, ByRef METHOD As Single, ByRef ACCRUE As Single, ByRef L(,) As Single, ByRef LO() As Single, ByRef LT(,) As Single)
         Dim y As Single
         Dim YRS As Single
@@ -323,7 +323,7 @@ Module MLoan
         Dim PRINPMT As Single
         Dim x As Single
         Dim INTR As Single
-        Dim DUM As Single '''STATIC
+        Dim DUM As Single ''STATIC
         '----------------------------------------------------------------------------
         ' MLO = MONTH OF LOAN RECEIPT
         ' YLO = YEAR OF LOAN RECEIPT

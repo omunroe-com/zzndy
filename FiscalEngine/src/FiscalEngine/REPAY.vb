@@ -529,35 +529,35 @@ Module MRepay
 		ColumnNm(10) = " REITOT"
 12492: 
 12494: 'Page type, Start year, Page counter, life of field, number of columns, page title, column length
-12496: ''''Write #5, 9, YR, 0, LG, 10, "GOVERNMENT REPAYMENT & PARTNER REIMBURSEMENT", 10, FinalWin, FINALPARTIC, sCur
-		
-		
-12498: 'columns titles
-12500: ''''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10)
-12504: 
-		
+12496:  ''Write #5, 9, YR, 0, LG, 10, "GOVERNMENT REPAYMENT & PARTNER REIMBURSEMENT", 10, FinalWin, FINALPARTIC, sCur
+
+
+12498:  'columns titles
+12500:  ''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10)
+12504:
+
         Dim oPg1 As IGiantRptPageAssignStd
-		oPg1 = g_oReport.NewStandardRptPage
-		' 11 Feb 2005 JWD (C0858) Change "GOVERNMENT" to "NOC"
-		oPg1.SetPageHeader(9, YR, 0, LG, 10, "NOC REPAYMENT & PARTNER REIMBURSEMENT", 10, FinalWin, FINALPARTIC, sCur)
-		' Was:
-		'oPg1.SetPageHeader 9, YR, 0, LG, 10, "GOVERNMENT REPAYMENT & PARTNER REIMBURSEMENT", 10, FinalWin, FINALPARTIC, sCur
-		' End (C0858)
-		oPg1.SetProfileHeaders(ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(8), ColumnNm(9), ColumnNm(10))
-		
-12650: For i = 1 To LG
-12690: ''''Write #5, CX(i, 1), CX(i, 2), CX(i, 3), CX(i, 4), CX(i, 5), CXRE(i, 1), CXRE(i, 2), CXRE(i, 3), CXRE(i, 4), CXRE(i, 5)
-			oPg1.SetProfileValues(i, CX(i, 1), CX(i, 2), CX(i, 3), CX(i, 4), CX(i, 5), CXRE(i, 1), CXRE(i, 2), CXRE(i, 3), CXRE(i, 4), CXRE(i, 5))
-12750: Next i
-12752: 
-12840: 'ALL DONE
-12842: If FVAR(iX) <> "CMB" Then
-			' Commented out GDP 18/8/99 -  for changes to consolidation - net of participation pre tax consolidation
-			'13200    Erase CLG$, CGR, sCGR, FVAR$, Inflate, sMDC, MDC, PC, sPCV, sPRV, PR
-13200: 'Erase CLG$, CGR, sCGR, FVAR$, sMDC, MDC, PC, sPCV, sPRV, PR
-			'Erase PT, RLD, RT, sRTV, TM, sTMV
-		End If
-		'''PushStats "REPAY", dStart
+        oPg1 = g_oReport.NewStandardRptPage
+        ' 11 Feb 2005 JWD (C0858) Change "GOVERNMENT" to "NOC"
+        oPg1.SetPageHeader(9, YR, 0, LG, 10, "NOC REPAYMENT & PARTNER REIMBURSEMENT", 10, FinalWin, FINALPARTIC, sCur)
+        ' Was:
+        'oPg1.SetPageHeader 9, YR, 0, LG, 10, "GOVERNMENT REPAYMENT & PARTNER REIMBURSEMENT", 10, FinalWin, FINALPARTIC, sCur
+        ' End (C0858)
+        oPg1.SetProfileHeaders(ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(8), ColumnNm(9), ColumnNm(10))
+
+12650:  For i = 1 To LG
+12690:      ''Write #5, CX(i, 1), CX(i, 2), CX(i, 3), CX(i, 4), CX(i, 5), CXRE(i, 1), CXRE(i, 2), CXRE(i, 3), CXRE(i, 4), CXRE(i, 5)
+            oPg1.SetProfileValues(i, CX(i, 1), CX(i, 2), CX(i, 3), CX(i, 4), CX(i, 5), CXRE(i, 1), CXRE(i, 2), CXRE(i, 3), CXRE(i, 4), CXRE(i, 5))
+12750:  Next i
+12752:
+12840:  'ALL DONE
+12842:  If FVAR(iX) <> "CMB" Then
+            ' Commented out GDP 18/8/99 -  for changes to consolidation - net of participation pre tax consolidation
+            '13200    Erase CLG$, CGR, sCGR, FVAR$, Inflate, sMDC, MDC, PC, sPCV, sPRV, PR
+13200:      'Erase CLG$, CGR, sCGR, FVAR$, sMDC, MDC, PC, sPCV, sPRV, PR
+            'Erase PT, RLD, RT, sRTV, TM, sTMV
+        End If
+        ''PushStats "REPAY", dStart
 		'Close #FileNm
 		' Added GDP 10/9/99
 		' Begin

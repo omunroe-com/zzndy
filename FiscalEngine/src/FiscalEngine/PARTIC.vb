@@ -110,8 +110,7 @@ Module PARTIC
 		' 3 Feb 2004 JWD
 		'  -> Remove explicit writes to report file. (C0776)
 		'-----------------------------------------------------------------------
-		Dim i As Short
-		Dim iPX As Short
+        Dim iPX As Short
 		Dim iSCT As Short
 		Dim iX As Short
 		Dim iXZZ As Short
@@ -333,114 +332,114 @@ Module PARTIC
 							If my3(iX, 3) < y9 Or (my3(iX, 3) = y9 And my3(iX, 2) < m9) Then
 								If PT(iY, 3) = -996 Then ' PAR was entered under Rate column
 									iSCT = my3(iX, 3) - YR + 1
-									GPBASE(iX) = (GPRATE(iX) - PARTRATE(iSCT)) '''''* (PT(iY, 5) / 100)
-								Else ' a Rate % was entered
-									GPBASE(iX) = (GPRATE(iX) - (PT(iY, 3) / 100)) '''''* (PT(iY, 5) / 100)
-								End If
-							End If
-						End If
-						
-						' Figure the recoverable/depreciable share net of NOC
-						' since NOC may recover/depreciate at a rate different
-						' from the participation rate in the capital item
-						' (ie NOC may recover/depreciate more or less than paid)
-						If iY > 0 Then
-							If PT(iY, 9) = -996 Then ' PAR was entered under dpcrRate column
-								iSCT = my3(iX, 3) - YR + 1
-								GPDPCR(iX) = 1 - PARTRATE(iSCT)
-							Else ' a dpcrRate % was entered
-								GPDPCR(iX) = (100 - PT(iY, 9)) / 100
-							End If
-						End If
-					End If
-				End If
-			Next iX
-		End If
-		
-		
-		'PRINT "-------------------------------------------------------"
-		'FOR q = 1 TO MY3TT
-		'PRINT "GPBASE("; q; ") = "; GPBASE(q), "GPRATE = "; GPRATE(q), "REIM = "; REIM(q), WINC(q)
-		'NEXT q
-		
-		'PUT CAPITAL EXPENDITURES AND REPAYMENTS IN CATEGORIES
-		'LPRINT " "
-		'LPRINT "assign capex to categories 1-4"
-		If my3tt > 0 Then
-			
-			For iX = 1 To my3tt
-				
-				'<<<<<< 4 Aug 2001 JWD (C0363)
-				If my3(iX, 1) < CPXCategoryCodeBAL Or my3(iX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
-					'~~~~~~ was:
-					''<<<<<< 21 Jun 2001 JWD (C0339)
-					'If my3(iX, 1) < CPXCategoryCodeBAL Then                 'BAL
-					''~~~~~~ was:
-					''If my3(iX, 1) < 18 Then                 'BAL
-					''>>>>>> End (C0339)
-					'>>>>>> End (C0363)
-					
-					iZ = my3(iX, 3) - YR + 1 'relative project year
-					If my3(iX, 1) >= 1 And my3(iX, 1) <= 3 Then
-						iXZZ = 1
-					ElseIf my3(iX, 1) >= 4 And my3(iX, 1) <= 8 Then 
-						iXZZ = 2
-					ElseIf my3(iX, 1) >= 9 And my3(iX, 1) <= 14 Then 
-						iXZZ = 3
-						'<<<<<< 8 Mar 2002 JWD (C0496)
-					ElseIf my3(iX, 1) >= 15 And my3(iX, 1) < CPXCategoryCodeBAL Or my3(iX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then 
-						'~~~~~~ was:
-						'ElseIf my3(iX, 1) >= 15 And my3(iX, 1) <= 17 Then
-						'>>>>>> End (C0496)
-						iXZZ = 4
-					End If
-					'UPGRADE_WARNING: Couldn't resolve default property of object CX(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, iXZZ). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					CX(iZ, iXZZ) = CX(iZ, iXZZ) + (my3(iX, 5) * GPRATE(iX)) * (WINC(iX) - REIM(iX))
-					'PRINT " capex line "; iX, "Category: "; iXZZ, iZ, cx(iZ, iXZZ)
-				End If
-			Next iX
-		End If
-		
-		' *************************************************************************
-		
-		For iZ = 1 To LG
-			'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 4). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 3). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 2). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			'UPGRADE_WARNING: Couldn't resolve default property of object CX(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 5). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			CX(iZ, 5) = CX(iZ, 1) + CX(iZ, 2) + CX(iZ, 3) + CX(iZ, 4)
-		Next iZ
-		
+                                    GPBASE(iX) = (GPRATE(iX) - PARTRATE(iSCT)) ''* (PT(iY, 5) / 100)
+                                Else ' a Rate % was entered
+                                    GPBASE(iX) = (GPRATE(iX) - (PT(iY, 3) / 100)) ''* (PT(iY, 5) / 100)
+                                End If
+                            End If
+                        End If
+
+                        ' Figure the recoverable/depreciable share net of NOC
+                        ' since NOC may recover/depreciate at a rate different
+                        ' from the participation rate in the capital item
+                        ' (ie NOC may recover/depreciate more or less than paid)
+                        If iY > 0 Then
+                            If PT(iY, 9) = -996 Then ' PAR was entered under dpcrRate column
+                                iSCT = my3(iX, 3) - YR + 1
+                                GPDPCR(iX) = 1 - PARTRATE(iSCT)
+                            Else ' a dpcrRate % was entered
+                                GPDPCR(iX) = (100 - PT(iY, 9)) / 100
+                            End If
+                        End If
+                    End If
+                End If
+            Next iX
+        End If
+
+
+        'PRINT "-------------------------------------------------------"
+        'FOR q = 1 TO MY3TT
+        'PRINT "GPBASE("; q; ") = "; GPBASE(q), "GPRATE = "; GPRATE(q), "REIM = "; REIM(q), WINC(q)
+        'NEXT q
+
+        'PUT CAPITAL EXPENDITURES AND REPAYMENTS IN CATEGORIES
+        'LPRINT " "
+        'LPRINT "assign capex to categories 1-4"
+        If my3tt > 0 Then
+
+            For iX = 1 To my3tt
+
+                '<<<<<< 4 Aug 2001 JWD (C0363)
+                If my3(iX, 1) < CPXCategoryCodeBAL Or my3(iX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
+                    '~~~~~~ was:
+                    ''<<<<<< 21 Jun 2001 JWD (C0339)
+                    'If my3(iX, 1) < CPXCategoryCodeBAL Then                 'BAL
+                    ''~~~~~~ was:
+                    ''If my3(iX, 1) < 18 Then                 'BAL
+                    ''>>>>>> End (C0339)
+                    '>>>>>> End (C0363)
+
+                    iZ = my3(iX, 3) - YR + 1 'relative project year
+                    If my3(iX, 1) >= 1 And my3(iX, 1) <= 3 Then
+                        iXZZ = 1
+                    ElseIf my3(iX, 1) >= 4 And my3(iX, 1) <= 8 Then
+                        iXZZ = 2
+                    ElseIf my3(iX, 1) >= 9 And my3(iX, 1) <= 14 Then
+                        iXZZ = 3
+                        '<<<<<< 8 Mar 2002 JWD (C0496)
+                    ElseIf my3(iX, 1) >= 15 And my3(iX, 1) < CPXCategoryCodeBAL Or my3(iX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
+                        '~~~~~~ was:
+                        'ElseIf my3(iX, 1) >= 15 And my3(iX, 1) <= 17 Then
+                        '>>>>>> End (C0496)
+                        iXZZ = 4
+                    End If
+                    'UPGRADE_WARNING: Couldn't resolve default property of object CX(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, iXZZ). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    CX(iZ, iXZZ) = CX(iZ, iXZZ) + (my3(iX, 5) * GPRATE(iX)) * (WINC(iX) - REIM(iX))
+                    'PRINT " capex line "; iX, "Category: "; iXZZ, iZ, cx(iZ, iXZZ)
+                End If
+            Next iX
+        End If
+
+        ' *************************************************************************
+
+        For iZ = 1 To LG
+            'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 4). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 3). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 2). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            'UPGRADE_WARNING: Couldn't resolve default property of object CX(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            'UPGRADE_WARNING: Couldn't resolve default property of object CX(iZ, 5). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            CX(iZ, 5) = CX(iZ, 1) + CX(iZ, 2) + CX(iZ, 3) + CX(iZ, 4)
+        Next iZ
+
         Dim oPg1 As IGiantRptPageAssignStd
-		If Left(RF(5), 3) = "ALL" Or Left(RF(5), 3) = "VAR" Then ' PRINT GOVERNMENT PARTICIPATION
-			'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(1). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			ColumnNm(1) = " GRPREN"
-			'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(2). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			ColumnNm(2) = " GRPEXP"
-			'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(3). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			ColumnNm(3) = " GRPDEV"
-			'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(4). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			ColumnNm(4) = " GRPOTH"
-			'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(5). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			ColumnNm(5) = " GRPTOT"
-			'Page type, Start year, Page counter, life of field, number of columns, page title, column length
-			'''        WRITE #5, 6, YR, 0, LG, 5, "GROUP EXPENDITURES", 10, WINT, PRTA, sCur
-			''''Write #5, 6, YR, 0, LG, 5, "GROUP EXPENDITURES", 10, FinalWin, FINALPARTIC, sCur
-			
-			'OLD version   WRITE #5, 6, yr, 0, LG, 5, "GOVERNMENT PARTICIPATION", 10, WINT, PRTA, sCur
-			'columns titles
-			''''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5)
-			
-			oPg1 = g_oReport.NewStandardRptPage
-			oPg1.SetPageHeader(6, YR, 0, LG, 5, "GROUP EXPENDITURES", 10, FinalWin, FINALPARTIC, sCur)
-			oPg1.SetProfileHeaders(ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5))
-			For iX = 1 To LG
-				''''Write #5, CX(iX, 1), CX(iX, 2), CX(iX, 3), CX(iX, 4), CX(iX, 5)
-				oPg1.SetProfileValues(iX, CX(iX, 1), CX(iX, 2), CX(iX, 3), CX(iX, 4), CX(iX, 5))
-			Next iX
-12840: End If
+        If Left(RF(5), 3) = "ALL" Or Left(RF(5), 3) = "VAR" Then ' PRINT GOVERNMENT PARTICIPATION
+            'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(1). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            ColumnNm(1) = " GRPREN"
+            'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(2). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            ColumnNm(2) = " GRPEXP"
+            'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(3). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            ColumnNm(3) = " GRPDEV"
+            'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(4). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            ColumnNm(4) = " GRPOTH"
+            'UPGRADE_WARNING: Couldn't resolve default property of object ColumnNm$(5). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+            ColumnNm(5) = " GRPTOT"
+            'Page type, Start year, Page counter, life of field, number of columns, page title, column length
+            ''        WRITE #5, 6, YR, 0, LG, 5, "GROUP EXPENDITURES", 10, WINT, PRTA, sCur
+            ''Write #5, 6, YR, 0, LG, 5, "GROUP EXPENDITURES", 10, FinalWin, FINALPARTIC, sCur
+
+            'OLD version   WRITE #5, 6, yr, 0, LG, 5, "GOVERNMENT PARTICIPATION", 10, WINT, PRTA, sCur
+            'columns titles
+            ''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5)
+
+            oPg1 = g_oReport.NewStandardRptPage
+            oPg1.SetPageHeader(6, YR, 0, LG, 5, "GROUP EXPENDITURES", 10, FinalWin, FINALPARTIC, sCur)
+            oPg1.SetProfileHeaders(ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5))
+            For iX = 1 To LG
+                ''Write #5, CX(iX, 1), CX(iX, 2), CX(iX, 3), CX(iX, 4), CX(iX, 5)
+                oPg1.SetProfileValues(iX, CX(iX, 1), CX(iX, 2), CX(iX, 3), CX(iX, 4), CX(iX, 5))
+            Next iX
+12840:  End If
 		
 	End Sub
 End Module

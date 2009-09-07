@@ -19,12 +19,12 @@ Friend Class CFmtGntRptPgDToASPENames
     '---------------------------------------------------------
 
 
-    Private m_oReportText As _CReportText
+    Private m_oReportText As CReportText
 
-    Private m_oVariableTitles As _IVariableTitlesA
+    Private m_oVariableTitles As IVariableTitlesA
 
-    Public WriteOnly Property ReportText() As _CReportText
-        Set(ByVal Value As _CReportText)
+    Public WriteOnly Property ReportText() As CReportText
+        Set(ByVal Value As CReportText)
 
             m_oReportText = Value
 

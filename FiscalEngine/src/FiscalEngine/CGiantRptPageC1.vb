@@ -35,7 +35,6 @@ Friend Class CGiantRptPageC1
     '
     Public Sub SetPageHeader(ByVal PageType As Short, ByVal startyear As Short, ByVal PageCount As Short, ByVal ProjectLife As Short, ByVal ProfileCount As Short, ByVal PageTitle As String, ByVal ColumnWidth As Short, ByVal FinalWorkingInt As Single, ByVal FinalParticipation As Single, ByVal PageCurrency As String)
 
-        Dim i As Short
 
         With m_oHeader
             .PageType = PageType
@@ -187,99 +186,99 @@ Friend Class CGiantRptPageC1
 	' IGiantTimeSeriesRptPage Interface
 	'
 	
-	''''
-	'''' Add the values to the specified array, beginning with specified row.
-	''''
-	'''' StartRow is the subscript 1 index value into which the first
-	'''' page profile will be copied:
-	''''   ValuesArray(StartRow, x) = ma_rValues(0, x),
-	''''       for x = LBound(ma_rValues, 2) To UBound(ma_rValues,2)
-	''''
-	'''' Assumes that the ValuesArray() is dimensioned to accomodate the
-	'''' data to be added.
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesValues(ByRef ValuesArray() As Single, ByRef StartRow As Long)
-	'''
-	'''    Dim i As Long
-	'''    Dim j As Long
-	'''    Dim L As Long
-	'''
-	'''    L = LBound(ValuesArray, 2)
-	'''
-	'''    For i = 0 To UBound(ma_rValues, 2)
-	'''        For j = 0 To UBound(ma_rValues, 1)
-	'''            ValuesArray(j + StartRow, i + L) = ma_rValues(j, i)
-	'''        Next j
-	'''    Next i
-	'''
-	'''    StartRow = StartRow + UBound(ma_rValues, 1) + 1
-	'''
-	'''End Sub
-	'''
-	''''
-	'''' Append the interests associated with the time series
-	'''' profiles for this page to the values array starting
-	'''' with the specified "row" (StartRow).
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesInterests(ByRef ValuesArray() As Single, ByRef StartRow As Long)
-	'''
-	'''    Dim j As Long
-	'''    Dim ub As Long
-	'''    Dim lb As Long
-	'''
-	'''    lb = LBound(ValuesArray, 2)
-	'''    ub = UBound(ma_rValues, 1)
-	'''
-	'''    For j = 0 To ub
-	'''        ValuesArray(j + StartRow, lb + 0) = m_oHeader.CompanyWorkingInterest
-	'''        ValuesArray(j + StartRow, lb + 1) = m_oHeader.GovernmentParticipation
-	'''    Next j
-	'''
-	'''    StartRow = StartRow + ub + 1
-	'''
-	'''End Sub
-	'''
-	''''
-	'''' Append the names associated with the time series
-	'''' profiles for this page to the names array starting
-	'''' with the specified "row" (StartRow).
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesNames _
-	''''    ( _
-	''''    ByRef NamesArray() As String, _
-	''''    ByRef StartRow As Long, _
-	''''    ByVal ReportText As CReportText, _
-	''''    ByVal VariableTitles As IVariableTitlesA _
-	''''    )
-	'''
-	'''    Dim j As Long
-	'''    Dim ub As Long
-	'''    Dim lb As Long
-	'''    Dim l_ttl As String
-	'''    Dim l_pt As Integer
-	'''
-	'''    lb = LBound(NamesArray, 2)
-	'''    ub = UBound(ma_rValues, 1)
-	'''
-	'''    l_pt = m_oHeader.PageType
-	'''
-	'''    With ReportText
-	'''        l_ttl = .SectionTitle(l_pt)
-	'''        For j = 0 To ub
-	'''            NamesArray(j + StartRow, lb + 0) = l_ttl
-	'''            NamesArray(j + StartRow, lb + 1) = .RowTitle(l_pt, j)
-	'''        Next j
-	'''    End With
-	'''
-	'''    StartRow = StartRow + ub + 1
-	'''
-	'''End Sub
-	'''
-	'''Private Property Get IGiantTimeSeriesRptPage_ProfileElementCount() As Integer
-	'''    IGiantTimeSeriesRptPage_ProfileElementCount = m_oHeader.Rows
-	'''End Property
-	'''
-	'''Private Property Get IGiantTimeSeriesRptPage_TimeSeriesProfileCount() As Integer
-	'''    IGiantTimeSeriesRptPage_TimeSeriesProfileCount = m_oHeader.Columns
-	'''End Property
+    ''
+    '' Add the values to the specified array, beginning with specified row.
+    ''
+    '' StartRow is the subscript 1 index value into which the first
+    '' page profile will be copied:
+    ''   ValuesArray(StartRow, x) = ma_rValues(0, x),
+    ''       for x = LBound(ma_rValues, 2) To UBound(ma_rValues,2)
+    ''
+    '' Assumes that the ValuesArray() is dimensioned to accomodate the
+    '' data to be added.
+    ''
+    ''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesValues(ByRef ValuesArray() As Single, ByRef StartRow As Long)
+    ''
+    ''    Dim i As Long
+    ''    Dim j As Long
+    ''    Dim L As Long
+    ''
+    ''    L = LBound(ValuesArray, 2)
+    ''
+    ''    For i = 0 To UBound(ma_rValues, 2)
+    ''        For j = 0 To UBound(ma_rValues, 1)
+    ''            ValuesArray(j + StartRow, i + L) = ma_rValues(j, i)
+    ''        Next j
+    ''    Next i
+    ''
+    ''    StartRow = StartRow + UBound(ma_rValues, 1) + 1
+    ''
+    ''End Sub
+    ''
+    ''
+    '' Append the interests associated with the time series
+    '' profiles for this page to the values array starting
+    '' with the specified "row" (StartRow).
+    ''
+    ''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesInterests(ByRef ValuesArray() As Single, ByRef StartRow As Long)
+    ''
+    ''    Dim j As Long
+    ''    Dim ub As Long
+    ''    Dim lb As Long
+    ''
+    ''    lb = LBound(ValuesArray, 2)
+    ''    ub = UBound(ma_rValues, 1)
+    ''
+    ''    For j = 0 To ub
+    ''        ValuesArray(j + StartRow, lb + 0) = m_oHeader.CompanyWorkingInterest
+    ''        ValuesArray(j + StartRow, lb + 1) = m_oHeader.GovernmentParticipation
+    ''    Next j
+    ''
+    ''    StartRow = StartRow + ub + 1
+    ''
+    ''End Sub
+    ''
+    ''
+    '' Append the names associated with the time series
+    '' profiles for this page to the names array starting
+    '' with the specified "row" (StartRow).
+    ''
+    ''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesNames _
+    ''    ( _
+    ''    ByRef NamesArray() As String, _
+    ''    ByRef StartRow As Long, _
+    ''    ByVal ReportText As CReportText, _
+    ''    ByVal VariableTitles As IVariableTitlesA _
+    ''    )
+    ''
+    ''    Dim j As Long
+    ''    Dim ub As Long
+    ''    Dim lb As Long
+    ''    Dim l_ttl As String
+    ''    Dim l_pt As Integer
+    ''
+    ''    lb = LBound(NamesArray, 2)
+    ''    ub = UBound(ma_rValues, 1)
+    ''
+    ''    l_pt = m_oHeader.PageType
+    ''
+    ''    With ReportText
+    ''        l_ttl = .SectionTitle(l_pt)
+    ''        For j = 0 To ub
+    ''            NamesArray(j + StartRow, lb + 0) = l_ttl
+    ''            NamesArray(j + StartRow, lb + 1) = .RowTitle(l_pt, j)
+    ''        Next j
+    ''    End With
+    ''
+    ''    StartRow = StartRow + ub + 1
+    ''
+    ''End Sub
+    ''
+    ''Private Property Get IGiantTimeSeriesRptPage_ProfileElementCount() As Integer
+    ''    IGiantTimeSeriesRptPage_ProfileElementCount = m_oHeader.Rows
+    ''End Property
+    ''
+    ''Private Property Get IGiantTimeSeriesRptPage_TimeSeriesProfileCount() As Integer
+    ''    IGiantTimeSeriesRptPage_TimeSeriesProfileCount = m_oHeader.Columns
+    ''End Property
 End Class

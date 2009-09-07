@@ -187,7 +187,6 @@ Friend Class CGiantRptPageH1
 	'
     Private Sub IGiantRptPageAssignStd_SetPageHeader(ByVal PageType As Short, ByVal startyear As Short, ByVal PageCount As Short, ByVal ProjectLife As Short, ByVal ProfileCount As Short, ByVal PageTitle As String, ByVal ColumnWidth As Short, ByVal FinalWorkingInt As Single, ByVal FinalParticipation As Single, ByVal PageCurrency As String) Implements IGiantRptPageAssignStd.SetPageHeader
 
-        Dim i As Short
 
         With m_oHeader
             .PageType = PageType
@@ -259,153 +258,153 @@ Friend Class CGiantRptPageH1
 	' IGiantTimeSeriesRptPage Interface
 	'
 	
-	''''
-	'''' Add the values to the specified array, beginning with specified row.
-	''''
-	'''' StartRow is the subscript 1 index value into which the first
-	'''' page profile will be copied:
-	''''   ValuesArray(StartRow, x) = ma_rValues(0, x),
-	''''       for x = LBound(ma_rValues, 2) To UBound(ma_rValues,2)
-	''''
-	'''' Assumes that the ValuesArray() is dimensioned to accomodate the
-	'''' data to be added.
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesValues _
-	''''    ( _
-	''''    ByRef ValuesArray() As Single, _
-	''''    ByRef StartRow As Long _
-	''''    )
-	'''
-	'''    Dim i As Long
-	'''    Dim j As Long
-	'''    Dim L As Long
-	'''
-	'''    L = LBound(ValuesArray, 2)
-	'''
-	'''    For i = 0 To UBound(ma_rValues, 2)
-	'''        For j = 0 To UBound(ma_rValues, 1)
-	'''            ValuesArray(j + StartRow, i + L) = ma_rValues(j, i)
-	'''        Next j
-	'''    Next i
-	'''
-	'''    StartRow = StartRow + UBound(ma_rValues, 1) + 1
-	'''
-	'''End Sub
-	'''
-	''''
-	'''' Append the interests associated with the time series
-	'''' profiles for this page to the values array starting
-	'''' with the specified "row" (StartRow).
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesInterests _
-	''''    ( _
-	''''    ByRef ValuesArray() As Single, _
-	''''    ByRef StartRow As Long _
-	''''    )
-	'''
-	'''    Dim j As Long
-	'''    Dim ub As Long
-	'''    Dim lb As Long
-	'''
-	'''    lb = LBound(ValuesArray, 2)
-	'''    ub = UBound(ma_rValues, 1)
-	'''
-	'''    For j = 0 To ub
-	'''        ValuesArray(j + StartRow, lb + 0) = m_oHeader.CompanyWorkingInterest
-	'''        ValuesArray(j + StartRow, lb + 1) = m_oHeader.GovernmentParticipation
-	'''    Next j
-	'''
-	'''    StartRow = StartRow + ub + 1
-	'''
-	'''End Sub
-	'''
-	''''
-	'''' Append the names associated with the time series
-	'''' profiles for this page to the names array starting
-	'''' with the specified "row" (StartRow).
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesNames _
-	''''    ( _
-	''''    ByRef NamesArray() As String, _
-	''''    ByRef StartRow As Long, _
-	''''    ByVal ReportText As CReportText, _
-	''''    ByVal VariableTitles As IVariableTitlesA _
-	''''    )
-	'''
-	'''    Dim j As Long
-	'''    Dim ub As Long
-	'''    Dim lb As Long
-	'''    Dim l_ttl As String
-	'''    Dim l_pt As Integer
-	'''    Dim l_hdr As String
-	'''    Dim l_var As String
-	'''    Dim l_txt As String
-	'''
-	'''    Const l_sReplStr As String = "|1|"
-	'''
-	'''    lb = LBound(NamesArray, 2)
-	'''    ub = UBound(ma_rValues, 1)
-	'''
-	'''    l_pt = m_oHeader.PageType
-	'''
-	'''    With ReportText
-	'''        l_ttl = VariableTitles.LongTitle(m_sVarCode)
-	'''        If Len(l_ttl) > 0 Then
-	'''            l_ttl = l_ttl & " (" & m_sVarCode & ")"
-	'''        Else
-	'''            l_ttl = m_sVarCode
-	'''        End If
-	'''        l_ttl = Replace(.SectionTitle(l_pt), l_sReplStr, l_ttl)
-	'''        For j = 0 To ub
-	'''            NamesArray(j + StartRow, lb + 0) = l_ttl
-	'''            l_hdr = .RowTitle(l_pt, j + 1)
-	'''            If j > 2 And j < 8 Then     ' substitute deduction variable names
-	'''                ' Prepare the deductions subtitle text
-	'''                ' Get the code from the titles array
-	'''                l_var = Trim(ma_sTitles(j))
-	'''
-	'''                If Len(l_var) > 0 Then
-	'''                    If Not VariableTitles.IsUserVariable(l_var) Or (StrComp(l_var, "DPR", vbTextCompare) = 0) Then
-	'''                        ' Regardless of whether or not there is a
-	'''                        ' user-defined variable with the code DPR,
-	'''                        ' when it appears in the Variable report
-	'''                        ' page, it is the depreciation schedule.
-	'''
-	'''                        l_txt = .ForecastTitle(l_var)
-	'''
-	'''                        ' Hopefully TEMPORARY?????
-	'''                        ' See if this is a volume forecast name
-	'''                        If IsVolumeForecast(l_var) Then
-	'''                            ' This is a volume forecast, so substitute into the
-	'''                            ' generic revenue forecast.
-	'''                            l_var = Replace(.ForecastTitle("REV"), l_sReplStr, l_txt)
-	'''                        Else
-	'''                            l_var = l_txt
-	'''                        End If
-	'''                    Else
-	'''                        l_txt = VariableTitles.LongTitle(l_var)
-	'''                        If Len(l_txt) > 0 Then
-	'''                            l_var = l_txt & " (" & l_var & ")"
-	'''                        End If
-	'''                    End If
-	'''                Else
-	'''                    l_var = vbNullString
-	'''                End If
-	'''                l_hdr = Replace(l_hdr, l_sReplStr, l_var)
-	'''            End If
-	'''            NamesArray(j + StartRow, lb + 1) = l_hdr
-	'''        Next j
-	'''    End With
-	'''
-	'''    StartRow = StartRow + ub + 1
-	'''
-	'''End Sub
-	'''
-	'''Private Property Get IGiantTimeSeriesRptPage_ProfileElementCount() As Integer
-	'''    IGiantTimeSeriesRptPage_ProfileElementCount = m_oHeader.Rows
-	'''End Property
-	'''
-	'''Private Property Get IGiantTimeSeriesRptPage_TimeSeriesProfileCount() As Integer
-	'''    IGiantTimeSeriesRptPage_TimeSeriesProfileCount = m_oHeader.Columns
-	'''End Property
+    ''
+    '' Add the values to the specified array, beginning with specified row.
+    ''
+    '' StartRow is the subscript 1 index value into which the first
+    '' page profile will be copied:
+    ''  ValuesArray(StartRow, x) = ma_rValues(0, x),
+    ''      for x = LBound(ma_rValues, 2) To UBound(ma_rValues,2)
+    ''
+    '' Assumes that the ValuesArray() is dimensioned to accomodate the
+    '' data to be added.
+    ''
+    ''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesValues _
+    ''    ( _
+    ''    ByRef ValuesArray() As Single, _
+    ''    ByRef StartRow As Long _
+    ''    )
+    ''
+    ''   Dim i As Long
+    ''   Dim j As Long
+    ''   Dim L As Long
+    ''
+    ''   L = LBound(ValuesArray, 2)
+    ''
+    ''   For i = 0 To UBound(ma_rValues, 2)
+    ''       For j = 0 To UBound(ma_rValues, 1)
+    ''           ValuesArray(j + StartRow, i + L) = ma_rValues(j, i)
+    ''       Next j
+    ''   Next i
+    ''
+    ''   StartRow = StartRow + UBound(ma_rValues, 1) + 1
+    ''
+    ''End Sub
+    ''
+    ''
+    '' Append the interests associated with the time series
+    '' profiles for this page to the values array starting
+    '' with the specified "row" (StartRow).
+    ''
+    ''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesInterests _
+    ''    ( _
+    ''    ByRef ValuesArray() As Single, _
+    ''    ByRef StartRow As Long _
+    ''    )
+    ''
+    ''   Dim j As Long
+    ''   Dim ub As Long
+    ''   Dim lb As Long
+    ''
+    ''   lb = LBound(ValuesArray, 2)
+    ''   ub = UBound(ma_rValues, 1)
+    ''
+    ''   For j = 0 To ub
+    ''       ValuesArray(j + StartRow, lb + 0) = m_oHeader.CompanyWorkingInterest
+    ''       ValuesArray(j + StartRow, lb + 1) = m_oHeader.GovernmentParticipation
+    ''   Next j
+    ''
+    ''   StartRow = StartRow + ub + 1
+    ''
+    ''End Sub
+    ''
+    ''
+    '' Append the names associated with the time series
+    '' profiles for this page to the names array starting
+    '' with the specified "row" (StartRow).
+    ''
+    ''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesNames _
+    ''    ( _
+    ''    ByRef NamesArray() As String, _
+    ''    ByRef StartRow As Long, _
+    ''    ByVal ReportText As CReportText, _
+    ''    ByVal VariableTitles As IVariableTitlesA _
+    ''    )
+    ''
+    ''    Dim j As Long
+    ''    Dim ub As Long
+    ''    Dim lb As Long
+    ''    Dim l_ttl As String
+    ''    Dim l_pt As Integer
+    ''    Dim l_hdr As String
+    ''    Dim l_var As String
+    ''    Dim l_txt As String
+    ''
+    ''    Const l_sReplStr As String = "|1|"
+    ''
+    ''    lb = LBound(NamesArray, 2)
+    ''    ub = UBound(ma_rValues, 1)
+    ''
+    ''    l_pt = m_oHeader.PageType
+    ''
+    ''    With ReportText
+    ''        l_ttl = VariableTitles.LongTitle(m_sVarCode)
+    ''        If Len(l_ttl) > 0 Then
+    ''            l_ttl = l_ttl & " (" & m_sVarCode & ")"
+    ''        Else
+    ''            l_ttl = m_sVarCode
+    ''        End If
+    ''        l_ttl = Replace(.SectionTitle(l_pt), l_sReplStr, l_ttl)
+    ''        For j = 0 To ub
+    ''            NamesArray(j + StartRow, lb + 0) = l_ttl
+    ''            l_hdr = .RowTitle(l_pt, j + 1)
+    ''            If j > 2 And j < 8 Then     ' substitute deduction variable names
+    ''                ' Prepare the deductions subtitle text
+    ''                ' Get the code from the titles array
+    ''                l_var = Trim(ma_sTitles(j))
+    ''
+    ''                If Len(l_var) > 0 Then
+    ''                    If Not VariableTitles.IsUserVariable(l_var) Or (StrComp(l_var, "DPR", vbTextCompare) = 0) Then
+    ''                        ' Regardless of whether or not there is a
+    ''                        ' user-defined variable with the code DPR,
+    ''                        ' when it appears in the Variable report
+    ''                        ' page, it is the depreciation schedule.
+    ''
+    ''                        l_txt = .ForecastTitle(l_var)
+    ''
+    ''                        ' Hopefully TEMPORARY?????
+    ''                        ' See if this is a volume forecast name
+    ''                        If IsVolumeForecast(l_var) Then
+    ''                            ' This is a volume forecast, so substitute into the
+    ''                            ' generic revenue forecast.
+    ''                            l_var = Replace(.ForecastTitle("REV"), l_sReplStr, l_txt)
+    ''                        Else
+    ''                            l_var = l_txt
+    ''                        End If
+    ''                    Else
+    ''                        l_txt = VariableTitles.LongTitle(l_var)
+    ''                        If Len(l_txt) > 0 Then
+    ''                            l_var = l_txt & " (" & l_var & ")"
+    ''                        End If
+    ''                    End If
+    ''                Else
+    ''                    l_var = vbNullString
+    ''                End If
+    ''                l_hdr = Replace(l_hdr, l_sReplStr, l_var)
+    ''            End If
+    ''            NamesArray(j + StartRow, lb + 1) = l_hdr
+    ''        Next j
+    ''    End With
+    ''
+    ''   StartRow = StartRow + ub + 1
+    ''
+    ''End Sub
+    ''
+    ''Private Property Get IGiantTimeSeriesRptPage_ProfileElementCount() As Integer
+    ''    IGiantTimeSeriesRptPage_ProfileElementCount = m_oHeader.Rows
+    ''End Property
+    ''
+    ''Private Property Get IGiantTimeSeriesRptPage_TimeSeriesProfileCount() As Integer
+    ''    IGiantTimeSeriesRptPage_TimeSeriesProfileCount = m_oHeader.Columns
+    ''End Property
 End Class

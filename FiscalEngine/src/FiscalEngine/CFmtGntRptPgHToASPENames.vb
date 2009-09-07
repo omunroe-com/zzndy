@@ -19,20 +19,20 @@ Friend Class CFmtGntRptPgHToASPENames
     '---------------------------------------------------------
 
 
-    Private m_oReportText As _CReportText
+    Private m_oReportText As CReportText
 
-    Private m_oVariableTitles As _IVariableTitlesA
+    Private m_oVariableTitles As IVariableTitlesA
 
-    Public WriteOnly Property ReportText() As _CReportText
-        Set(ByVal Value As _CReportText)
+    Public WriteOnly Property ReportText() As CReportText
+        Set(ByVal Value As CReportText)
 
             m_oReportText = Value
 
         End Set
     End Property
 
-    Public WriteOnly Property VariableTitles() As _IVariableTitlesA
-        Set(ByVal Value As _IVariableTitlesA)
+    Public WriteOnly Property VariableTitles() As IVariableTitlesA
+        Set(ByVal Value As IVariableTitlesA)
 
             m_oVariableTitles = Value
 

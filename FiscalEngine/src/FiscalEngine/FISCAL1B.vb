@@ -772,9 +772,9 @@ Module FISCAL1B
             'Erase DL, sDL, dp, sDP, EXPLOAN, INTRST, LOAN, PD, sPDV
             'Erase PRINC, SEQ
             'If bDebugging Then
-            '''Print "Calculating Economic Indicators"
+            ''Print "Calculating Economic Indicators"
             'End If
-            '''PushStats "FISCAL", dStart
+            ''PushStats "FISCAL", dStart
             Exit Sub
         End If
 
@@ -828,7 +828,7 @@ Module FISCAL1B
         FVAR(iX) = TD(iX, 1)
 
         '      If bDebugging Then
-        '''Print "Calculating "; FVAR$(iX)
+        ''Print "Calculating "; FVAR$(iX)
         '      End If
 
         ReDim RLD(LG)
@@ -950,7 +950,7 @@ Module FISCAL1B
         FVAR(iX) = TD(iX, 1)
         '      Debug.Print "ix = "; iX; "  FVAR$(ix) = "; FVAR$(iX); " LG = "; LG
         'If bDebugging Then
-        '''Print "Calculating "; FVAR$(iX)
+        ''Print "Calculating "; FVAR$(iX)
         'IF iX = 5 THEN
         '   OPEN "calc.log" FOR APPEND AS #17
         '   PRINT #17, "10017 redimmed RLD  RLD(5) = "; RLD(5)
@@ -1487,8 +1487,8 @@ ReEnterPAR:
 
             If Left(RF(5), 3) = "ALL" And TD(varnum, 18) <> "NOP" And TD(varnum, 18) <> "VOP" Then
 
-                ''''Write #5, 22, YR, PgCounter%, LGMonth, 14, "COLOMBIA PARTICIPATION WORKSHEET", 8, FinalWin, FINALPARTIC, sCur
-                ''''Write #5, "CMBPER", "CMBPROD", "CMBREV", "CMBROY", "CMBCPX", "CMBOPX", "CMBRPY", "ADJREV", "ADJROY", "ADJCPX", "ADJOPX", "ADJRPY", "CMBRATIO", "CMBRATE"
+                ''Write #5, 22, YR, PgCounter%, LGMonth, 14, "COLOMBIA PARTICIPATION WORKSHEET", 8, FinalWin, FINALPARTIC, sCur
+                ''Write #5, "CMBPER", "CMBPROD", "CMBREV", "CMBROY", "CMBCPX", "CMBOPX", "CMBRPY", "ADJREV", "ADJROY", "ADJCPX", "ADJOPX", "ADJRPY", "CMBRATIO", "CMBRATE"
 
                 oPg1 = g_oReport.NewStandardRptPageSpecial(22)
                 oPg1.SetPageHeader(22, YR, PgCounter, LGMonth, 14, "COLOMBIA PARTICIPATION WORKSHEET", 8, FinalWin, FINALPARTIC, sCur)
@@ -1561,7 +1561,7 @@ ReEnterPAR:
 
                 'Write variables to output file
                 If Left(RF(5), 3) = "ALL" And TD(varnum, 18) <> "NOP" And TD(varnum, 18) <> "VOP" Then
-                    ''''Write #5, ipxy, cmbresv, cmbmorev(ipxy), cmbmoroy(ipxy), cmbmocap(ipxy), cmbmoopex(ipxy), cmbmorepay(ipxy), cmbaccrev, cmbaccroy, cmbacccap, cmbaccopex, cmbaccrepay, cmbratio(ipxy), cmbrate(ipxy)
+                    ''Write #5, ipxy, cmbresv, cmbmorev(ipxy), cmbmoroy(ipxy), cmbmocap(ipxy), cmbmoopex(ipxy), cmbmorepay(ipxy), cmbaccrev, cmbaccroy, cmbacccap, cmbaccopex, cmbaccrepay, cmbratio(ipxy), cmbrate(ipxy)
                     oPg1.SetProfileValues(ipxy, ipxy, cmbresv, cmbmorev(ipxy), cmbmoroy(ipxy), cmbmocap(ipxy), cmbmoopex(ipxy), cmbmorepay(ipxy), cmbaccrev, cmbaccroy, cmbacccap, cmbaccopex, cmbaccrepay, cmbratio(ipxy), cmbrate(ipxy))
                 End If
 
@@ -2552,7 +2552,7 @@ ReEnterWIN:
         '=======================================================================
 13000:  'APPLY PROPER PRICE AND RECALCULATE REVENUES
 
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''
         '12-8-92  If the income item = OIL, GAS, OV1, or OV2, AND there is
         '  an entry (PRC or other) in the price column, we want to leave
         '  the VOL() in thd units of the income item instead of dividing
@@ -2741,7 +2741,7 @@ ReEnterWIN:
                     'do nothing - VOL(), PCE(), & REV() are correct
             End Select
         End If
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
         If TD(iX, 18) = "VOL" Or TD(iX, 18) = "VOP" Then
             For jp = 1 To LG
@@ -2776,7 +2776,7 @@ ReEnterWIN:
                 Next jp
             End If
         End If
-        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         'see description of this section from line 13000 above
         If TD(iX, 7) <> "" Then 'user entered a price code
             Select Case TD(iX, 5) 'first income column code
@@ -2820,7 +2820,7 @@ ReEnterWIN:
                     Next j
             End Select
         End If
-        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         'LOOP THRU DEDUCTIONS
         ReDim DDT(LG, 6)
         For i = 1 To 5
@@ -2844,7 +2844,7 @@ ReEnterWIN:
 
             'you are here if: TD$(iX, I + 7) <> "DPR"
 20300:
-            '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
             '8-7-92  Rule change for processing DEF line. If "DPR" is an income
             '          variable (Cost Recovery) THEN anything in the deductions column
             '          has already been taken out of the recovery. We DO NOT deduct the
@@ -2854,7 +2854,7 @@ ReEnterWIN:
             If TD(iX, 5) = "DPR" Or TD(iX, 6) = "DPR" Then 'cost recovery variable
                 GoTo 22999 'ignore the deductions - they were handled in DEPREC
             End If
-            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
             If TD(iX, i + 7) = "DPL" Then 'CALCULATE DEPLETION
                 'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
@@ -3229,7 +3229,7 @@ ReEnterWIN:
 
         '-------------------------------------------------------------------------
 
-     
+
 25000:  ' THIS PRINTS VARIABLE REPORT
         'Giant 5.4 start --------------------
         'If we are in an iteration loop, we will end up here once for each
@@ -3372,13 +3372,13 @@ ReEnterWIN:
 25200:
 25205:  'Page type, Start year, Page counter, life of field, number of columns, page title, column length
         ' 19 Nov 2002 JWD (C0633) Up the column count to 15 for addition of LCF ceiling column
-25210:  ''''Write #5, 12, YR, PgCounter%, LG, 15, TLL$, 8, FinalWin, FINALPARTIC, sCur
+25210:  ''Write #5, 12, YR, PgCounter%, LG, 15, TLL$, 8, FinalWin, FINALPARTIC, sCur
         'Write #5, 12, YR, PgCounter%, LG, 14, TLL$, 8, FinalWin, FINALPARTIC, sCur
         ' End (C0633)
 
 25215:  'columns titles
         ' 19 Nov 2002 JWD (C0633) Add output of LCF ceiling column heading
-25217:  ''''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10), ColumnNm$(11), ColumnNm$(12), ColumnNm$(13), ColumnNm$(14), ColumnNm$(15)
+25217:  ''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10), ColumnNm$(11), ColumnNm$(12), ColumnNm$(13), ColumnNm$(14), ColumnNm$(15)
         'Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10), ColumnNm$(11), ColumnNm$(12), ColumnNm$(13), ColumnNm$(14)
         ' End (C0633)
 
@@ -3392,7 +3392,7 @@ ReEnterWIN:
         ' write out everything as zero except for the net amount.
 25300:  If TD(iX, 15) <> "" Or IsVariableLinked(TD(iX, 1)) Then
             For y = 1 To LG
-                ''''Write #5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, RVN(y, iX), 0
+                ''Write #5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, RVN(y, iX), 0
                 oPg1.SetProfileValues(y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, RVN(y, iX), 0)
             Next y
         Else
@@ -3404,7 +3404,7 @@ ReEnterWIN:
             If Len(Trim(TD(iX, 7))) > 0 Then
                 For y = 1 To LG
                     ' 19 Nov 2002 JWD (C0633) Add output of LCF ceiling column data
-25320:              ''''Write #5, VOL(y), PCE(y), REV(y), DDT(y, 1), DDT(y, 2), DDT(y, 3), DDT(y, 4), DDT(y, 5), DDT(y, 0), RLD(y), TAX(y), GTax(y), Lcf(y), RVN(y, iX), l_CeilingAmounts(y)
+25320:              ''Write #5, VOL(y), PCE(y), REV(y), DDT(y, 1), DDT(y, 2), DDT(y, 3), DDT(y, 4), DDT(y, 5), DDT(y, 0), RLD(y), TAX(y), GTax(y), Lcf(y), RVN(y, iX), l_CeilingAmounts(y)
                     'Write #5, VOL(y), PCE(y), REV(y), DDT(y, 1), DDT(y, 2), DDT(y, 3), DDT(y, 4), DDT(y, 5), DDT(y, 0), RLD(y), TAX(y), GTax(y), Lcf(y), RVN(y, iX)
                     ' End (C0633)
 
@@ -3424,7 +3424,7 @@ ReEnterWIN:
                 ' Added GDP 24 Feb 2003
                 ' Write out 0 for Production and Price if PRC not present in price column
                 For y = 1 To LG
-                    ''''Write #5, 0, 0, REV(y), DDT(y, 1), DDT(y, 2), DDT(y, 3), DDT(y, 4), DDT(y, 5), DDT(y, 0), RLD(y), TAX(y), GTax(y), Lcf(y), RVN(y, iX), l_CeilingAmounts(y)
+                    ''Write #5, 0, 0, REV(y), DDT(y, 1), DDT(y, 2), DDT(y, 3), DDT(y, 4), DDT(y, 5), DDT(y, 0), RLD(y), TAX(y), GTax(y), Lcf(y), RVN(y, iX), l_CeilingAmounts(y)
 
 
                     If bUseVariableVolumetrics Then
@@ -3861,7 +3861,7 @@ ReEnterWIN:
 
     End Sub
 
-    Function FiscalDef_VariableIsRingFencedCheck(ByVal iX As Short)
+    Function FiscalDef_VariableIsRingFencedCheck(ByVal iX As Short) As Boolean
         ' Test to see if variable is ring fenced
         ' Set flag accordingly.
 

@@ -1236,43 +1236,43 @@ Module FORECAST
         Next x
 
 
-        '''        ' 4 Jan 2005 JWD (C0846)
-        '''        ReDim EffInts(0 To gc_nMAXLIFE, 0 To gc_nEffInts_PFN)
-        '''
-        '''        For x = 1 To LG
-        '''            If CA(x, gc_nCA_GRSREV) <> 0 Then
-        '''                ' Compute the effective working interest for the company based on revenue
-        '''                EffInts(x, gc_nEffInts_WIN) = CA(x, gc_nCA_CMPREV) / (CA(x, gc_nCA_GRSREV) - CA(x, gc_nCA_NOCREV))
-        '''                ' Compute the effective participation interest for the NOC based on revenue
-        '''                EffInts(x, gc_nEffInts_PAR) = CA(x, gc_nCA_NOCREV) / CA(x, gc_nCA_GRSREV)
-        '''            Else
-        '''                EffInts(x, gc_nEffInts_WIN) = 1
-        '''                EffInts(x, gc_nEffInts_PAR) = 0
-        '''            End If
-        '''
-        '''            If OPEX(x) <> 0 Then
-        '''                ' Compute the effective working interest for the company based on operating expense
-        '''                EffInts(x, gc_nEffInts_WOX) = OPEX(x) / (OPEX(x) + CA(x, gc_nCA_3DPOPX))
-        '''                ' Compute the effective operating expense participation interest for the NOC
-        '''                EffInts(x, gc_nEffInts_POX) = CA(x, gc_nCA_NOCOPX) / (OPEX(x) + CA(x, gc_nCA_3DPOPX) + CA(x, gc_nCA_NOCOPX))
-        '''            Else
-        '''                EffInts(x, gc_nEffInts_WOX) = 1
-        '''                EffInts(x, gc_nEffInts_POX) = 0
-        '''            End If
-        '''
-        '''            If TOTFINANCE(x) <> 0 Then
-        '''                ' Compute effective company working interest for determining Finance shares
-        '''                EffInts(x, gc_nEffInts_WFN) = TOTFINANCE(x) / (TOTFINANCE(x) + CA(x, gc_nCA_3DPFIN))
-        '''            Else
-        '''                EffInts(x, gc_nEffInts_WFN) = 1
-        '''                EffInts(x, gc_nEffInts_PFN) = 0
-        '''            End If
-        '''            If CA(x, gc_nCA_NOCFIN) <> 0 And TOTFINANCE(x) <> 0 Then
-        '''                ' Compute effective NOC participation for determining Finance share
-        '''                EffInts(x, gc_nEffInts_PFN) = CA(x, gc_nCA_NOCFIN) / (TOTFINANCE(x) + CA(x, gc_nCA_3DPFIN) + CA(x, gc_nCA_NOCFIN))
-        '''            End If
-        '''        Next x
-        '''        ' End (C0846)
+        ''        ' 4 Jan 2005 JWD (C0846)
+        ''        ReDim EffInts(0 To gc_nMAXLIFE, 0 To gc_nEffInts_PFN)
+        ''
+        ''        For x = 1 To LG
+        ''            If CA(x, gc_nCA_GRSREV) <> 0 Then
+        ''                ' Compute the effective working interest for the company based on revenue
+        ''                EffInts(x, gc_nEffInts_WIN) = CA(x, gc_nCA_CMPREV) / (CA(x, gc_nCA_GRSREV) - CA(x, gc_nCA_NOCREV))
+        ''                ' Compute the effective participation interest for the NOC based on revenue
+        ''                EffInts(x, gc_nEffInts_PAR) = CA(x, gc_nCA_NOCREV) / CA(x, gc_nCA_GRSREV)
+        ''            Else
+        ''                EffInts(x, gc_nEffInts_WIN) = 1
+        ''                EffInts(x, gc_nEffInts_PAR) = 0
+        ''            End If
+        ''
+        ''            If OPEX(x) <> 0 Then
+        ''                ' Compute the effective working interest for the company based on operating expense
+        ''                EffInts(x, gc_nEffInts_WOX) = OPEX(x) / (OPEX(x) + CA(x, gc_nCA_3DPOPX))
+        ''                ' Compute the effective operating expense participation interest for the NOC
+        ''                EffInts(x, gc_nEffInts_POX) = CA(x, gc_nCA_NOCOPX) / (OPEX(x) + CA(x, gc_nCA_3DPOPX) + CA(x, gc_nCA_NOCOPX))
+        ''            Else
+        ''                EffInts(x, gc_nEffInts_WOX) = 1
+        ''                EffInts(x, gc_nEffInts_POX) = 0
+        ''            End If
+        ''
+        ''            If TOTFINANCE(x) <> 0 Then
+        ''                ' Compute effective company working interest for determining Finance shares
+        ''                EffInts(x, gc_nEffInts_WFN) = TOTFINANCE(x) / (TOTFINANCE(x) + CA(x, gc_nCA_3DPFIN))
+        ''            Else
+        ''                EffInts(x, gc_nEffInts_WFN) = 1
+        ''                EffInts(x, gc_nEffInts_PFN) = 0
+        ''            End If
+        ''            If CA(x, gc_nCA_NOCFIN) <> 0 And TOTFINANCE(x) <> 0 Then
+        ''                ' Compute effective NOC participation for determining Finance share
+        ''                EffInts(x, gc_nEffInts_PFN) = CA(x, gc_nCA_NOCFIN) / (TOTFINANCE(x) + CA(x, gc_nCA_3DPFIN) + CA(x, gc_nCA_NOCFIN))
+        ''            End If
+        ''        Next x
+        ''        ' End (C0846)
 
         '****************************** added 10 January 2001
         'In a consolidation of projects with differing primary streams,
@@ -1360,26 +1360,26 @@ Module FORECAST
             my3Ex(x, gna_my3Ex_TAN) = MYC(x, gc_nMYC_TAN)
         Next x
 
-        '''        ' 22 Mar 2005 JWD (C0869) Add allocation of EffIntsX array
-        '''        ReDim EffIntsX(0 To UBound(my3, 1), 0 To gc_nEffIntsXSIZED2)
-        '''
-        '''        ' 4 Jan 2004 JWD (C0846)
-        '''        For x = 1 To MY3T
-        '''            ' Save the identifying attributes of the expenditure, this is for
-        '''            ' locating the MY3() element that corresponds to these interests,
-        '''            ' this is because the MY3() is sorted between here and CashFlow.
-        '''            EffIntsX(x, gc_nEffIntsX_CAT) = MYC(x, gc_nMYC_CAT)
-        '''            EffIntsX(x, gc_nEffIntsX_XMO) = MYC(x, gc_nMYC_XMO)
-        '''            EffIntsX(x, gc_nEffIntsX_XYR) = MYC(x, gc_nMYC_XYR)
-        '''            EffIntsX(x, gc_nEffIntsX_TAN) = MYC(x, gc_nMYC_TAN)
-        '''            ' Compute effective interest for company in respect of 3rd party expenditures
-        '''            EffIntsX(x, gc_nEffIntsX_WIN) = MYC(x, gc_nMYC_AMT) / (MYC(x, gc_nMYC_AMT) + MYC(x, gc_nMYC_3DP))
-        '''            ' Compute effective interest for NOC
-        '''            EffIntsX(x, gc_nEffIntsX_PAR) = MYC(x, gc_nMYC_NOC) / (MYC(x, gc_nMYC_AMT) + MYC(x, gc_nMYC_3DP) + MYC(x, gc_nMYC_NOC))
-        '''            ' Compute effective partner reimbursement portion of expenditure
-        '''            EffIntsX(x, gc_nEffIntsX_BUR) = MYC(x, gc_nMYC_BUR) / (MYC(x, gc_nMYC_AMT) + MYC(x, gc_nMYC_3DP))
-        '''        Next x
-        '''        ' End (C0846)
+        ''        ' 22 Mar 2005 JWD (C0869) Add allocation of EffIntsX array
+        ''        ReDim EffIntsX(0 To UBound(my3, 1), 0 To gc_nEffIntsXSIZED2)
+        ''
+        ''        ' 4 Jan 2004 JWD (C0846)
+        ''        For x = 1 To MY3T
+        ''            ' Save the identifying attributes of the expenditure, this is for
+        ''            ' locating the MY3() element that corresponds to these interests,
+        ''            ' this is because the MY3() is sorted between here and CashFlow.
+        ''            EffIntsX(x, gc_nEffIntsX_CAT) = MYC(x, gc_nMYC_CAT)
+        ''            EffIntsX(x, gc_nEffIntsX_XMO) = MYC(x, gc_nMYC_XMO)
+        ''            EffIntsX(x, gc_nEffIntsX_XYR) = MYC(x, gc_nMYC_XYR)
+        ''            EffIntsX(x, gc_nEffIntsX_TAN) = MYC(x, gc_nMYC_TAN)
+        ''            ' Compute effective interest for company in respect of 3rd party expenditures
+        ''            EffIntsX(x, gc_nEffIntsX_WIN) = MYC(x, gc_nMYC_AMT) / (MYC(x, gc_nMYC_AMT) + MYC(x, gc_nMYC_3DP))
+        ''            ' Compute effective interest for NOC
+        ''            EffIntsX(x, gc_nEffIntsX_PAR) = MYC(x, gc_nMYC_NOC) / (MYC(x, gc_nMYC_AMT) + MYC(x, gc_nMYC_3DP) + MYC(x, gc_nMYC_NOC))
+        ''            ' Compute effective partner reimbursement portion of expenditure
+        ''            EffIntsX(x, gc_nEffIntsX_BUR) = MYC(x, gc_nMYC_BUR) / (MYC(x, gc_nMYC_AMT) + MYC(x, gc_nMYC_3DP))
+        ''        Next x
+        ''        ' End (C0846)
 
         '5-18-92 can't handle DFL for pre-tax consolidated runs
         '<<<<<< 23 Jul 2001 JWD (C0354)
@@ -2858,11 +2858,11 @@ Module FORECAST
             '----------------------------------------------------------------------
             '       put file name in the OXFIL file - for use by the OXY data base routines
             '1-20-93
-            ''' 9 Feb 2004 JWD (C0783) Remove output to OXFIL
-            '''zipfileno% = FreeFile
-            '''Open FOxfil$ For Append As #zipfileno%
-            '''   Print #zipfileno%, nm$
-            '''Close #zipfileno%
+            '' 9 Feb 2004 JWD (C0783) Remove output to OXFIL
+            ''zipfileno% = FreeFile
+            ''Open FOxfil$ For Append As #zipfileno%
+            ''   Print #zipfileno%, nm$
+            ''Close #zipfileno%
             '----------------------------------------------------------------------
 
             FileOpen(filenum, nm, OpenMode.Input)
@@ -3198,7 +3198,7 @@ Module FORECAST
         Input(filenum, sDum)
         Input(filenum, sDum)
         Input(filenum, OILGAS)
-        Input(filenum, calyear) '''''prccd$(1),prccd$(2),el$(1),el$(2)
+        Input(filenum, calyear) ''prccd$(1),prccd$(2),el$(1),el$(2)
         Input(filenum, PDCRecs)
         Input(filenum, BDARecs)
         Input(filenum, CPXRecs)

@@ -113,7 +113,6 @@ Module VENFEE1A
         Dim NHVmonth() As Single
         Dim qtrcap As Single
         Dim qtrindex As Single
-        Dim qtrstart As Single
         Dim RemMth As Single
         '---------------------------------------------------------
 
@@ -815,15 +814,15 @@ Module VENFEE1A
 
             Next iv
 
-            ''''Write #5, 17, YR, PgCounter%, reportlg, 14, "VENEZUELA SERVICE FEE CALCULATION", 8, FinalWin, FINALPARTIC, sCur
-            ''''Write #5, ColHdr$(1), ColHdr$(2), ColHdr$(3), ColHdr$(4), ColHdr$(5), ColHdr$(6), ColHdr$(7), ColHdr$(8), ColHdr$(9), ColHdr$(10), ColHdr$(11), ColHdr$(12), ColHdr$(13), ColHdr$(14)
+            ''Write #5, 17, YR, PgCounter%, reportlg, 14, "VENEZUELA SERVICE FEE CALCULATION", 8, FinalWin, FINALPARTIC, sCur
+            ''Write #5, ColHdr$(1), ColHdr$(2), ColHdr$(3), ColHdr$(4), ColHdr$(5), ColHdr$(6), ColHdr$(7), ColHdr$(8), ColHdr$(9), ColHdr$(10), ColHdr$(11), ColHdr$(12), ColHdr$(13), ColHdr$(14)
 
             oPg1 = g_oReport.NewStandardRptPageSpecial(17)
             oPg1.SetPageHeader(17, YR, PgCounter, reportlg, 14, "VENEZUELA SERVICE FEE CALCULATION", 8, FinalWin, FINALPARTIC, sCur)
             oPg1.SetProfileHeaders(ColHdr(1), ColHdr(2), ColHdr(3), ColHdr(4), ColHdr(5), ColHdr(6), ColHdr(7), ColHdr(8), ColHdr(9), ColHdr(10), ColHdr(11), ColHdr(12), ColHdr(13), ColHdr(14))
 
             For iv = 1 To reportlg
-                ''''Write #5, WorkSht(iv, 1), WorkSht(iv, 2), WorkSht(iv, 3), WorkSht(iv, 4), WorkSht(iv, 5), WorkSht(iv, 6), WorkSht(iv, 7), WorkSht(iv, 8), WorkSht(iv, 9), WorkSht(iv, 10), WorkSht(iv, 11), WorkSht(iv, 12), WorkSht(iv, 13), WorkSht(iv, 14)
+                ''Write #5, WorkSht(iv, 1), WorkSht(iv, 2), WorkSht(iv, 3), WorkSht(iv, 4), WorkSht(iv, 5), WorkSht(iv, 6), WorkSht(iv, 7), WorkSht(iv, 8), WorkSht(iv, 9), WorkSht(iv, 10), WorkSht(iv, 11), WorkSht(iv, 12), WorkSht(iv, 13), WorkSht(iv, 14)
                 oPg1.SetProfileValues(iv, WorkSht(iv, 1), WorkSht(iv, 2), WorkSht(iv, 3), WorkSht(iv, 4), WorkSht(iv, 5), WorkSht(iv, 6), WorkSht(iv, 7), WorkSht(iv, 8), WorkSht(iv, 9), WorkSht(iv, 10), WorkSht(iv, 11), WorkSht(iv, 12), WorkSht(iv, 13), WorkSht(iv, 14))
             Next iv
 

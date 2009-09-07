@@ -85,8 +85,6 @@ Friend Class CGiantRptPageB1
     '
     Public Sub SetPageHeader(ByVal PageType As Short, ByVal startyear As Short, ByVal PageCount As Short, ByVal IndicatorCount As Short, ByVal DiscountRateCount As Short, ByVal PageTitle As String, ByVal ColumnWidth As Short, ByVal FinalWorkingInt As Single, ByVal FinalParticipation As Single, ByVal PageCurrency As String)
 
-        Dim i As Short
-
         With m_oHeader
             .PageType = PageType
             .year_Renamed = startyear

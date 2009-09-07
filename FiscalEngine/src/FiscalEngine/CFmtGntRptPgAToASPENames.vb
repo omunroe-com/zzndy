@@ -18,11 +18,11 @@ Friend Class CFmtGntRptPgAToASPENames
     '---------------------------------------------------------
 
 
-    Private m_oReportText As _CReportText
+    Private m_oReportText As CReportText
 
 
-    Public WriteOnly Property ReportText() As _CReportText
-        Set(ByVal Value As _CReportText)
+    Public WriteOnly Property ReportText() As CReportText
+        Set(ByVal Value As CReportText)
 
             m_oReportText = Value
 

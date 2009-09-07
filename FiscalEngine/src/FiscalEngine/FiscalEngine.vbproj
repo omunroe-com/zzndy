@@ -15,7 +15,6 @@
     <AssemblyRevisionNumber>10</AssemblyRevisionNumber>
     <GenerateRevisionNumber>False</GenerateRevisionNumber>
     <AssemblyCompanyName>IHS</AssemblyCompanyName>
-    <StartWithIE>2</StartWithIE>
     <RootNamespace>FiscalEngine</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

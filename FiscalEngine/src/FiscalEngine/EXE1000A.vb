@@ -663,1019 +663,1019 @@ Module EXE1000A
 					Loop 
 					RFT = i 'RFT # of lines in Run File
 					
-					'''               9 Feb 2004 JWD (C0783) Remove input of Run Notes (RNN) file
-					'''                    'RUN notes file
-					'''               RunNoteFile$ = sRunDir + Left$(s$, Len(s$) - 3) + "RNN"
-					'''               If Len(Dir$(RunNoteFile$)) > 0 Then
-					'''                  fileno% = FreeFile
-					'''                  Open RunNoteFile$ For Input As #fileno%
-					'''                  If ErrNo% = 0 Then
-					'''                     Input #fileno%, strTmp     'case description
-					'''                     Input #fileno%, RunNoteRecs%
-					'''                     ReDim RunNotes$(RunNoteRecs%)
-					'''                     For i = 1 To RunNoteRecs%
-					'''                        Input #fileno%, RunNotes$(i)
-					'''                     Next i
-					'''                     Close #fileno%
-					'''                  End If
-					'''               End If
-					
-19195: ElseIf Val(Right(DUM, 4)) > 5.2 Then  'i.e.VERSION 5.3
-					
-					
-					RFT = 0 : i = 0
-					RunFileNotes = 0
-					'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					DUM = g_oRunFileIn.NextItem ' Input #3, DUM$              'placeholder for description line
-					
-					''' 9 Feb 2004 JWD (C0783) Remove output to OXFIL.DAT
-					'''                'store file names for OXY data base zipping
-					'''               zipfileno% = FreeFile
-					'''               Open FOxfil$ For Append As #zipfileno%
-					'''                   Print #zipfileno%, sRunDir + s$
-					'''               Close #zipfileno%
-					
-					Do While Not g_oRunFileIn.AtEnd ' EOF(3)
-						'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-						DUM = g_oRunFileIn.NextItem ' Input #3, DUM$            'command variable
-						Select Case DUM
-							Case "GETDATA", "SNSDATA", "SNSPER", "GETCTRY", "SNSCTRY", "RUN", "GRAPH", "PLOT", "CONSOL"
-								i = i + 1
-3234: 
-								' Input #3, dum2$, dum3$, dum4$, dum5$, dum6$, dum7$, dum8$, dum9$, dum10$, dum11$
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum2 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum3 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum4 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum5 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum6 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum7 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum8 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum9 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum10 = g_oRunFileIn.NextItem
-								'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-								dum11 = g_oRunFileIn.NextItem
-								
-								'OXY database items
-								
-								'----------------------------------------------------------------------
-								'1-20-93
-								'If this is a GETDATA or GETCNTY line, put the file name in the OXFIL file
-								'  for use by the OXY data base routines.  This file will be used as the
-								'  response file when GNTOXY1.EXE SHELLs to PKZIP.EXE to zip all of the
-								'  input files used in this run
-								
-								'
-								'                    IF dum$ = "GETDATA" OR dum$ = "GETCTRY" THEN
-								'                       IF dum$ = "GETDATA" THEN
-								'                          tp$ = ".GNT"
-								'                       ELSEIF dum$ = "GETCTRY" THEN
-								'                          tp$ = ".CTY"
-								'                       END IF
-								'                       zipfileno% = FREEFILE
-								'                       OPEN FOxfil$ FOR APPEND AS #zipfileno%
-								'                          PRINT #zipfileno%, dum2$ + dum3$ + tp$
-								'                       CLOSE #zipfileno%
-								'                    END IF
-								'----------------------------------------------------------------------
-								ReDim Preserve RunLines(i)
-								DUM = Left(DUM & Space(7), 7)
-								dum2 = Left(dum2 & Space(25), 25)
-								dum3 = Left(dum3 & Space(8), 8)
-								dum4 = Left(dum4 & Space(3), 3)
-								dum5 = Left(dum5 & Space(8), 8)
-								dum6 = Left(dum6 & Space(8), 8)
-								dum7 = Left(dum7 & Space(8), 8)
-								dum8 = Left(dum8 & Space(8), 8)
-								dum9 = Left(dum9 & Space(8), 8)
-								dum10 = Left(dum10 & Space(8), 8)
-								dum11 = Left(dum11 & Space(8), 8)
-								
-								RunLines(i) = DUM & " " & dum2 & " " & dum3 & " " & dum4 & " " & dum5 & " " & dum6 & " " & dum7 & " " & dum8 & " " & dum9 & " " & dum10 & " " & dum11
-								
-								
-							Case Else 'this is a notes line
-								RunNoteRecs = RunNoteRecs + 1
-								ReDim Preserve RunNotes(RunNoteRecs)
-								RunNotes(RunNoteRecs) = DUM
-						End Select
-					Loop 
-					
-					RFT = i 'RFT # of lines in Run File
-				End If
-				g_oRunFileIn.CloseFile() ' Close #3
-				' GDP 08 Apr 2003
-				' Commented out OXY code
-				''''''''''''''''''''''''''''''''''''''''
-				''we must write the contents of the run file (including notes) to disk
-				''  so that in subsequent runs, we have an image of the complete run file
-				''  for the OXY NOT database file. This is the easiest way to do this since
-				''  when I need the info in GNTOXY1.EXE, the run file is open for other uses.
-				'
-				'            ct% = 0
-				'            If RunNoteRecs% > 0 Then
-				'               For i = RunNoteRecs% To 1 Step -1
-				'                  If RTrim$(LTrim$(RunNotes$(i))) <> "" Then
-				'                     ct% = i
-				'                     Exit For
-				'                  End If
-				'               Next i
-				'            End If
-				'            If ct% > 0 Then
-				'               RunNoteRecs% = ct%
-				'            Else
-				'               RunNoteRecs% = 1
-				'            End If
-				'            ReDim Preserve RunNotes$(RunNoteRecs%)
-				'
-				'            filen% = FreeFile
-				'            Open FOxyRun$ For Output As #filen%
-				'               Write #filen%, UBound(RunLines$), RunNoteRecs%
-				'               For i = 1 To UBound(RunLines$)
-				'                  Write #filen%, RunLines$(i)
-				'               Next i
-				'               For i = 1 To RunNoteRecs%
-				'                  Write #filen%, RTrim$(RunNotes$(i))
-				'               Next i
-				'            Close #filen%
-				''''''''''''''''''''''''''''''''''''''''
-				
-				
-				'WE now have a count of the number of run lines (excluding notes)
-19196: 
-				g_oRunFileIn = g_oFileSystem.OpenForInput(sRunDir & s) ' Open sRunDir + S$ For Input As #3
-				'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-				DUM = g_oRunFileIn.NextItem ' Input #3, DUM$
-				'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-				RunDesc = g_oRunFileIn.NextItem ' Input #3, RunDesc$            'case description
-				ReDim RF(RUNFILECOLS) 'Now assign RF$()
-				ReDim L1(14) 'stores dates & durations for consolidations
-				AR = 1
-19197: ' Input #3, RF$(1), RF$(2), RF$(3), RF$(4), RF$(5), RF$(6), RF$(7), RF$(8), RF$(9), RF$(10), RF$(11)
-				For j = 1 To RUNFILECOLS
-					'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					RF(j) = g_oRunFileIn.NextItem
-				Next j
-				
-				If Left(RF(1), 7) = "GETDATA" Then
-					
-					L1(6) = 10000
-					L1(2) = 10000
-					L1(7) = 10000
-					L1(8) = 0
-					L1(12) = 10000
-					L1(14) = 10000
-					'1/8/92 ---------------------
-					'              N1$ = RF$(3)
-					'----------------------------
-					
-					' 10 Feb 2005 JWD (C0856) Change to use symbols for 2 dim size
-					ReDim AC(gc_nMAXLIFE, gc_nACSIZED2)
-					ReDim CC(gc_nMAXCAPEX, gc_nCCSIZED2)
-					' Was:
-					''<<<<<< 21 Sep 2001 JWD (C0454)
-					'   'consolidation arrays - filled out in cashflow
-					'ReDim AC(gc_nMAXLIFE, 11), CC(gc_nMAXCAPEX, 4)
-					''~~~~~~ was:
-					''   'consolidation arrays - filled out in cashflow
-					''ReDim AC(gc_nMAXLIFE, 11), CC(300, 4)
-					''>>>>>> End (C0454)
-					' End (C0856)
-					
-					' 17 Mar 2004 JWD Add initialization of CCT, was not being reset across runfiles
-					CCT = 0
-					
-19198: 
-					'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-					Call ForecastData()
-					
-					
-					' 15 Jan 2004 JWD
-					' Capture project natural life
-					l_natural_life = LG
-					
-					'<<<<<< 13 Jan 1999 JWD Add to export forecasted data
-					If bExportForecasts Then
-						ExportForecastedData()
-					End If
-					'>>>>>> End 13 Jan 1999
-					
-					'<<<<<< 5 Jul 2001 JWD (C0341)
-					InitializeAbandonmentFundingProvisions()
-					'>>>>>> End (C0341)
-					
-					Call CountryForecast()
-					
-					
-					' 24 Oct 1996 JWD Replace inline test
-					'  with following GoSub
-					'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
+                    ''               9 Feb 2004 JWD (C0783) Remove input of Run Notes (RNN) file
+                    ''                    'RUN notes file
+                    ''               RunNoteFile$ = sRunDir + Left$(s$, Len(s$) - 3) + "RNN"
+                    ''               If Len(Dir$(RunNoteFile$)) > 0 Then
+                    ''                  fileno% = FreeFile
+                    ''                  Open RunNoteFile$ For Input As #fileno%
+                    ''                  If ErrNo% = 0 Then
+                    ''                     Input #fileno%, strTmp     'case description
+                    ''                     Input #fileno%, RunNoteRecs%
+                    ''                     ReDim RunNotes$(RunNoteRecs%)
+                    ''                     For i = 1 To RunNoteRecs%
+                    ''                        Input #fileno%, RunNotes$(i)
+                    ''                     Next i
+                    ''                     Close #fileno%
+                    ''                  End If
+                    ''               End If
+
+19195:          ElseIf Val(Right(DUM, 4)) > 5.2 Then  'i.e.VERSION 5.3
+
+
+                    RFT = 0 : i = 0
+                    RunFileNotes = 0
+                    'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    DUM = g_oRunFileIn.NextItem ' Input #3, DUM$              'placeholder for description line
+
+                    '' 9 Feb 2004 JWD (C0783) Remove output to OXFIL.DAT
+                    ''                'store file names for OXY data base zipping
+                    ''               zipfileno% = FreeFile
+                    ''               Open FOxfil$ For Append As #zipfileno%
+                    ''                   Print #zipfileno%, sRunDir + s$
+                    ''               Close #zipfileno%
+
+                    Do While Not g_oRunFileIn.AtEnd ' EOF(3)
+                        'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                        DUM = g_oRunFileIn.NextItem ' Input #3, DUM$            'command variable
+                        Select Case DUM
+                            Case "GETDATA", "SNSDATA", "SNSPER", "GETCTRY", "SNSCTRY", "RUN", "GRAPH", "PLOT", "CONSOL"
+                                i = i + 1
+3234:
+                                ' Input #3, dum2$, dum3$, dum4$, dum5$, dum6$, dum7$, dum8$, dum9$, dum10$, dum11$
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum2 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum3 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum4 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum5 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum6 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum7 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum8 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum9 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum10 = g_oRunFileIn.NextItem
+                                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                                dum11 = g_oRunFileIn.NextItem
+
+                                'OXY database items
+
+                                '----------------------------------------------------------------------
+                                '1-20-93
+                                'If this is a GETDATA or GETCNTY line, put the file name in the OXFIL file
+                                '  for use by the OXY data base routines.  This file will be used as the
+                                '  response file when GNTOXY1.EXE SHELLs to PKZIP.EXE to zip all of the
+                                '  input files used in this run
+
+                                '
+                                '                    IF dum$ = "GETDATA" OR dum$ = "GETCTRY" THEN
+                                '                       IF dum$ = "GETDATA" THEN
+                                '                          tp$ = ".GNT"
+                                '                       ELSEIF dum$ = "GETCTRY" THEN
+                                '                          tp$ = ".CTY"
+                                '                       END IF
+                                '                       zipfileno% = FREEFILE
+                                '                       OPEN FOxfil$ FOR APPEND AS #zipfileno%
+                                '                          PRINT #zipfileno%, dum2$ + dum3$ + tp$
+                                '                       CLOSE #zipfileno%
+                                '                    END IF
+                                '----------------------------------------------------------------------
+                                ReDim Preserve RunLines(i)
+                                DUM = Left(DUM & Space(7), 7)
+                                dum2 = Left(dum2 & Space(25), 25)
+                                dum3 = Left(dum3 & Space(8), 8)
+                                dum4 = Left(dum4 & Space(3), 3)
+                                dum5 = Left(dum5 & Space(8), 8)
+                                dum6 = Left(dum6 & Space(8), 8)
+                                dum7 = Left(dum7 & Space(8), 8)
+                                dum8 = Left(dum8 & Space(8), 8)
+                                dum9 = Left(dum9 & Space(8), 8)
+                                dum10 = Left(dum10 & Space(8), 8)
+                                dum11 = Left(dum11 & Space(8), 8)
+
+                                RunLines(i) = DUM & " " & dum2 & " " & dum3 & " " & dum4 & " " & dum5 & " " & dum6 & " " & dum7 & " " & dum8 & " " & dum9 & " " & dum10 & " " & dum11
+
+
+                            Case Else 'this is a notes line
+                                RunNoteRecs = RunNoteRecs + 1
+                                ReDim Preserve RunNotes(RunNoteRecs)
+                                RunNotes(RunNoteRecs) = DUM
+                        End Select
+                    Loop
+
+                    RFT = i 'RFT # of lines in Run File
+                End If
+                g_oRunFileIn.CloseFile() ' Close #3
+                ' GDP 08 Apr 2003
+                ' Commented out OXY code
+                ''''''''''''''''''''''''''''''''''''
+                ''we must write the contents of the run file (including notes) to disk
+                ''  so that in subsequent runs, we have an image of the complete run file
+                ''  for the OXY NOT database file. This is the easiest way to do this since
+                ''  when I need the info in GNTOXY1.EXE, the run file is open for other uses.
+                '
+                '            ct% = 0
+                '            If RunNoteRecs% > 0 Then
+                '               For i = RunNoteRecs% To 1 Step -1
+                '                  If RTrim$(LTrim$(RunNotes$(i))) <> "" Then
+                '                     ct% = i
+                '                     Exit For
+                '                  End If
+                '               Next i
+                '            End If
+                '            If ct% > 0 Then
+                '               RunNoteRecs% = ct%
+                '            Else
+                '               RunNoteRecs% = 1
+                '            End If
+                '            ReDim Preserve RunNotes$(RunNoteRecs%)
+                '
+                '            filen% = FreeFile
+                '            Open FOxyRun$ For Output As #filen%
+                '               Write #filen%, UBound(RunLines$), RunNoteRecs%
+                '               For i = 1 To UBound(RunLines$)
+                '                  Write #filen%, RunLines$(i)
+                '               Next i
+                '               For i = 1 To RunNoteRecs%
+                '                  Write #filen%, RTrim$(RunNotes$(i))
+                '               Next i
+                '            Close #filen%
+                ''''''''''''''''''''''''''''''''''''
+
+
+                'WE now have a count of the number of run lines (excluding notes)
+19196:
+                g_oRunFileIn = g_oFileSystem.OpenForInput(sRunDir & s) ' Open sRunDir + S$ For Input As #3
+                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                DUM = g_oRunFileIn.NextItem ' Input #3, DUM$
+                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                RunDesc = g_oRunFileIn.NextItem ' Input #3, RunDesc$            'case description
+                ReDim RF(RUNFILECOLS) 'Now assign RF$()
+                ReDim L1(14) 'stores dates & durations for consolidations
+                AR = 1
+19197:          ' Input #3, RF$(1), RF$(2), RF$(3), RF$(4), RF$(5), RF$(6), RF$(7), RF$(8), RF$(9), RF$(10), RF$(11)
+                For j = 1 To RUNFILECOLS
+                    'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    RF(j) = g_oRunFileIn.NextItem
+                Next j
+
+                If Left(RF(1), 7) = "GETDATA" Then
+
+                    L1(6) = 10000
+                    L1(2) = 10000
+                    L1(7) = 10000
+                    L1(8) = 0
+                    L1(12) = 10000
+                    L1(14) = 10000
+                    '1/8/92 ---------------------
+                    '              N1$ = RF$(3)
+                    '----------------------------
+
+                    ' 10 Feb 2005 JWD (C0856) Change to use symbols for 2 dim size
+                    ReDim AC(gc_nMAXLIFE, gc_nACSIZED2)
+                    ReDim CC(gc_nMAXCAPEX, gc_nCCSIZED2)
+                    ' Was:
+                    ''<<<<<< 21 Sep 2001 JWD (C0454)
+                    '   'consolidation arrays - filled out in cashflow
+                    'ReDim AC(gc_nMAXLIFE, 11), CC(gc_nMAXCAPEX, 4)
+                    ''~~~~~~ was:
+                    ''   'consolidation arrays - filled out in cashflow
+                    ''ReDim AC(gc_nMAXLIFE, 11), CC(300, 4)
+                    ''>>>>>> End (C0454)
+                    ' End (C0856)
+
+                    ' 17 Mar 2004 JWD Add initialization of CCT, was not being reset across runfiles
+                    CCT = 0
+
+19198:
+                    'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
+                    Call ForecastData()
+
+
+                    ' 15 Jan 2004 JWD
+                    ' Capture project natural life
+                    l_natural_life = LG
+
+                    '<<<<<< 13 Jan 1999 JWD Add to export forecasted data
+                    If bExportForecasts Then
+                        ExportForecastedData()
+                    End If
+                    '>>>>>> End 13 Jan 1999
+
+                    '<<<<<< 5 Jul 2001 JWD (C0341)
+                    InitializeAbandonmentFundingProvisions()
+                    '>>>>>> End (C0341)
+
+                    Call CountryForecast()
+
+
+                    ' 24 Oct 1996 JWD Replace inline test
+                    '  with following GoSub
+                    'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
                     FixupForExportCodes()
-					
-					
-					'** Currency conversion of input here
-					
-					If Len(RF(3)) > 0 Then
-						ConvertInputData(RF(3))
-					End If
-					
-					'<<<<<< 23 Jul 2001 JWD (C0354)
-					ApplyAbandonmentFundingProvisions()
-					'>>>>>> End (C0354)
-					
-					Call CalculateBonus()
-					
-					'<<<<<< 23 Jul 2001 JWD (C0354)
-					''<<<<<< 25 Jun 2001 JWD (C0341)
-					'ApplyAbandonmentFundingProvisions
-					''>>>>>> End (C0341)
-					'>>>>>> End (C0354)
-					
-					' 31 Oct 1996 JWD See comments in Gosub
+
+
+                    '** Currency conversion of input here
+
+                    If Len(RF(3)) > 0 Then
+                        ConvertInputData(RF(3))
+                    End If
+
+                    '<<<<<< 23 Jul 2001 JWD (C0354)
+                    ApplyAbandonmentFundingProvisions()
+                    '>>>>>> End (C0354)
+
+                    Call CalculateBonus()
+
+                    '<<<<<< 23 Jul 2001 JWD (C0354)
+                    ''<<<<<< 25 Jun 2001 JWD (C0341)
+                    'ApplyAbandonmentFundingProvisions
+                    ''>>>>>> End (C0341)
+                    '>>>>>> End (C0354)
+
+                    ' 31 Oct 1996 JWD See comments in Gosub
                     RenameMiscellaneousTitlesFile()
-					
-					' 28 Oct 1996 JWD See comments in Gosub
+
+                    ' 28 Oct 1996 JWD See comments in Gosub
                     RenameVariableTitlesFile()
 
-					' 4th Jul 2000 GDP Changed for AS$ET so full currency names are passed
-					'If Len(RF$(3)) > 0 Then sCur = Left$(RF$(3), 3)
-					If Len(RF(3)) > 0 Then sCur = RF(3)
-					
-					Call GrossReport()
-					
-					'UPGRADE_WARNING: Lower bound of array xRunSwitches was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-					ReDim xRunSwitches(RunSwitchesCount)
-					
-					' go ahead and do the normal calls through the
-					' generation of after-tax cash flow page while the
-					' data is absolutely right at this point.
-					xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
-					xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
-					xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
-					xRunSwitches(RunSwitch_FIN) = RunSwitch_FIN_On
-					xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_On
-					xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
-					
-					Call FiscalDef()
-					ReDim gna_ACFX(LG, 26)
-					
-					Call ConsolidateLoan()
-					Call CalculateRepayment()
-					
-					' capture the company cash flow values now
-					xxx_POSCF = gna_ACFX_CPS
-					xxx_NEGCF = gna_ACFX_CNG
-					
-					Call Cashflow()
-					
-					' Now go back and generate the data for the dcf page
-					' copy the operating-level numbers to A() and MY3()
-					If g_bPTCons Then
-						
-						' establish correspondence between my3() and my3Ex()
-						' when done lpa_my3Ex values are the index of the
-						' my3Ex() row that corresponds to the my3() row index
-						' value.
-						' i. e. my3Ex(lpa_my3Ex(my3tt), gna_my3Ex_GCX) is the value
-						' of the group-level capital for the expenditure my3(my3tt)
-						'UPGRADE_WARNING: Lower bound of array lpa_my3Ex was changed from LBound(my3, 1) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-						ReDim lpa_my3Ex(UBound(my3, 1))
-						For iiiX = 1 To my3tt
-							' Find the corresponding item (based on category, exp. date and tangible percent)
-							' in this case (g_bPTCons is true) each entry is supposed to be unique
-							' pointer is initialized to point to row 0,
-							' which should be zero valued for all levels in my3Ex()
-							lpa_my3Ex(iiiX) = 0
-							For iiiY = 1 To UBound(my3Ex, 1)
-								If my3Ex(iiiY, gna_my3Ex_CAT) = my3(iiiX, gc_nMY3_CAT) And my3Ex(iiiY, gna_my3Ex_XMO) = my3(iiiX, gc_nMY3_XMO) And my3Ex(iiiY, gna_my3Ex_XYR) = my3(iiiX, gc_nMY3_XYR) And my3Ex(iiiY, gna_my3Ex_TAN) = my3(iiiX, gc_nMY3_TAN) Then
-									lpa_my3Ex(iiiX) = iiiY
-								End If
-							Next iiiY
-						Next iiiX
-						
-						
-						' Now go back and generate the data for the dcf page
-						' capture total-level
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 0)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-							
-							gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
-							gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
-							
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
-							iiiY = my3(iiiX, 3) - YR + 1
-							gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
-						Next iiiX
-						
-						' load operating-level values
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 1)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_OCX)
-						Next iiiX
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
-						xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
-						xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
-						
-						ReportLevelSaved = RF(5)
-						RF(5) = "   " ' set to no report output
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_OPS
-						xxx_NEGCF = gna_ACFX_ONG
-						
-						Call Cashflow()
-						
-						' load group-level values
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 2)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_GCX)
-						Next iiiX
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_GPS
-						xxx_NEGCF = gna_ACFX_GNG
-						
-						Call Cashflow()
-						
-						' load company-level values
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 3)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_CCX)
-						Next iiiX
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
-						xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
-						xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
-						
-						' Change the ring fence file to use for this level
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
-						
-						' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
-						' don't want to write to the file for company-level ring fence because done
-						' above already. But still have to have a reference to the company-level for reading
-						RunNameSaved = RF(2) ' save the actual name
-						RF(2) = RunNameSaved & "X" ' fixup to fool ring fence output code
-						Call FiscalDef()
-						RF(2) = RunNameSaved ' restore the actual name
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = 0
-						xxx_NEGCF = 0
-						
-						' Change the ring fence file to use for this level
-						' Don't want the company level data written again, was done above
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
-						
-						Call Cashflow()
-						
-					Else
-						
-						' single data run (non pre-tax consol)
-						For iiiX = 1 To LG
-							gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
-							gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							If (my3(iiiX, 1) > 1 And my3(iiiX, 1) < CPXCategoryCodeBAL) Or my3(iiiX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
-								iiiY = my3(iiiX, 3) - YR + 1
-								gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3(iiiX, 5)
-							End If
-						Next iiiX
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
-						xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
-						xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
-						
-						ReportLevelSaved = RF(5)
-						RF(5) = "   " ' set to no report output
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_OPS
-						xxx_NEGCF = gna_ACFX_ONG
-						
-						Call Cashflow()
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_GPS
-						xxx_NEGCF = gna_ACFX_GNG
-						
-						Call Cashflow()
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
-						
-						' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
-						' don't want to write to the file for company-level ring fence because done
-						' above already. But still have to have a reference to the company-level for reading
-						RunNameSaved = RF(2) ' save the actual name
-						RF(2) = RunNameSaved & "X" ' fixup to fool ring fence output code
-						Call FiscalDef()
-						RF(2) = RunNameSaved ' restore the actual name
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = 0
-						xxx_NEGCF = 0
-						
-						' Change the ring fence file to use for this level
-						' Don't want the company level data written again, was done above
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
-						
-						Call Cashflow()
-						
-					End If
-					
-					
-					' do the discounted cash flow page
-					xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only
-					RF(5) = ReportLevelSaved
-					
-					' Change the ring fence file to use for this level
-					' Used from here through the next call of Cashflow()
-					g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
-					
-					Call Cashflow()
-					
-					
-					'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-					Call WriteGNTCon()
-					
-					' 30 Oct 1996 JWD Comment out following
-					' OXY files replaced by OXY export format
-					' Call WriteOXYFiles
-					
-					' Add condition on report write
-					If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
-						WriteOutputReport(g_oReport, ReportFileSpec(sRptDir, RN, RNU, "PRN"), g_oFileSystem)
-					End If
-					
-					' 23 Sep 2004 JWD (C0839) Write run summary data
-					l_oRunSumOut = g_oFileSystem.OpenForOutput(sRptDir & RN & ".SUM")
-					'UPGRADE_WARNING: Couldn't resolve default property of object New (CCMGiantRunSummarySeqA). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					'UPGRADE_WARNING: Couldn't resolve default property of object l_oRunSumOut. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					g_oReport.WriteReport(l_oRunSumOut, New CCMGiantRunSummarySeqA)
-					l_oRunSumOut.CloseFile()
-					' End (C0839)
-					
-				Else 'RF$(1) <> "GETDATA"
-19199: Error(254)
-				End If
-				
-			End If
-			
-			'OPEN "badfile.log" FOR OUTPUT AS #13
-			'PRINT #13, "Mainexec 49000 RF$(1) = "; RF$(1)
-			'PRINT #13, "Mainexec 49000 Rf$(2) = "; RF$(2)
-			'PRINT #13, "Mainexec 49000 RF$(3) = "; RF$(3)
-			'CLOSE #13
-			
-		Else 'ar > 0  'this means that this is not the first time here
-49061: 
-			' Set a global reference to the ring fence file. If it doesn't exist, error
-			g_oRingFenceFile = g_oFileSystem.OpenForInput(TempDir & "RING.FNC").CloseFile
-			
-			ReDim gfa_RingFenceFiles(4)
-			
-			gfa_RingFenceFiles(gfa_RingFenceFile_OPS) = g_oFileSystem.OpenForInput(TempDir & "RINGO.FNC").CloseFile
-			gfa_RingFenceFiles(gfa_RingFenceFile_GRP) = g_oFileSystem.OpenForInput(TempDir & "RINGG.FNC").CloseFile
-			gfa_RingFenceFiles(gfa_RingFenceFile_CMP) = g_oRingFenceFile ' holds another reference, for when g_oRingFenceFile is assigned one of the others
-			gfa_RingFenceFiles(gfa_RingFenceFile_DUM) = g_oFileSystem.OpenForInput(TempDir & "DUMMY.FNC").CloseFile
-			
-			'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-			ReadGNTCon()
-			AR = AR + 1
-			If AR > RFT Then 'no more lines in Run File
-				g_oRunFileIn.CloseFile() ' Close #3
-			Else 'AR is not greater than RFT
-				' read all past lines - must do this because all files are closed coming back from DISPLAY
-				s = RN & ".RUN"
-49075: g_oRunFileIn = g_oFileSystem.OpenForInput(sRunDir & s) ' Open sRunDir + S$ For Input As #3
-				'----------------------------------------------------------------------
-				'       put run file name in the OXFIL file - for use by the OXY data base routines
-				'1-20-93
-49076: 
-				''' 9 Feb 2004 JWD (C0783) Remove output to OXFIL.DAT
-				'''            zipfileno% = FreeFile
-				'''            Open FOxfil$ For Append As #zipfileno%
-				'''                Print #zipfileno%, sRunDir + s$
-				'''            Close #zipfileno%
-				'----------------------------------------------------------------------
-49080: 'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-				DUM = g_oRunFileIn.NextItem ' Input #3, DUM$
-				'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-				dum0 = g_oRunFileIn.NextItem ' Input #3, dum0$
-				
-				For i = 1 To AR - 1
-					' Input #3, RF$(1), RF$(2), RF$(3), RF$(4), RF$(5), RF$(6), RF$(7), RF$(8), RF$(9), RF$(10), RF$(11)
-					For j = 1 To RUNFILECOLS
-						'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-						RF(j) = g_oRunFileIn.NextItem
-					Next j
-				Next i
-				' read next line in run file
-				' Input #3, RF$(1), RF$(2), RF$(3), RF$(4), RF$(5), RF$(6), RF$(7), RF$(8), RF$(9), RF$(10), RF$(11)
-				For j = 1 To RUNFILECOLS
-					'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					RF(j) = g_oRunFileIn.NextItem
-				Next j
-				'store run line data for OXY database
-				ReDim Preserve RunLines(1)
-				DUM = Left(RF(1) & Space(7), 7)
-				dum2 = Left(RF(2) & Space(25), 25)
-				dum3 = Left(RF(3) & Space(8), 8)
-				dum4 = Left(RF(4) & Space(3), 3)
-				dum5 = Left(RF(5) & Space(8), 8)
-				dum6 = Left(RF(6) & Space(8), 8)
-				dum7 = Left(RF(7) & Space(8), 8)
-				dum8 = Left(RF(8) & Space(8), 8)
-				dum9 = Left(RF(9) & Space(8), 8)
-				dum10 = Left(RF(10) & Space(8), 8)
-				dum11 = Left(RF(11) & Space(8), 8)
-				RunLines(1) = DUM & dum2 & dum3 & dum4 & dum5 & dum6 & dum7 & dum8 & dum9 & dum10 & dum11
-				
-				If Left(RF(1), 7) = "GETDATA" Then
-					LG = 0
-49081: 'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-					Call ForecastData()
-					
-					' 15 Jan 2004 JWD
-					' Capture project natural life
-					l_natural_life = LG
-					
-					'<<<<<< 13 Jan 1999 JWD Add to export forecasted data
-					If bExportForecasts Then
-						ExportForecastedData()
-					End If
-					'>>>>>> End 13 Jan 1999
-					
-					'<<<<<< 5 Jul 2001 JWD (C0341)
-					InitializeAbandonmentFundingProvisions()
-					'>>>>>> End (C0341)
-					
-					Call CountryForecast()
-					
-					' 24 Oct 1996 JWD Replace inline test
-					'  with following GoSub
-					'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
+                    ' 4th Jul 2000 GDP Changed for AS$ET so full currency names are passed
+                    'If Len(RF$(3)) > 0 Then sCur = Left$(RF$(3), 3)
+                    If Len(RF(3)) > 0 Then sCur = RF(3)
+
+                    Call GrossReport()
+
+                    'UPGRADE_WARNING: Lower bound of array xRunSwitches was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+                    ReDim xRunSwitches(RunSwitchesCount)
+
+                    ' go ahead and do the normal calls through the
+                    ' generation of after-tax cash flow page while the
+                    ' data is absolutely right at this point.
+                    xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
+                    xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
+                    xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
+                    xRunSwitches(RunSwitch_FIN) = RunSwitch_FIN_On
+                    xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_On
+                    xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
+
+                    Call FiscalDef()
+                    ReDim gna_ACFX(LG, 26)
+
+                    Call ConsolidateLoan()
+                    Call CalculateRepayment()
+
+                    ' capture the company cash flow values now
+                    xxx_POSCF = gna_ACFX_CPS
+                    xxx_NEGCF = gna_ACFX_CNG
+
+                    Call Cashflow()
+
+                    ' Now go back and generate the data for the dcf page
+                    ' copy the operating-level numbers to A() and MY3()
+                    If g_bPTCons Then
+
+                        ' establish correspondence between my3() and my3Ex()
+                        ' when done lpa_my3Ex values are the index of the
+                        ' my3Ex() row that corresponds to the my3() row index
+                        ' value.
+                        ' i. e. my3Ex(lpa_my3Ex(my3tt), gna_my3Ex_GCX) is the value
+                        ' of the group-level capital for the expenditure my3(my3tt)
+                        'UPGRADE_WARNING: Lower bound of array lpa_my3Ex was changed from LBound(my3, 1) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+                        ReDim lpa_my3Ex(UBound(my3, 1))
+                        For iiiX = 1 To my3tt
+                            ' Find the corresponding item (based on category, exp. date and tangible percent)
+                            ' in this case (g_bPTCons is true) each entry is supposed to be unique
+                            ' pointer is initialized to point to row 0,
+                            ' which should be zero valued for all levels in my3Ex()
+                            lpa_my3Ex(iiiX) = 0
+                            For iiiY = 1 To UBound(my3Ex, 1)
+                                If my3Ex(iiiY, gna_my3Ex_CAT) = my3(iiiX, gc_nMY3_CAT) And my3Ex(iiiY, gna_my3Ex_XMO) = my3(iiiX, gc_nMY3_XMO) And my3Ex(iiiY, gna_my3Ex_XYR) = my3(iiiX, gc_nMY3_XYR) And my3Ex(iiiY, gna_my3Ex_TAN) = my3(iiiX, gc_nMY3_TAN) Then
+                                    lpa_my3Ex(iiiX) = iiiY
+                                End If
+                            Next iiiY
+                        Next iiiX
+
+
+                        ' Now go back and generate the data for the dcf page
+                        ' capture total-level
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 0)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+
+                            gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
+                            gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
+
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
+                            iiiY = my3(iiiX, 3) - YR + 1
+                            gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
+                        Next iiiX
+
+                        ' load operating-level values
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 1)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_OCX)
+                        Next iiiX
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
+                        xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
+                        xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
+
+                        ReportLevelSaved = RF(5)
+                        RF(5) = "   " ' set to no report output
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_OPS
+                        xxx_NEGCF = gna_ACFX_ONG
+
+                        Call Cashflow()
+
+                        ' load group-level values
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 2)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_GCX)
+                        Next iiiX
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_GPS
+                        xxx_NEGCF = gna_ACFX_GNG
+
+                        Call Cashflow()
+
+                        ' load company-level values
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 3)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_CCX)
+                        Next iiiX
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
+                        xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
+                        xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
+
+                        ' Change the ring fence file to use for this level
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
+
+                        ' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
+                        ' don't want to write to the file for company-level ring fence because done
+                        ' above already. But still have to have a reference to the company-level for reading
+                        RunNameSaved = RF(2) ' save the actual name
+                        RF(2) = RunNameSaved & "X" ' fixup to fool ring fence output code
+                        Call FiscalDef()
+                        RF(2) = RunNameSaved ' restore the actual name
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = 0
+                        xxx_NEGCF = 0
+
+                        ' Change the ring fence file to use for this level
+                        ' Don't want the company level data written again, was done above
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
+
+                        Call Cashflow()
+
+                    Else
+
+                        ' single data run (non pre-tax consol)
+                        For iiiX = 1 To LG
+                            gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
+                            gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            If (my3(iiiX, 1) > 1 And my3(iiiX, 1) < CPXCategoryCodeBAL) Or my3(iiiX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
+                                iiiY = my3(iiiX, 3) - YR + 1
+                                gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3(iiiX, 5)
+                            End If
+                        Next iiiX
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
+                        xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
+                        xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
+
+                        ReportLevelSaved = RF(5)
+                        RF(5) = "   " ' set to no report output
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_OPS
+                        xxx_NEGCF = gna_ACFX_ONG
+
+                        Call Cashflow()
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_GPS
+                        xxx_NEGCF = gna_ACFX_GNG
+
+                        Call Cashflow()
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
+
+                        ' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
+                        ' don't want to write to the file for company-level ring fence because done
+                        ' above already. But still have to have a reference to the company-level for reading
+                        RunNameSaved = RF(2) ' save the actual name
+                        RF(2) = RunNameSaved & "X" ' fixup to fool ring fence output code
+                        Call FiscalDef()
+                        RF(2) = RunNameSaved ' restore the actual name
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = 0
+                        xxx_NEGCF = 0
+
+                        ' Change the ring fence file to use for this level
+                        ' Don't want the company level data written again, was done above
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
+
+                        Call Cashflow()
+
+                    End If
+
+
+                    ' do the discounted cash flow page
+                    xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only
+                    RF(5) = ReportLevelSaved
+
+                    ' Change the ring fence file to use for this level
+                    ' Used from here through the next call of Cashflow()
+                    g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
+
+                    Call Cashflow()
+
+
+                    'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
+                    Call WriteGNTCon()
+
+                    ' 30 Oct 1996 JWD Comment out following
+                    ' OXY files replaced by OXY export format
+                    ' Call WriteOXYFiles
+
+                    ' Add condition on report write
+                    If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
+                        WriteOutputReport(g_oReport, ReportFileSpec(sRptDir, RN, RNU, "PRN"), g_oFileSystem)
+                    End If
+
+                    ' 23 Sep 2004 JWD (C0839) Write run summary data
+                    l_oRunSumOut = g_oFileSystem.OpenForOutput(sRptDir & RN & ".SUM")
+                    'UPGRADE_WARNING: Couldn't resolve default property of object New (CCMGiantRunSummarySeqA). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    'UPGRADE_WARNING: Couldn't resolve default property of object l_oRunSumOut. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    g_oReport.WriteReport(l_oRunSumOut, New CCMGiantRunSummarySeqA)
+                    l_oRunSumOut.CloseFile()
+                    ' End (C0839)
+
+                Else 'RF$(1) <> "GETDATA"
+19199:              Error (254)
+                End If
+
+            End If
+
+            'OPEN "badfile.log" FOR OUTPUT AS #13
+            'PRINT #13, "Mainexec 49000 RF$(1) = "; RF$(1)
+            'PRINT #13, "Mainexec 49000 Rf$(2) = "; RF$(2)
+            'PRINT #13, "Mainexec 49000 RF$(3) = "; RF$(3)
+            'CLOSE #13
+
+        Else 'ar > 0  'this means that this is not the first time here
+49061:
+            ' Set a global reference to the ring fence file. If it doesn't exist, error
+            g_oRingFenceFile = g_oFileSystem.OpenForInput(TempDir & "RING.FNC").CloseFile
+
+            ReDim gfa_RingFenceFiles(4)
+
+            gfa_RingFenceFiles(gfa_RingFenceFile_OPS) = g_oFileSystem.OpenForInput(TempDir & "RINGO.FNC").CloseFile
+            gfa_RingFenceFiles(gfa_RingFenceFile_GRP) = g_oFileSystem.OpenForInput(TempDir & "RINGG.FNC").CloseFile
+            gfa_RingFenceFiles(gfa_RingFenceFile_CMP) = g_oRingFenceFile ' holds another reference, for when g_oRingFenceFile is assigned one of the others
+            gfa_RingFenceFiles(gfa_RingFenceFile_DUM) = g_oFileSystem.OpenForInput(TempDir & "DUMMY.FNC").CloseFile
+
+            'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
+            ReadGNTCon()
+            AR = AR + 1
+            If AR > RFT Then 'no more lines in Run File
+                g_oRunFileIn.CloseFile() ' Close #3
+            Else 'AR is not greater than RFT
+                ' read all past lines - must do this because all files are closed coming back from DISPLAY
+                s = RN & ".RUN"
+49075:          g_oRunFileIn = g_oFileSystem.OpenForInput(sRunDir & s) ' Open sRunDir + S$ For Input As #3
+                '----------------------------------------------------------------------
+                '       put run file name in the OXFIL file - for use by the OXY data base routines
+                '1-20-93
+49076:
+                '' 9 Feb 2004 JWD (C0783) Remove output to OXFIL.DAT
+                ''            zipfileno% = FreeFile
+                ''            Open FOxfil$ For Append As #zipfileno%
+                ''                Print #zipfileno%, sRunDir + s$
+                ''            Close #zipfileno%
+                '----------------------------------------------------------------------
+49080:          'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                DUM = g_oRunFileIn.NextItem ' Input #3, DUM$
+                'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                dum0 = g_oRunFileIn.NextItem ' Input #3, dum0$
+
+                For i = 1 To AR - 1
+                    ' Input #3, RF$(1), RF$(2), RF$(3), RF$(4), RF$(5), RF$(6), RF$(7), RF$(8), RF$(9), RF$(10), RF$(11)
+                    For j = 1 To RUNFILECOLS
+                        'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                        RF(j) = g_oRunFileIn.NextItem
+                    Next j
+                Next i
+                ' read next line in run file
+                ' Input #3, RF$(1), RF$(2), RF$(3), RF$(4), RF$(5), RF$(6), RF$(7), RF$(8), RF$(9), RF$(10), RF$(11)
+                For j = 1 To RUNFILECOLS
+                    'UPGRADE_WARNING: Couldn't resolve default property of object g_oRunFileIn.NextItem. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    RF(j) = g_oRunFileIn.NextItem
+                Next j
+                'store run line data for OXY database
+                ReDim Preserve RunLines(1)
+                DUM = Left(RF(1) & Space(7), 7)
+                dum2 = Left(RF(2) & Space(25), 25)
+                dum3 = Left(RF(3) & Space(8), 8)
+                dum4 = Left(RF(4) & Space(3), 3)
+                dum5 = Left(RF(5) & Space(8), 8)
+                dum6 = Left(RF(6) & Space(8), 8)
+                dum7 = Left(RF(7) & Space(8), 8)
+                dum8 = Left(RF(8) & Space(8), 8)
+                dum9 = Left(RF(9) & Space(8), 8)
+                dum10 = Left(RF(10) & Space(8), 8)
+                dum11 = Left(RF(11) & Space(8), 8)
+                RunLines(1) = DUM & dum2 & dum3 & dum4 & dum5 & dum6 & dum7 & dum8 & dum9 & dum10 & dum11
+
+                If Left(RF(1), 7) = "GETDATA" Then
+                    LG = 0
+49081:              'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
+                    Call ForecastData()
+
+                    ' 15 Jan 2004 JWD
+                    ' Capture project natural life
+                    l_natural_life = LG
+
+                    '<<<<<< 13 Jan 1999 JWD Add to export forecasted data
+                    If bExportForecasts Then
+                        ExportForecastedData()
+                    End If
+                    '>>>>>> End 13 Jan 1999
+
+                    '<<<<<< 5 Jul 2001 JWD (C0341)
+                    InitializeAbandonmentFundingProvisions()
+                    '>>>>>> End (C0341)
+
+                    Call CountryForecast()
+
+                    ' 24 Oct 1996 JWD Replace inline test
+                    '  with following GoSub
+                    'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
                     FixupForExportCodes()
-					
-					'** Currency conversion of input here
-					If Len(RF(3)) > 0 Then
-						ConvertInputData(RF(3))
-					End If
-					
-					'<<<<<< 23 Jul 2001 JWD (C0354)
-					ApplyAbandonmentFundingProvisions()
-					'>>>>>> End (C0354)
-					
-					Call CalculateBonus()
-					
-					'<<<<<< 2 Aug 2001 JWD (C0365)
-					''<<<<<< 25 Jun 2001 JWD (C0341)
-					'ApplyAbandonmentFundingProvisions
-					''>>>>>> End (C0341)
-					'>>>>>> End (C0365)
-					
-					' 31 Oct 1996 JWD See comments in Gosub
+
+                    '** Currency conversion of input here
+                    If Len(RF(3)) > 0 Then
+                        ConvertInputData(RF(3))
+                    End If
+
+                    '<<<<<< 23 Jul 2001 JWD (C0354)
+                    ApplyAbandonmentFundingProvisions()
+                    '>>>>>> End (C0354)
+
+                    Call CalculateBonus()
+
+                    '<<<<<< 2 Aug 2001 JWD (C0365)
+                    ''<<<<<< 25 Jun 2001 JWD (C0341)
+                    'ApplyAbandonmentFundingProvisions
+                    ''>>>>>> End (C0341)
+                    '>>>>>> End (C0365)
+
+                    ' 31 Oct 1996 JWD See comments in Gosub
                     RenameMiscellaneousTitlesFile()
-					
-					' 28 Oct 1996 JWD See comments in Gosub
+
+                    ' 28 Oct 1996 JWD See comments in Gosub
                     RenameVariableTitlesFile()
-					'If Len(RF$(3)) > 0 Then sCur = Left$(RF$(3), 3)
-					'Changed GDP 11/7/00 so full currency string is passed through
-					If Len(RF(3)) > 0 Then sCur = RF(3)
-					
-					Call GrossReport()
-					
-					ReDim gna_ACFX(LG, 26)
-					'UPGRADE_WARNING: Lower bound of array xRunSwitches was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-					ReDim xRunSwitches(RunSwitchesCount)
-					
-					' go ahead and do the normal calls through the
-					' generation of after-tax cash flow page while the
-					' data is absolutely right at this point.
-					xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
-					xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
-					xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
-					xRunSwitches(RunSwitch_FIN) = RunSwitch_FIN_On
-					xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_On
-					xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
-					
-					Call FiscalDef()
-					Call ConsolidateLoan()
-					Call CalculateRepayment()
-					
-					' capture the company cash flow values now
-					xxx_POSCF = gna_ACFX_CPS
-					xxx_NEGCF = gna_ACFX_CNG
-					
-					Call Cashflow()
-					
-					' Now go back and generate the data for the dcf page
-					' copy the operating-level numbers to A() and MY3()
-					If g_bPTCons Then
-						
-						' establish correspondence between my3() and my3Ex()
-						' when done lpa_my3Ex values are the index of the
-						' my3Ex() row that corresponds to the my3() row index
-						' value.
-						' i. e. my3Ex(lpa_my3Ex(my3tt), gna_my3Ex_GCX) is the value
-						' of the group-level capital for the expenditure my3(my3tt)
-						'UPGRADE_WARNING: Lower bound of array lpa_my3Ex was changed from LBound(my3, 1) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-						ReDim lpa_my3Ex(UBound(my3, 1))
-						For iiiX = 1 To my3tt
-							' Find the corresponding item (based on category, exp. date and tangible percent)
-							' in this case (g_bPTCons is true) each entry is supposed to be unique
-							' pointer is initialized to point to row 0,
-							' which should be zero valued for all levels in my3Ex()
-							lpa_my3Ex(iiiX) = 0
-							For iiiY = 1 To UBound(my3Ex, 1)
-								If my3Ex(iiiY, gna_my3Ex_CAT) = my3(iiiX, gc_nMY3_CAT) And my3Ex(iiiY, gna_my3Ex_XMO) = my3(iiiX, gc_nMY3_XMO) And my3Ex(iiiY, gna_my3Ex_XYR) = my3(iiiX, gc_nMY3_XYR) And my3Ex(iiiY, gna_my3Ex_TAN) = my3(iiiX, gc_nMY3_TAN) Then
-									lpa_my3Ex(iiiX) = iiiY
-								End If
-							Next iiiY
-						Next iiiX
-						
-						
-						' Now go back and generate the data for the dcf page
-						' capture total-level
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 0)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-							
-							gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
-							gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
-							
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
-							iiiY = my3(iiiX, 3) - YR + 1
-							gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
-						Next iiiX
-						
-						' load operating-level values
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 1)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_OCX)
-						Next iiiX
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
-						xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
-						xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
-						
-						ReportLevelSaved = RF(5)
-						RF(5) = "   " ' set to no report output
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_OPS
-						xxx_NEGCF = gna_ACFX_ONG
-						
-						Call Cashflow()
-						
-						' load group-level values
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 2)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_GCX)
-						Next iiiX
-						
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_GPS
-						xxx_NEGCF = gna_ACFX_GNG
-						
-						Call Cashflow()
-						
-						' load company-level values
-						ReDim OPEX(gc_nMAXLIFE)
-						For iiiX = 1 To LG
-							For iiiY = 1 To gc_nAMAXOPX
-								A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 3)
-							Next iiiY
-							For iiiY = gc_nAMINOPX To gc_nAMAXOPX
-								OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
-							Next iiiY
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_CCX)
-						Next iiiX
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
-						
-						' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
-						' don't want to write to the file for company-level ring fence because done
-						' above already. But still have to have a reference to the company-level for reading
-						RunNameSaved = RF(2) ' save the actual name
-						RF(2) = RunNameSaved & "X" ' fixup to fool ring fence out code
-						Call FiscalDef()
-						RF(2) = RunNameSaved ' restore the actual name
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = 0
-						xxx_NEGCF = 0
-						
-						' Change the ring fence file to use for this level
-						' Don't want the company level data written again, was done above
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
-						
-						Call Cashflow()
-						
-					Else
-						
-						' single data run (non pre-tax consol)
-						For iiiX = 1 To LG
-							gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
-							gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
-						Next iiiX
-						
-						For iiiX = 1 To my3tt
-							If (my3(iiiX, 1) > 1 And my3(iiiX, 1) < CPXCategoryCodeBAL) Or my3(iiiX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
-								iiiY = my3(iiiX, 3) - YR + 1
-								gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3(iiiX, 5)
-							End If
-						Next iiiX
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
-						xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
-						xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
-						
-						ReportLevelSaved = RF(5)
-						RF(5) = "   " ' set to no report output
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_OPS
-						xxx_NEGCF = gna_ACFX_ONG
-						
-						Call Cashflow()
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
-						xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
-						
-						Call FiscalDef()
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = gna_ACFX_GPS
-						xxx_NEGCF = gna_ACFX_GNG
-						
-						Call Cashflow()
-						
-						xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
-						xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
-						
-						' Change the ring fence file to use for this level
-						' Used from here through the next call of Cashflow()
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
-						
-						' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
-						' don't want to write to the file for company-level ring fence because done
-						' above already. But still have to have a reference to the company-level for reading
-						RunNameSaved = RF(2) ' save the actual name
-						RF(2) = RunNameSaved & "X" ' fixup to fool ring fence out code
-						Call FiscalDef()
-						RF(2) = RunNameSaved ' restore the actual name
-						Call ConsolidateLoan()
-						Call CalculateRepayment()
-						
-						xxx_POSCF = 0
-						xxx_NEGCF = 0
-						
-						' Change the ring fence file to use for this level
-						' Don't want the company level data written again, was done above
-						g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
-						
-						Call Cashflow()
-						
-					End If
-					
-					
-					' do the discounted cash flow page
-					xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only
-					RF(5) = ReportLevelSaved
-					
-					' Change the ring fence file to use. Don't want ring fence output from here.
-					g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
-					
-					Call Cashflow()
-					
-					'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-					Call WriteGNTCon()
-					' 30 Oct 1996 JWD Comment out following
-					' OXY files replaced by OXY export format
-					'Call WriteOXYFiles
-					
-					' Add condition on report write
-					If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
-						WriteOutputReport(g_oReport, ReportFileSpec(sRptDir, RN, RNU, "PRN"), g_oFileSystem)
-					End If
-					
-					' 23 Sep 2004 JWD (C0839) Write run summary data
-					l_oRunSumOut = g_oFileSystem.OpenForAppend(sRptDir & RN & ".SUM")
-					'UPGRADE_WARNING: Couldn't resolve default property of object New (CCMGiantRunSummarySeqA). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					'UPGRADE_WARNING: Couldn't resolve default property of object l_oRunSumOut. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					g_oReport.WriteReport(l_oRunSumOut, New CCMGiantRunSummarySeqA)
-					l_oRunSumOut.CloseFile()
-					' End (C0839)
-					
-				ElseIf Left(RF(1), 6) = "CONSOL" Then 
-49082: 
-					' 24 Oct 1996 JWD Replace inline test
-					'  with following GoSub
+                    'If Len(RF$(3)) > 0 Then sCur = Left$(RF$(3), 3)
+                    'Changed GDP 11/7/00 so full currency string is passed through
+                    If Len(RF(3)) > 0 Then sCur = RF(3)
+
+                    Call GrossReport()
+
+                    ReDim gna_ACFX(LG, 26)
+                    'UPGRADE_WARNING: Lower bound of array xRunSwitches was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+                    ReDim xRunSwitches(RunSwitchesCount)
+
+                    ' go ahead and do the normal calls through the
+                    ' generation of after-tax cash flow page while the
+                    ' data is absolutely right at this point.
+                    xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
+                    xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
+                    xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
+                    xRunSwitches(RunSwitch_FIN) = RunSwitch_FIN_On
+                    xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_On
+                    xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
+
+                    Call FiscalDef()
+                    Call ConsolidateLoan()
+                    Call CalculateRepayment()
+
+                    ' capture the company cash flow values now
+                    xxx_POSCF = gna_ACFX_CPS
+                    xxx_NEGCF = gna_ACFX_CNG
+
+                    Call Cashflow()
+
+                    ' Now go back and generate the data for the dcf page
+                    ' copy the operating-level numbers to A() and MY3()
+                    If g_bPTCons Then
+
+                        ' establish correspondence between my3() and my3Ex()
+                        ' when done lpa_my3Ex values are the index of the
+                        ' my3Ex() row that corresponds to the my3() row index
+                        ' value.
+                        ' i. e. my3Ex(lpa_my3Ex(my3tt), gna_my3Ex_GCX) is the value
+                        ' of the group-level capital for the expenditure my3(my3tt)
+                        'UPGRADE_WARNING: Lower bound of array lpa_my3Ex was changed from LBound(my3, 1) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+                        ReDim lpa_my3Ex(UBound(my3, 1))
+                        For iiiX = 1 To my3tt
+                            ' Find the corresponding item (based on category, exp. date and tangible percent)
+                            ' in this case (g_bPTCons is true) each entry is supposed to be unique
+                            ' pointer is initialized to point to row 0,
+                            ' which should be zero valued for all levels in my3Ex()
+                            lpa_my3Ex(iiiX) = 0
+                            For iiiY = 1 To UBound(my3Ex, 1)
+                                If my3Ex(iiiY, gna_my3Ex_CAT) = my3(iiiX, gc_nMY3_CAT) And my3Ex(iiiY, gna_my3Ex_XMO) = my3(iiiX, gc_nMY3_XMO) And my3Ex(iiiY, gna_my3Ex_XYR) = my3(iiiX, gc_nMY3_XYR) And my3Ex(iiiY, gna_my3Ex_TAN) = my3(iiiX, gc_nMY3_TAN) Then
+                                    lpa_my3Ex(iiiX) = iiiY
+                                End If
+                            Next iiiY
+                        Next iiiX
+
+
+                        ' Now go back and generate the data for the dcf page
+                        ' capture total-level
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 0)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+
+                            gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
+                            gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
+
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
+                            iiiY = my3(iiiX, 3) - YR + 1
+                            gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_TCX)
+                        Next iiiX
+
+                        ' load operating-level values
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 1)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_OCX)
+                        Next iiiX
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
+                        xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
+                        xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
+
+                        ReportLevelSaved = RF(5)
+                        RF(5) = "   " ' set to no report output
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_OPS
+                        xxx_NEGCF = gna_ACFX_ONG
+
+                        Call Cashflow()
+
+                        ' load group-level values
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 2)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_GCX)
+                        Next iiiX
+
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_GPS
+                        xxx_NEGCF = gna_ACFX_GNG
+
+                        Call Cashflow()
+
+                        ' load company-level values
+                        ReDim OPEX(gc_nMAXLIFE)
+                        For iiiX = 1 To LG
+                            For iiiY = 1 To gc_nAMAXOPX
+                                A(iiiX, iiiY) = gna_ACX(iiiX, iiiY, 3)
+                            Next iiiY
+                            For iiiY = gc_nAMINOPX To gc_nAMAXOPX
+                                OPEX(iiiX) = OPEX(iiiX) + A(iiiX, iiiY)
+                            Next iiiY
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            my3(iiiX, 5) = my3Ex(lpa_my3Ex(iiiX), gna_my3Ex_CCX)
+                        Next iiiX
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
+
+                        ' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
+                        ' don't want to write to the file for company-level ring fence because done
+                        ' above already. But still have to have a reference to the company-level for reading
+                        RunNameSaved = RF(2) ' save the actual name
+                        RF(2) = RunNameSaved & "X" ' fixup to fool ring fence out code
+                        Call FiscalDef()
+                        RF(2) = RunNameSaved ' restore the actual name
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = 0
+                        xxx_NEGCF = 0
+
+                        ' Change the ring fence file to use for this level
+                        ' Don't want the company level data written again, was done above
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
+
+                        Call Cashflow()
+
+                    Else
+
+                        ' single data run (non pre-tax consol)
+                        For iiiX = 1 To LG
+                            gna_ACFX(iiiX, gna_ACFX_TPS) = ATotalRevenues(iiiX)
+                            gna_ACFX(iiiX, gna_ACFX_TNG) = OPEX(iiiX)
+                        Next iiiX
+
+                        For iiiX = 1 To my3tt
+                            If (my3(iiiX, 1) > 1 And my3(iiiX, 1) < CPXCategoryCodeBAL) Or my3(iiiX, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
+                                iiiY = my3(iiiX, 3) - YR + 1
+                                gna_ACFX(iiiY, gna_ACFX_TNG) = gna_ACFX(iiiY, gna_ACFX_TNG) + my3(iiiX, 5)
+                            End If
+                        Next iiiX
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Operating
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_Off
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_Off
+                        xRunSwitches(RunSwitch_LMT) = RunSwitch_LMT_Off
+                        xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off
+
+                        ReportLevelSaved = RF(5)
+                        RF(5) = "   " ' set to no report output
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_OPS)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_OPS
+                        xxx_NEGCF = gna_ACFX_ONG
+
+                        Call Cashflow()
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Group
+                        xRunSwitches(RunSwitch_PAR) = RunSwitch_PAR_On
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_GRP)
+
+                        Call FiscalDef()
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = gna_ACFX_GPS
+                        xxx_NEGCF = gna_ACFX_GNG
+
+                        Call Cashflow()
+
+                        xRunSwitches(RunSwitch_LVL) = RunSwitch_LVL_Company
+                        xRunSwitches(RunSwitch_WIN) = RunSwitch_WIN_On
+
+                        ' Change the ring fence file to use for this level
+                        ' Used from here through the next call of Cashflow()
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_CMP)
+
+                        ' Now a bit of a hack, keeps FiscalDef from writing to the ring fence file for this part of the run
+                        ' don't want to write to the file for company-level ring fence because done
+                        ' above already. But still have to have a reference to the company-level for reading
+                        RunNameSaved = RF(2) ' save the actual name
+                        RF(2) = RunNameSaved & "X" ' fixup to fool ring fence out code
+                        Call FiscalDef()
+                        RF(2) = RunNameSaved ' restore the actual name
+                        Call ConsolidateLoan()
+                        Call CalculateRepayment()
+
+                        xxx_POSCF = 0
+                        xxx_NEGCF = 0
+
+                        ' Change the ring fence file to use for this level
+                        ' Don't want the company level data written again, was done above
+                        g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
+
+                        Call Cashflow()
+
+                    End If
+
+
+                    ' do the discounted cash flow page
+                    xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only
+                    RF(5) = ReportLevelSaved
+
+                    ' Change the ring fence file to use. Don't want ring fence output from here.
+                    g_oRingFenceFile = gfa_RingFenceFiles(gfa_RingFenceFile_DUM)
+
+                    Call Cashflow()
+
+                    'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
+                    Call WriteGNTCon()
+                    ' 30 Oct 1996 JWD Comment out following
+                    ' OXY files replaced by OXY export format
+                    'Call WriteOXYFiles
+
+                    ' Add condition on report write
+                    If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
+                        WriteOutputReport(g_oReport, ReportFileSpec(sRptDir, RN, RNU, "PRN"), g_oFileSystem)
+                    End If
+
+                    ' 23 Sep 2004 JWD (C0839) Write run summary data
+                    l_oRunSumOut = g_oFileSystem.OpenForAppend(sRptDir & RN & ".SUM")
+                    'UPGRADE_WARNING: Couldn't resolve default property of object New (CCMGiantRunSummarySeqA). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    'UPGRADE_WARNING: Couldn't resolve default property of object l_oRunSumOut. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    g_oReport.WriteReport(l_oRunSumOut, New CCMGiantRunSummarySeqA)
+                    l_oRunSumOut.CloseFile()
+                    ' End (C0839)
+
+                ElseIf Left(RF(1), 6) = "CONSOL" Then
+49082:
+                    ' 24 Oct 1996 JWD Replace inline test
+                    '  with following GoSub
                     FixupForExportCodes()
-					
-					'UPGRADE_WARNING: Lower bound of array xRunSwitches was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-					ReDim xRunSwitches(RunSwitchesCount)
-					xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_On
-					
-					If Len(RF(3)) > 0 Then ConCur = Left(RF(3), 3)
-					Call Cashflow()
-					
-					'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-					Call WriteGNTCon()
-					
-					' 30 Oct 1996 JWD Comment out following
-					' OXY files replaced by OXY export format
-					'Call WriteOXYFiles
-					
-					' Add condition on report write
-					If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
-						WriteOutputReport(g_oReport, ReportFileSpec(sRptDir, RN, RNU, "PRN"), g_oFileSystem)
-					End If
-					
-					' 23 Sep 2004 JWD (C0839) Write run summary data
-					l_oRunSumOut = g_oFileSystem.OpenForAppend(sRptDir & RN & ".SUM")
-					'UPGRADE_WARNING: Couldn't resolve default property of object New (CCMGiantRunSummarySeqA). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					'UPGRADE_WARNING: Couldn't resolve default property of object l_oRunSumOut. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					g_oReport.WriteReport(l_oRunSumOut, New CCMGiantRunSummarySeqA)
-					l_oRunSumOut.CloseFile()
-					' End (C0839)
-					
-				Else
-					MsgBox("MAINEXEC.EXE:Main  Error 253.  Encountered command other than GETDATA or CONSOL in run file.  Program ending")
-					Error(253) 'unexpected runfile command
-				End If
-			End If
-		End If
-		
-99: ' Normal end of run
-		
-		g_oRunFileIn.CloseFile()
-		
-		WriteFinder(AR, "CASHFLOW")
-		'''PushStats "MAINEXEC", dStart
-		'''GoSub PrintStats
+
+                    'UPGRADE_WARNING: Lower bound of array xRunSwitches was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+                    ReDim xRunSwitches(RunSwitchesCount)
+                    xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_On
+
+                    If Len(RF(3)) > 0 Then ConCur = Left(RF(3), 3)
+                    Call Cashflow()
+
+                    'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
+                    Call WriteGNTCon()
+
+                    ' 30 Oct 1996 JWD Comment out following
+                    ' OXY files replaced by OXY export format
+                    'Call WriteOXYFiles
+
+                    ' Add condition on report write
+                    If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
+                        WriteOutputReport(g_oReport, ReportFileSpec(sRptDir, RN, RNU, "PRN"), g_oFileSystem)
+                    End If
+
+                    ' 23 Sep 2004 JWD (C0839) Write run summary data
+                    l_oRunSumOut = g_oFileSystem.OpenForAppend(sRptDir & RN & ".SUM")
+                    'UPGRADE_WARNING: Couldn't resolve default property of object New (CCMGiantRunSummarySeqA). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    'UPGRADE_WARNING: Couldn't resolve default property of object l_oRunSumOut. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                    g_oReport.WriteReport(l_oRunSumOut, New CCMGiantRunSummarySeqA)
+                    l_oRunSumOut.CloseFile()
+                    ' End (C0839)
+
+                Else
+                    MsgBox("MAINEXEC.EXE:Main  Error 253.  Encountered command other than GETDATA or CONSOL in run file.  Program ending")
+                    Error (253) 'unexpected runfile command
+                End If
+            End If
+        End If
+
+99:     ' Normal end of run
+
+        g_oRunFileIn.CloseFile()
+
+        WriteFinder(AR, "CASHFLOW")
+        ''PushStats "MAINEXEC", dStart
+        ''GoSub PrintStats
 		TerminateExecution()
 		Exit Sub
 		'=======================================================================
@@ -1826,10 +1826,10 @@ ReadRun: 'READ RUN FILE
     Private Function GetConsolCurrency(ByVal sFilename As String) As String
 
         Dim a_sRunFileLine(11) As String
-        Dim i As Short
         Dim hFile As Short
-        Dim sDum As String
+        Dim sDum As String = String.Empty
 
+        GetConsolCurrency = String.Empty
         hFile = FreeFile()
 
         FileOpen(hFile, sFilename, OpenMode.Input)

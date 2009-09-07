@@ -277,11 +277,8 @@ err_CalcUKRoyLiability:
 	End Sub
 	
 	Public Sub CalcUKRoyaltyPaid(ByVal nCtyFileLine As Short)
-		Dim a_fAJ4() As Single
-		Dim i As Short
-		
-		
-		
+        Dim i As Short
+
 		'UPGRADE_WARNING: Lower bound of array ma_fRYP was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
 		ReDim ma_fRYP(LG * 2)
 		For i = 1 To LG * 2
@@ -455,8 +452,7 @@ err_CalcUKRoyLiability:
 	'
 	Private Sub CalcSafeguardPRT()
 		
-		Dim a_fAJ1() As Single
-		Dim a_fOPX() As Single
+        Dim a_fOPX() As Single
 		
 		
 		Dim i As Short
@@ -723,17 +719,13 @@ err_CalcUKRoyLiability:
 	End Sub
 	Sub CarryForward(ByRef a_fCeiling() As Single, ByRef a_fDeduction() As Single, ByRef a_fDeductionTaken() As Single)
 		Dim i As Short
-		Dim nMin, nMax As Short
+        Dim nMax As Short
 		
-		
-		' Defined any temp Arrays
+        ' Defined any temp Arrays
 		Dim a_fTEMP() As Double
 		Dim fExcess As Double
-		Dim fExcessInt As Double
-		Dim a_fDeductionCF() As Double
-		Dim nDivisor As Short
-		
-		
+        Dim a_fDeductionCF() As Double
+
 		nMax = UBound(a_fDeduction)
 		
 		'UPGRADE_WARNING: Lower bound of array a_fTEMP was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
@@ -815,8 +807,7 @@ err_CalcUKRoyLiability:
 	Public Sub ShowReport()
 		Dim i As Short
 		Dim j As Short
-		Dim sFilename As String
-		Dim hFile As Short
+        Dim hFile As Short
 		
 		hFile = FreeFile
 		
@@ -857,24 +848,24 @@ err_CalcUKRoyLiability:
 		Dim i As Short
 		Dim j As Short
 		
-		''''Write #5, 23, YR, 0, LG * 2, m_nReportItems, "PRT REPORT", 8, 0, 0, sCur
-		
-		Dim oPg1 As CGiantRptPageC1
-		oPg1 = g_oReport.NewPRTRptPage
-		oPg1.SetPageHeader(23, YR, 0, LG * 2, m_nReportItems, "PRT REPORT", 8, 0, 0, sCur)
-		
-		For i = 1 To m_nReportItems
-			''''Write #5, a_udtSemiAnnualReport(i).sCode
-			oPg1.ProfileHeader(i) = a_udtSemiAnnualReport(i).sCode
-		Next i
-		For j = 1 To LG * 2
-			For i = 1 To m_nReportItems
-				
-				''''Write #5, a_udtSemiAnnualReport(i).a_fData(j)
-				oPg1.ProfileElementValue(i, j) = a_udtSemiAnnualReport(i).a_fData(j)
-				
-			Next i
-		Next j
+        ''Write #5, 23, YR, 0, LG * 2, m_nReportItems, "PRT REPORT", 8, 0, 0, sCur
+
+        Dim oPg1 As CGiantRptPageC1
+        oPg1 = g_oReport.NewPRTRptPage
+        oPg1.SetPageHeader(23, YR, 0, LG * 2, m_nReportItems, "PRT REPORT", 8, 0, 0, sCur)
+
+        For i = 1 To m_nReportItems
+            ''Write #5, a_udtSemiAnnualReport(i).sCode
+            oPg1.ProfileHeader(i) = a_udtSemiAnnualReport(i).sCode
+        Next i
+        For j = 1 To LG * 2
+            For i = 1 To m_nReportItems
+
+                ''Write #5, a_udtSemiAnnualReport(i).a_fData(j)
+                oPg1.ProfileElementValue(i, j) = a_udtSemiAnnualReport(i).a_fData(j)
+
+            Next i
+        Next j
 	End Sub
 	
 	'UPGRADE_WARNING: ParamArray vntParams was changed from ByRef to ByVal. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="93C6A0DC-8C99-429A-8696-35FC4DCEFCCC"'

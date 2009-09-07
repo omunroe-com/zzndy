@@ -775,55 +775,55 @@ Module DTA2000A
             End If
             ' End (C0846)
 
-            '''        If bRVS Then
-            '''            rTCXtmp = my3Ex(x, 0)
-            '''            rOCXtmp = my3Ex(x, 1)
-            '''            rGCXtmp = my3Ex(x, 2)
-            '''            rCCXtmp = my3Ex(x, 3)
-            '''        Else
-            rAMTtmp = my3 (x, gc_nMY3_AMT)
-            If my3 (x, 1) = 1 Then ' bonuses aren't added to gross-level total
+            ''        If bRVS Then
+            ''            rTCXtmp = my3Ex(x, 0)
+            ''            rOCXtmp = my3Ex(x, 1)
+            ''            rGCXtmp = my3Ex(x, 2)
+            ''            rCCXtmp = my3Ex(x, 3)
+            ''        Else
+            rAMTtmp = my3(x, gc_nMY3_AMT)
+            If my3(x, 1) = 1 Then ' bonuses aren't added to gross-level total
                 rTCXtmp = 0
             Else
                 rTCXtmp = rAMTtmp
             End If
             rOCXtmp = rAMTtmp
-            rGCXtmp = rAMTtmp*GPRTE (x)
-            rCCXtmp = rAMTtmp*GPRTE (x)*CAPWIN (x)
-            '''        End If
+            rGCXtmp = rAMTtmp * GPRTE(x)
+            rCCXtmp = rAMTtmp * GPRTE(x) * CAPWIN(x)
+            ''        End If
 
 
             If loopit = 0 Then
                 AddTCC = 1
-'AddTCC = # of new rows added to CC()
-                MYC (1, 1) = my3 (x, 1)
-                MYC (1, 2) = my3 (x, 2)
-                MYC (1, 3) = my3 (x, 3)
-                MYC (1, 4) = my3 (x, 4)
+                'AddTCC = # of new rows added to CC()
+                MYC(1, 1) = my3(x, 1)
+                MYC(1, 2) = my3(x, 2)
+                MYC(1, 3) = my3(x, 3)
+                MYC(1, 4) = my3(x, 4)
                 'Commented out GDP 18/08/99 - net of participation consolidation routine
                 'MYC(1, 5) = MY3(x, 5) * (MY3(x, 6) / 100)
                 If bRVS Then
-                    MYC (1, 5) = my3 (x, 5)*(CAPWIN (x)*GPRTE (x))
+                    MYC(1, 5) = my3(x, 5) * (CAPWIN(x) * GPRTE(x))
                 Else
-                    MYC (1, 5) = my3 (x, 5)*(my3 (x, 6)/100)
+                    MYC(1, 5) = my3(x, 5) * (my3(x, 6) / 100)
                 End If
-                MYC (1, 6) = 100
-                MYC (1, 7) = 0
+                MYC(1, 6) = 100
+                MYC(1, 7) = 0
 
-                '''          ' 29 Dec 2004 JWD (C0846) Add capture of company, 3d party, noc, and repaid capex
-                '''          MYC(1, gc_nMYC_GRS) = my3(x, gc_nMY3_AMT)         ' capture gross amount
-                '''          MYC(1, gc_nMYC_CMP) = my3(x, gc_nMY3_AMT) * CAPWIN(x) * GPRTE(x)          ' company amount
-                '''          MYC(1, gc_nMYC_3DP) = my3(x, gc_nMY3_AMT) * (1 - CAPWIN(x)) * GPRTE(x)   ' 3d party
-                '''          MYC(1, gc_nMYC_NOC) = my3(x, gc_nMY3_AMT) * (1 - GPRTE(x))               ' NOC amount
-                '''          ' Compute the amount to be repaid to/by company by/to 3d party for capital carries
-                '''          MYC(1, gc_nMYC_BUR) = my3(x, gc_nMY3_AMT) * (CAPWIN(x) - rWinTmp) * (my3(x, gc_nMY3_BUR) / 100) * GPRTE(x)
-                '''          ' End (C0846)
+                ''          ' 29 Dec 2004 JWD (C0846) Add capture of company, 3d party, noc, and repaid capex
+                ''          MYC(1, gc_nMYC_GRS) = my3(x, gc_nMY3_AMT)         ' capture gross amount
+                ''          MYC(1, gc_nMYC_CMP) = my3(x, gc_nMY3_AMT) * CAPWIN(x) * GPRTE(x)          ' company amount
+                ''          MYC(1, gc_nMYC_3DP) = my3(x, gc_nMY3_AMT) * (1 - CAPWIN(x)) * GPRTE(x)   ' 3d party
+                ''          MYC(1, gc_nMYC_NOC) = my3(x, gc_nMY3_AMT) * (1 - GPRTE(x))               ' NOC amount
+                ''          ' Compute the amount to be repaid to/by company by/to 3d party for capital carries
+                ''          MYC(1, gc_nMYC_BUR) = my3(x, gc_nMY3_AMT) * (CAPWIN(x) - rWinTmp) * (my3(x, gc_nMY3_BUR) / 100) * GPRTE(x)
+                ''          ' End (C0846)
 
 
-                MYC (1, gc_nMYC_TCX) = rTCXtmp
-                MYC (1, gc_nMYC_OCX) = rOCXtmp
-                MYC (1, gc_nMYC_GCX) = rGCXtmp
-                MYC (1, gc_nMYC_CCX) = rCCXtmp
+                MYC(1, gc_nMYC_TCX) = rTCXtmp
+                MYC(1, gc_nMYC_OCX) = rOCXtmp
+                MYC(1, gc_nMYC_GCX) = rGCXtmp
+                MYC(1, gc_nMYC_CCX) = rCCXtmp
 
             Else
                 matchem = "N"
@@ -831,65 +831,65 @@ Module DTA2000A
                     ' and all MY3() so far in this run
                     If matchem = "Y" Then GoTo nexty4
                     If _
-                        my3 (x, 1) = MYC (y, 1) And my3 (x, 2) = MYC (y, 2) And my3 (x, 3) = MYC (y, 3) And _
-                        my3 (x, 4) = MYC (y, 4) Then
+                        my3(x, 1) = MYC(y, 1) And my3(x, 2) = MYC(y, 2) And my3(x, 3) = MYC(y, 3) And _
+                        my3(x, 4) = MYC(y, 4) Then
                         ' found perfect match, thus sum this expenditure into matching MYC()
                         'Commented out GDP 18/08/99 - net of participation consolidation routine
                         'MYC(y, 5) = MYC(y, 5) + (MY3(x, 5) * (MY3(x, 6) / 100))
                         If bRVS Then
-                            MYC (y, 5) = MYC (y, 5) + (my3 (x, 5)*(CAPWIN (x)*GPRTE (x)))
+                            MYC(y, 5) = MYC(y, 5) + (my3(x, 5) * (CAPWIN(x) * GPRTE(x)))
                         Else
-                            MYC (y, 5) = MYC (y, 5) + (my3 (x, 5)*(my3 (x, 6)/100))
+                            MYC(y, 5) = MYC(y, 5) + (my3(x, 5) * (my3(x, 6) / 100))
                         End If
 
-                        '''              ' 29 Dec 2004 JWD (C0846) Add capture of company, 3d party, noc, and repaid capex
-                        '''              MYC(y, gc_nMYC_GRS) = MYC(y, gc_nMYC_GRS) + my3(x, gc_nMY3_AMT)      ' capture gross amount
-                        '''              MYC(y, gc_nMYC_CMP) = MYC(y, gc_nMYC_CMP) + my3(x, gc_nMY3_AMT) * CAPWIN(x) * GPRTE(x)       ' company amount
-                        '''              MYC(y, gc_nMYC_3DP) = MYC(y, gc_nMYC_3DP) + my3(x, gc_nMY3_AMT) * (1 - CAPWIN(x)) * GPRTE(x) ' 3d party
-                        '''              MYC(y, gc_nMYC_NOC) = MYC(y, gc_nMYC_NOC) + my3(x, gc_nMY3_AMT) * (1 - GPRTE(x))             ' NOC amount
-                        '''              ' Compute the amount to be repaid to/by company by/to 3d party for capital carries
-                        '''              MYC(y, gc_nMYC_BUR) = MYC(y, gc_nMYC_BUR) + my3(x, gc_nMY3_AMT) * (CAPWIN(x) - rWinTmp) * (my3(x, gc_nMY3_BUR) / 100) * GPRTE(x)
-                        '''              ' End (C0846)
+                        ''              ' 29 Dec 2004 JWD (C0846) Add capture of company, 3d party, noc, and repaid capex
+                        ''              MYC(y, gc_nMYC_GRS) = MYC(y, gc_nMYC_GRS) + my3(x, gc_nMY3_AMT)      ' capture gross amount
+                        ''              MYC(y, gc_nMYC_CMP) = MYC(y, gc_nMYC_CMP) + my3(x, gc_nMY3_AMT) * CAPWIN(x) * GPRTE(x)       ' company amount
+                        ''              MYC(y, gc_nMYC_3DP) = MYC(y, gc_nMYC_3DP) + my3(x, gc_nMY3_AMT) * (1 - CAPWIN(x)) * GPRTE(x) ' 3d party
+                        ''              MYC(y, gc_nMYC_NOC) = MYC(y, gc_nMYC_NOC) + my3(x, gc_nMY3_AMT) * (1 - GPRTE(x))             ' NOC amount
+                        ''              ' Compute the amount to be repaid to/by company by/to 3d party for capital carries
+                        ''              MYC(y, gc_nMYC_BUR) = MYC(y, gc_nMYC_BUR) + my3(x, gc_nMY3_AMT) * (CAPWIN(x) - rWinTmp) * (my3(x, gc_nMY3_BUR) / 100) * GPRTE(x)
+                        ''              ' End (C0846)
 
 
-                        MYC (y, gc_nMYC_TCX) = MYC (y, gc_nMYC_TCX) + rTCXtmp
-                        MYC (y, gc_nMYC_OCX) = MYC (y, gc_nMYC_OCX) + rOCXtmp
-                        MYC (y, gc_nMYC_GCX) = MYC (y, gc_nMYC_GCX) + rGCXtmp
-                        MYC (y, gc_nMYC_CCX) = MYC (y, gc_nMYC_CCX) + rCCXtmp
+                        MYC(y, gc_nMYC_TCX) = MYC(y, gc_nMYC_TCX) + rTCXtmp
+                        MYC(y, gc_nMYC_OCX) = MYC(y, gc_nMYC_OCX) + rOCXtmp
+                        MYC(y, gc_nMYC_GCX) = MYC(y, gc_nMYC_GCX) + rGCXtmp
+                        MYC(y, gc_nMYC_CCX) = MYC(y, gc_nMYC_CCX) + rCCXtmp
 
                         matchem = "Y"
                     End If
-                    nexty4: Next y
+nexty4:         Next y
                 If matchem = "N" Then
                     ' no match found, increment line counter
                     AddTCC = AddTCC + 1
-                    MYC (AddTCC + TCC, 1) = my3 (x, 1)
-                    MYC (AddTCC + TCC, 2) = my3 (x, 2)
-                    MYC (AddTCC + TCC, 3) = my3 (x, 3)
-                    MYC (AddTCC + TCC, 4) = my3 (x, 4)
+                    MYC(AddTCC + TCC, 1) = my3(x, 1)
+                    MYC(AddTCC + TCC, 2) = my3(x, 2)
+                    MYC(AddTCC + TCC, 3) = my3(x, 3)
+                    MYC(AddTCC + TCC, 4) = my3(x, 4)
                     'Commented out GDP 18/08/99 - net of participation consolidation routine
                     'MYC(AddTCC + TCC, 5) = MY3(x, 5) * (MY3(x, 6) / 100)
                     If bRVS Then
-                        MYC (AddTCC + TCC, 5) = my3 (x, 5)*(CAPWIN (x)*GPRTE (x))
+                        MYC(AddTCC + TCC, 5) = my3(x, 5) * (CAPWIN(x) * GPRTE(x))
                     Else
-                        MYC (AddTCC + TCC, 5) = my3 (x, 5)*(my3 (x, 6)/100)
+                        MYC(AddTCC + TCC, 5) = my3(x, 5) * (my3(x, 6) / 100)
                     End If
-                    MYC (AddTCC + TCC, 6) = 100
-                    MYC (AddTCC + TCC, 7) = 0
+                    MYC(AddTCC + TCC, 6) = 100
+                    MYC(AddTCC + TCC, 7) = 0
 
-                    '''            ' 29 Dec 2004 JWD (C0846) Add capture of company, 3d party, noc, and repaid capex
-                    '''            MYC(AddTCC + TCC, gc_nMYC_GRS) = my3(x, gc_nMY3_AMT)         ' capture gross amount
-                    '''            MYC(AddTCC + TCC, gc_nMYC_CMP) = my3(x, gc_nMY3_AMT) * CAPWIN(x) * GPRTE(x)          ' company amount
-                    '''            MYC(AddTCC + TCC, gc_nMYC_3DP) = my3(x, gc_nMY3_AMT) * (1 - CAPWIN(x)) * GPRTE(x)   ' 3d party
-                    '''            MYC(AddTCC + TCC, gc_nMYC_NOC) = my3(x, gc_nMY3_AMT) * (1 - GPRTE(x))               ' NOC amount
-                    '''            ' Compute the amount to be repaid to/by company by/to 3d party for capital carries
-                    '''            MYC(AddTCC + TCC, gc_nMYC_BUR) = my3(x, gc_nMY3_AMT) * (CAPWIN(x) - rWinTmp) * (my3(x, gc_nMY3_BUR) / 100) * GPRTE(x)
-                    '''            ' End (C0846)
+                    ''            ' 29 Dec 2004 JWD (C0846) Add capture of company, 3d party, noc, and repaid capex
+                    ''            MYC(AddTCC + TCC, gc_nMYC_GRS) = my3(x, gc_nMY3_AMT)         ' capture gross amount
+                    ''            MYC(AddTCC + TCC, gc_nMYC_CMP) = my3(x, gc_nMY3_AMT) * CAPWIN(x) * GPRTE(x)          ' company amount
+                    ''            MYC(AddTCC + TCC, gc_nMYC_3DP) = my3(x, gc_nMY3_AMT) * (1 - CAPWIN(x)) * GPRTE(x)   ' 3d party
+                    ''            MYC(AddTCC + TCC, gc_nMYC_NOC) = my3(x, gc_nMY3_AMT) * (1 - GPRTE(x))               ' NOC amount
+                    ''            ' Compute the amount to be repaid to/by company by/to 3d party for capital carries
+                    ''            MYC(AddTCC + TCC, gc_nMYC_BUR) = my3(x, gc_nMY3_AMT) * (CAPWIN(x) - rWinTmp) * (my3(x, gc_nMY3_BUR) / 100) * GPRTE(x)
+                    ''            ' End (C0846)
 
-                    MYC (AddTCC + TCC, gc_nMYC_TCX) = rTCXtmp
-                    MYC (AddTCC + TCC, gc_nMYC_OCX) = rOCXtmp
-                    MYC (AddTCC + TCC, gc_nMYC_GCX) = rGCXtmp
-                    MYC (AddTCC + TCC, gc_nMYC_CCX) = rCCXtmp
+                    MYC(AddTCC + TCC, gc_nMYC_TCX) = rTCXtmp
+                    MYC(AddTCC + TCC, gc_nMYC_OCX) = rOCXtmp
+                    MYC(AddTCC + TCC, gc_nMYC_GCX) = rGCXtmp
+                    MYC(AddTCC + TCC, gc_nMYC_CCX) = rCCXtmp
 
                 End If
             End If
@@ -898,45 +898,45 @@ Module DTA2000A
         TCC = TCC + AddTCC
 
 
-        39000: 'NOW SET VARIABLES THAT DON'T CHANGE RUN TO RUN
+39000:  'NOW SET VARIABLES THAT DON'T CHANGE RUN TO RUN
         If rA <> 1 Then GoTo 39100
-        MSPM (1) = gn (1)
+        MSPM(1) = gn(1)
         For z = 1 To 6
-            MSPM (z + 1) = gn (z + 3)
+            MSPM(z + 1) = gn(z + 3)
         Next z
         ' Set the default primary stream of the consolidation
-        If MSPM (8) = 0 Then
-            MSPM (8) = PPR
+        If MSPM(8) = 0 Then
+            MSPM(8) = PPR
         End If
 
 
-        MSPM (9) = gn (2)
-        MSPM (10) = DiscMthd
+        MSPM(9) = gn(2)
+        MSPM(10) = DiscMthd
         For z = 1 To 4
-            PMMS (z) = PN (z)
+            PMMS(z) = PN(z)
         Next z
-        39100:
+39100:
         'MsgBox "Laving ConsolValues Sub"
 
-        err_ConsolValues:
+err_ConsolValues:
 
         ''MsgBox Err.Description & ": ConsolValues"
-        Err.Raise (Err.Number, "ConsolValues", Err.Description)
+        Err.Raise(Err.Number, "ConsolValues", Err.Description)
 
     End Sub
 
     ' $subtitle: 'DeleteStr'
     ' $Page:
-    Sub DeleteStr (ByRef s As String, ByRef p As Short, ByRef N As Short)
+    Sub DeleteStr(ByRef s As String, ByRef p As Short, ByRef N As Short)
         '--------------------------------------------------------------------
         ' Delete N% characters from S$ beginning at position P%
-        s = Left (s, p - 1) & Mid (s, p + N)
+        s = Left(s, p - 1) & Mid(s, p + N)
 
     End Sub
 
     '$subtitle: 'DTAConvertABtoA'
     '$Page:
-    Sub DTAConvertABtoA (ByRef ab(,) As Single, ByRef units() As String)
+    Sub DTAConvertABtoA(ByRef ab(,) As Single, ByRef units() As String)
         Dim j As Short
         Dim convert As Short
         Dim ptr As Short
@@ -950,17 +950,17 @@ Module DTA2000A
         '---------------------------------------------------------
         Dim rScale As Single
         '---------------------------------------------------------
-        200:
+200:
 
 
-        recs = UBound (units)
+        recs = UBound(units)
         Dim fact(LG) As Single
 
         'CALC primary product first then do the rest
         '  (some categories are dependent on primary product being
         '  done first (ie. OIL as a ratio of GAS if GAS is primary))
         For m = 1 To LG
-            A (m, PPR) = ab (m, PPR)
+            A(m, PPR) = ab(m, PPR)
         Next m
 
 
@@ -970,9 +970,9 @@ Module DTA2000A
         For i = 1 To recs
             If i <> PPR Then 'don't redo primary product!
                 ptr = 0
-'reset pointer in A() to factor this category against
+                'reset pointer in A() to factor this category against
                 convert = False
-'FALSE means do not convert this category's data
+                'FALSE means do not convert this category's data
                 j = i
                 ' GDP 20 Jan 2003
                 ' Changed to use constants
@@ -980,25 +980,25 @@ Module DTA2000A
                     'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
 
                     For m = 1 To LG
-                        fact (m) = 1
+                        fact(m) = 1
                     Next m
                     'see if this category in a ratio of another category
                     ptr = 0
-                    If InStr (units (j), "/") > 0 Then
-                        Select Case units (j)
+                    If InStr(units(j), "/") > 0 Then
+                        Select Case units(j)
                             Case "M/B", "$/B" 'mcf/bbl, $/bbl
                                 ptr = 1
-'OIL MMBbl volume
+                                'OIL MMBbl volume
                                 rScale = 1
                             Case "B/M" 'bbl/mcf
                                 ptr = 2
-'GAS BCF volume
+                                'GAS BCF volume
                                 rScale = 0.001
                             Case "$/M" '$/mcf
                                 ptr = 2
-'GAS BCF volume
+                                'GAS BCF volume
                                 rScale = 1
-'.001
+                                '.001
                         End Select
                     End If
 
@@ -1007,18 +1007,18 @@ Module DTA2000A
                     If ptr > 0 Then
                         convert = True
                         For m = 1 To LG
-                            fact (m) = A (m, ptr)*rScale
+                            fact(m) = A(m, ptr) * rScale
                         Next m
                     End If
 
                 End If
                 If convert Then
                     For m = 1 To LG
-                        A (m, i) = ab (m, i)*fact (m)
+                        A(m, i) = ab(m, i) * fact(m)
                     Next m
                 Else
                     For m = 1 To LG
-                        A (m, i) = ab (m, i)
+                        A(m, i) = ab(m, i)
                     Next m
                 End If
             End If
@@ -1027,7 +1027,7 @@ Module DTA2000A
         Exit Sub
 
         '--------------------------------------------------------------------
-        TestConvert:
+TestConvert:
         'This GOSUB examines the units$() for the category and sets the
         '  convert% flag TRUE if the category's values in ab() need to be
         '  converted (and sets ptr% to point at the category in ab() to
@@ -1037,25 +1037,25 @@ Module DTA2000A
         '  to convert OPC $/Bbl into $mm.
 
         For m = 1 To LG
-            fact (m) = 1
+            fact(m) = 1
         Next m
         'see if this category in a ratio of another category
         ptr = 0
-        If InStr (units (j), "/") > 0 Then
-            Select Case units (j)
+        If InStr(units(j), "/") > 0 Then
+            Select Case units(j)
                 Case "M/B", "$/B" 'mcf/bbl, $/bbl
                     ptr = 1
-'OIL MMBbl volume
+                    'OIL MMBbl volume
                     rScale = 1
                 Case "B/M" 'bbl/mcf
                     ptr = 2
-'GAS BCF volume
+                    'GAS BCF volume
                     rScale = 0.001
                 Case "$/M" '$/mcf
                     ptr = 2
-'GAS BCF volume
+                    'GAS BCF volume
                     rScale = 1
-'.001
+                    '.001
             End Select
         End If
 
@@ -1064,7 +1064,7 @@ Module DTA2000A
         If ptr > 0 Then
             convert = True
             For m = 1 To LG
-                fact (m) = A (m, ptr)*rScale
+                fact(m) = A(m, ptr) * rScale
             Next m
         End If
 
@@ -1075,7 +1075,7 @@ Module DTA2000A
 
     ' $SubTitle:'DTAExponentialDecl - Calc prod using a constant % decline'
     ' $Page
-    Sub DTAExponentialDecl (ByRef qf As Single, ByRef delay As Single, ByRef qi As Single, ByRef qdecl As Single, _
+    Sub DTAExponentialDecl(ByRef qf As Single, ByRef delay As Single, ByRef qi As Single, ByRef qdecl As Single, _
                             ByRef column() As Single)
         Dim qt As Single
         Dim prevq As Single
@@ -1103,32 +1103,32 @@ Module DTA2000A
         '         QT    - production rate at time T
         '         Q     - cumulative production through current time period.
         '         PREVQ - cumulative production through previous time period.
-        300:
+300:
 
         'Calculate the log of the decline rate and the decline rate...
-        xlog = (qf - qi)/qdecl
-        dr = Math.Exp (xlog)
+        xlog = (qf - qi) / qdecl
+        dr = Math.Exp(xlog)
         q = 0
         t = 0 - delay
-'This sets up T so that on first iteration, T = DELAY
-        For i = 1 To UBound (column)
+        'This sets up T so that on first iteration, T = DELAY
+        For i = 1 To UBound(column)
             If (qdecl - q) < 0.001 Then
                 Exit For
             End If
             prevq = q
-            qt = qi*dr^(t + i)
-            q = (qt - qi)/xlog
+            qt = qi * dr ^ (t + i)
+            q = (qt - qi) / xlog
             If q > qdecl Then
                 q = qdecl
             End If
-            column (i) = q - prevq
+            column(i) = q - prevq
         Next i
 
     End Sub
 
     ' $SubTitle:'DTAForecastBase'
     ' $Page
-    Sub DTAForecastBase (ByRef BDAData() As ParmType, ByRef Datacol() As Single, ByRef curveoffset As Single, _
+    Sub DTAForecastBase(ByRef BDAData() As ParmType, ByRef Datacol() As Single, ByRef curveoffset As Single, _
                          ByRef curvelife As Single)
         Dim startmonth As Short
         Dim startyear As Short
@@ -1137,7 +1137,7 @@ Module DTA2000A
         '  parameters: (bdadata() AS ParmType, datacol!(), curveoffset, curvelife)
         '  function: loops through bdadata(), calls DTAForecastStep,
         '       and returns datacol()
-        7300:
+7300:
 
 
         'fln% = FreeFile
@@ -1145,7 +1145,7 @@ Module DTA2000A
         '   PRINT #fln%, "     in forecastbase  BDAData(1).dat = "; BDAData(1).dat
         'CLOSE #fln%
 
-        Select Case BDAData (1).dat
+        Select Case BDAData(1).dat
             Case "PJY"
                 startyear = ProjYr : startmonth = 1
                 MonthRelative = False
@@ -1170,11 +1170,11 @@ Module DTA2000A
             startyear = startyear + 100
         End If
 
-        DTAForecastStep (BDAData, startyear, startmonth, Datacol, curveoffset, curvelife)
-        7301:
+        DTAForecastStep(BDAData, startyear, startmonth, Datacol, curveoffset, curvelife)
+7301:
 
         MonthRelative = True
-        7303:
+7303:
 
     End Sub
 
@@ -1194,7 +1194,7 @@ Module DTA2000A
     '     and then the increment was commented out without
     '     explanation. This may be a problem. (SCO0046)
     '---------------------------------------------------------
-    Sub DTAForecastStep (ByRef BDAData() As ParmType, ByRef startyear As Short, ByRef startmonth As Short, _
+    Sub DTAForecastStep(ByRef BDAData() As ParmType, ByRef startyear As Short, ByRef startmonth As Short, _
                          ByRef Datacol() As Single, ByRef curveoffset As Single, ByRef curvelife As Single)
         Dim x As Single
         Dim qdecl As Single
@@ -1231,7 +1231,7 @@ Module DTA2000A
         Dim uW As Short
         Dim zeroper As Short
         '---------------------------------------------------------
-        30250:
+30250:
 
         'fln% = FreeFile
         'OPEN "FCST.LOG" FOR APPEND AS #fln%
@@ -1239,22 +1239,22 @@ Module DTA2000A
         'CLOSE #fln%
 
 
-        HIVALUE = - 32760
-'null integer field
-        NULVALUE = - 3.4E+35
-'denotes a NOT ENTERED field (NOT 0!)
-        LIFE = - 999 : PAR = - 996 : LIF = - 995
-        PDY = - 993 : PDM = - 992 : PJY = - 991 : PJM = - 990 : DSC = - 989
-        CAL = - 988 : PRD = - 987
+        HIVALUE = -32760
+        'null integer field
+        NULVALUE = -3.4E+35
+        'denotes a NOT ENTERED field (NOT 0!)
+        LIFE = -999 : PAR = -996 : LIF = -995
+        PDY = -993 : PDM = -992 : PJY = -991 : PJM = -990 : DSC = -989
+        CAL = -988 : PRD = -987
 
         e = 2.71828
-        ProjYr = Val (Right (LTrim (Str (YR)), 2))
-'project start year (ie. 91)
+        ProjYr = Val(Right(LTrim(Str(YR)), 2))
+        'project start year (ie. 91)
         Dim wrkcol(LG + 1) As Single
-        30251:
+30251:
 
-        For j = 1 To UBound (BDAData)
-            30253:
+        For j = 1 To UBound(BDAData)
+30253:
 
             'fln% = FreeFile
             'OPEN "FCST.LOG" FOR APPEND AS #fln%
@@ -1264,7 +1264,7 @@ Module DTA2000A
             'figure period in which this data record starts....
             If j = 1 Then 'only calc these values for the first record
                 startperiod = startyear + 1 - ProjYr
-'9-22-95
+                '9-22-95
                 '<<<<<< 21 Nov 1996 JWD Add following to correct
                 '           project start > 1999 failure.
                 If ProjYr < 50 Then
@@ -1272,15 +1272,15 @@ Module DTA2000A
                 End If
                 '>>>>>>
                 curveoffset = startperiod - 1
-'# of project periods prior to start of this curve
+                '# of project periods prior to start of this curve
             ElseIf Continuous Then
-                30225:
-                startperiod = startperiod + Int (periods)
+30225:
+                startperiod = startperiod + Int(periods)
             Else 'step method AND j > 1
-                30236:
-                startperiod = startperiod + UBound (wrkcol)
+30236:
+                startperiod = startperiod + UBound(wrkcol)
             End If
-            30252:
+30252:
             ProjLife = LG
 
             'fln% = FreeFile
@@ -1289,12 +1289,12 @@ Module DTA2000A
             'CLOSE #fln%
 
 
-            Select Case BDAData (j).mtd
+            Select Case BDAData(j).mtd
                 Case 1 'constant amount, # years
                     Continuous = False
                     periods = ProjLife - startperiod + 1
-                    If BDAData (j).parm2 <= periods And BDAData (j).parm2 <> LIFE Then
-                        periods = BDAData (j).parm2
+                    If BDAData(j).parm2 <= periods And BDAData(j).parm2 <> LIFE Then
+                        periods = BDAData(j).parm2
                     Else
                         If MonthRelative Then
                             AdjustLastYear = True
@@ -1304,43 +1304,43 @@ Module DTA2000A
                         periods = LG - startperiod + 1
                     End If
                     ReDim wrkcol(periods)
-                    30254:
-                    p1 = LTrim (RTrim (BDAData (j).parm1))
+30254:
+                    p1 = LTrim(RTrim(BDAData(j).parm1))
                     If p1 = "" Then
                         begamt = qf
                     Else
-                        30255: begamt = Val (BDAData (j).parm1)
+30255:                  begamt = Val(BDAData(j).parm1)
                     End If
 
                     For i = 1 To periods
-                        30256: wrkcol (i) = begamt
+30256:                  wrkcol(i) = begamt
                     Next i
 
-                    30258:
-                    qf = wrkcol (UBound (wrkcol))
+30258:
+                    qf = wrkcol(UBound(wrkcol))
 
                 Case 2 'fixed amounts 1-6
-                    30259: Continuous = False
+30259:              Continuous = False
                     periods = 6
                     Dim DUM(periods) As Single
-                    14131:
-                    DUM (1) = Val (BDAData (j).parm1)
-                    DUM (2) = BDAData (j).parm2
-                    DUM (3) = BDAData (j).parm3
-                    DUM (4) = BDAData (j).parm4
-                    DUM (5) = BDAData (j).parm5
-                    DUM (6) = BDAData (j).parm6
-                    For i = 6 To 1 Step - 1
-                        13132: If DUM (i) = NULVALUE Then
+14131:
+                    DUM(1) = Val(BDAData(j).parm1)
+                    DUM(2) = BDAData(j).parm2
+                    DUM(3) = BDAData(j).parm3
+                    DUM(4) = BDAData(j).parm4
+                    DUM(5) = BDAData(j).parm5
+                    DUM(6) = BDAData(j).parm6
+                    For i = 6 To 1 Step -1
+13132:                  If DUM(i) = NULVALUE Then
                             periods = periods - 1
                         Else
                             Exit For
-                               End If
+                        End If
                     Next i
-                    14133:
+14133:
                     For i = 1 To periods
-                        If DUM (i) = NULVALUE Then
-                            DUM (i) = 0
+                        If DUM(i) = NULVALUE Then
+                            DUM(i) = 0
                         End If
                     Next i
                     If periods >= LG - startperiod + 1 Then
@@ -1349,19 +1349,19 @@ Module DTA2000A
                             AdjustLastYear = True
                         End If
                     End If
-                    14134:
+14134:
                     ReDim wrkcol(periods)
-                    14135:
+14135:
                     For i = 1 To periods
-                        wrkcol (i) = DUM (i)
+                        wrkcol(i) = DUM(i)
                     Next i
                     'UPGRADE_NOTE: Erase was upgraded to System.Array.Clear. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
-                    Array.Clear (DUM, 0, DUM.Length)
-                    14136:
-                    qf = wrkcol (UBound (wrkcol))
+                    Array.Clear(DUM, 0, DUM.Length)
+14136:
+                    qf = wrkcol(UBound(wrkcol))
                 Case 3, 5 'initial amount, esc(mtd 3) / decl(mtd5) rate, # years
-                    30269: Continuous = False
-                    periods = BDAData (j).parm3
+30269:              Continuous = False
+                    periods = BDAData(j).parm3
                     If periods = LIFE Then
                         periods = LG - startperiod + 1
                         If MonthRelative Then
@@ -1374,29 +1374,29 @@ Module DTA2000A
                             AdjustLastYear = True
                         End If
                     End If
-                    11234: ReDim wrkcol(periods)
-                    11235: p1 = LTrim (RTrim (BDAData (j).parm1))
+11234:              ReDim wrkcol(periods)
+11235:              p1 = LTrim(RTrim(BDAData(j).parm1))
                     If p1 = "" Then
-                        p1 = LTrim (Str (qf))
-                    ElseIf p1 = Space (Len (p1)) Then
-                        p1 = LTrim (Str (qf))
+                        p1 = LTrim(Str(qf))
+                    ElseIf p1 = Space(Len(p1)) Then
+                        p1 = LTrim(Str(qf))
                     End If
-                    wrkcol (1) = Val (p1)
-                    EscalRate = BDAData (j).parm2
-                    If BDAData (j).mtd = 5 Then
-                        EscalRate = EscalRate*- 1
+                    wrkcol(1) = Val(p1)
+                    EscalRate = BDAData(j).parm2
+                    If BDAData(j).mtd = 5 Then
+                        EscalRate = EscalRate * -1
                     End If
 
-                    Call DTAStepProj (EscalRate, wrkcol)
+                    Call DTAStepProj(EscalRate, wrkcol)
 
-                    qf = wrkcol (UBound (wrkcol))
+                    qf = wrkcol(UBound(wrkcol))
 
                 Case 4, 6 'escalation rate, # years
-                    30260: Continuous = False
-                    If BDAData (j).parm2 = LG Then
+30260:              Continuous = False
+                    If BDAData(j).parm2 = LG Then
                         periods = ProjLife - startperiod + 1
                     Else
-                        periods = BDAData (j).parm2
+                        periods = BDAData(j).parm2
                     End If
                     If periods = LIFE Then
                         '<<<<<< 11 Jun 1998 JWD Restore increment by 1
@@ -1407,39 +1407,39 @@ Module DTA2000A
                         periods = LG - startperiod + 1
                     End If
                     ReDim wrkcol(periods)
-                    If BDAData (j).mtd = 6 Then
-                        EscalRate = Val (BDAData (j).parm1)*- 1
+                    If BDAData(j).mtd = 6 Then
+                        EscalRate = Val(BDAData(j).parm1) * -1
                     Else
-                        EscalRate = Val (BDAData (j).parm1)
+                        EscalRate = Val(BDAData(j).parm1)
                     End If
-                    wrkcol (1) = qf*(1 + EscalRate*0.01)
+                    wrkcol(1) = qf * (1 + EscalRate * 0.01)
                     If j > 1 Then
-                        DTAStepProj (EscalRate, wrkcol)
+                        DTAStepProj(EscalRate, wrkcol)
                     End If
-                    qf = wrkcol (UBound (wrkcol))
+                    qf = wrkcol(UBound(wrkcol))
                 Case 7, 8, 9, 0 'continuous methods
-                    30270: Continuous = True
-                    If BDAData (j).mtd = 7 Or BDAData (j).mtd = 9 Then
-                        d = (BDAData (j).parm2)/100
-'decline rate for this record
-                        dur = BDAData (j).parm3
-'duration of this record
-                        p1 = LTrim (RTrim (BDAData (j).parm1))
+30270:              Continuous = True
+                    If BDAData(j).mtd = 7 Or BDAData(j).mtd = 9 Then
+                        d = (BDAData(j).parm2) / 100
+                        'decline rate for this record
+                        dur = BDAData(j).parm3
+                        'duration of this record
+                        p1 = LTrim(RTrim(BDAData(j).parm1))
                         If p1 = "" Then
-                            p1 = LTrim (Str (qf))
-                        ElseIf p1 = Space (Len (p1)) Then
-                            p1 = LTrim (Str (qf))
+                            p1 = LTrim(Str(qf))
+                        ElseIf p1 = Space(Len(p1)) Then
+                            p1 = LTrim(Str(qf))
                         End If
-                        qi = Val (p1)
-                    ElseIf BDAData (j).mtd = 8 Or BDAData (j).mtd = 0 Then
-                        d = Val (BDAData (j).parm1)/100
-'decline rate for this record
-                        dur = BDAData (j).parm2
-'duration of this record
+                        qi = Val(p1)
+                    ElseIf BDAData(j).mtd = 8 Or BDAData(j).mtd = 0 Then
+                        d = Val(BDAData(j).parm1) / 100
+                        'decline rate for this record
+                        dur = BDAData(j).parm2
+                        'duration of this record
                         qi = qf
                     End If
                     If j = 1 Then
-                        delay = (startmonth - 1)/12
+                        delay = (startmonth - 1) / 12
                     Else
                         delay = delay + periods
                         Do While delay >= 1
@@ -1448,31 +1448,31 @@ Module DTA2000A
                     End If
                     If dur = LIFE Then
                         dur = LG - startperiod
-'+ 1
+                        '+ 1
                     End If
                     If dur >= LG - startperiod + 1 Then
                         periods = ProjLife - startperiod + 1
                     Else
                         periods = dur
                     End If
-                    If BDAData (j).mtd = 7 Or BDAData (j).mtd = 8 Then
-                        d = - 1*d
+                    If BDAData(j).mtd = 7 Or BDAData(j).mtd = 8 Then
+                        d = -1 * d
                     End If
-                    avar = - 1*Math.Log (1 - d)
-'avar = nominal decline factor [avar = -ln(1-d)]
-                    qf = qi*e^(- avar*periods)
+                    avar = -1 * Math.Log(1 - d)
+                    'avar = nominal decline factor [avar = -ln(1-d)]
+                    qf = qi * e ^ (-avar * periods)
                     If periods > LG - startperiod Then
                         periods = LG - startperiod
                     End If
-                    ReDim wrkcol(Int (periods + 1))
+                    ReDim wrkcol(Int(periods + 1))
                     'QDECL = cum production
-                    qdecl = (qi/avar)*(1 - (e^(- 1*avar*periods)))
-                    DTAExponentialDecl (qf, delay, qi, qdecl, wrkcol)
+                    qdecl = (qi / avar) * (1 - (e ^ (-1 * avar * periods)))
+                    DTAExponentialDecl(qf, delay, qi, qdecl, wrkcol)
             End Select
-            30280:
+30280:
 
             curvelife = curvelife + periods
-'track total duration of this category
+            'track total duration of this category
             zeroper = startperiod - 1
 
             'fln% = FreeFile
@@ -1480,26 +1480,26 @@ Module DTA2000A
             '   PRINT #fln%, "       forecast finished  zeroper = "; zeroper
             'CLOSE #fln%
 
-            uW = UBound (wrkcol)
-            uD = UBound (Datacol)
+            uW = UBound(wrkcol)
+            uD = UBound(Datacol)
 
             If startmonth <> 1 And Not Continuous Then
-                delay = (startmonth - 1)/12!
+                delay = (startmonth - 1) / 12.0!
                 For i = 1 To uW
-                    x = wrkcol (i)*delay
-'X = amount delayed to next year
+                    x = wrkcol(i) * delay
+                    'X = amount delayed to next year
                     If zeroper + i <= uD Then
-                        Datacol (zeroper + i) = Datacol (zeroper + i) + (wrkcol (i) - x)
+                        Datacol(zeroper + i) = Datacol(zeroper + i) + (wrkcol(i) - x)
                     End If
                     If zeroper + i + 1 <= uD Then
-                        Datacol (zeroper + i + 1) = Datacol (zeroper + i + 1) + x
+                        Datacol(zeroper + i + 1) = Datacol(zeroper + i + 1) + x
                     End If
                 Next i
             Else
-                30281:
+30281:
                 For i = 1 To uW
                     If zeroper + i > 0 And zeroper + i <= uD Then
-                        Datacol (zeroper + i) = Datacol (zeroper + i) + wrkcol (i)
+                        Datacol(zeroper + i) = Datacol(zeroper + i) + wrkcol(i)
 
                         'fln% = FreeFile
                         'OPEN "FCST.LOG" FOR APPEND AS #fln%
@@ -1511,7 +1511,7 @@ Module DTA2000A
             End If
         Next j
 
-        30290:
+30290:
 
         '  ERASE wrkcol!
 
@@ -1519,7 +1519,7 @@ Module DTA2000A
 
     ' $SubTitle:'DTAStepProj'
     ' $Page
-    Sub DTAStepProj (ByRef ChgRate As Single, ByRef column() As Single)
+    Sub DTAStepProj(ByRef ChgRate As Single, ByRef column() As Single)
         Dim i As Short
         Dim facto As Single
         '--------------------------------------------------------------------
@@ -1543,11 +1543,11 @@ Module DTA2000A
         '          Changed formal parameter from Rate to ChgRate.  Rate is
         '       function name in VB.
         '--------------------------------------------------------------------
-        1000:
-        facto = 1! + (ChgRate*0.01)
+1000:
+        facto = 1.0! + (ChgRate * 0.01)
 
-        For i = 2 To UBound (column)
-            column (i) = column (i - 1)*facto
+        For i = 2 To UBound(column)
+            column(i) = column(i - 1) * facto
         Next i
 
     End Sub
@@ -1560,7 +1560,7 @@ Module DTA2000A
     '  -> Change symbol name In$ to strIn$ to eliminate name
     '     conflict with reserved word in VB5.
     '
-    Sub DTAVerifyDates (ByRef strIn As String, ByRef MX As Single, ByRef YX As Single)
+    Sub DTAVerifyDates(ByRef strIn As String, ByRef MX As Single, ByRef YX As Single)
         Dim S1 As Short
         Dim ERO As Short
         '--------------------------------------------------------------------
@@ -1568,16 +1568,16 @@ Module DTA2000A
         ' THIS SUBROUTINE VERIFIES THE DATE ENTERED
 
         ERO = 0
-        S1 = InStr (strIn, "/")
+        S1 = InStr(strIn, "/")
         If S1 = 2 Or S1 = 3 Then GoTo 47150
         GoTo 47200
-        47150: MX = Val (Mid (strIn, 1, S1 - 1))
+47150:  MX = Val(Mid(strIn, 1, S1 - 1))
         If MX < 1 Or MX > 12 Then GoTo 47200
-        YX = Val (Mid (strIn, S1 + 1, 2))
+        YX = Val(Mid(strIn, S1 + 1, 2))
         If YX < 0 Or YX > 99 Then GoTo 47200
         GoTo 47210
-        47200: ERO = 1
-        47210: If YX >= 50 Then YX = YX + 1900
+47200:  ERO = 1
+47210:  If YX >= 50 Then YX = YX + 1900
         If YX < 50 Then YX = YX + 2000
 
 
@@ -1585,7 +1585,7 @@ Module DTA2000A
 
     ' $SubTitle:'EXTNameEntered%'
     ' $Page
-    Function EXTNameEntered (ByRef arg As String) As Short
+    Function EXTNameEntered(ByRef arg As String) As Short
         '--------------------------------------------------------------------
         'This function is called by ValidateLine.
         'This Function examines the inbound string argument and
@@ -1598,10 +1598,6 @@ Module DTA2000A
         'entered in parameter 1 on BDA, INF, or ANN
         '---------------------------------------------------------
         Dim bEXTFile As Short
-        Dim i As Short
-        Dim alpha As String
-        Dim sTmp As String
-        Dim iLArg As Short
         '---------------------------------------------------------
         bEXTFile = False
 
@@ -1627,7 +1623,7 @@ Module DTA2000A
 
     ' $subtitle: 'FixLen$'
     ' $PAGE
-    Function FixLen (ByRef R As Single, ByRef fl As Short) As String
+    Function FixLen(ByRef R As Single, ByRef fl As Short) As String
         Dim Expon As Short
         Dim wk As String
         '--------------------------------------------------------------------
@@ -1636,32 +1632,32 @@ Module DTA2000A
         Dim dp As Short
 
         If R < 0 Then
-            wk = Str (R)
+            wk = Str(R)
         Else
-            wk = LTrim (Str (R))
+            wk = LTrim(Str(R))
         End If
-        If InStr (wk, "E+") > 0 Then
-            Expon = Val (Right (wk, 2))
-            wk = Left (wk, Len (wk) - 4)
-            wk = wk & New String ("0", Expon)
-            dp = InStr (wk, ".")
+        If InStr(wk, "E+") > 0 Then
+            Expon = Val(Right(wk, 2))
+            wk = Left(wk, Len(wk) - 4)
+            wk = wk & New String("0", Expon)
+            dp = InStr(wk, ".")
             'Shift Decimal point right
             If dp > 0 Then
-                Call DeleteStr (wk, dp, 1)
-                Call InsertChar (".", wk, dp + Expon)
+                Call DeleteStr(wk, dp, 1)
+                Call InsertChar(".", wk, dp + Expon)
             Else
-                Call InsertChar (".", wk, Expon + 2)
+                Call InsertChar(".", wk, Expon + 2)
             End If
-            wk = Left (wk, fl)
-        ElseIf InStr (wk, "E-") > 0 Then
-            Expon = Val (Right (wk, 2))
-            wk = Left (wk, Len (wk) - 4)
-            wk = New String ("0", Expon) & wk
-            dp = InStr (wk, ".")
+            wk = Left(wk, fl)
+        ElseIf InStr(wk, "E-") > 0 Then
+            Expon = Val(Right(wk, 2))
+            wk = Left(wk, Len(wk) - 4)
+            wk = New String("0", Expon) & wk
+            dp = InStr(wk, ".")
             'Shift Decimal point left
             If dp > 0 Then
-                Call DeleteStr (wk, dp, 1)
-                Call InsertChar (".", wk, dp - Expon)
+                Call DeleteStr(wk, dp, 1)
+                Call InsertChar(".", wk, dp - Expon)
             End If
         End If
         FixLen = wk
@@ -1670,7 +1666,7 @@ Module DTA2000A
 
     ' $SubTitle:'ForecastDCL - Driver sub for Prod Decline type records'
     ' $Page
-    Sub ForecastDCL (ByRef pdcdata() As PDCType, ByRef Datacol() As Single, ByRef curveoffset As Single, _
+    Sub ForecastDCL(ByRef pdcdata() As PDCType, ByRef Datacol() As Single, ByRef curveoffset As Single, _
                      ByRef curvelife As Single)
         Dim i As Short
         Dim zeroper As Single
@@ -1715,18 +1711,18 @@ Module DTA2000A
         Dim iErrorLine As Short
         Dim A As Double
         '---------------------------------------------------------
-        23010:
+23010:
 
         Maxlife = gc_nMAXLIFE
 
 
-        HIVALUE = - 32760
-'null integer field
-        NULVALUE = - 3.4E+35
-'denotes a NOT ENTERED field (NOT 0!)
-        LIFE = - 999 : PAR = - 996 : LIF = - 995
-        PDY = - 993 : PDM = - 992 : PJY = - 991 : PJM = - 990 : DSC = - 989
-        CAL = - 988 : PRD = - 987
+        HIVALUE = -32760
+        'null integer field
+        NULVALUE = -3.4E+35
+        'denotes a NOT ENTERED field (NOT 0!)
+        LIFE = -999 : PAR = -996 : LIF = -995
+        PDY = -993 : PDM = -992 : PJY = -991 : PJM = -990 : DSC = -989
+        CAL = -988 : PRD = -987
 
         e = 2.71828
 
@@ -1741,16 +1737,16 @@ Module DTA2000A
 
         startmonth = ProdMo
         ProjLife = LG
-        delay = (startmonth - 1)/12
+        delay = (startmonth - 1) / 12
         curvelife = 0
-'track total duration of this category
+        'track total duration of this category
         prevd = 0.000001
 
-        For j = 1 To UBound (pdcdata)
+        For j = 1 To UBound(pdcdata)
             'if delay + the fractional part of the last curve life >= 1 then
             '  add 1 to the startperiod of the next curve record to get
             '  phasing OK
-            fracdur = dur - Int (dur)
+            fracdur = dur - Int(dur)
             If fracdur + delay >= 1 Then
                 startperiod = startperiod + 1
             End If
@@ -1761,16 +1757,16 @@ Module DTA2000A
             Do While delay >= 1
                 delay = delay - 1
             Loop
-'this will make -    0 < delay < 1
+            'this will make -    0 < delay < 1
 
             'figure period in which this data record starts....
             If j = 1 Then 'only calc these values for the first record
                 startperiod = startyear - ProjYr + 1
                 curveoffset = startperiod - 1
-'# of project periods prior to start of this curve
+                '# of project periods prior to start of this curve
 
             Else
-                startperiod = startperiod + Int (periods)
+                startperiod = startperiod + Int(periods)
             End If
 
             '3-24-93  avoid s/s out of range in projects beginning in or after 2000
@@ -1780,10 +1776,10 @@ Module DTA2000A
 
 
             MaxDuration = MaxDuration - dur
-'(startperiod - 1)
+            '(startperiod - 1)
             'set fact to adjust entered initial & final rates
             '(convert to annual amounts)
-            Select Case pdcdata (j).unit
+            Select Case pdcdata(j).unit
                 Case "DAY"
                     fact = 365
                 Case "MON"
@@ -1791,21 +1787,21 @@ Module DTA2000A
                 Case "YRS"
                     fact = 1
             End Select
-            30190:
+30190:
             'ALSO - divide by 1000 - values are MBBL-reported in MMBBL
-            If pdcdata (j).begprod <> NULVALUE Then
-                pdcdata (j).begprod = pdcdata (j).begprod*fact/1000
+            If pdcdata(j).begprod <> NULVALUE Then
+                pdcdata(j).begprod = pdcdata(j).begprod * fact / 1000
             End If
-            If pdcdata (j).endprod <> NULVALUE Then
-                pdcdata (j).endprod = pdcdata (j).endprod*fact/1000
+            If pdcdata(j).endprod <> NULVALUE Then
+                pdcdata(j).endprod = pdcdata(j).endprod * fact / 1000
             End If
             '--------------------------------------------------------------------
             'set d = decline (d > 0 for DECLINE)
-            If pdcdata (j).RATE_Renamed = NULVALUE Then
+            If pdcdata(j).RATE_Renamed = NULVALUE Then
                 d = prevd
-'.0000001                              'pdcdata(j%).rate = -.0000001
+                '.0000001                              'pdcdata(j%).rate = -.0000001
             Else
-                d = ((pdcdata (j).RATE_Renamed)/100)*- 1
+                d = ((pdcdata(j).RATE_Renamed) / 100) * -1
             End If
             If d = 1 Then
                 d = 0.99999
@@ -1813,7 +1809,7 @@ Module DTA2000A
             '--------------------------------------------------------------------
             'load local variables with record data
             'qi = initial rate
-            qi = pdcdata (j).begprod
+            qi = pdcdata(j).begprod
             If qi = NULVALUE Then
                 If j > 1 Then 'if initial amt NULVALUE, use ending amt from previous record
                     qi = qf
@@ -1822,73 +1818,73 @@ Module DTA2000A
                 End If
             End If
             'xn = hyperbolic exponent
-            xn = pdcdata (j).hypexp
+            xn = pdcdata(j).hypexp
             'qf = final rate
-            qf = pdcdata (j).endprod
+            qf = pdcdata(j).endprod
             If qf = qi Then
                 iErrorLine = j
             End If
             'qdecl = final rate
-            qdecl = pdcdata (j).cumprod
+            qdecl = pdcdata(j).cumprod
             'dur = time for curve
-            dur = pdcdata (j).time
+            dur = pdcdata(j).time
 
             '--------------------------------------------------------------------
             'test validity of entered final, cumulative, or time value
             'AND load missing variables!
-            Select Case pdcdata (j).mtd
+            Select Case pdcdata(j).mtd
                 Case "EXP"
-                    8110: If qdecl <> NULVALUE Then 'cumulative entered - solve for time - see if it is within LG
+8110:               If qdecl <> NULVALUE Then 'cumulative entered - solve for time - see if it is within LG
                         qd = qdecl
-'entered value of cumulative
-                        qf = (qdecl*Math.Log (1 - d)) + qi
+                        'entered value of cumulative
+                        qf = (qdecl * Math.Log(1 - d)) + qi
                         If qf <= 0 Then
                             qf = 0.000001
                         End If
-                        If d < 0.0001 And d > - 0.0001 Then
+                        If d < 0.0001 And d > -0.0001 Then
                             qf = qi
-                            dur = qdecl/qi
+                            dur = qdecl / qi
                             If dur > MaxDuration Then
-                                qdecl = qi*MaxDuration
+                                qdecl = qi * MaxDuration
                                 dur = MaxDuration
                             End If
                         Else
-                            dur = Math.Log (qf/qi)/Math.Log (1 - d)
-                            8120: If dur > MaxDuration Then 'if calc time > LG reset cumprod to max attainable
-                                qf = qi*((1 - d)^Maxlife)
+                            dur = Math.Log(qf / qi) / Math.Log(1 - d)
+8120:                       If dur > MaxDuration Then 'if calc time > LG reset cumprod to max attainable
+                                qf = qi * ((1 - d) ^ Maxlife)
                                 dur = MaxDuration
-                                  End If
-                            qdecl = (qf - qi)/Math.Log (1 - d)
+                            End If
+                            qdecl = (qf - qi) / Math.Log(1 - d)
                             If qdecl > qd Then
                                 qdecl = qd
                             End If
                         End If
                     ElseIf dur <> NULVALUE Then 'time entered - assure time <= LG
-                        8130: If dur > MaxDuration Then
+8130:                   If dur > MaxDuration Then
                             dur = MaxDuration
-                              End If
-                        If d < 0.0001 And d > - 0.0001 Then
+                        End If
+                        If d < 0.0001 And d > -0.0001 Then
                             qf = qi
-                            qdecl = qi*dur
+                            qdecl = qi * dur
                         Else
-                            qf = qi*((1 - d)^dur)
-                            qdecl = (qf - qi)/Math.Log (1 - d)
+                            qf = qi * ((1 - d) ^ dur)
+                            qdecl = (qf - qi) / Math.Log(1 - d)
                         End If
                     ElseIf qf <> NULVALUE Then 'make sure that the curve will reach qf within LG
-                        If d < 0.0001 And d > - 0.0001 Then
+                        If d < 0.0001 And d > -0.0001 Then
                             qf = qi
                             qdecl = 0
                             dur = 0
                         Else
-                            8140: z = qf
-                            atime = Math.Log (qf/qi)/Math.Log (1 - d)
+8140:                       z = qf
+                            atime = Math.Log(qf / qi) / Math.Log(1 - d)
                             If atime > MaxDuration Then 'if calc time > LG reset qf to max attainable
-                                qf = qi*((1 - d)^MaxDuration)
+                                qf = qi * ((1 - d) ^ MaxDuration)
                             End If
-                            qdecl = (qf - qi)/Math.Log (1 - d)
-                            dur = Math.Log (qf/qi)/Math.Log (1 - d)
+                            qdecl = (qf - qi) / Math.Log(1 - d)
+                            dur = Math.Log(qf / qi) / Math.Log(1 - d)
                         End If
-                          End If
+                    End If
                 Case "HAR" 'harmonic decline curves
                     If d < 0 Then
                         iErrorLine = j
@@ -1897,35 +1893,35 @@ Module DTA2000A
                             d = 0
                         End If
 
-                        A = d/(1 - d)
-                        9110: If qdecl <> NULVALUE Then 'cumulative entered - solve for time - see if it is within LG
+                        A = d / (1 - d)
+9110:                   If qdecl <> NULVALUE Then 'cumulative entered - solve for time - see if it is within LG
                             If d = 0 Then
                                 qf = qi
-                                dur = qdecl/qi
+                                dur = qdecl / qi
                                 If dur > MaxDuration Then
                                     dur = MaxDuration
-                                    qdecl = qi*dur
+                                    qdecl = qi * dur
                                 End If
                             Else
                                 qd = qdecl
-'entered value of cumulative
-                                qf = qi/Math.Exp ((qdecl*A)/qi)
-                                dur = ((qi/qf) - 1)/A
-                                9120: If dur > MaxDuration Then 'if calc time > LG reset cumprod to max attainable
+                                'entered value of cumulative
+                                qf = qi / Math.Exp((qdecl * A) / qi)
+                                dur = ((qi / qf) - 1) / A
+9120:                           If dur > MaxDuration Then 'if calc time > LG reset cumprod to max attainable
                                     dur = MaxDuration
-                                    qf = qi/(1 + (A*dur))
-                                      End If
-                                qdecl = (qi/A)*Math.Log (qi/qf)
+                                    qf = qi / (1 + (A * dur))
+                                End If
+                                qdecl = (qi / A) * Math.Log(qi / qf)
                             End If
                         ElseIf dur <> NULVALUE Then 'time entered - assure time <= LG
-                            9130: If dur > MaxDuration Then
+9130:                       If dur > MaxDuration Then
                                 dur = MaxDuration
-                                  End If
+                            End If
                             If d = 0 Then
-                                qdecl = qi*dur
+                                qdecl = qi * dur
                             Else
-                                qf = qi/(1 + (A*dur))
-                                qdecl = (qi/A)*Math.Log (qi/qf)
+                                qf = qi / (1 + (A * dur))
+                                qdecl = (qi / A) * Math.Log(qi / qf)
                             End If
                         ElseIf qf <> NULVALUE Then 'make sure that the curve will reach qf within LG
                             If d = 0 Then
@@ -1936,18 +1932,18 @@ Module DTA2000A
                                 If qf > qi Then
                                     iErrorLine = j
                                 End If
-                                qdecl = (qi/A)*Math.Log (qi/qf)
-                                dur = ((qi/qf) - 1)/A
+                                qdecl = (qi / A) * Math.Log(qi / qf)
+                                dur = ((qi / qf) - 1) / A
                                 If dur > MaxDuration Then 'if calc time > LG reset qf to max attainable
                                     dur = MaxDuration
-                                    qf = qi/(1 + (A*dur))
-                                    qdecl = (qi/A)*Math.Log (qi/qf)
+                                    qf = qi / (1 + (A * dur))
+                                    qdecl = (qi / A) * Math.Log(qi / qf)
                                 End If
                             End If
                             If qf > qi Then
                                 iErrorLine = j
                             End If
-                              End If
+                        End If
                     End If
                 Case "HYP"
                     If d < 0 Then
@@ -1957,34 +1953,34 @@ Module DTA2000A
                             d = 0
                         End If
                         A = (((1 - d) ^ -xn) - 1) / xn
-                        10110: If qdecl <> NULVALUE Then 'cumulative entered - solve for time - see if it is within LG
+10110:                  If qdecl <> NULVALUE Then 'cumulative entered - solve for time - see if it is within LG
                             If d = 0 Then
-                                dur = qdecl/qi
+                                dur = qdecl / qi
                                 If dur > MaxDuration Then
                                     dur = MaxDuration
-                                    qdecl = qi*dur
+                                    qdecl = qi * dur
                                 End If
                             Else
                                 qd = qdecl
-'entered value of cumulative
-                                qf = ((qi^xn) - (((qdecl*(1 - xn))*A)/(qi^xn)))^(1/xn)
+                                'entered value of cumulative
+                                qf = ((qi ^ xn) - (((qdecl * (1 - xn)) * A) / (qi ^ xn))) ^ (1 / xn)
                                 dur = (((qf / qi) ^ -xn) - 1) / (xn * A)
-                                10120: If dur > MaxDuration Then 'if calc time > LG reset cumprod to max attainable
+10120:                          If dur > MaxDuration Then 'if calc time > LG reset cumprod to max attainable
                                     dur = MaxDuration
-                                    qf = qi*(1 + (xn*A*dur))^(- 1/xn)
-                                    qdecl = ((qi^xn)/((1 - xn)*A))*((qi^(1 - xn)) - (qf^(1 - xn)))
-                                       End If
+                                    qf = qi * (1 + (xn * A * dur)) ^ (-1 / xn)
+                                    qdecl = ((qi ^ xn) / ((1 - xn) * A)) * ((qi ^ (1 - xn)) - (qf ^ (1 - xn)))
+                                End If
                             End If
                         ElseIf dur <> NULVALUE Then 'time entered - assure time <= LG
-                            10130: If dur > MaxDuration Then
+10130:                      If dur > MaxDuration Then
                                 dur = MaxDuration
-                                   End If
+                            End If
                             If d = 0 Then
                                 qf = qi
-                                qdecl = qi*dur
+                                qdecl = qi * dur
                             Else
-                                qf = qi*(1 + (xn*A*dur))^(- 1/xn)
-                                qdecl = ((qi^xn)/((1 - xn)*A))*((qi^(1 - xn)) - (qf^(1 - xn)))
+                                qf = qi * (1 + (xn * A * dur)) ^ (-1 / xn)
+                                qdecl = ((qi ^ xn) / ((1 - xn) * A)) * ((qi ^ (1 - xn)) - (qf ^ (1 - xn)))
                             End If
                         ElseIf qf <> NULVALUE Then 'make sure that the curve will reach qf within LG
                             If qf > qi Then
@@ -1995,22 +1991,22 @@ Module DTA2000A
                                 qdecl = 0
                                 dur = 0
                             Else
-                                qdecl = ((qi^xn)/((1 - xn)*A))*(qi^(1 - xn) - qf^(1 - xn))
+                                qdecl = ((qi ^ xn) / ((1 - xn) * A)) * (qi ^ (1 - xn) - qf ^ (1 - xn))
                                 dur = (((qf / qi) ^ -xn) - 1) / (xn * A)
                                 If dur > MaxDuration Then 'if calc time > LG reset qf to max attainable
                                     dur = MaxDuration
-                                    qf = qi*(1 + (xn*A*dur))^(- 1/xn)
-                                    qdecl = ((qi^xn)/((1 - xn)*A))*((qi^(1 - xn)) - (qf^(1 - xn)))
+                                    qf = qi * (1 + (xn * A * dur)) ^ (-1 / xn)
+                                    qdecl = ((qi ^ xn) / ((1 - xn) * A)) * ((qi ^ (1 - xn)) - (qf ^ (1 - xn)))
                                 End If
                             End If
-                               End If
+                        End If
                         If qf > qi Then
                             iErrorLine = j
                         End If
                     End If
             End Select
             '--------------------------------------------------------------------
-            8150:
+8150:
 
 
             MaxDur = Maxlife - startperiod + 1
@@ -2021,7 +2017,7 @@ Module DTA2000A
             End If
 
             curvelife = curvelife + periods
-'track total duration of this category
+            'track total duration of this category
 
             If periods + 2 > MaxDur + 1 Then
                 periods = MaxDur - 2
@@ -2032,61 +2028,61 @@ Module DTA2000A
             If periods < 0 Then
                 periods = 0
             End If
-            8151:
-            ReDim wrkcol(Int (periods + 2))
-            8152:
+8151:
+            ReDim wrkcol(Int(periods + 2))
+8152:
             If iErrorLine > 0 Then
                 ReDim Datacol(1)
                 Exit Sub
             End If
 
 
-            Select Case pdcdata (j).mtd
+            Select Case pdcdata(j).mtd
                 Case "EXP"
-                    If d > - 0.001 And d < 0.001 Then
+                    If d > -0.001 And d < 0.001 Then
                         'UPGRADE_WARNING: Couldn't resolve default property of object wrkcol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                        PlateauPDC (qi, qdecl, delay, wrkcol())
-'production plateau
+                        PlateauPDC(qi, qdecl, delay, wrkcol())
+                        'production plateau
                     Else
                         'UPGRADE_WARNING: Couldn't resolve default property of object wrkcol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                        DTAExponentialDecl (qf, delay, qi, qdecl, wrkcol())
+                        DTAExponentialDecl(qf, delay, qi, qdecl, wrkcol())
                     End If
                 Case "HYP"
-                    If d > - 0.001 And d < 0.001 Then
+                    If d > -0.001 And d < 0.001 Then
                         'UPGRADE_WARNING: Couldn't resolve default property of object wrkcol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                        PlateauPDC (qi, qdecl, delay, wrkcol())
-'production plateau
+                        PlateauPDC(qi, qdecl, delay, wrkcol())
+                        'production plateau
                     Else
                         'UPGRADE_WARNING: Couldn't resolve default property of object wrkcol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                        HyperbolicDecl (qi, qf, qdecl, xn, delay, wrkcol(), d)
+                        HyperbolicDecl(qi, qf, qdecl, xn, delay, wrkcol(), d)
                     End If
                 Case "HAR"
-                    If d > - 0.001 And d < 0.001 Then
+                    If d > -0.001 And d < 0.001 Then
                         'UPGRADE_WARNING: Couldn't resolve default property of object wrkcol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                        PlateauPDC (qi, qdecl, delay, wrkcol())
-'production plateau
+                        PlateauPDC(qi, qdecl, delay, wrkcol())
+                        'production plateau
                     Else
                         'UPGRADE_WARNING: Couldn't resolve default property of object wrkcol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                        HarmonicDecl (qi, qf, qdecl, delay, wrkcol(), d)
+                        HarmonicDecl(qi, qf, qdecl, delay, wrkcol(), d)
                     End If
             End Select
 
             '  delay = delay + (dur - INT(dur))
             '  delay = delay - INT(delay)
-            30209:
+30209:
 
             zeroper = startperiod - 1
 
-            For i = 1 To UBound (wrkcol)
-                If zeroper + i <= UBound (Datacol) Then
+            For i = 1 To UBound(wrkcol)
+                If zeroper + i <= UBound(Datacol) Then
                     'UPGRADE_WARNING: Couldn't resolve default property of object wrkcol(i). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                    Datacol (zeroper + i) = Datacol (zeroper + i) + wrkcol (i)
+                    Datacol(zeroper + i) = Datacol(zeroper + i) + wrkcol(i)
                 End If
             Next i
             prevd = d
-'store previous decline (incase next record has decline blank)
+            'store previous decline (incase next record has decline blank)
         Next j
-'forecastdcl
+        'forecastdcl
 
         Erase wrkcol
 
@@ -2094,7 +2090,7 @@ Module DTA2000A
 
     ' $SubTitle:'DTAForecastLoadA - loads A() with values from datacol!()'
     ' $Page
-    Sub ForecastLoadA (ByRef item As Short, ByRef Datacol() As Single, ByRef z(,) As Single)
+    Sub ForecastLoadA(ByRef item As Short, ByRef Datacol() As Single, ByRef z(,) As Single)
         '--------------------------------------------------------------------
         '  parameters: Category$, datacol!(), z()
         '  function: takes datacol() and fills out z(1-LG, item)
@@ -2102,9 +2098,9 @@ Module DTA2000A
         '---------------------------------------------------------
         Dim p As Short
         '---------------------------------------------------------
-        4350:
+4350:
         For p = 1 To LG
-            z (p, item) = Datacol (p)
+            z(p, item) = Datacol(p)
         Next p
 
     End Sub
@@ -2122,7 +2118,7 @@ Module DTA2000A
 
         'This sub sets the "life" variables LG, LGI, LFX & LFI during the
         '  forecasting process (after forecasting the primary product)
-        4390:
+4390:
 
         'LFI - producing life (actual) (ie 23.15 years)
         LFI = curvelife
@@ -2130,7 +2126,7 @@ Module DTA2000A
             LFI = Maxlife
         End If
         'LFX - producing life (integer) (rounded up to whole year)
-        LFX = Int (LFI)
+        LFX = Int(LFI)
         If LFX < LFI Then
             LFX = LFX + 1
         End If
@@ -2139,24 +2135,24 @@ Module DTA2000A
         End If
 
         'LGI - project life (actual) (ie 27.5 years)
-        LGI = LFI + (proddelay/12)
+        LGI = LFI + (proddelay / 12)
         If LGI > Maxlife Then
             LGI = Maxlife
         End If
 
         'LG - project life (reporting years(integer))
-        LG = Int (LGI)
+        LG = Int(LGI)
         If LG < LGI Then
             LG = LG + 1
-        ElseIf Right (PrimaryStart, 1) = "M" And ProjMo > 1 Then
+        ElseIf Right(PrimaryStart, 1) = "M" And ProjMo > 1 Then
             LG = LG + 1
         End If
         If LG > Maxlife Then
             LG = Maxlife
         End If
         If ProjMo > ProdMo Then
-            DUM = (ProjMo - 1)/12 + LGI
-            dum2 = Int (DUM)
+            DUM = (ProjMo - 1) / 12 + LGI
+            dum2 = Int(DUM)
             If dum2 < DUM Then
                 dum2 = dum2 + 1
             End If
@@ -2170,11 +2166,11 @@ Module DTA2000A
         '  aAt this point, LG is set to 33. However, the project will run over
         '  into the 34th calendar year, so make LG = 34
         remmos = 12 - ProjMo + 1
-'remaining months in year
-        fracyear = remmos/12
-'fractional year in first calendar year
-        partyear = LGI - Int (LGI)
-'fractional part of project life
+        'remaining months in year
+        fracyear = remmos / 12
+        'fractional year in first calendar year
+        partyear = LGI - Int(LGI)
+        'fractional part of project life
         If fracyear < partyear Then
             LG = LG + 1
         End If
@@ -2188,7 +2184,7 @@ Module DTA2000A
 
     ' $SubTitle:'HarmonicDecl'
     ' $Page
-    Sub HarmonicDecl (ByRef qi As Single, ByRef qf As Single, ByRef qdecl As Single, ByRef delay As Single, _
+    Sub HarmonicDecl(ByRef qi As Single, ByRef qf As Single, ByRef qdecl As Single, ByRef delay As Single, _
                       ByRef column() As Single, ByRef d As Single)
         Dim i As Short
         '--------------------------------------------------------------------
@@ -2217,28 +2213,28 @@ Module DTA2000A
         Dim qprev As Single
         Dim t As Single
         '---------------------------------------------------------
-        400:
+400:
 
         If qf > qi Then
             Exit Sub
         End If
         q = 0
         qprev = 0
-'cum thru end of (i%-1) years
-        rA = d/(1 - d)
+        'cum thru end of (i%-1) years
+        rA = d / (1 - d)
         t = 0 - delay
-'This sets up T so that on first iteration, T = -DELAY
-        For i = 1 To UBound (column)
+        'This sets up T so that on first iteration, T = -DELAY
+        For i = 1 To UBound(column)
             If qprev >= qdecl Then
                 Exit For
             End If
-            qt = qi/(1 + (rA*(i + t)))
-            q = (qi/rA)*Math.Log (qi/qt)
-'cum thru end of i% years
+            qt = qi / (1 + (rA * (i + t)))
+            q = (qi / rA) * Math.Log(qi / qt)
+            'cum thru end of i% years
             If q > qdecl Then
                 q = qdecl
             End If
-            column (i) = q - qprev
+            column(i) = q - qprev
             qprev = q
         Next i
 
@@ -2246,7 +2242,7 @@ Module DTA2000A
 
     ' $SubTitle:'HyperbolicDecl'
     ' $Page
-    Sub HyperbolicDecl (ByRef qi As Single, ByRef qf As Single, ByRef qdecl As Single, ByRef xn As Single, _
+    Sub HyperbolicDecl(ByRef qi As Single, ByRef qf As Single, ByRef qdecl As Single, ByRef xn As Single, _
                         ByRef delay As Single, ByRef column() As Single, ByRef d As Single)
         '--------------------------------------------------------------------
         '     Routine to calculate production stream using a hyperbolic decline.
@@ -2263,7 +2259,7 @@ Module DTA2000A
         '     Return:
         '         COLUMN - is the production stream (array)
         '     Local Variables:
-        '''''         DI    - instantaneous initial nominal decline
+        ''         DI    - instantaneous initial nominal decline
         '         T     - time
         '         QT    - production rate at time T
         '         Q     - cumulative production through current time period.
@@ -2276,28 +2272,28 @@ Module DTA2000A
         Dim qt As Double
         Dim t As Double
         '---------------------------------------------------------
-        500:
+500:
         If qf > qi Then
             Exit Sub
         ElseIf xn <= 0 Or xn >= 1 Then
             Exit Sub
         End If
-        '''''  di = (qi ^ xn / ((1 - xn) * qdecl)) * (qi ^ (1 - xn) - qf ^ (1 - xn))
+        ''  di = (qi ^ xn / ((1 - xn) * qdecl)) * (qi ^ (1 - xn) - qf ^ (1 - xn))
         q = 0
         A = (((1 - d) ^ -xn) - 1) / xn
         t = 0 - delay
-'This sets up T, on first iteration T = -DELAY
-        For i = 1 To UBound (column)
+        'This sets up T, on first iteration T = -DELAY
+        For i = 1 To UBound(column)
             If (qdecl - q) < 0.001 Then
                 Exit For
             End If
             prevq = q
-            qt = qi*(1 + (xn*A*(t + i)))^(- 1/xn)
-            q = ((qi^xn)/((1 - xn)*A))*((qi^(1 - xn)) - (qt^(1 - xn)))
+            qt = qi * (1 + (xn * A * (t + i))) ^ (-1 / xn)
+            q = ((qi ^ xn) / ((1 - xn) * A)) * ((qi ^ (1 - xn)) - (qt ^ (1 - xn)))
             If q > qdecl Then
                 q = qdecl
             End If
-            column (i) = q - prevq
+            column(i) = q - prevq
         Next i
 
     End Sub

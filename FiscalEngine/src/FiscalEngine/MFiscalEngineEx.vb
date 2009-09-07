@@ -144,7 +144,7 @@ Module MFiscalEngineEx
 	'     is to be accepted as an empty (no entries) array.
 	'     (C0911)
 	'
-    Public Function FiscalCalculatorEx(ByRef BaseAmounts(,) As Double, ByRef BaseNames() As String, ByRef CapexAmounts(,) As Double, ByRef CapexWI(,) As Double, ByRef CapexRP(,) As Double, ByRef CapexNames() As String, ByRef CapexTangible() As Double, ByRef Inflation() As Double, ByRef DiscountRates() As Double, ByRef ProjectDates() As String, ByRef MiscellaneousItems() As Double, ByRef LoansData() As Double, ByRef BaseAmountsExtraIn() As Double, ByRef CapexPARIn() As Double, ByRef ModelVarsIn() As String, ByRef ModelVarsAmountsIn() As Double, ByRef ModelVarsToReturn() As String, ByVal CountryFileName As String, ByRef CountryFileSensitivities(,) As String, ByRef CalcSettings() As Short, ByRef OutputAmounts() As Double, ByRef OutputNames() As String, ByRef OutputInterests() As Double, ByRef EconomicIndicators(,) As Double, ByRef OtherIndicators() As Double, ByRef BaseAmountsExtraOut() As Double, ByRef CapexPAROut() As Double, ByRef ModelVarsOut() As String, ByRef ModelVarsAmountsOut() As Double, ByRef CalcIndicators() As Short, ByRef OutputText As _CReportText, ByRef RunSwitches() As Integer) As Boolean
+    Public Function FiscalCalculatorEx(ByRef BaseAmounts(,) As Double, ByRef BaseNames() As String, ByRef CapexAmounts(,) As Double, ByRef CapexWI(,) As Double, ByRef CapexRP(,) As Double, ByRef CapexNames() As String, ByRef CapexTangible() As Double, ByRef Inflation() As Double, ByRef DiscountRates() As Double, ByRef ProjectDates() As String, ByRef MiscellaneousItems() As Double, ByRef LoansData() As Double, ByRef BaseAmountsExtraIn() As Double, ByRef CapexPARIn() As Double, ByRef ModelVarsIn() As String, ByRef ModelVarsAmountsIn() As Double, ByRef ModelVarsToReturn() As String, ByVal CountryFileName As String, ByRef CountryFileSensitivities(,) As String, ByRef CalcSettings() As Short, ByRef OutputAmounts() As Double, ByRef OutputNames() As String, ByRef OutputInterests() As Double, ByRef EconomicIndicators(,) As Double, ByRef OtherIndicators() As Double, ByRef BaseAmountsExtraOut() As Double, ByRef CapexPAROut() As Double, ByRef ModelVarsOut() As String, ByRef ModelVarsAmountsOut() As Double, ByRef CalcIndicators() As Short, ByRef OutputText As CReportText, ByRef RunSwitches() As Integer) As Boolean
 
         On Error GoTo FiscalCalculator_Error
 
@@ -359,7 +359,7 @@ FiscalCalculator_InitializeStandard:  ' This is the target of a goto, coming fro
         g_bPTCons = False ' This is not a pre-tax consolidation run
 
         '<<TBD>> which calcindicator is this?
-        '''        EconomicLimitApplied = 0      ' 0=Economic Limit keyword not found in fiscal definition
+        ''        EconomicLimitApplied = 0      ' 0=Economic Limit keyword not found in fiscal definition
 
         ' Add load of currency exchange rate data
         LoadCurrencyFileAMPE()
@@ -479,7 +479,7 @@ FiscalCalculator_Input:
         SetGrossAbandonmentExpenditure(MiscellaneousItems(3))
         SetAbandonmentExpenditurePeriodOffset((CalcSettings(settings_abandonment_timing) - 1))
         '<<TBD>> extract the abandonment inflation from Inflation()
-        '''SetAbandonmentInflationForecast AbandonmentInflation()
+        ''SetAbandonmentInflationForecast AbandonmentInflation()
 
         ' Open the "run file"
         ' Assign to the global symbol
@@ -506,15 +506,15 @@ FiscalCalculator_Input:
 
 FiscalCalculator_Process:
 
-        '''      '' See if it looks like any capex carries are in the project
-        '''      'zzzCheckCapexForCarriedExpenditures A(), my3(), MY3T, b_have_capex_carry
-        '''
-        '''      '' See how big the model is for sizing output reports arrays
-        '''      'zzzDetermineOutputArraySize i_estimated_size, b_have_capex_carry
-        '''      '
-        '''      'ReDim OutAmts(1 To i_estimated_size, 1 To LG)
-        '''      'ReDim OutNms(1 To i_estimated_size, 1 To 2)
-        '''      'ReDim OutInts(1 To i_estimated_size, 1 To 2)
+        ''      '' See if it looks like any capex carries are in the project
+        ''      'zzzCheckCapexForCarriedExpenditures A(), my3(), MY3T, b_have_capex_carry
+        ''
+        ''      '' See how big the model is for sizing output reports arrays
+        ''      'zzzDetermineOutputArraySize i_estimated_size, b_have_capex_carry
+        ''      '
+        ''      'ReDim OutAmts(1 To i_estimated_size, 1 To LG)
+        ''      'ReDim OutNms(1 To i_estimated_size, 1 To 2)
+        ''      'ReDim OutInts(1 To i_estimated_size, 1 To 2)
 
         ' Compute total opex
         ReDim OPEX(gc_nMAXLIFE)
@@ -659,7 +659,7 @@ FiscalCalculator_CashFlow:  ' this is a target of a goto, coming from FiscalCalc
 
         '<<TBD>> Is this the best place to do this especially with life extension due to abandonment
         '<<TBD>> Designation of CalcIndicator to receive this indicator? or put in Other indicators? It is in the run summary!
-        '''EconomicLife = LG
+        ''EconomicLife = LG
 
 FiscalCalculator_Output:
 
@@ -706,13 +706,13 @@ FiscalCalculator_Output:
         ' Get indicators data from report object
         With g_oReport
             EconomicIndicators = Array2DSingleAsDouble(.PresentValueTable)
-            '''CompanyROR = CDbl(.CompanyRateOfReturn)
-            '''GovernmentROR = CDbl(.GovernmentRateOfReturn)
+            ''CompanyROR = CDbl(.CompanyRateOfReturn)
+            ''GovernmentROR = CDbl(.GovernmentRateOfReturn)
         End With
 
         ' Return whether or not the economic limit keyword was applied
         '<<TBD>> CalcIndicators() element to receive this indicator
-        '''        EconomicLimitApplied = IIf(zzzFiscalDefinitionHasLMTKeyword, 1, 0)
+        ''        EconomicLimitApplied = IIf(zzzFiscalDefinitionHasLMTKeyword, 1, 0)
 
         ' Get other indicators from report object (run summary)
         Dim l_oSummary As CDArray1DDblA
@@ -751,57 +751,57 @@ FiscalCalculator_Error:
         Resume FiscalCalculator_Exit
 
     End Function
-	
-	'''
-	''' Check the capital expenditures arrays for the presence
-	''' of data indicating that the company or a partner is
-	''' carried for some capital expenditures. These would
-	''' cause inclusion of related report sections. The purpose
-	''' for this is not to actually determine absolutely if the
-	''' section would need to be included, or not, but to see
-	''' if it is likely that it would.
-	'''
-	''' Whether or not a carry is in effect is if the working
-	''' interest value for the specific expenditure is diffent
-	''' from the working interest forecast value for the
-	''' corresponding period in the base forecasts.
-	'''
-	''' Any discrepancy in working interests is enough to
-	''' assume that there will be a carry, and should include
-	''' the additional report sections.
-	'''
-	''Private Sub zzzCheckCapexForCarriedExpenditures(ByRef Forecasts() As Single, ByRef Capex() As Single, ByVal CapexCount As Integer, ByRef HaveCarriedCapex As Boolean)
-	''
-	''   Dim i As Integer
-	''   Dim j As Integer
-	''
-	''   HaveCarriedCapex = False
-	''
-	''   For i = 1 To CapexCount
-	''      j = Capex(i, 3) - YR + 1
-	''      If Forecasts(j, gc_nAWIN) <> Capex(i, 6) Then
-	''         HaveCarriedCapex = True
-	''         Exit For
-	''      End If
-	''   Next i
-	''
-	''End Sub
-	
-	'
-	' Modifications:
-	' 30 Sep 2003 JWD
-	'  -> Add formal parameter ProductionLife. (C0754)
-	'  -> Change references to global symbol LG to refer to
-	'     formal parameter symbol ProjectLife. (C0755)
-	'
-	' Go through the volumes looking for the last period of
-	' non-zero forecast. This is the project life. This is
-	' done in the event the input forecast is oversized and
-	' has trailing zeroes.
-	'
-	' Also, after determination of overall project life,
-	' set the production life.
-	'
+
+    ''
+    '' Check the capital expenditures arrays for the presence
+    '' of data indicating that the company or a partner is
+    '' carried for some capital expenditures. These would
+    '' cause inclusion of related report sections. The purpose
+    '' for this is not to actually determine absolutely if the
+    '' section would need to be included, or not, but to see
+    '' if it is likely that it would.
+    ''
+    '' Whether or not a carry is in effect is if the working
+    '' interest value for the specific expenditure is diffent
+    '' from the working interest forecast value for the
+    '' corresponding period in the base forecasts.
+    ''
+    '' Any discrepancy in working interests is enough to
+    '' assume that there will be a carry, and should include
+    '' the additional report sections.
+    ''
+    ''Private Sub zzzCheckCapexForCarriedExpenditures(ByRef Forecasts() As Single, ByRef Capex() As Single, ByVal CapexCount As Integer, ByRef HaveCarriedCapex As Boolean)
+    ''
+    ''   Dim i As Integer
+    ''   Dim j As Integer
+    ''
+    ''   HaveCarriedCapex = False
+    ''
+    ''   For i = 1 To CapexCount
+    ''      j = Capex(i, 3) - YR + 1
+    ''      If Forecasts(j, gc_nAWIN) <> Capex(i, 6) Then
+    ''         HaveCarriedCapex = True
+    ''         Exit For
+    ''      End If
+    ''   Next i
+    ''
+    ''End Sub
+
+    '
+    ' Modifications:
+    ' 30 Sep 2003 JWD
+    '  -> Add formal parameter ProductionLife. (C0754)
+    '  -> Change references to global symbol LG to refer to
+    '     formal parameter symbol ProjectLife. (C0755)
+    '
+    ' Go through the volumes looking for the last period of
+    ' non-zero forecast. This is the project life. This is
+    ' done in the event the input forecast is oversized and
+    ' has trailing zeroes.
+    '
+    ' Also, after determination of overall project life,
+    ' set the production life.
+    '
     Private Sub zzzCheckInputForecastsLife(ByRef InputForecasts(,) As Double, ByRef ProjectLife As Short, ByRef ProductionLife As Short)
 
         Dim i As Short
@@ -840,12 +840,12 @@ FiscalCalculator_Error:
         ' End (C0754)
 
     End Sub
-	
-	'
-	' Examine the working interest forecast for entries
-	' and update as 100% if no data is entered, i. e. all
-	' entries of working interest forecast are zeroes.
-	'
+
+    '
+    ' Examine the working interest forecast for entries
+    ' and update as 100% if no data is entered, i. e. all
+    ' entries of working interest forecast are zeroes.
+    '
     Private Sub zzzCheckWIForecast(ByRef Forecasts(,) As Single)
 
         Dim i As Short
@@ -866,32 +866,32 @@ FiscalCalculator_Error:
         End If
 
     End Sub
-	
-	'
-	' Validate the date entry and assign to
-	' referenced variables if good.
-	'
-	Private Sub zzzConvertDateEntry(ByRef sDateEntry As String, ByRef rMonth As Single, ByRef rYear As Single)
-		
-		Dim sTmp As String
-		Dim tDate As Date
-		
-		sTmp = Replace(sDateEntry, ".", "/")
-		
-		tDate = CDate(sTmp)
-		
-		' If we get here, it's a good date
-		
-		rMonth = Month(tDate)
-		rYear = Year(tDate)
-		
-	End Sub
-	
-	'
-	' Examine the capital expenditure forecast entries and
-	' replace any WIN codes with the actual working interest
-	' for the period from the working interest forecast.
-	'
+
+    '
+    ' Validate the date entry and assign to
+    ' referenced variables if good.
+    '
+    Private Sub zzzConvertDateEntry(ByRef sDateEntry As String, ByRef rMonth As Single, ByRef rYear As Single)
+
+        Dim sTmp As String
+        Dim tDate As Date
+
+        sTmp = Replace(sDateEntry, ".", "/")
+
+        tDate = CDate(sTmp)
+
+        ' If we get here, it's a good date
+
+        rMonth = Month(tDate)
+        rYear = Year(tDate)
+
+    End Sub
+
+    '
+    ' Examine the capital expenditure forecast entries and
+    ' replace any WIN codes with the actual working interest
+    ' for the period from the working interest forecast.
+    '
     Private Sub zzzUpdateCapexWI(ByRef Forecasts(,) As Single, ByRef Capex(,) As Single, ByVal CapexCount As Short)
 
         Dim rpx As Short ' period of capital expenditure
@@ -906,179 +906,179 @@ FiscalCalculator_Error:
         Next i
 
     End Sub
-	
-	'
-	' Initialize the array to some value
-	'
-	Private Sub zzzInitializeArray(ByRef TheArray() As Single, ByVal InitialValue As Single)
-		
-		Dim i As Short
-		
-		For i = LBound(TheArray) To UBound(TheArray)
-			TheArray(i) = InitialValue
-		Next i
-		
-	End Sub
-	
-	''''
-	'''' Modifications:
-	'''' 7 Oct 2003 JWD
-	''''  -> Change to count the appearance of keywords as
-	''''     variables when the keywords appear within an
-	''''     iteration loop. This sizes the output arrays to
-	''''     avoid 'subscript out of range' errors when such
-	''''     improper country file constructions are processed.
-	''''     This should be removed when such constructions are
-	''''     considered invalid country files. (C0758)
-	''''
-	'''' Analyze the fiscal model to determine the approximate
-	'''' size of the model. This is for sizing of the output
-	'''' arrays.
-	''''
-	'''Private Sub zzzDetermineOutputArraySize( _
-	''''   ByRef arraysize As Integer, _
-	''''   ByRef HaveCarriedCapex As Boolean)
-	'''
-	'''
-	'''   Dim i As Integer
-	'''   Dim j As Integer
-	'''   Dim p As Integer
-	'''
-	'''   Dim cvars As Integer       ' count of user variables
-	'''   Dim cvcfe As Integer       ' count of cash flow variables
-	'''   Dim cvdpr As Integer       ' count of depreciation deductions
-	'''   Dim cvcrc As Integer       ' count of cost recovery incomes
-	'''   Dim cvrto As Integer       ' count of variables using rate based calculations
-	'''   Dim ckfin As Integer       ' count of FIN keywords
-	'''   Dim ckpar As Integer       ' count of PAR keywords
-	'''
-	'''   Dim keywords As String
-	'''   Dim keyword_dpr As String
-	'''
-	'''   Dim asize As Integer       ' count of rows needed in output array
-	'''
-	'''   ' 7 Oct 2003 JWD (C0758) Iteration loop flag
-	'''   Dim bInIterLoop As Boolean
-	'''
-	'''   keywords = "CURPARFINLMTWINITBITE"
-	'''   keyword_dpr = "DPR"
-	'''
-	'''   ckpar = 0
-	'''   ckfin = 0
-	'''   cvars = 0
-	'''   cvcfe = 0
-	'''   cvdpr = 0
-	'''   cvcrc = 0
-	'''   cvrto = 0
-	'''
-	'''   ' Having carried capex uses same report sections
-	'''   ' as government participation
-	'''   If HaveCarriedCapex Then
-	'''      ckpar = ckpar + 1
-	'''   End If
-	'''
-	'''   For i = 1 To TDT
-	'''      SearchCodeString keywords, TD$(i, 1), 3, p
-	'''      If p > 0 Then     ' keyword
-	'''         ' 7 Oct 2003 JWD (C0758) Add test of iter loop flag
-	'''         If Not bInIterLoop Then
-	'''            If p = 2 Then        ' participation
-	'''               ckpar = ckpar + 1
-	'''            ElseIf p = 3 Then    ' financing
-	'''               ckfin = ckfin + 1
-	'''            ElseIf p = 6 Then    ' enter iteration loop
-	'''               bInIterLoop = True
-	'''            End If
-	'''         Else
-	'''            If p = 7 Then        ' exit iter loop
-	'''                bInIterLoop = False
-	'''            ElseIf p = 6 Then
-	'''                ' do nothing
-	'''            Else                 ' treat as normal variable
-	'''                cvars = cvars + 1
-	'''            End If
-	'''         End If
-	'''         ' ~~~~~~ was:
-	'''         ' Note: Restore this code when above construction is disallowed
-	'''         'If p = 2 Then        ' participation
-	'''         '   ckpar = ckpar + 1
-	'''         'ElseIf p = 3 Then    ' financing
-	'''         '   ckfin = ckfin + 1
-	'''         'End If
-	'''         ' End (C0758)
-	'''      Else              ' user defined variable
-	'''         cvars = cvars + 1
-	'''
-	'''         ' Check for cash flow effect
-	'''         If Len(Trim$(TD$(i, 4))) > 0 Then
-	'''            cvcfe = cvcfe + 1
-	'''         End If
-	'''
-	'''         ' Check for cost recovery variables
-	'''         If StrComp(TD$(i, 5), keyword_dpr, vbTextCompare) = 0 Then
-	'''            cvcrc = cvcrc + 1
-	'''         End If
-	'''         If StrComp(TD$(i, 6), keyword_dpr, vbTextCompare) = 0 Then
-	'''            cvcrc = cvcrc + 1
-	'''         End If
-	'''
-	'''         ' Check for depreciation deductions
-	'''         For j = 8 To 12
-	'''            If StrComp(TD$(i, j), keyword_dpr, vbTextCompare) = 0 Then
-	'''               cvdpr = cvdpr + 1
-	'''            End If
-	'''         Next j
-	'''
-	'''         ' Check the variable rates table for IRR/RTO calculations
-	'''         For j = 1 To RTT
-	'''            If sRTV(j) = TD$(i, 1) Then   ' If the current variable
-	'''               If RT(j, 4) >= pRateCode_RTO Then
-	'''                  If RT(j, 4) < pRateCode_UserBase + 1 Then ' 101 and greater are user variables
-	'''                     cvrto = cvrto + 1
-	'''                     Exit For       ' Only need to count the first one
-	'''                  End If
-	'''               End If
-	'''            End If
-	'''         Next j
-	'''      End If
-	'''
-	'''   Next i
-	'''
-	'''   ' Repay/reimbursement section only occurs once
-	'''   ' even when both participation and capex carry
-	'''   If ckpar > 1 Then
-	'''      ckpar = 1
-	'''   End If
-	'''
-	'''   ' Having gathered characteristics of the fiscal model
-	'''   ' determine the size of the output reports array
-	'''
-	'''   asize = 78                    ' lines in GrossReports section
-	'''
-	'''   asize = asize + 15 * ckpar    ' 15 lines in group expenditures and repayment sections
-	'''
-	'''   asize = asize + 6 * ckfin     ' lines in loans section
-	'''
-	'''   asize = asize + 15 * cvars    ' 15 lines per variable sheet
-	'''
-	'''   asize = asize + 10 * cvdpr    ' 10 lines per depreciation work sheet
-	'''
-	'''   asize = asize + 13 * cvcrc    ' 13 lines per cost recovery work sheet
-	'''
-	'''   asize = asize + 14 * cvrto    ' max 14 lines per rate based (IRR/RTO) work sheet
-	'''
-	'''   asize = asize + 7 + cvcfe     ' after tax cash flow max 7 + number of cash flow effect variables
-	'''
-	'''   asize = asize + 9             ' lines in deflated cash flow section
-	'''
-	'''   arraysize = asize
-	'''
-	'''End Sub
-	
-	'
-	' Examine the fiscal definition and return whether
-	' or not it contains the LMT (economic limit) keyword.
-	'
+
+    '
+    ' Initialize the array to some value
+    '
+    Private Sub zzzInitializeArray(ByRef TheArray() As Single, ByVal InitialValue As Single)
+
+        Dim i As Short
+
+        For i = LBound(TheArray) To UBound(TheArray)
+            TheArray(i) = InitialValue
+        Next i
+
+    End Sub
+
+    ''
+    '' Modifications:
+    '' 7 Oct 2003 JWD
+    '' -> Change to count the appearance of keywords as
+    ''    variables when the keywords appear within an
+    ''    iteration loop. This sizes the output arrays to
+    ''    avoid 'subscript out of range' errors when such
+    ''    improper country file constructions are processed.
+    ''    This should be removed when such constructions are
+    ''    considered invalid country files. (C0758)
+    ''
+    '' Analyze the fiscal model to determine the approximate
+    '' size of the model. This is for sizing of the output
+    '' arrays.
+    ''
+    ''Private Sub zzzDetermineOutputArraySize( _
+    ''   ByRef arraysize As Integer, _
+    ''   ByRef HaveCarriedCapex As Boolean)
+    ''
+    ''
+    ''  Dim i As Integer
+    ''  Dim j As Integer
+    ''  Dim p As Integer
+    ''
+    ''  Dim cvars As Integer       ' count of user variables
+    ''  Dim cvcfe As Integer       ' count of cash flow variables
+    ''  Dim cvdpr As Integer       ' count of depreciation deductions
+    ''  Dim cvcrc As Integer       ' count of cost recovery incomes
+    ''  Dim cvrto As Integer       ' count of variables using rate based calculations
+    ''  Dim ckfin As Integer       ' count of FIN keywords
+    ''  Dim ckpar As Integer       ' count of PAR keywords
+    ''
+    ''  Dim keywords As String
+    ''  Dim keyword_dpr As String
+    ''
+    ''  Dim asize As Integer       ' count of rows needed in output array
+    ''
+    ''  ' 7 Oct 2003 JWD (C0758) Iteration loop flag
+    ''  Dim bInIterLoop As Boolean
+    ''
+    ''  keywords = "CURPARFINLMTWINITBITE"
+    ''  keyword_dpr = "DPR"
+    ''
+    ''  ckpar = 0
+    ''  ckfin = 0
+    ''  cvars = 0
+    ''  cvcfe = 0
+    ''  cvdpr = 0
+    ''  cvcrc = 0
+    ''  cvrto = 0
+    ''
+    ''  ' Having carried capex uses same report sections
+    ''  ' as government participation
+    ''  If HaveCarriedCapex Then
+    ''     ckpar = ckpar + 1
+    ''  End If
+    ''
+    ''  For i = 1 To TDT
+    ''     SearchCodeString keywords, TD$(i, 1), 3, p
+    ''     If p > 0 Then     ' keyword
+    ''        ' 7 Oct 2003 JWD (C0758) Add test of iter loop flag
+    ''        If Not bInIterLoop Then
+    ''           If p = 2 Then        ' participation
+    ''              ckpar = ckpar + 1
+    ''           ElseIf p = 3 Then    ' financing
+    ''              ckfin = ckfin + 1
+    ''           ElseIf p = 6 Then    ' enter iteration loop
+    ''              bInIterLoop = True
+    ''           End If
+    ''        Else
+    ''           If p = 7 Then        ' exit iter loop
+    ''               bInIterLoop = False
+    ''           ElseIf p = 6 Then
+    ''               ' do nothing
+    ''           Else                 ' treat as normal variable
+    ''               cvars = cvars + 1
+    ''           End If
+    ''        End If
+    ''        ' ~~~~~~ was:
+    ''        ' Note: Restore this code when above construction is disallowed
+    ''        'If p = 2 Then        ' participation
+    ''        '   ckpar = ckpar + 1
+    ''        'ElseIf p = 3 Then    ' financing
+    ''        '   ckfin = ckfin + 1
+    ''        'End If
+    ''        ' End (C0758)
+    ''     Else              ' user defined variable
+    ''        cvars = cvars + 1
+    ''
+    ''        ' Check for cash flow effect
+    ''        If Len(Trim$(TD$(i, 4))) > 0 Then
+    ''           cvcfe = cvcfe + 1
+    ''        End If
+    ''
+    ''        ' Check for cost recovery variables
+    ''        If StrComp(TD$(i, 5), keyword_dpr, vbTextCompare) = 0 Then
+    ''           cvcrc = cvcrc + 1
+    ''        End If
+    ''        If StrComp(TD$(i, 6), keyword_dpr, vbTextCompare) = 0 Then
+    ''           cvcrc = cvcrc + 1
+    ''        End If
+    ''
+    ''        ' Check for depreciation deductions
+    ''        For j = 8 To 12
+    ''           If StrComp(TD$(i, j), keyword_dpr, vbTextCompare) = 0 Then
+    ''              cvdpr = cvdpr + 1
+    ''           End If
+    ''        Next j
+    ''
+    ''        ' Check the variable rates table for IRR/RTO calculations
+    ''        For j = 1 To RTT
+    ''           If sRTV(j) = TD$(i, 1) Then   ' If the current variable
+    ''              If RT(j, 4) >= pRateCode_RTO Then
+    ''                 If RT(j, 4) < pRateCode_UserBase + 1 Then ' 101 and greater are user variables
+    ''                    cvrto = cvrto + 1
+    ''                    Exit For       ' Only need to count the first one
+    ''                 End If
+    ''              End If
+    ''           End If
+    ''        Next j
+    ''     End If
+    ''
+    ''  Next i
+    ''
+    ''  ' Repay/reimbursement section only occurs once
+    ''  ' even when both participation and capex carry
+    ''  If ckpar > 1 Then
+    ''     ckpar = 1
+    ''  End If
+    ''
+    ''  ' Having gathered characteristics of the fiscal model
+    ''  ' determine the size of the output reports array
+    ''
+    ''  asize = 78                    ' lines in GrossReports section
+    ''
+    ''  asize = asize + 15 * ckpar    ' 15 lines in group expenditures and repayment sections
+    ''
+    ''  asize = asize + 6 * ckfin     ' lines in loans section
+    ''
+    ''  asize = asize + 15 * cvars    ' 15 lines per variable sheet
+    ''
+    ''  asize = asize + 10 * cvdpr    ' 10 lines per depreciation work sheet
+    ''
+    ''  asize = asize + 13 * cvcrc    ' 13 lines per cost recovery work sheet
+    ''
+    ''  asize = asize + 14 * cvrto    ' max 14 lines per rate based (IRR/RTO) work sheet
+    ''
+    ''  asize = asize + 7 + cvcfe     ' after tax cash flow max 7 + number of cash flow effect variables
+    ''
+    ''  asize = asize + 9             ' lines in deflated cash flow section
+    ''
+    ''  arraysize = asize
+    ''
+    ''End Sub
+
+    '
+    ' Examine the fiscal definition and return whether
+    ' or not it contains the LMT (economic limit) keyword.
+    '
 	Private Function zzzFiscalDefinitionHasLMTKeyword() As Object
 		
 		Dim i As Short

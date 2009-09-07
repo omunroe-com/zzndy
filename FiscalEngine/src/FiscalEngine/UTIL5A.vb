@@ -1927,10 +1927,8 @@ LocalHandler:
 	'
 	Sub DefineRatio(ByRef Numvar As Short)
 		Dim m As Short
-		Dim L As Short
-		Dim NoCats As Short
-		Dim DUM As String
-		Dim k As Short
+        Dim NoCats As Short
+        Dim k As Short
 		Dim PreDefined As Short
 		Dim stream As String
 		Dim SubDataCol As Object
@@ -2161,7 +2159,7 @@ RetrieveUserValues:
 1126: 
     End Sub
 
-    Function BuildListOfDefinedVariables(ByRef nocats) As Object()
+    Function BuildListOfDefinedVariables(ByRef nocats As Single) As Object()
         'The valid categories include these items which are "reserved"
         '  words in Giant.  If the entered category is not one of
         '  these, it must be a user defined variable.  RetrieveValues
@@ -2636,9 +2634,9 @@ endprc:
             If profitsplit = False Then
 
                 'Tax Based on IRR
-                ''''Write #5, 18, YR, PgCounter%, LG, 11, "RATE OF RETURN BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
+                ''Write #5, 18, YR, PgCounter%, LG, 11, "RATE OF RETURN BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
 
-                ''''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10), Ttls$(11)
+                ''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10), Ttls$(11)
 
                 oPg1 = g_oReport.NewSubScheduleRptPage(18)
                 oPg1.SetPageHeader(18, YR, PgCounter, LG, 11, "RATE OF RETURN BASED WORKSHEET FOR " & PgTtl, 8, FinalWin, FINALPARTIC, sCur)
@@ -2646,16 +2644,16 @@ endprc:
                 oPg1.SetRptPageVariableCode(PgTtl)
 
                 For y = 1 To LG
-                    ''''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10), WkSht!(y, 11)
+                    ''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10), WkSht!(y, 11)
                     oPg1.SetProfileValues(y, WkSht(y, 1), WkSht(y, 2), WkSht(y, 3), WkSht(y, 4), WkSht(y, 5), WkSht(y, 6), WkSht(y, 7), WkSht(y, 8), WkSht(y, 9), WkSht(y, 10), WkSht(y, 11))
                 Next y
 
             Else
 
                 'Profit Share Based on IRR
-                ''''Write #5, 19, YR, PgCounter%, LG, 14, "RATE OF RETURN BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
+                ''Write #5, 19, YR, PgCounter%, LG, 14, "RATE OF RETURN BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
 
-                ''''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10), Ttls$(11), Ttls$(12), Ttls$(13), Ttls$(14)
+                ''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10), Ttls$(11), Ttls$(12), Ttls$(13), Ttls$(14)
 
                 oPg1 = g_oReport.NewSubScheduleRptPage(19)
                 oPg1.SetPageHeader(19, YR, PgCounter, LG, 14, "RATE OF RETURN BASED WORKSHEET FOR " & PgTtl, 8, FinalWin, FINALPARTIC, sCur)
@@ -2663,7 +2661,7 @@ endprc:
                 oPg1.SetRptPageVariableCode(PgTtl)
 
                 For y = 1 To LG
-                    ''''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10), WkSht!(y, 11), WkSht!(y, 12), WkSht!(y, 13), WkSht!(y, 14)
+                    ''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10), WkSht!(y, 11), WkSht!(y, 12), WkSht!(y, 13), WkSht!(y, 14)
                     oPg1.SetProfileValues(y, WkSht(y, 1), WkSht(y, 2), WkSht(y, 3), WkSht(y, 4), WkSht(y, 5), WkSht(y, 6), WkSht(y, 7), WkSht(y, 8), WkSht(y, 9), WkSht(y, 10), WkSht(y, 11), WkSht(y, 12), WkSht(y, 13), WkSht(y, 14))
                 Next y
 
@@ -2675,9 +2673,9 @@ endprc:
             If profitsplit = False Then
 
                 'Tax Based on Ratio
-                ''''Write #5, 20, YR, PgCounter%, LG, 10, "RATIO BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
+                ''Write #5, 20, YR, PgCounter%, LG, 10, "RATIO BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
 
-                ''''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10)
+                ''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10)
 
                 oPg1 = g_oReport.NewSubScheduleRptPage(20)
                 oPg1.SetPageHeader(20, YR, PgCounter, LG, 10, "RATIO BASED WORKSHEET FOR " & PgTtl, 8, FinalWin, FINALPARTIC, sCur)
@@ -2685,16 +2683,16 @@ endprc:
                 oPg1.SetRptPageVariableCode(PgTtl)
 
                 For y = 1 To LG
-                    ''''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10)
+                    ''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10)
                     oPg1.SetProfileValues(y, WkSht(y, 1), WkSht(y, 2), WkSht(y, 3), WkSht(y, 4), WkSht(y, 5), WkSht(y, 6), WkSht(y, 7), WkSht(y, 8), WkSht(y, 9), WkSht(y, 10))
                 Next y
 
             Else
 
                 'Profit Share Based on Ratio
-                ''''Write #5, 21, YR, PgCounter%, LG, 13, "RATIO BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
+                ''Write #5, 21, YR, PgCounter%, LG, 13, "RATIO BASED WORKSHEET FOR " + PgTtl$, 8, FinalWin, FINALPARTIC, sCur
 
-                ''''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10), Ttls$(11), Ttls$(12), Ttls$(13)
+                ''Write #5, Ttls$(1), Ttls$(2), Ttls$(3), Ttls$(4), Ttls$(5), Ttls$(6), Ttls$(7), Ttls$(8), Ttls$(9), Ttls$(10), Ttls$(11), Ttls$(12), Ttls$(13)
 
                 oPg1 = g_oReport.NewSubScheduleRptPage(21)
                 oPg1.SetPageHeader(21, YR, PgCounter, LG, 13, "RATIO BASED WORKSHEET FOR " & PgTtl, 8, FinalWin, FINALPARTIC, sCur)
@@ -2702,7 +2700,7 @@ endprc:
                 oPg1.SetRptPageVariableCode(PgTtl)
 
                 For y = 1 To LG
-                    ''''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10), WkSht!(y, 11), WkSht!(y, 12), WkSht!(y, 13)
+                    ''Write #5, WkSht!(y, 1), WkSht!(y, 2), WkSht!(y, 3), WkSht!(y, 4), WkSht!(y, 5), WkSht!(y, 6), WkSht!(y, 7), WkSht!(y, 8), WkSht!(y, 9), WkSht!(y, 10), WkSht!(y, 11), WkSht!(y, 12), WkSht!(y, 13)
                     oPg1.SetProfileValues(y, WkSht(y, 1), WkSht(y, 2), WkSht(y, 3), WkSht(y, 4), WkSht(y, 5), WkSht(y, 6), WkSht(y, 7), WkSht(y, 8), WkSht(y, 9), WkSht(y, 10), WkSht(y, 11), WkSht(y, 12), WkSht(y, 13))
                 Next y
 
@@ -3516,7 +3514,7 @@ endit:
         '------------------------------------------------------------------------
 
 ratecalcerror:
-        '''Print "RateCalc SUB Error: "; Err; " at line number: "; Erl
+        ''Print "RateCalc SUB Error: "; Err; " at line number: "; Erl
         MsgBox("RateCalc SUB Error: " & Err.Number & " at line number: " & Erl())
 
         Resume Next
@@ -4318,7 +4316,7 @@ ratecalcerror:
         Exit Sub
 
 RetrieveValuesError:
-        '''Print "RetrieveValues SUB Error: "; Err; " at line number: "; Erl
+        ''Print "RetrieveValues SUB Error: "; Err; " at line number: "; Erl
         MsgBox("RetrieveValues SUB Error: " & Err.Number & " at line number: " & Erl())
         Resume Next
 

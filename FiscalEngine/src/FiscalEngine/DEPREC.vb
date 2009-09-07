@@ -273,8 +273,7 @@ Module DEPREC
 		Dim e As Short
 		Dim netopex As Single
 		Dim RPBASE As Single
-		Dim loopit As Single
-		Dim DEPR() As Single
+        Dim DEPR() As Single
 		
 		'---------------------------------------------------------
 20: 
@@ -575,7 +574,7 @@ default_Renamed:
             End Select
         Next q
 
-        '''''IF TD$(iX, i + 4) <> "DPR"
+        ''IF TD$(iX, i + 4) <> "DPR"
 
 4810:   For iZZ = 1 To LG
             'OPEX() = annual costs   OPEXRATE() = govt rate share of OPEX
@@ -608,14 +607,14 @@ default_Renamed:
         System.Array.Clear(opexded, 0, opexded.Length)
 4839:
         ''END GOSUB 4000
-		
-		' 20 Nov 2002 JWD (C0634)
-		If bDPCR = False Then ' False, this is a depreciation schedule
-			CLEX = "N" ' This controls imposition of ceiling
-		End If ' Any ceiling defined should not be imposed
-		' End (C0634)           ' on depreciation schedules.
-		
-1000: 'CALCULATE DEPRECIATION
+
+        ' 20 Nov 2002 JWD (C0634)
+        If bDPCR = False Then ' False, this is a depreciation schedule
+            CLEX = "N" ' This controls imposition of ceiling
+        End If ' Any ceiling defined should not be imposed
+        ' End (C0634)           ' on depreciation schedules.
+
+1000:   'CALCULATE DEPRECIATION
 
         Dim fallThroughCapex As Boolean
         fallThroughCapex = False
@@ -1108,7 +1107,7 @@ nextlm:             Next iLM
                 ReDim UOPVol(LG)
                 ReDim ResAdd(LG)
                 ReDim RemRes(LG)
-                '''       ERASE UOPVol, ResAdd, RemRes
+                ''       ERASE UOPVol, ResAdd, RemRes
 
                 For iLM = iSTRT To LG
                     DEPR(iLM) = BEGBAL * dprrat(iLM)
@@ -1324,10 +1323,10 @@ nextlm:             Next iLM
 5290:   ColumnNm(10) = ("  OPTOT")
 5298:
 5300:   'Page type, Year start, Page counter, life of field, number of columns, page title, column length
-5302:   ''''Write #5, 8, YR, 0, LG, 10, "DEPRECIATION SCHEDULE" + cdtitle$, 10, FinalWin, FINALPARTIC, sCur
+5302:   ''Write #5, 8, YR, 0, LG, 10, "DEPRECIATION SCHEDULE" + cdtitle$, 10, FinalWin, FINALPARTIC, sCur
 
 5304:   'columns titles
-5306:   ''''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10)
+5306:   ''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10)
 
         Dim oPg1 As IGiantRptPageAssignSub
         oPg1 = g_oReport.NewSubScheduleRptPage(8)
@@ -1336,7 +1335,7 @@ nextlm:             Next iLM
         oPg1.SetRptPageVariableCode(cd)
 5312:
 5314:   For i = 1 To LG
-5330:       ''''Write #5, ACT(i, 1), ACT(i, 2), ACT(i, 3), ACT(i, 4), ACT(i, 5), ACT(i, 6), ACT(i, 7), ACT(i, 8), ACT(i, 9), ACT(i, 10)
+5330:       ''Write #5, ACT(i, 1), ACT(i, 2), ACT(i, 3), ACT(i, 4), ACT(i, 5), ACT(i, 6), ACT(i, 7), ACT(i, 8), ACT(i, 9), ACT(i, 10)
             oPg1.SetProfileValues(i, ACT(i, 1), ACT(i, 2), ACT(i, 3), ACT(i, 4), ACT(i, 5), ACT(i, 6), ACT(i, 7), ACT(i, 8), ACT(i, 9), ACT(i, 10))
 5360:   Next i
 5440:
@@ -1367,10 +1366,10 @@ nextlm:             Next iLM
 5556:
 5558:   'Page type, Start year, Page counter, life of field, number of columns, page title, column length
         'add a column and shring col didth to 8 to accommodate ceiling value
-5560:   ''''Write #5, 7, YR, 0, LG, 13, "COST RECOVERY SCHEDULE" + cdtitle$, 8, FinalWin, FINALPARTIC, sCur
+5560:   ''Write #5, 7, YR, 0, LG, 13, "COST RECOVERY SCHEDULE" + cdtitle$, 8, FinalWin, FINALPARTIC, sCur
 
 5562:   'columns titles
-5566:   ''''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10), ColumnNm$(11), ColumnNm$(12), ColumnNm$(13)
+5566:   ''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10), ColumnNm$(11), ColumnNm$(12), ColumnNm$(13)
 
         oPg1 = g_oReport.NewSubScheduleRptPage(7)
         oPg1.SetPageHeader(7, YR, 0, LG, 13, "COST RECOVERY SCHEDULE" & cdtitle, 8, FinalWin, FINALPARTIC, sCur)
@@ -1379,7 +1378,7 @@ nextlm:             Next iLM
         oPg1.SetRptPageVariableCode(cd)
 5571:
 5700:   For i = 1 To LG
-5730:       ''''Write #5, ACT(i, 1), ACT(i, 2), ACT(i, 3), ACT(i, 4), ACT(i, 11), ACT(i, 5), ACT(i, 6), ACT(i, 7), ACT(i, 8), ACT(i, 9), ACT(i, 12), ACT(i, 10), (clngs(i) * CLRA(i) / 100)
+5730:       ''Write #5, ACT(i, 1), ACT(i, 2), ACT(i, 3), ACT(i, 4), ACT(i, 11), ACT(i, 5), ACT(i, 6), ACT(i, 7), ACT(i, 8), ACT(i, 9), ACT(i, 12), ACT(i, 10), (clngs(i) * CLRA(i) / 100)
             oPg1.SetProfileValues(i, ACT(i, 1), ACT(i, 2), ACT(i, 3), ACT(i, 4), ACT(i, 11), ACT(i, 5), ACT(i, 6), ACT(i, 7), ACT(i, 8), ACT(i, 9), ACT(i, 12), ACT(i, 10), (clngs(i) * CLRA(i) / 100))
 
 5760:   Next i
@@ -1411,7 +1410,7 @@ nextlm:             Next iLM
         '5730   WRITE #5, ACT(i, 1), ACT(i, 2), ACT(i, 3), ACT(i, 4), ACT(i, 11), ACT(i, 5), ACT(i, 6), ACT(i, 7), ACT(i, 8), ACT(i, 9), ACT(i, 12), ACT(i, 10)
         '5760 NEXT i
         '5762
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 5999:   GoTo 6999
 6000:

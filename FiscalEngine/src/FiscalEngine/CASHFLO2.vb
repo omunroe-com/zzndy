@@ -130,36 +130,35 @@ Module CASHFLO2
         '  -> Remove output to CHUONG.DAT. File is obsolete
         '     and unused by any application system. (C0783)
         '--------------------------------------------------------------------
-        Dim i As Short
         '---------------------------------------------------------
 
-        ''' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
-        '''        Open FChuong$ For Append As #1
-        '''        For i = 1 To 6
-        '''          Write #1, PVDat(9, i) 'Net cash flow
-        '''        Next i
-        '''        For i = 1 To 6
-        '''          Write #1, PVDat(10, i) 'Payout
-        '''        Next i
-        '''        For i = 1 To 6
-        '''          Write #1, PVDat(11, i) ' Risk return Ratio
-        '''        Next i
-        '''        For i = 1 To 6
-        '''          Write #1, PVDat(12, i) ' Profitability Index
-        '''        Next i
-        '''
-        '''        For i = 1 To 6                  'Government Take
-        '''          If PVDat(13, i) > -0.1 And PVDat(13, i) < 0.1 Then
-        '''            Write #1, 0.005
-        '''          ElseIf PVDat(13, i) > 100 Then
-        '''            Write #1, 101
-        '''          ElseIf PVDat(13, i) < -100 Then
-        '''            Write #1, -100
-        '''          Else
-        '''            Write #1, PVDat(13, i)
-        '''          End If
-        '''        Next i
-        '''        Close #1
+        '' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
+        ''        Open FChuong$ For Append As #1
+        ''        For i = 1 To 6
+        ''          Write #1, PVDat(9, i) 'Net cash flow
+        ''        Next i
+        ''        For i = 1 To 6
+        ''          Write #1, PVDat(10, i) 'Payout
+        ''        Next i
+        ''        For i = 1 To 6
+        ''          Write #1, PVDat(11, i) ' Risk return Ratio
+        ''        Next i
+        ''        For i = 1 To 6
+        ''          Write #1, PVDat(12, i) ' Profitability Index
+        ''        Next i
+        ''
+        ''        For i = 1 To 6                  'Government Take
+        ''          If PVDat(13, i) > -0.1 And PVDat(13, i) < 0.1 Then
+        ''            Write #1, 0.005
+        ''          ElseIf PVDat(13, i) > 100 Then
+        ''            Write #1, 101
+        ''          ElseIf PVDat(13, i) < -100 Then
+        ''            Write #1, -100
+        ''          Else
+        ''            Write #1, PVDat(13, i)
+        ''          End If
+        ''        Next i
+        ''        Close #1
 
     End Sub
 
@@ -242,7 +241,7 @@ Module CASHFLO2
         End If
 
         'SUM NEGATIVE CASH FLOWS
-        '''      IF NEG% = 0 AND NEGT% = 0 AND NEGA% = 0 AND NEGU% = 0 GOTO 6650
+        ''      IF NEG% = 0 AND NEGT% = 0 AND NEGA% = 0 AND NEGU% = 0 GOTO 6650
         If NEG > 0 Or NEGT > 0 Or NEGA > 0 Or NEGU > 0 Then
             iCFT = NEG + 1
             NGCF(0, iCFT) = 0
@@ -299,243 +298,7 @@ Module CASHFLO2
             Next x
 
         End If
-
+   
     End Sub
 
-    ' $subtitle: 'WriteFive'
-    ' $Page:
-    Sub WriteFive(ByRef PosCtr As Short, ByRef Counter As Short, ByRef REPY As Short, ByRef FIN As Short, ByRef ColumnNm() As String)
-        '--------------------------------------------------------------------
-        'Write the column heads for Positive cashflow items (2 pages)
-22260:
-        'columns titles
-        If PosCtr = 1 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 2 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 3 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 4 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 5 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 6 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 7 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 8 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(8), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf PosCtr = 9 Then
-            WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(8), ColumnNm(9), ColumnNm(Counter - 1), ColumnNm(Counter))
-        Else
-            If REPY <> 0 And FIN <> 0 Then
-                WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(PosCtr - 2), ColumnNm(PosCtr - 1), ColumnNm(PosCtr), ColumnNm(Counter - 1), ColumnNm(Counter))
-            ElseIf REPY <> 0 Or FIN <> 0 Then
-                WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(8), ColumnNm(PosCtr - 1), ColumnNm(PosCtr), ColumnNm(Counter - 1), ColumnNm(Counter))
-            Else
-                WriteLine(5, ColumnNm(1), ColumnNm(2), ColumnNm(3), ColumnNm(4), ColumnNm(5), ColumnNm(6), ColumnNm(7), ColumnNm(8), ColumnNm(9), ColumnNm(PosCtr), ColumnNm(Counter - 1), ColumnNm(Counter))
-            End If
-        End If
-
-    End Sub
-
-    ' $subtitle: 'WriteFour'
-    ' $Page:
-    Sub WriteFour(ByRef Counter As Short, ByRef ColumnNm() As String)
-        '--------------------------------------------------------------------
-        Dim j As Short
-        'Write After Tax Cash Flow Page Titles (page type 10)
-22270:
-        'columns titles
-        '    If Counter% = 5 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5)
-        '    ElseIf Counter% = 6 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6)
-        '    ElseIf Counter% = 7 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7)
-        '    ElseIf Counter% = 8 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8)
-        '    ElseIf Counter% = 9 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9)
-        '    ElseIf Counter% = 10 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10)
-        '    ElseIf Counter% = 11 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10), ColumnNm$(11)
-        '    ElseIf Counter% = 12 Then
-        '      Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9), ColumnNm$(10), ColumnNm$(11), ColumnNm$(12)
-        '    End If
-
-        '      Print #5, ColumnNm$(1);
-        '      For j = 2 To Counter%
-        '         Print #5, ","; ColumnNm$(j);
-        '      Next j
-        '      Print #5, ""
-
-        For j = 1 To Counter - 1
-            Write(5, ColumnNm(j))
-        Next j
-        WriteLine(5, ColumnNm(Counter))
-
-    End Sub
-
-    ' $subtitle: 'WriteOne'
-    ' $Page:
-    Sub WriteOne(ByRef AtcfCtr As Short, ByRef DUM(,) As Object)
-        '--------------------------------------------------------------------
-        ' Modifications:
-        ' 21 Apr 1997 JWD
-        '   -> Add Str$() to print statements to ensure that the
-        '      numeric values are output to the file in 'code
-        '      locale' rather than 'execution locale'.  This
-        '      corrects problem of reports not being displayed
-        '      in countries where comma is the decimal separator.
-        '--------------------------------------------------------------------
-        Dim i As Short
-        Dim j As Short
-        '--------------------------------------------------------------------
-22280:
-        'Write out the Values
-        '   For x = 1 To LG      'checking the correct number of columns
-        '     If AtcfCtr% = 5 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5)
-        '     ElseIf AtcfCtr% = 6 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6)
-        '     ElseIf AtcfCtr% = 7 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7)
-        '     ElseIf AtcfCtr% = 8 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8)
-        '     ElseIf AtcfCtr% = 9 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, 9)
-        '     ElseIf AtcfCtr% = 10 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, 9), DUM(x, 10)
-        '     ElseIf AtcfCtr% = 11 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, 9), DUM(x, 10), DUM(x, 11)
-        '     ElseIf AtcfCtr% = 12 Then
-        '       Write #5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, 9), DUM(x, 10), DUM(x, 11), DUM(x, 12)
-        '     End If
-        '   Next x
-
-        '   For i = 1 To LG      'checking the correct number of columns
-        '      Print #5, str$(DUM(i, 1));
-        '      For j = 2 To AtcfCtr%
-        '         Print #5, ","; str$(DUM(i, j));
-        '      Next j
-        '      Print #5, ""
-        '   Next i
-
-        For i = 1 To LG 'checking the correct number of columns
-            For j = 1 To AtcfCtr - 1
-                Write(5, DUM(i, j))
-            Next j
-            WriteLine(5, DUM(i, AtcfCtr))
-        Next i
-
-    End Sub
-
-    ' $subtitle: 'WriteSix'
-    ' $Page:
-    Sub WriteSix(ByRef NegCtr As Short, ByRef Counter As Short, ByRef ColumnNm() As String)
-        Dim inc As Short
-        '--------------------------------------------------------------------
-        'Write the column heads for Negative cashflow items  (2 pages)
-22290:
-        If NegCtr = 1 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 2 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 3 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 4 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 4), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 5 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 5), ColumnNm(Counter - 4), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 6 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 6), ColumnNm(Counter - 5), ColumnNm(Counter - 4), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 7 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 7), ColumnNm(Counter - 6), ColumnNm(Counter - 5), ColumnNm(Counter - 4), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 8 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 8), ColumnNm(Counter - 7), ColumnNm(Counter - 6), ColumnNm(Counter - 5), ColumnNm(Counter - 4), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        ElseIf NegCtr = 9 Then
-            WriteLine(5, ColumnNm(Counter - NegCtr - 1), ColumnNm(Counter - 9), ColumnNm(Counter - 8), ColumnNm(Counter - 7), ColumnNm(Counter - 6), ColumnNm(Counter - 5), ColumnNm(Counter - 4), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        Else
-            inc = Counter - NegCtr
-            WriteLine(5, ColumnNm(inc - 1), ColumnNm(inc), ColumnNm(inc + 1), ColumnNm(inc + 2), ColumnNm(inc + 3), ColumnNm(inc + 4), ColumnNm(inc + 5), ColumnNm(inc + 6), ColumnNm(Counter - 3), ColumnNm(Counter - 2), ColumnNm(Counter - 1), ColumnNm(Counter))
-        End If
-
-
-    End Sub
-
-    ' $subtitle: 'WriteThree'
-    ' $Page:
-    Sub WriteThree(ByRef NegCtr As Short, ByRef AtcfCtr As Short, ByRef DUM(,) As Object)
-        Dim inc As Short
-        '--------------------------------------------------------------------
-        Dim x As Short
-22295:
-        For x = 1 To LG
-            If NegCtr = 1 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 2 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 3 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 4 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 4), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 5 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 5), DUM(x, AtcfCtr - 4), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 6 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 6), DUM(x, AtcfCtr - 5), DUM(x, AtcfCtr - 4), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 7 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 7), DUM(x, AtcfCtr - 6), DUM(x, AtcfCtr - 5), DUM(x, AtcfCtr - 4), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 8 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 8), DUM(x, AtcfCtr - 7), DUM(x, AtcfCtr - 6), DUM(x, AtcfCtr - 5), DUM(x, AtcfCtr - 4), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf NegCtr = 9 Then
-                WriteLine(5, DUM(x, AtcfCtr - NegCtr - 1), DUM(x, AtcfCtr - 9), DUM(x, AtcfCtr - 8), DUM(x, AtcfCtr - 7), DUM(x, AtcfCtr - 6), DUM(x, AtcfCtr - 5), DUM(x, AtcfCtr - 4), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            Else
-                inc = AtcfCtr - NegCtr
-                WriteLine(5, DUM(x, inc - 1), DUM(x, inc), DUM(x, inc + 1), DUM(x, inc + 2), DUM(x, inc + 3), DUM(x, inc + 4), DUM(x, inc + 5), DUM(x, inc + 6), DUM(x, AtcfCtr - 3), DUM(x, AtcfCtr - 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            End If
-        Next x
-
-    End Sub
-
-    ' $subtitle: 'WriteTwo'
-    ' $Page:
-    Sub WriteTwo(ByRef PosCtr As Short, ByRef AtcfCtr As Short, ByRef REPY As Short, ByRef FIN As Short, ByRef DUM(,) As Object)
-        '--------------------------------------------------------------------
-        Dim x As Short
-22100:
-
-        For x = 1 To LG
-            If PosCtr = 1 Then
-                WriteLine(5, DUM(x, 1), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 2 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 3 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 4 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 5 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 6 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 7 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 8 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            ElseIf PosCtr = 9 Then
-                WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, 9), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-            Else
-                If REPY <> 0 And FIN <> 0 Then
-                    WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, PosCtr - 2), DUM(x, PosCtr - 1), DUM(x, PosCtr), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-                ElseIf REPY <> 0 Or FIN <> 0 Then
-                    WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, PosCtr - 1), DUM(x, PosCtr), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-                Else
-                    WriteLine(5, DUM(x, 1), DUM(x, 2), DUM(x, 3), DUM(x, 4), DUM(x, 5), DUM(x, 6), DUM(x, 7), DUM(x, 8), DUM(x, 9), DUM(x, PosCtr), DUM(x, AtcfCtr - 1), DUM(x, AtcfCtr))
-                End If
-            End If
-        Next x
-22150:
-
-    End Sub
 End Module

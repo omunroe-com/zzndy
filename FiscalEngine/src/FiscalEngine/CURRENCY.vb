@@ -69,8 +69,7 @@ Module CURRENCY
 		'        Change CUR$ to sCur, duplicate definition (CUR()).
 		'        Change CurrExc$ to sCurrExch, duplicate def.
 		'-----------------------------------------------------------------------
-		Dim x As Single
-		Dim i As Short
+        Dim i As Short
 		Dim ii As Short
 		'-----------------------------------------------------------------------
 		
@@ -236,8 +235,7 @@ Module CURRENCY
 		Dim nInIndex As Short ' Contains the index in udtCurrency of the input currency
 		Dim nOutIndex As Short ' Contains the index in udtCurrency of the output currency
 		Dim i As Short
-		Dim j As Short
-		
+
 		
 		nInIndex = -1
 		nOutIndex = -1
@@ -375,9 +373,7 @@ err_ConvertInputData:
 		Dim nInIndex As Short ' Contains the index in udtCurrency of the input currency
 		Dim nOutIndex As Short ' Contains the index in udtCurrency of the output currency
 		Dim i As Short
-		Dim j As Short
-		
-		
+
 		nInIndex = -1
 		nOutIndex = -1
 		' Read in the currencies and find a match

@@ -242,8 +242,7 @@ err_InitializeExcel:
 	End Function
 	' Function to read in worksheet linked to variable (sCode)
 	Public Function LoadExcelWorksheet(ByVal sCode As String) As Object
-		Dim objExcel As Object
-		Dim i As Short
+        Dim i As Short
 		Dim bAlreadyLoaded As Boolean
 		
 		
@@ -399,19 +398,18 @@ err_InitializeExcel:
 	'
 	' Clean up object variables and close any open workbooks
 	Public Function CleanUpExcel() As Boolean
-		Dim wbkThis As Object
-		If Not g_appExcel Is Nothing Then
-			' 8 Oct 2003 JWD (C0760) Wrap Close method call with conditional
-			If Not m_objExcelWorkbook Is Nothing Then
-				'UPGRADE_WARNING: Couldn't resolve default property of object m_objExcelWorkbook.Close. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-				m_objExcelWorkbook.Close(False)
-			End If
-			' End (C0760)
-			'UPGRADE_NOTE: Object m_objExcelWorkbook may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-			m_objExcelWorkbook = Nothing
-			'UPGRADE_NOTE: Object g_appExcel may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-			g_appExcel = Nothing
-		End If
+        If Not g_appExcel Is Nothing Then
+            ' 8 Oct 2003 JWD (C0760) Wrap Close method call with conditional
+            If Not m_objExcelWorkbook Is Nothing Then
+                'UPGRADE_WARNING: Couldn't resolve default property of object m_objExcelWorkbook.Close. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                m_objExcelWorkbook.Close(False)
+            End If
+            ' End (C0760)
+            'UPGRADE_NOTE: Object m_objExcelWorkbook may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+            m_objExcelWorkbook = Nothing
+            'UPGRADE_NOTE: Object g_appExcel may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+            g_appExcel = Nothing
+        End If
 	End Function
 	' Returns whether a 3 letter code is present in a string containing a list
 	' of concatenated 3 letter codes.
@@ -435,7 +433,7 @@ err_InitializeExcel:
 	Public Function ParseCode(ByVal sComment As String, ByVal sSectionName As String) As String
 		Dim nStart As Short
 		Dim nEnd As Short
-		Dim sText As String
+        Dim sText As String
 		Dim nStartCode As Short
 		Dim sSearchValue As String
 		Dim sCommentNoSpace As String

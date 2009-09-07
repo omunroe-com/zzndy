@@ -475,11 +475,11 @@ Module MAbandonment
 			''<<<<<< 6 Aug 2001 JWD (C0372)
 			'AddCapitalExpenditure CPXCategoryCode_AbandonmentCashExpenditure, 7, YR + LG - 1, 0, zzz_GrossAbandonmentExpenditure, the_working_interest, 0
 			''~~~~~~ was:
-			'''<<<<<< 2 Aug 2001 JWD (C0363)
+            ''<<<<<< 2 Aug 2001 JWD (C0363)
 			''AddCapitalExpenditure CPXCategoryCode_AbandonmentCashExpenditure, 7, YR + LG - 1, 0, zzz_GrossAbandonmentExpenditure, zzz_WIN, 0
-			'''~~~~~~ was:
-			'''AddCapitalExpenditure the_code, 7, YR + LG - 1, 0, zzz_GrossAbandonmentExpenditure, zzz_WIN, 0
-			'''>>>>>> End (C0363)
+            ''~~~~~~ was:
+            ''AddCapitalExpenditure the_code, 7, YR + LG - 1, 0, zzz_GrossAbandonmentExpenditure, zzz_WIN, 0
+            ''>>>>>> End (C0363)
 			''>>>>>> End (C0372)
 			'>>>>>> End (C0375)
 			
@@ -502,8 +502,7 @@ Module MAbandonment
 	'
 	Sub ChangeAbandonmentTimingForEconomicLimit()
 		
-		Dim the_code As Short
-		Dim i As Short
+        Dim i As Short
 		Dim abandon_period As Single
 		
 		'<<<<<< 6 Aug 2001 JWD (C0363)
@@ -634,8 +633,7 @@ Module MAbandonment
 	Public Sub ReadAbandonmentExpenditureData(ByVal FileHandle As Integer)
 		
 		'<<<<<< 24 Jul 2001 JWD (C0355)
-		Dim i As Short
-		Dim version_number As Integer
+        Dim version_number As Integer
 		'>>>>>> End (C0355)
 		
 		Dim number As Integer

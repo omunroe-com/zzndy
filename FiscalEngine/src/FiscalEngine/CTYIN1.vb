@@ -354,9 +354,9 @@ Module CTYIN1
 	''<<<<<< 14 Jun 2001 JWD
 	'Public Const CPXCategoryCodesString = "BNSLSERENGEOEDHEDSADHASCDNPDVPPLFFCLTRNEORCP1CP2CP3CP4CP5CP6CP7CP8CP9ABNBALBL2BL3"
 	''~~~~~~ was:
-	'''<<<<<< 13 Jun 2001 JWD                ....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0
+    ''<<<<<< 13 Jun 2001 JWD                ....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....0
 	''Public Const CPXCategoryCodesString = "BNSLSERENGEOEDHEDSADHASCDNPDVPPLFFCLTRNEORCP1CP2CP3BALBL2BL3"
-	'''>>>>>> End 13 Jun 2001
+    ''>>>>>> End 13 Jun 2001
 	''>>>>>> End 14 Jun 2001
 	'>>>>>> End (C0363)
 	
@@ -682,7 +682,7 @@ Module CTYIN1
     Public sPDV() As String
 
     ''' <summary>
-    ''' # items in PDT() & PDT$().
+    ''' # items in PDT() and PDT$().
     ''' </summary>
     ''' <remarks></remarks>
     Public PDTT As Short

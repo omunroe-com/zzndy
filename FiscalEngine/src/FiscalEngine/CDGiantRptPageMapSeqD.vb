@@ -12,31 +12,31 @@ Friend Class CDGiantRptPageMapSeqD
 	'---------------------------------------------------------
 	
 	
-	Private m_oReportText As _CReportText
-	Private m_oVariableTitles As _IVariableTitlesA
-	
-	'
-	' The reference to the source of the names
-	'
-	Public WriteOnly Property ReportText() As _CReportText
-		Set(ByVal Value As _CReportText)
-			
-			m_oReportText = Value
-			
-		End Set
-	End Property
+    Private m_oReportText As CReportText
+    Private m_oVariableTitles As IVariableTitlesA
+
+    '
+    ' The reference to the source of the names
+    '
+    Public WriteOnly Property ReportText() As CReportText
+        Set(ByVal Value As CReportText)
+
+            m_oReportText = Value
+
+        End Set
+    End Property
 	
 	'
 	' For formats that need a reference to the variable
 	' titles table to format the names.
 	'
-	Public WriteOnly Property VariableTitles() As _IVariableTitlesA
-		Set(ByVal Value As _IVariableTitlesA)
-			
-			m_oVariableTitles = Value
-			
-		End Set
-	End Property
+    Public WriteOnly Property VariableTitles() As IVariableTitlesA
+        Set(ByVal Value As IVariableTitlesA)
+
+            m_oVariableTitles = Value
+
+        End Set
+    End Property
 	
 	
 	'=========================================================

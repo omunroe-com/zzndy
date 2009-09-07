@@ -144,7 +144,6 @@ Friend Class CGiantRptPageF1
     '
     Private Sub IGiantRptPageAssignStd_SetPageHeader(ByVal PageType As Short, ByVal startyear As Short, ByVal PageCount As Short, ByVal ProjectLife As Short, ByVal ProfileCount As Short, ByVal PageTitle As String, ByVal ColumnWidth As Short, ByVal FinalWorkingInt As Single, ByVal FinalParticipation As Single, ByVal PageCurrency As String) Implements IGiantRptPageAssignStd.SetPageHeader
 
-        Dim i As Short
 
         With m_oHeader
             .PageType = PageType

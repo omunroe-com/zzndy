@@ -631,11 +631,11 @@ Module CASHFLO1
 		OUTFIL = sRptDir & RNP & ".PRN"
 		If Left(RF(4), 3) = "FIL" Or Left(RF(4), 3) = "SCR" Or Left(RF(4), 3) = "PTR" Or Left(RF(4), 3) = "PTD" Then
 			If Left(RF(5), 3) = "ALL" Or Left(RF(5), 3) = "VAR" Or Left(RF(5), 3) = "SUM" Then
-				''''            Open OUTFIL$ For Output As #5
-			End If
-		End If
-		
-		'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
+                ''            Open OUTFIL$ For Output As #5
+            End If
+        End If
+
+        'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
         'GoSub 40000 'READS ACCUMULATED TOTALS AND SETS UP CONSOLIDATION
 
         If L1(2) = 10000 Then
@@ -672,7 +672,7 @@ Module CASHFLO1
             'ReDim NGCFT(LG, 12), NGCFA(LG, 12), NGCFU(LG, 12)
             'ReDim PAY(LG), ATCF(LG), DUM(LG, 25)
             '>>>>>> End (C0527)
-            ''''REDIM DFL(LG)
+            ''REDIM DFL(LG)
             ReDim COCF(LG)
             ReDim COCCF(LG)
             ReDim CODCF(LG)
@@ -703,7 +703,7 @@ Module CASHFLO1
             ReDim GFINAN(LG)
             ReDim CNREIM(LG)
             ReDim C3DPTY(LG)
-            '''            ReDim EffInts(LG, gc_nEffIntsSIZED2)
+            ''            ReDim EffInts(LG, gc_nEffIntsSIZED2)
             ' End (C0846)
 
             ReDim gna_ACFX(LG, 26)
@@ -768,24 +768,24 @@ Module CASHFLO1
             NGCFU(x, 1) = AC(x, 11)
             NGCFU(x, 2) = AC(x, 11)
 
-            '''          ' 10 Feb 2005 JWD (C0856) Compute the total net cash flow and the respective effective interests
-            '''          GPCFV(x) = AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)
-            '''          ' 5 Jun 2006 JWD (C0898) Change to only compute EffInts() values when company + 3d party ncf is sufficiently large to be valid. Change to range of values considered zero instead of exact match to zero. Compensates for round-off errors that lead to divide by zero.
-            '''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF)) > 0.0000009 Then
-            '''            EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
-            '''          End If
-            '''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)) > 0.0000009 Then
-            '''            EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
-            '''          End If
-            '''          ' was:
-            '''          'If AC(x, gc_nAC_CMPNCF) <> 0 Then
-            '''          '  EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
-            '''          '  EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
-            '''          'End If
-            '''          ' End (C0898)
-            '''
-            '''          GREV(x) = AC(x, gc_nAC_GRSREV) + GPCFV(x)
-            '''          ' End (C0856)
+            ''          ' 10 Feb 2005 JWD (C0856) Compute the total net cash flow and the respective effective interests
+            ''          GPCFV(x) = AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)
+            ''          ' 5 Jun 2006 JWD (C0898) Change to only compute EffInts() values when company + 3d party ncf is sufficiently large to be valid. Change to range of values considered zero instead of exact match to zero. Compensates for round-off errors that lead to divide by zero.
+            ''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF)) > 0.0000009 Then
+            ''            EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
+            ''          End If
+            ''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)) > 0.0000009 Then
+            ''            EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
+            ''          End If
+            ''          ' was:
+            ''          'If AC(x, gc_nAC_CMPNCF) <> 0 Then
+            ''          '  EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
+            ''          '  EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
+            ''          'End If
+            ''          ' End (C0898)
+            ''
+            ''          GREV(x) = AC(x, gc_nAC_GRSREV) + GPCFV(x)
+            ''          ' End (C0856)
 
             gna_ACFX(x, gna_ACFX_TPS) = AC(x, gc_nAC_TPS)
             gna_ACFX(x, gna_ACFX_TNG) = AC(x, gc_nAC_TNG)
@@ -798,10 +798,10 @@ Module CASHFLO1
 
         Next x
 
-        '''        ' 7 Jan 2005 JWD (C0846) Add allocation of MY3 related arrays
-        '''        ReDim GMY3(CCT)
-        '''        ReDim EffIntsX(CCT, gc_nEffIntsXSIZED2)
-        '''        ' End (C0846)
+        ''        ' 7 Jan 2005 JWD (C0846) Add allocation of MY3 related arrays
+        ''        ReDim GMY3(CCT)
+        ''        ReDim EffIntsX(CCT, gc_nEffIntsXSIZED2)
+        ''        ' End (C0846)
 
         If CCT = 0 Then
             GoTo 40160
@@ -822,22 +822,22 @@ Module CASHFLO1
             WINC(x) = 1
             GPRATE(x) = 1
 
-            '''          ' 10 Feb 2005 JWD (C0856)
-            '''          GMY3(x) = CC(x, gc_nCC_AMT) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)
-            '''          If CC(x, gc_nCC_AMT) <> 0 Then
-            '''             ' 8 Jun 2006 JWD (C0900) Change to check divisor for zero + near-zero values before dividing
-            '''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP)) > 0.0000009 Then
-            '''               EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
-            '''             End If
-            '''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)) > 0.0000009 Then
-            '''               EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
-            '''             End If
-            '''             ' was:
-            '''             '  EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
-            '''             '  EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
-            '''             ' End (C0900)
-            '''          End If
-            '''          ' End (C0856)
+            ''          ' 10 Feb 2005 JWD (C0856)
+            ''          GMY3(x) = CC(x, gc_nCC_AMT) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)
+            ''          If CC(x, gc_nCC_AMT) <> 0 Then
+            ''             ' 8 Jun 2006 JWD (C0900) Change to check divisor for zero + near-zero values before dividing
+            ''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP)) > 0.0000009 Then
+            ''               EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
+            ''             End If
+            ''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)) > 0.0000009 Then
+            ''               EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
+            ''             End If
+            ''             ' was:
+            ''             '  EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
+            ''             '  EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
+            ''             ' End (C0900)
+            ''          End If
+            ''          ' End (C0856)
 
             my3Ex(x, 0) = CC(x, gc_nCC_TCX)
             my3Ex(x, 1) = CC(x, gc_nCC_OCX)
@@ -846,620 +846,620 @@ Module CASHFLO1
 
         Next x
 
-6010: For i = 1 To LG
-			ERT(i) = 1
-		Next i
-		
-		' 4 Jan 2005 JWD (C0846) Add next to fill EffInts() for normal run to calculate 3rd party and NOC cash flows
-		If Not g_bPTCons Then
-			'''            ' If this is not a pre-tax consolidation run, EffInts has not been allocated, so allocate and initialize...
-			'''            ReDim EffInts(0 To gc_nMAXLIFE, 0 To gc_nEffIntsSIZED2)
-			'''            For y = 1 To LG
-			'''                EffInts(y, gc_nEffInts_WIN) = WIN(y)
-			'''                EffInts(y, gc_nEffInts_PAR) = PARTRATE(y)
-			'''                EffInts(y, gc_nEffInts_WOX) = WIN(y)
-			'''                EffInts(y, gc_nEffInts_POX) = OPEXRATE(y)
-			'''                ' Capture financing information
-			'''                ' Default case assumes that only company has interest in financing cash flow
-			'''                EffInts(y, gc_nEffInts_WFN) = 1
-			'''                EffInts(y, gc_nEffInts_PFN) = 0
-			'''
-			'''                ' 22 Apr 2005 JWD (C0873) Change order of operations on expression, replace numeral with symbol
-			'''                If (g_nFinanceEvents And gc_nFinanceEvents_WIN) > 0 Then  ' amounts are net of win, 3rd party shared in financing, i. e. WIN after FIN in fiscal def
-			'''                    EffInts(y, gc_nEffInts_WFN) = WIN(y)
-			'''                End If
-			'''
-			'''                ' 22 Apr 2005 JWD (C0873) Change order of operations on expression, replace numeral with symbol
-			'''                If (g_nFinanceEvents And gc_nFinanceEvents_PAR) > 0 Then  ' amounts are net of par, NOC shared in financing, i. e. PAR after FIN in fiscal def
-			'''                    EffInts(y, gc_nEffInts_PFN) = PARTRATE(y)
-			'''                End If
-			'''            Next y
-			'''            ' Assign the effective interests for the capital expenditures
-			'''            ReDim EffIntsX(0 To UBound(my3, 1), 0 To gc_nEffIntsXSIZED2)
-			'''            For y = 1 To my3tt
-			'''                GMY3(y) = my3(y, gc_nMY3_AMT)
-			'''                EffIntsX(y, gc_nEffIntsX_WIN) = WINC(y)
-			'''                EffIntsX(y, gc_nEffIntsX_PAR) = 1 - GPRATE(y)
-			'''                i = my3(y, gc_nMY3_XYR) - YR + 1
-			'''                EffIntsX(y, gc_nEffIntsX_BUR) = (WINC(y) - WIN(i)) * my3(y, gc_nMY3_BUR) / 100
-			'''            Next y
-			'''
-			'''            ' Assign the opex to the grossed-up opex array
-			'''            For y = 1 To LG
-			'''                GOPEX(y) = OPEX(y)
-			'''            Next y
-			'''
-			'''            ' Compute the grossed-up revenues
-			'''            For y = 1 To LG
-			'''                GREV(y) = ATotalRevenues(y)
-			'''            Next y
-			
-			' Compute the group and company capex amounts, by expenditure
-			'UPGRADE_WARNING: Lower bound of array my3Ex was changed from 0,gna_my3Ex_SizeD2_LB to 0,0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-			ReDim my3Ex(UBound(my3, 1), gna_my3Ex_SizeD2_UB)
-			For y = 1 To my3tt
-				' capture actual expenditure amounts (not balances, or the accrual abandonment)
-				If my3(y, gc_nMY3_CAT) < CPXCategoryCodeBAL Or my3(y, gc_nMY3_CAT) = CPXCategoryCode_AbandonmentCashExpenditure Then
-					If my3(y, gc_nMY3_CAT) <> 1 Then ' ignore bonus for Total Capex because it doesn't exit
-						my3Ex(y, gna_my3Ex_TCX) = my3(y, gc_nMY3_AMT) ' the total-level capex
-					End If
-					my3Ex(y, gna_my3Ex_OCX) = my3(y, gc_nMY3_AMT) ' the operator-level capex
-					my3Ex(y, gna_my3Ex_GCX) = my3(y, gc_nMY3_AMT) * GPRATE(y) ' the group (non-NOC) capex
-					my3Ex(y, gna_my3Ex_CCX) = my3(y, gc_nMY3_AMT) * GPRATE(y) * WINC(y) ' the company capex
-				End If
-			Next y
-			
-		Else
-			'''            ' Compute the grossed-up capital expenditures
-			'''            ' Match up the EffIntsX interests with the MY3 amounts
-			'''            ' For each item in MY3...
-			'''            For y = 1 To my3tt
-			'''                ' Find the corresponding item (based on category, exp. date and tangible percent)
-			'''                For x = 1 To UBound(EffIntsX, 1)
-			'''                    If EffIntsX(x, gc_nEffIntsX_CAT) = my3(y, gc_nMY3_CAT) And EffIntsX(x, gc_nEffIntsX_XMO) = my3(y, gc_nMY3_XMO) And EffIntsX(x, gc_nEffIntsX_XYR) = my3(y, gc_nMY3_XYR) And EffIntsX(x, gc_nEffIntsX_TAN) = my3(y, gc_nMY3_TAN) Then
-			'''                        GMY3(x) = my3(y, gc_nMY3_AMT) / EffIntsX(x, gc_nEffIntsX_WIN) / (1 - EffIntsX(x, gc_nEffIntsX_PAR))
-			'''                    End If
-			'''                Next x
-			'''            Next y
-			'''
-			'''            ' Compute the grossed-up operating expense amounts
-			'''            For y = 1 To LG
-			'''                GOPEX(y) = OPEX(y) / EffInts(y, gc_nEffInts_WOX) / (1 - EffInts(y, gc_nEffInts_POX))
-			'''            Next y
-			'''
-			'''            ' Compute the grossed-up revenues
-			'''            For y = 1 To LG
-			'''                GREV(y) = ATotalRevenues(y) / EffInts(y, gc_nEffInts_WIN) / (1 - EffInts(y, gc_nEffInts_PAR))
-			'''            Next y
-			'''
-			
-			If xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only Then
-				' doing the discounted cash flow and economic indicators only... skipping after-tax cash flow
-				' have to fix up the company cash flows - for now only for g_bPTCons=true
-				OPEX(0) = 0
-				For i = 1 To LG
-					PSCF(i, 1) = gna_ACFX(i, gna_ACFX_CPS)
-					NGCF(i, 1) = gna_ACFX(i, gna_ACFX_CNG) - OPEX(i) * (1 - OPEXRATE(i)) * WIN(i)
-					NGCF(i, 2) = OPEX(i) * (1 - OPEXRATE(i)) * WIN(i)
-					OPEX(0) = OPEX(0) + OPEX(i)
-				Next i
-				For i = 1 To my3tt
-					iDET = my3(i, 3) - YR + 1
-					NGCF(iDET, 1) = NGCF(iDET, 1) - my3Ex(i, 3)
-					NGCF(iDET, 3) = NGCF(iDET, 3) + my3Ex(i, 3)
-				Next i
-				PS = 1
-				OPXP = 2
-				CPXP = 3
-				NEG = 3
-				'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
+6010:   For i = 1 To LG
+            ERT(i) = 1
+        Next i
+
+        ' 4 Jan 2005 JWD (C0846) Add next to fill EffInts() for normal run to calculate 3rd party and NOC cash flows
+        If Not g_bPTCons Then
+            ''            ' If this is not a pre-tax consolidation run, EffInts has not been allocated, so allocate and initialize...
+            ''            ReDim EffInts(0 To gc_nMAXLIFE, 0 To gc_nEffIntsSIZED2)
+            ''            For y = 1 To LG
+            ''                EffInts(y, gc_nEffInts_WIN) = WIN(y)
+            ''                EffInts(y, gc_nEffInts_PAR) = PARTRATE(y)
+            ''                EffInts(y, gc_nEffInts_WOX) = WIN(y)
+            ''                EffInts(y, gc_nEffInts_POX) = OPEXRATE(y)
+            ''                ' Capture financing information
+            ''                ' Default case assumes that only company has interest in financing cash flow
+            ''                EffInts(y, gc_nEffInts_WFN) = 1
+            ''                EffInts(y, gc_nEffInts_PFN) = 0
+            ''
+            ''                ' 22 Apr 2005 JWD (C0873) Change order of operations on expression, replace numeral with symbol
+            ''                If (g_nFinanceEvents And gc_nFinanceEvents_WIN) > 0 Then  ' amounts are net of win, 3rd party shared in financing, i. e. WIN after FIN in fiscal def
+            ''                    EffInts(y, gc_nEffInts_WFN) = WIN(y)
+            ''                End If
+            ''
+            ''                ' 22 Apr 2005 JWD (C0873) Change order of operations on expression, replace numeral with symbol
+            ''                If (g_nFinanceEvents And gc_nFinanceEvents_PAR) > 0 Then  ' amounts are net of par, NOC shared in financing, i. e. PAR after FIN in fiscal def
+            ''                    EffInts(y, gc_nEffInts_PFN) = PARTRATE(y)
+            ''                End If
+            ''            Next y
+            ''            ' Assign the effective interests for the capital expenditures
+            ''            ReDim EffIntsX(0 To UBound(my3, 1), 0 To gc_nEffIntsXSIZED2)
+            ''            For y = 1 To my3tt
+            ''                GMY3(y) = my3(y, gc_nMY3_AMT)
+            ''                EffIntsX(y, gc_nEffIntsX_WIN) = WINC(y)
+            ''                EffIntsX(y, gc_nEffIntsX_PAR) = 1 - GPRATE(y)
+            ''                i = my3(y, gc_nMY3_XYR) - YR + 1
+            ''                EffIntsX(y, gc_nEffIntsX_BUR) = (WINC(y) - WIN(i)) * my3(y, gc_nMY3_BUR) / 100
+            ''            Next y
+            ''
+            ''            ' Assign the opex to the grossed-up opex array
+            ''            For y = 1 To LG
+            ''                GOPEX(y) = OPEX(y)
+            ''            Next y
+            ''
+            ''            ' Compute the grossed-up revenues
+            ''            For y = 1 To LG
+            ''                GREV(y) = ATotalRevenues(y)
+            ''            Next y
+
+            ' Compute the group and company capex amounts, by expenditure
+            'UPGRADE_WARNING: Lower bound of array my3Ex was changed from 0,gna_my3Ex_SizeD2_LB to 0,0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+            ReDim my3Ex(UBound(my3, 1), gna_my3Ex_SizeD2_UB)
+            For y = 1 To my3tt
+                ' capture actual expenditure amounts (not balances, or the accrual abandonment)
+                If my3(y, gc_nMY3_CAT) < CPXCategoryCodeBAL Or my3(y, gc_nMY3_CAT) = CPXCategoryCode_AbandonmentCashExpenditure Then
+                    If my3(y, gc_nMY3_CAT) <> 1 Then ' ignore bonus for Total Capex because it doesn't exit
+                        my3Ex(y, gna_my3Ex_TCX) = my3(y, gc_nMY3_AMT) ' the total-level capex
+                    End If
+                    my3Ex(y, gna_my3Ex_OCX) = my3(y, gc_nMY3_AMT) ' the operator-level capex
+                    my3Ex(y, gna_my3Ex_GCX) = my3(y, gc_nMY3_AMT) * GPRATE(y) ' the group (non-NOC) capex
+                    my3Ex(y, gna_my3Ex_CCX) = my3(y, gc_nMY3_AMT) * GPRATE(y) * WINC(y) ' the company capex
+                End If
+            Next y
+
+        Else
+            ''            ' Compute the grossed-up capital expenditures
+            ''            ' Match up the EffIntsX interests with the MY3 amounts
+            ''            ' For each item in MY3...
+            ''            For y = 1 To my3tt
+            ''                ' Find the corresponding item (based on category, exp. date and tangible percent)
+            ''                For x = 1 To UBound(EffIntsX, 1)
+            ''                    If EffIntsX(x, gc_nEffIntsX_CAT) = my3(y, gc_nMY3_CAT) And EffIntsX(x, gc_nEffIntsX_XMO) = my3(y, gc_nMY3_XMO) And EffIntsX(x, gc_nEffIntsX_XYR) = my3(y, gc_nMY3_XYR) And EffIntsX(x, gc_nEffIntsX_TAN) = my3(y, gc_nMY3_TAN) Then
+            ''                        GMY3(x) = my3(y, gc_nMY3_AMT) / EffIntsX(x, gc_nEffIntsX_WIN) / (1 - EffIntsX(x, gc_nEffIntsX_PAR))
+            ''                    End If
+            ''                Next x
+            ''            Next y
+            ''
+            ''            ' Compute the grossed-up operating expense amounts
+            ''            For y = 1 To LG
+            ''                GOPEX(y) = OPEX(y) / EffInts(y, gc_nEffInts_WOX) / (1 - EffInts(y, gc_nEffInts_POX))
+            ''            Next y
+            ''
+            ''            ' Compute the grossed-up revenues
+            ''            For y = 1 To LG
+            ''                GREV(y) = ATotalRevenues(y) / EffInts(y, gc_nEffInts_WIN) / (1 - EffInts(y, gc_nEffInts_PAR))
+            ''            Next y
+            ''
+
+            If xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only Then
+                ' doing the discounted cash flow and economic indicators only... skipping after-tax cash flow
+                ' have to fix up the company cash flows - for now only for g_bPTCons=true
+                OPEX(0) = 0
+                For i = 1 To LG
+                    PSCF(i, 1) = gna_ACFX(i, gna_ACFX_CPS)
+                    NGCF(i, 1) = gna_ACFX(i, gna_ACFX_CNG) - OPEX(i) * (1 - OPEXRATE(i)) * WIN(i)
+                    NGCF(i, 2) = OPEX(i) * (1 - OPEXRATE(i)) * WIN(i)
+                    OPEX(0) = OPEX(0) + OPEX(i)
+                Next i
+                For i = 1 To my3tt
+                    iDET = my3(i, 3) - YR + 1
+                    NGCF(iDET, 1) = NGCF(iDET, 1) - my3Ex(i, 3)
+                    NGCF(iDET, 3) = NGCF(iDET, 3) + my3Ex(i, 3)
+                Next i
+                PS = 1
+                OPXP = 2
+                CPXP = 3
+                NEG = 3
+                'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
                 TotalArrays(CF, COCF, COCCF)
-				GoTo AfDeflate
-			End If
-			
-		End If
-		' End (C0846)
-		
-		PS = 0
-		'<<<<<< 29 Mar 2002 JWD (C0527)
-		ReDim PSCF(LG, maximum_count_positive_cashflows)
-		ReDim NGCF(LG, maximum_count_negative_cashflows)
-		ReDim NGCFT(LG, maximum_count_negative_cashflows)
-		ReDim NGCFA(LG, maximum_count_negative_cashflows)
-		ReDim NGCFU(LG, maximum_count_negative_cashflows)
-		'~~~~~~ was:
-		'ReDim PSCF(LG, 12), NGCF(LG, 12), NGCFT(LG, 12), NGCFA(LG, 12), NGCFU(LG, 12)
-		'>>>>>> End (C0527)
-		
-		For i = 1 To TDT
-			If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 6110
-			If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 6110
-			If Left(TD(i, 4), 1) = "+" Then GoTo 6060
-			GoTo 6110
-6060: 'POSITIVE CASH FLOW
-			PS = PS + 1
-			For y = 1 To LG - AbandonmentPlacementOffset
-				PSCF(y, PS) = RVN(y, i) * ERT(y)
-			Next y
-6110: Next i
-		
-		'''      ' 17 Dec 2004 JWD (C0846) Capture the positive cash flow variable amounts and gross-up
-		'''      For y = 1 To LG
-		'''          rTmp = 0
-		'''          For i = 1 To PS%
-		'''              ' Accumulate this year's amounts for all positive variables
-		'''              rTmp = rTmp + PSCF(y, i)
-		'''          Next i
-		'''          ' Next assumes WIN(y) is never zero (it shouldn't be, it is set to 1 in FiscalDef) and PARTRATE(y) is never 1.
-		'''          GPCFV(y) = rTmp / EffInts(y, gc_nEffInts_WIN) / (1 - EffInts(y, gc_nEffInts_PAR))
-		'''      Next y
-		'''      ' End (C0846)
-		'''
-		'PUT IN GOVERNMENT REPAYMENT
-		If PRTA = 1 Or BURS = 1 Then
-			GoTo 6125
-		End If
-		GoTo 6152
-		
-6125: PS = PS + 1
-		REPY = PS
-		
-		For i = 1 To LG
-			PSCF(i, PS) = TOTPMT(i) * ERT(i)
-		Next i
-		
-		'''      ' 17 Dec 2004 JWD (C0846) Compute the gross amount of NOC repayment and net company partner reimbursement
-		'''      ' First, compute the net company partner reimbursement amounts
-		'''      For i = 1 To my3tt
-		'''          If EffIntsX(i, gc_nEffIntsX_BUR) <> 0 Then
-		'''              ' Compute the year of reimbursement, this is copied from Repay
-		'''              y = my3(i, gc_nMY3_XYR) - YR + 1
-		'''              If my3(i, gc_nMY3_XYR) < Y1 Then
-		'''                  y = Y1 - YR + 1
-		'''              End If
-		'''              CNREIM(y) = CNREIM(y) + GMY3(i) * EffIntsX(i, gc_nEffIntsX_WIN) * (1 - EffIntsX(i, gc_nEffIntsX_PAR)) * EffIntsX(i, gc_nEffIntsX_BUR)
-		'''          End If
-		'''      Next i
-		'''
-		'''      ' Next, compute the grossed up NOC repayment. TOTPMT() is net to company and includes the partner reimbursement
-		'''      For y = 1 To LG
-		'''          ' Next assumes that WIN(y) is never zero (shouldn't be)
-		'''          GREPAY(y) = (TOTPMT(y) - CNREIM(y)) / EffInts(y, gc_nEffInts_WIN)
-		'''      Next y
-		'''      ' End (C0846)
-		'''
-6152: 'FINANCE
-		FINANCE(0) = 0
-		
-		For i = 1 To LG
-			FINANCE(0) = FINANCE(0) + FINANCE(i)
-		Next i
-		
-		If FINANCE(0) = 0 Then
-			GoTo 6160
-		End If
-		
-		PS = PS + 1
-		fin = PS
-		For i = 1 To LG
-			PSCF(i, PS) = FINANCE(i) * ERT(i)
-		Next i
-		
-		'''      ' 22 Dec 2004 JWD (C0846)
-		'''      For i = 1 To LG
-		'''          ' 22 Apr 2005 JWD (C0872) Change next 1
-		'''          GFINAN(i) = FINANCE(i) / EffInts(i, gc_nEffInts_WFN) / (1 - EffInts(i, gc_nEffInts_PFN))
-		'''          ' was:
-		'''          'GFINAN(i) = FINANCE(i) / EffInts(y, gc_nEffInts_WFN) / (1 - EffInts(y, gc_nEffInts_PFN))
-		'''          ' End (C0872)
-		'''      Next i
-6160: 
-		
-		NEG = 0
-		For i = 1 To TDT
-			If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 6330
-			If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 6330
-			If Left(TD(i, 4), 1) = "+" Or Left(TD(i, 4), 1) = " " Then GoTo 6330
-			
-			CountNegatives(i, TRDT, ADJT, USTT)
-			
-			For y = 1 To LG - AbandonmentPlacementOffset
-				If Left(TD(i, 4), 1) = "-" Then
-					NGCF(y, NEG) = RVN(y, i) * ERT(y)
-				ElseIf Left(TD(i, 4), 1) = "T" Then  '3rd party cashflow
-					NGCF(y, NEG) = RVN(y, i) * ERT(y)
-					NGCFT(y, NEGT) = RVN(y, i) * ERT(y)
-					' 20 Dec 2004 JWD (C0846) Add to total 3rd party cash flow
-					C3DPTY(y) = C3DPTY(y) + NGCFT(y, NEGT)
-				ElseIf Left(TD(i, 4), 1) = "A" Then  'adjustment cashflow
-					NGCF(y, NEG) = RVN(y, i) * ERT(y)
-					NGCFA(y, NEGA) = RVN(y, i) * ERT(y)
-				ElseIf Left(TD(i, 4), 1) = "U" Then  'US Tax cashflow
-					NGCF(y, NEG) = RVN(y, i) * ERT(y)
-					NGCFU(y, NEGU) = RVN(y, i) * ERT(y)
-				End If
-			Next y
-6330: Next i
-		
-		'''      ' 17 Dec 2004 JWD (C0846) Capture the negative cash flow variable amounts and gross-up
-		'''      For y = 1 To LG
-		'''          rTmp = 0
-		'''          For i = 1 To NEG%
-		'''              ' Accumulate this year's amounts for all negative variables (less T variables)
-		'''              rTmp = rTmp + NGCF(y, i) - NGCFT(y, i)
-		'''          Next i
-		'''          ' Next assumes WIN(y) is never zero (it shouldn't be, it is set to 1 in FiscalDef) and PARTRATE(y) is never 1.
-		'''          GNCFV(y) = rTmp / EffInts(y, gc_nEffInts_WIN) / (1 - EffInts(y, gc_nEffInts_PAR))
-		'''      Next y
-		'''      ' End (C0846)
-		
-		UserNegatives = NEG '# of user defined negative (-) cash flows
-		TAUItems = NEGT + NEGA + NEGU '# of user def neg (T,A,U) cash flows
-		
-		
-		'OPERATING EXPENSES
-		OPEX(0) = 0
-		
-		For i = LG - AbandonmentPlacementOffset + 1 To UBound(OPEX)
-			OPEX(i) = 0
-		Next i
-		
-		For i = 1 To LG - AbandonmentPlacementOffset
-			OPEX(0) = OPEX(0) + OPEX(i)
-		Next i
-		
-		If OPEX(0) = 0 Then GoTo 6380
-		
-		NEG = NEG + 1
-		OPXP = NEG
-		For i = 1 To LG
-			NGCF(i, NEG) = OPEX(i) * (1 - OPEXRATE(i)) * ERT(i) * WIN(i)
-		Next i
-		
-6380: 'CAPITAL EXPENDITURES
-		If my3tt = 0 Then GoTo 6430
-		
-		NEG = NEG + 1
-		CPXP = NEG
-		For i = 1 To my3tt
-			'<<<<<< 4 Aug 2001 JWD (C0363)
-			If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
-				'~~~~~~ was:
-				''<<<<<< 21 Jun 2001 JWD (C0339)
-				'If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) > CPXCategoryCodeBL3 Then        'skip BAL, BL2 & BL3
-				''~~~~~~ was:
-				''If my3(i, 1) < 18 Or my3(i, 1) > 20 Then        'skip BAL, BL2 & BL3
-				''>>>>>> End (C0339)
-				'>>>>>> End (C0363)
-				iDET = my3(i, 3) - YR + 1
-				NGCF(iDET, NEG) = NGCF(iDET, NEG) + my3(i, 5) * GPRATE(i) * WINC(i)
-			End If
-6420: Next i
-		
-6430: 'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
+                GoTo AfDeflate
+            End If
+
+        End If
+        ' End (C0846)
+
+        PS = 0
+        '<<<<<< 29 Mar 2002 JWD (C0527)
+        ReDim PSCF(LG, maximum_count_positive_cashflows)
+        ReDim NGCF(LG, maximum_count_negative_cashflows)
+        ReDim NGCFT(LG, maximum_count_negative_cashflows)
+        ReDim NGCFA(LG, maximum_count_negative_cashflows)
+        ReDim NGCFU(LG, maximum_count_negative_cashflows)
+        '~~~~~~ was:
+        'ReDim PSCF(LG, 12), NGCF(LG, 12), NGCFT(LG, 12), NGCFA(LG, 12), NGCFU(LG, 12)
+        '>>>>>> End (C0527)
+
+        For i = 1 To TDT
+            If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 6110
+            If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 6110
+            If Left(TD(i, 4), 1) = "+" Then GoTo 6060
+            GoTo 6110
+6060:       'POSITIVE CASH FLOW
+            PS = PS + 1
+            For y = 1 To LG - AbandonmentPlacementOffset
+                PSCF(y, PS) = RVN(y, i) * ERT(y)
+            Next y
+6110:   Next i
+
+        ''      ' 17 Dec 2004 JWD (C0846) Capture the positive cash flow variable amounts and gross-up
+        ''      For y = 1 To LG
+        ''          rTmp = 0
+        ''          For i = 1 To PS%
+        ''              ' Accumulate this year's amounts for all positive variables
+        ''              rTmp = rTmp + PSCF(y, i)
+        ''          Next i
+        ''          ' Next assumes WIN(y) is never zero (it shouldn't be, it is set to 1 in FiscalDef) and PARTRATE(y) is never 1.
+        ''          GPCFV(y) = rTmp / EffInts(y, gc_nEffInts_WIN) / (1 - EffInts(y, gc_nEffInts_PAR))
+        ''      Next y
+        ''      ' End (C0846)
+        ''
+        'PUT IN GOVERNMENT REPAYMENT
+        If PRTA = 1 Or BURS = 1 Then
+            GoTo 6125
+        End If
+        GoTo 6152
+
+6125:   PS = PS + 1
+        REPY = PS
+
+        For i = 1 To LG
+            PSCF(i, PS) = TOTPMT(i) * ERT(i)
+        Next i
+
+        ''      ' 17 Dec 2004 JWD (C0846) Compute the gross amount of NOC repayment and net company partner reimbursement
+        ''      ' First, compute the net company partner reimbursement amounts
+        ''      For i = 1 To my3tt
+        ''          If EffIntsX(i, gc_nEffIntsX_BUR) <> 0 Then
+        ''              ' Compute the year of reimbursement, this is copied from Repay
+        ''              y = my3(i, gc_nMY3_XYR) - YR + 1
+        ''              If my3(i, gc_nMY3_XYR) < Y1 Then
+        ''                  y = Y1 - YR + 1
+        ''              End If
+        ''              CNREIM(y) = CNREIM(y) + GMY3(i) * EffIntsX(i, gc_nEffIntsX_WIN) * (1 - EffIntsX(i, gc_nEffIntsX_PAR)) * EffIntsX(i, gc_nEffIntsX_BUR)
+        ''          End If
+        ''      Next i
+        ''
+        ''      ' Next, compute the grossed up NOC repayment. TOTPMT() is net to company and includes the partner reimbursement
+        ''      For y = 1 To LG
+        ''          ' Next assumes that WIN(y) is never zero (shouldn't be)
+        ''          GREPAY(y) = (TOTPMT(y) - CNREIM(y)) / EffInts(y, gc_nEffInts_WIN)
+        ''      Next y
+        ''      ' End (C0846)
+        ''
+6152:   'FINANCE
+        FINANCE(0) = 0
+
+        For i = 1 To LG
+            FINANCE(0) = FINANCE(0) + FINANCE(i)
+        Next i
+
+        If FINANCE(0) = 0 Then
+            GoTo 6160
+        End If
+
+        PS = PS + 1
+        fin = PS
+        For i = 1 To LG
+            PSCF(i, PS) = FINANCE(i) * ERT(i)
+        Next i
+
+        ''      ' 22 Dec 2004 JWD (C0846)
+        ''      For i = 1 To LG
+        ''          ' 22 Apr 2005 JWD (C0872) Change next 1
+        ''          GFINAN(i) = FINANCE(i) / EffInts(i, gc_nEffInts_WFN) / (1 - EffInts(i, gc_nEffInts_PFN))
+        ''          ' was:
+        ''          'GFINAN(i) = FINANCE(i) / EffInts(y, gc_nEffInts_WFN) / (1 - EffInts(y, gc_nEffInts_PFN))
+        ''          ' End (C0872)
+        ''      Next i
+6160:
+
+        NEG = 0
+        For i = 1 To TDT
+            If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 6330
+            If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 6330
+            If Left(TD(i, 4), 1) = "+" Or Left(TD(i, 4), 1) = " " Then GoTo 6330
+
+            CountNegatives(i, TRDT, ADJT, USTT)
+
+            For y = 1 To LG - AbandonmentPlacementOffset
+                If Left(TD(i, 4), 1) = "-" Then
+                    NGCF(y, NEG) = RVN(y, i) * ERT(y)
+                ElseIf Left(TD(i, 4), 1) = "T" Then  '3rd party cashflow
+                    NGCF(y, NEG) = RVN(y, i) * ERT(y)
+                    NGCFT(y, NEGT) = RVN(y, i) * ERT(y)
+                    ' 20 Dec 2004 JWD (C0846) Add to total 3rd party cash flow
+                    C3DPTY(y) = C3DPTY(y) + NGCFT(y, NEGT)
+                ElseIf Left(TD(i, 4), 1) = "A" Then  'adjustment cashflow
+                    NGCF(y, NEG) = RVN(y, i) * ERT(y)
+                    NGCFA(y, NEGA) = RVN(y, i) * ERT(y)
+                ElseIf Left(TD(i, 4), 1) = "U" Then  'US Tax cashflow
+                    NGCF(y, NEG) = RVN(y, i) * ERT(y)
+                    NGCFU(y, NEGU) = RVN(y, i) * ERT(y)
+                End If
+            Next y
+6330:   Next i
+
+        ''      ' 17 Dec 2004 JWD (C0846) Capture the negative cash flow variable amounts and gross-up
+        ''      For y = 1 To LG
+        ''          rTmp = 0
+        ''          For i = 1 To NEG%
+        ''              ' Accumulate this year's amounts for all negative variables (less T variables)
+        ''              rTmp = rTmp + NGCF(y, i) - NGCFT(y, i)
+        ''          Next i
+        ''          ' Next assumes WIN(y) is never zero (it shouldn't be, it is set to 1 in FiscalDef) and PARTRATE(y) is never 1.
+        ''          GNCFV(y) = rTmp / EffInts(y, gc_nEffInts_WIN) / (1 - EffInts(y, gc_nEffInts_PAR))
+        ''      Next y
+        ''      ' End (C0846)
+
+        UserNegatives = NEG '# of user defined negative (-) cash flows
+        TAUItems = NEGT + NEGA + NEGU '# of user def neg (T,A,U) cash flows
+
+
+        'OPERATING EXPENSES
+        OPEX(0) = 0
+
+        For i = LG - AbandonmentPlacementOffset + 1 To UBound(OPEX)
+            OPEX(i) = 0
+        Next i
+
+        For i = 1 To LG - AbandonmentPlacementOffset
+            OPEX(0) = OPEX(0) + OPEX(i)
+        Next i
+
+        If OPEX(0) = 0 Then GoTo 6380
+
+        NEG = NEG + 1
+        OPXP = NEG
+        For i = 1 To LG
+            NGCF(i, NEG) = OPEX(i) * (1 - OPEXRATE(i)) * ERT(i) * WIN(i)
+        Next i
+
+6380:   'CAPITAL EXPENDITURES
+        If my3tt = 0 Then GoTo 6430
+
+        NEG = NEG + 1
+        CPXP = NEG
+        For i = 1 To my3tt
+            '<<<<<< 4 Aug 2001 JWD (C0363)
+            If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
+                '~~~~~~ was:
+                ''<<<<<< 21 Jun 2001 JWD (C0339)
+                'If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) > CPXCategoryCodeBL3 Then        'skip BAL, BL2 & BL3
+                ''~~~~~~ was:
+                ''If my3(i, 1) < 18 Or my3(i, 1) > 20 Then        'skip BAL, BL2 & BL3
+                ''>>>>>> End (C0339)
+                '>>>>>> End (C0363)
+                iDET = my3(i, 3) - YR + 1
+                NGCF(iDET, NEG) = NGCF(iDET, NEG) + my3(i, 5) * GPRATE(i) * WINC(i)
+            End If
+6420:   Next i
+
+6430:   'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
         TotalArrays(CF, COCF, COCCF)
-		
-		' capture the positive and negative cash flows into designated array locations
-		If xxx_POSCF > 0 And xxx_NEGCF > 0 Then
-			For i = 1 To LG
-				gna_ACFX(i, xxx_POSCF) = PSCF(i, PS + 1)
-				gna_ACFX(i, xxx_NEGCF) = NGCF(i, NEG + 1)
-			Next i
-		End If
-		
-AfDeflate: 
-		' -----------------------------------------------------------------------
-		' CALCULATE UNDISCOUNTED VARIABLES FOR DEFLATED CASH FLOW PAGE
-		' FIRST DO COMPANY CASH FLOW AND CUMULATIVE CASH FLOW
-		
-		ReDim COCCF(LG)
-		
-		For i = 1 To LG
-			If DFL(i) <> 0 Then
-				COCF(i) = CF(i) / DFL(i)
-			Else
-				COCF(i) = 0
-			End If
-		Next i
-		
-		COCCF(1) = COCF(1)
-		For i = 2 To LG
-			COCCF(i) = COCCF(i - 1) + COCF(i)
-		Next i
-		
-6432: 
-		
-		'''        ' 17 Dec 2004 JWD (C0846) Add calculation of 3rd party and NOC cash flows
-		'''
-		'''        ' Do third party cash flow
-		'''        ' Third party cash flow is:
-		'''        ' GPCFV is 100%; is cash received by group (COMPANY and 3rd party) and by NOC (participation)
-		'''        ' GNCFV, OPEX are 100%; & is cash paid out by group (COMPANY and 3rd party) and by NOC (participation)
-		'''        ' GREPAY is 100%; is paid by NOC to group (COMPANY and 3rd Party) for carried capital
-		'''        ' GFINAN is 100%; net financing (loans and repayment of) is received & paid by group and by NOC (participation)
-		'''        ' CNREIM is net to the COMPANY; is the amount of reimbursement of carried capital between COMPANY and 3rd party (amounts received by COMPANY are positive, paid by COMPANY are negative)
-		'''        ' C3DPTY is net to the COMPANY; is amount of payments to 3rd party that are defined in fiscal model
-		
-		' Condition on not a pre-tax consolidation
-		For i = 1 To LG
-			'''            TDPCF(i) = ((GPCFV(i) - GNCFV(i)) * (1 - EffInts(i, gc_nEffInts_PAR)) + GREPAY(i)) * (1 - EffInts(i, gc_nEffInts_WIN)) - GOPEX(i) * (1 - EffInts(i, gc_nEffInts_POX)) * (1 - EffInts(i, gc_nEffInts_WOX)) - CNREIM(i) + C3DPTY(i) + (GFINAN(i) * (1 - EffInts(i, gc_nEffInts_PFN)) * (1 - EffInts(i, gc_nEffInts_WFN)))
-			TDPCF(i) = gna_ACFX(i, gna_ACFX_GPS) - gna_ACFX(i, gna_ACFX_GNG) - gna_ACFX(i, gna_ACFX_CPS) + gna_ACFX(i, gna_ACFX_CNG)
-		Next i
-		
-		'''        ' Add in the capital expenditure amounts
-		'''        For i = 1 To my3tt
-		'''            y = my3(i, gc_nMY3_XYR) - YR + 1
-		'''            If my3(i, gc_nMY3_CAT) < CPXCategoryCodeBAL Or my3(i, gc_nMY3_CAT) = CPXCategoryCode_AbandonmentCashExpenditure Then
-		'''                TDPCF(y) = TDPCF(y) - GMY3(i) * (1 - EffIntsX(i, gc_nEffIntsX_PAR)) * (1 - EffIntsX(i, gc_nEffIntsX_WIN))
-		'''            End If
-		'''        Next i
-		
-		For i = 1 To LG
-			If DFL(i) <> 0 Then
-				TDPCF(i) = TDPCF(i) / DFL(i)
-			Else
-				TDPCF(i) = 0
-			End If
-		Next i
-		
-		TDPCCF(1) = TDPCF(1)
-		For i = 2 To LG
-			TDPCCF(i) = TDPCCF(i - 1) + TDPCF(i)
-		Next i
-		
-		' Do NOC cash flow
-		
-		For i = 1 To LG
-			'''           NOCCF(i) = (GPCFV(i) - GNCFV(i)) * EffInts(i, gc_nEffInts_PAR) - GOPEX(i) * EffInts(i, gc_nEffInts_POX) - GREPAY(i) + (GFINAN(i) * EffInts(i, gc_nEffInts_PFN))
-			NOCCF(i) = gna_ACFX(i, gna_ACFX_OPS) - gna_ACFX(i, gna_ACFX_ONG) - gna_ACFX(i, gna_ACFX_GPS) + gna_ACFX(i, gna_ACFX_GNG)
-		Next i
-		
-		'''        ' Add in the capital expenditure amounts
-		'''        Debug.Print "NOCCF(y) = NOCCF(y) - GMY3(i) * EffIntsX(i, gc_nEffIntsX_PAR)"
-		
-		'''        For i = 1 To my3tt
-		'''            y = my3(i, gc_nMY3_XYR) - YR + 1
-		'''            If my3(i, gc_nMY3_CAT) < CPXCategoryCodeBAL Or my3(i, gc_nMY3_CAT) = CPXCategoryCode_AbandonmentCashExpenditure Then
-		'''                NOCCF(y) = NOCCF(y) - GMY3(i) * EffIntsX(i, gc_nEffIntsX_PAR)
-		'''            End If
-		'''        Next i
-		
-		For i = 1 To LG
-			If DFL(i) <> 0 Then
-				NOCCF(i) = NOCCF(i) / DFL(i)
-			Else
-				NOCCF(i) = 0
-			End If
-		Next i
-		
-		NOCCCF(1) = NOCCF(1)
-		For i = 2 To LG
-			NOCCCF(i) = NOCCCF(i - 1) + NOCCF(i)
-		Next i
-		' End (C0846)
-		
-		' =======================================================================
-		' NOW DO GOVERNMENT CASH FLOW
-		' =======================================================================
-		
-		'''         'compute capex
-		'''      For i = 1 To my3tt
-		'''         '<<<<<< 4 Aug 2001 JWD (C0363)
-		'''         If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
-		'''         '~~~~~~ was:
-		'''         ''<<<<<< 21 Jun 2001 JWD (C0339)
-		'''         'If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) > CPXCategoryCodeBL3 Then ' BAL, BL2, BL3
-		'''         ''~~~~~~ was:
-		'''         ''If my3(i, 1) <> 18 Then
-		'''         ''>>>>>> End (C0339)
-		'''         '>>>>>> End (C0363)
-		'''            y = my3(i, 3) - YR + 1
-		'''            If my3(i, 1) = 1 Then       'if categ. 1 then Gov. gets 100%
-		'''               CP(y) = CP(y) - my3(i, 5)
-		'''            Else
-		'''               CP(y) = CP(y) + (my3(i, 5) * (1 - GPRATE(i)))
-		'''            End If
-		'''         End If
-		'''      Next i
-		
-6434: 
-		'do positive cash flows for government
-		'if its repayment or finance, they do not apply to government
-		' 17 Dec 2004 JWD (C0846) Replaced government cash flow calc with code following
-		'
-		'      For i = 1 To LG
-		'                                'govt starts at 100% gross revenues
-		'         ' Changed GDP 20 Jan 2003
-		'         ' GVCF(i) = (A(i, 1) * A(i, 7)) + (A(i, 2) * A(i, 8)) + (A(i, 3) * A(i, 9)) + (A(i, 4) * A(i, 10))
-		'         GVCF(i) = ATotalRevenues(i)
-		'
-		'         For y = 1 To PS%
-		'            If y = REPY% Or y = fin% Then
-		'            Else
-		'               If WIN(i) <> 0 Then
-		'                  GVCF(i) = GVCF(i) - (PSCF(i, y) / WIN(i))
-		'               End If
-		'            End If
-		'         Next y
-		'6436
-		'                                'take out capital and opex
-		'         NEGLP% = NEG%
-		'         If my3tt <> 0 Then
-		'            NEGLP% = NEGLP% - 1
-		'         End If
-		'         If OPEX(0) <> 0 Then
-		'            NEGLP% = NEGLP% - 1
-		'         End If
-		'         For y = 1 To NEGLP%             'do negative cash flows for government
-		'            If WIN(i) <> 0 Then
-		'               GVCF(i) = GVCF(i) + ((NGCF(i, y) / WIN(i)))
-		'            End If
-		'         Next y
-		'6438
-		'                'Back out T & U negatives from GOVT
-		'                'T & U negatives do not go to (or come from)
-		'                '  the GOVT (Even though they are in NGCF())
-		'         For y = 1 To NEGT%             'do negative cash flows for government
-		'            If WIN(i) <> 0 Then
-		'               GVCF(i) = GVCF(i) - ((NGCFT(i, y) / WIN(i)))
-		'            End If
-		'         Next y
-		'6439
-		'         For y = 1 To NEGU%             'do negative cash flows for government
-		'            If WIN(i) <> 0 Then
-		'               GVCF(i) = GVCF(i) - ((NGCFU(i, y) / WIN(i)))
-		'            End If
-		'         Next y
-		'6442
-		'                'do capex
-		'         GVCF(i) = GVCF(i) - CP(i)
-		'         GVCF(i) = GVCF(i) - (OPEX(i) * OPEXRATE(i))     'do opex
-		'         If WIN(i) <> 0 Then                             'do TOTPMT()
-		'            GVCF(i) = GVCF(i) - (TOTPMT(i) / WIN(i))
-		'         Else
-		'            GVCF(i) = 0
-		'         End If
-		'6446
-		' End (C0846)
-		
-		For i = 1 To LG
-			' Government cash flow is total revenues less all positive cash flows
-			' (going to company & partners (3rd party)) plus any negative cash flows
-			' (excluding T cash flows, opex and capex)
-			'''         GVCF(i) = GREV(i) - GPCFV(i) + GNCFV(i)
-			GVCF(i) = gna_ACFX(i, gna_ACFX_TPS) - gna_ACFX(i, gna_ACFX_TNG) - gna_ACFX(i, gna_ACFX_OPS) + gna_ACFX(i, gna_ACFX_ONG)
-		Next i
-		
-		'''      ' Add in the capital expenditure amounts (bonuses)
-		'''      For i = 1 To my3tt
-		'''          y = my3(i, gc_nMY3_XYR) - YR + 1
-		'''          If my3(i, gc_nMY3_CAT) = 1 Then
-		'''              GVCF(y) = GVCF(y) + GMY3(i)
-		'''          End If
-		'''      Next i
-		
-		For i = 1 To LG
-			'applying the deflator
-			If DFL(i) <> 0 Then
-				GVCF(i) = GVCF(i) / DFL(i)
-			Else
-				GVCF(i) = 0
-			End If
-		Next i
-		
-		'accumulate gov.
-		GVCCF(1) = GVCF(1)
-		For i = 2 To LG
-			GVCCF(i) = GVCCF(i - 1) + GVCF(i)
-		Next i
-		
-		
-		' GDP 20 Jan 2003
-		' Commented out code below - not used
-		'6448
-		'        'save OXY Database items
-		'      If RF$(3) = "OXY" Then          'Camefrom$ = "DISPLAY" THEN
-		'         SaveOXYSerialNo DashSerial$
-		'      Else
-		'         DashSerial$ = ""
-		'      End If
-6450: 
-		' GDP 08 Apr 2003
-		' Commented out - removed below functions
-		' only used for OXY
-		'LoadAnnData
-		'LoadPrjData
-		'LoadDocData
-		'++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		'++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		'++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		
-		'if RF$(1) = "CONSOL", you rejoin normal run here from 6008
-6735: 
-		' GDP 20 Jan 2003
-		' Commented out below code - not used
-		
-		'      If RF$(1) = "CONSOL" And RF$(3) = "OXY" Then
-		'         SaveOXYSerialNo DashSerial$
-		'      End If
-		If xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only Then
-			GoTo 24000
-		End If
-		
-		If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
-			GoTo 6740
-		End If
-		GoTo 24000
-		
-		'--------------------------------------------------------------------
-6740: 
-		' Add for capturing column data for ASPEEngine
-		Dim l_iTypes() As Short
-		Dim l_sCodes() As String
-		'UPGRADE_WARNING: Lower bound of array l_iTypes was changed from LBound(ColumnNm$) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-		ReDim l_iTypes(UBound(ColumnNm))
-		'UPGRADE_WARNING: Lower bound of array l_sCodes was changed from LBound(ColumnNm$) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-		ReDim l_sCodes(UBound(ColumnNm))
-		
-		'PRINT POSITIVE CASH FLOW TITLES
-		'setting the ColumnNm$() counter
-		Counter = 1
-		For i = 1 To TDT
-			If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 7180
-			If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 7180
-			
-			If Left(TD(i, 4), 1) = "+" Then
-				'here if doing primary product AND if cash flow effect = "+"
-				MatchTitles(TD(i, 1), CStr(ColumnNm(Counter))) 'FINDS MATCHING SHORT REPORT TITLE
-				' Capture type and user-defined variable code for this profile
-				l_iTypes(Counter) = 8
-				l_sCodes(Counter) = TD(i, 1)
-				Counter = Counter + 1
-			End If
-7180: Next i
-		
-		Counter = Counter - 1 'to offset the for/next loop for incrementing an extra 1
-		'assigning repay if there is any
-		If REPY <> 0 Then
-			Counter = Counter + 1
+
+        ' capture the positive and negative cash flows into designated array locations
+        If xxx_POSCF > 0 And xxx_NEGCF > 0 Then
+            For i = 1 To LG
+                gna_ACFX(i, xxx_POSCF) = PSCF(i, PS + 1)
+                gna_ACFX(i, xxx_NEGCF) = NGCF(i, NEG + 1)
+            Next i
+        End If
+
+AfDeflate:
+        ' -----------------------------------------------------------------------
+        ' CALCULATE UNDISCOUNTED VARIABLES FOR DEFLATED CASH FLOW PAGE
+        ' FIRST DO COMPANY CASH FLOW AND CUMULATIVE CASH FLOW
+
+        ReDim COCCF(LG)
+
+        For i = 1 To LG
+            If DFL(i) <> 0 Then
+                COCF(i) = CF(i) / DFL(i)
+            Else
+                COCF(i) = 0
+            End If
+        Next i
+
+        COCCF(1) = COCF(1)
+        For i = 2 To LG
+            COCCF(i) = COCCF(i - 1) + COCF(i)
+        Next i
+
+6432:
+
+        ''        ' 17 Dec 2004 JWD (C0846) Add calculation of 3rd party and NOC cash flows
+        ''
+        ''        ' Do third party cash flow
+        ''        ' Third party cash flow is:
+        ''        ' GPCFV is 100%; is cash received by group (COMPANY and 3rd party) and by NOC (participation)
+        ''        ' GNCFV, OPEX are 100%; & is cash paid out by group (COMPANY and 3rd party) and by NOC (participation)
+        ''        ' GREPAY is 100%; is paid by NOC to group (COMPANY and 3rd Party) for carried capital
+        ''        ' GFINAN is 100%; net financing (loans and repayment of) is received & paid by group and by NOC (participation)
+        ''        ' CNREIM is net to the COMPANY; is the amount of reimbursement of carried capital between COMPANY and 3rd party (amounts received by COMPANY are positive, paid by COMPANY are negative)
+        ''        ' C3DPTY is net to the COMPANY; is amount of payments to 3rd party that are defined in fiscal model
+
+        ' Condition on not a pre-tax consolidation
+        For i = 1 To LG
+            ''            TDPCF(i) = ((GPCFV(i) - GNCFV(i)) * (1 - EffInts(i, gc_nEffInts_PAR)) + GREPAY(i)) * (1 - EffInts(i, gc_nEffInts_WIN)) - GOPEX(i) * (1 - EffInts(i, gc_nEffInts_POX)) * (1 - EffInts(i, gc_nEffInts_WOX)) - CNREIM(i) + C3DPTY(i) + (GFINAN(i) * (1 - EffInts(i, gc_nEffInts_PFN)) * (1 - EffInts(i, gc_nEffInts_WFN)))
+            TDPCF(i) = gna_ACFX(i, gna_ACFX_GPS) - gna_ACFX(i, gna_ACFX_GNG) - gna_ACFX(i, gna_ACFX_CPS) + gna_ACFX(i, gna_ACFX_CNG)
+        Next i
+
+        ''        ' Add in the capital expenditure amounts
+        ''        For i = 1 To my3tt
+        ''            y = my3(i, gc_nMY3_XYR) - YR + 1
+        ''            If my3(i, gc_nMY3_CAT) < CPXCategoryCodeBAL Or my3(i, gc_nMY3_CAT) = CPXCategoryCode_AbandonmentCashExpenditure Then
+        ''                TDPCF(y) = TDPCF(y) - GMY3(i) * (1 - EffIntsX(i, gc_nEffIntsX_PAR)) * (1 - EffIntsX(i, gc_nEffIntsX_WIN))
+        ''            End If
+        ''        Next i
+
+        For i = 1 To LG
+            If DFL(i) <> 0 Then
+                TDPCF(i) = TDPCF(i) / DFL(i)
+            Else
+                TDPCF(i) = 0
+            End If
+        Next i
+
+        TDPCCF(1) = TDPCF(1)
+        For i = 2 To LG
+            TDPCCF(i) = TDPCCF(i - 1) + TDPCF(i)
+        Next i
+
+        ' Do NOC cash flow
+
+        For i = 1 To LG
+            ''           NOCCF(i) = (GPCFV(i) - GNCFV(i)) * EffInts(i, gc_nEffInts_PAR) - GOPEX(i) * EffInts(i, gc_nEffInts_POX) - GREPAY(i) + (GFINAN(i) * EffInts(i, gc_nEffInts_PFN))
+            NOCCF(i) = gna_ACFX(i, gna_ACFX_OPS) - gna_ACFX(i, gna_ACFX_ONG) - gna_ACFX(i, gna_ACFX_GPS) + gna_ACFX(i, gna_ACFX_GNG)
+        Next i
+
+        ''        ' Add in the capital expenditure amounts
+        ''        Debug.Print "NOCCF(y) = NOCCF(y) - GMY3(i) * EffIntsX(i, gc_nEffIntsX_PAR)"
+
+        ''        For i = 1 To my3tt
+        ''            y = my3(i, gc_nMY3_XYR) - YR + 1
+        ''            If my3(i, gc_nMY3_CAT) < CPXCategoryCodeBAL Or my3(i, gc_nMY3_CAT) = CPXCategoryCode_AbandonmentCashExpenditure Then
+        ''                NOCCF(y) = NOCCF(y) - GMY3(i) * EffIntsX(i, gc_nEffIntsX_PAR)
+        ''            End If
+        ''        Next i
+
+        For i = 1 To LG
+            If DFL(i) <> 0 Then
+                NOCCF(i) = NOCCF(i) / DFL(i)
+            Else
+                NOCCF(i) = 0
+            End If
+        Next i
+
+        NOCCCF(1) = NOCCF(1)
+        For i = 2 To LG
+            NOCCCF(i) = NOCCCF(i - 1) + NOCCF(i)
+        Next i
+        ' End (C0846)
+
+        ' =======================================================================
+        ' NOW DO GOVERNMENT CASH FLOW
+        ' =======================================================================
+
+        ''         'compute capex
+        ''      For i = 1 To my3tt
+        ''         '<<<<<< 4 Aug 2001 JWD (C0363)
+        ''         If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) = CPXCategoryCode_AbandonmentCashExpenditure Then
+        ''         '~~~~~~ was:
+        ''         ''<<<<<< 21 Jun 2001 JWD (C0339)
+        ''         'If my3(i, 1) < CPXCategoryCodeBAL Or my3(i, 1) > CPXCategoryCodeBL3 Then ' BAL, BL2, BL3
+        ''         ''~~~~~~ was:
+        ''         ''If my3(i, 1) <> 18 Then
+        ''         ''>>>>>> End (C0339)
+        ''         '>>>>>> End (C0363)
+        ''            y = my3(i, 3) - YR + 1
+        ''            If my3(i, 1) = 1 Then       'if categ. 1 then Gov. gets 100%
+        ''               CP(y) = CP(y) - my3(i, 5)
+        ''            Else
+        ''               CP(y) = CP(y) + (my3(i, 5) * (1 - GPRATE(i)))
+        ''            End If
+        ''         End If
+        ''      Next i
+
+6434:
+        'do positive cash flows for government
+        'if its repayment or finance, they do not apply to government
+        ' 17 Dec 2004 JWD (C0846) Replaced government cash flow calc with code following
+        '
+        '      For i = 1 To LG
+        '                                'govt starts at 100% gross revenues
+        '         ' Changed GDP 20 Jan 2003
+        '         ' GVCF(i) = (A(i, 1) * A(i, 7)) + (A(i, 2) * A(i, 8)) + (A(i, 3) * A(i, 9)) + (A(i, 4) * A(i, 10))
+        '         GVCF(i) = ATotalRevenues(i)
+        '
+        '         For y = 1 To PS%
+        '            If y = REPY% Or y = fin% Then
+        '            Else
+        '               If WIN(i) <> 0 Then
+        '                  GVCF(i) = GVCF(i) - (PSCF(i, y) / WIN(i))
+        '               End If
+        '            End If
+        '         Next y
+        '6436
+        '                                'take out capital and opex
+        '         NEGLP% = NEG%
+        '         If my3tt <> 0 Then
+        '            NEGLP% = NEGLP% - 1
+        '         End If
+        '         If OPEX(0) <> 0 Then
+        '            NEGLP% = NEGLP% - 1
+        '         End If
+        '         For y = 1 To NEGLP%             'do negative cash flows for government
+        '            If WIN(i) <> 0 Then
+        '               GVCF(i) = GVCF(i) + ((NGCF(i, y) / WIN(i)))
+        '            End If
+        '         Next y
+        '6438
+        '                'Back out T & U negatives from GOVT
+        '                'T & U negatives do not go to (or come from)
+        '                '  the GOVT (Even though they are in NGCF())
+        '         For y = 1 To NEGT%             'do negative cash flows for government
+        '            If WIN(i) <> 0 Then
+        '               GVCF(i) = GVCF(i) - ((NGCFT(i, y) / WIN(i)))
+        '            End If
+        '         Next y
+        '6439
+        '         For y = 1 To NEGU%             'do negative cash flows for government
+        '            If WIN(i) <> 0 Then
+        '               GVCF(i) = GVCF(i) - ((NGCFU(i, y) / WIN(i)))
+        '            End If
+        '         Next y
+        '6442
+        '                'do capex
+        '         GVCF(i) = GVCF(i) - CP(i)
+        '         GVCF(i) = GVCF(i) - (OPEX(i) * OPEXRATE(i))     'do opex
+        '         If WIN(i) <> 0 Then                             'do TOTPMT()
+        '            GVCF(i) = GVCF(i) - (TOTPMT(i) / WIN(i))
+        '         Else
+        '            GVCF(i) = 0
+        '         End If
+        '6446
+        ' End (C0846)
+
+        For i = 1 To LG
+            ' Government cash flow is total revenues less all positive cash flows
+            ' (going to company & partners (3rd party)) plus any negative cash flows
+            ' (excluding T cash flows, opex and capex)
+            ''         GVCF(i) = GREV(i) - GPCFV(i) + GNCFV(i)
+            GVCF(i) = gna_ACFX(i, gna_ACFX_TPS) - gna_ACFX(i, gna_ACFX_TNG) - gna_ACFX(i, gna_ACFX_OPS) + gna_ACFX(i, gna_ACFX_ONG)
+        Next i
+
+        ''      ' Add in the capital expenditure amounts (bonuses)
+        ''      For i = 1 To my3tt
+        ''          y = my3(i, gc_nMY3_XYR) - YR + 1
+        ''          If my3(i, gc_nMY3_CAT) = 1 Then
+        ''              GVCF(y) = GVCF(y) + GMY3(i)
+        ''          End If
+        ''      Next i
+
+        For i = 1 To LG
+            'applying the deflator
+            If DFL(i) <> 0 Then
+                GVCF(i) = GVCF(i) / DFL(i)
+            Else
+                GVCF(i) = 0
+            End If
+        Next i
+
+        'accumulate gov.
+        GVCCF(1) = GVCF(1)
+        For i = 2 To LG
+            GVCCF(i) = GVCCF(i - 1) + GVCF(i)
+        Next i
+
+
+        ' GDP 20 Jan 2003
+        ' Commented out code below - not used
+        '6448
+        '        'save OXY Database items
+        '      If RF$(3) = "OXY" Then          'Camefrom$ = "DISPLAY" THEN
+        '         SaveOXYSerialNo DashSerial$
+        '      Else
+        '         DashSerial$ = ""
+        '      End If
+6450:
+        ' GDP 08 Apr 2003
+        ' Commented out - removed below functions
+        ' only used for OXY
+        'LoadAnnData
+        'LoadPrjData
+        'LoadDocData
+        '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        'if RF$(1) = "CONSOL", you rejoin normal run here from 6008
+6735:
+        ' GDP 20 Jan 2003
+        ' Commented out below code - not used
+
+        '      If RF$(1) = "CONSOL" And RF$(3) = "OXY" Then
+        '         SaveOXYSerialNo DashSerial$
+        '      End If
+        If xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Only Then
+            GoTo 24000
+        End If
+
+        If RF(5) = "ALL" Or RF(5) = "VAR" Or RF(5) = "SUM" Then
+            GoTo 6740
+        End If
+        GoTo 24000
+
+        '--------------------------------------------------------------------
+6740:
+        ' Add for capturing column data for ASPEEngine
+        Dim l_iTypes() As Short
+        Dim l_sCodes() As String
+        'UPGRADE_WARNING: Lower bound of array l_iTypes was changed from LBound(ColumnNm$) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+        ReDim l_iTypes(UBound(ColumnNm))
+        'UPGRADE_WARNING: Lower bound of array l_sCodes was changed from LBound(ColumnNm$) to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
+        ReDim l_sCodes(UBound(ColumnNm))
+
+        'PRINT POSITIVE CASH FLOW TITLES
+        'setting the ColumnNm$() counter
+        Counter = 1
+        For i = 1 To TDT
+            If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 7180
+            If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 7180
+
+            If Left(TD(i, 4), 1) = "+" Then
+                'here if doing primary product AND if cash flow effect = "+"
+                MatchTitles(TD(i, 1), CStr(ColumnNm(Counter))) 'FINDS MATCHING SHORT REPORT TITLE
+                ' Capture type and user-defined variable code for this profile
+                l_iTypes(Counter) = 8
+                l_sCodes(Counter) = TD(i, 1)
+                Counter = Counter + 1
+            End If
+7180:   Next i
+
+        Counter = Counter - 1 'to offset the for/next loop for incrementing an extra 1
+        'assigning repay if there is any
+        If REPY <> 0 Then
+            Counter = Counter + 1
             ColumnNm(Counter) = (" REPAY ")
-			l_iTypes(Counter) = 1
-		End If
-		If fin <> 0 Then
-			Counter = Counter + 1
+            l_iTypes(Counter) = 1
+        End If
+        If fin <> 0 Then
+            Counter = Counter + 1
             ColumnNm(Counter) = ("FINANCE")
-			l_iTypes(Counter) = 2
-		End If
-		Counter = Counter + 1
+            l_iTypes(Counter) = 2
+        End If
+        Counter = Counter + 1
         ColumnNm(Counter) = (" POSTOT")
-		l_iTypes(Counter) = 3
-		
-		'assigning the number of postive cf
-		PosCtr = Counter
-		
-		Counter = Counter + 1
-		For i = 1 To TDT
-			If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 7240
-			If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 7240
-			cflo = Left(TD(i, 4), 1)
-			
-			If cflo = "-" Or cflo = "T" Or cflo = "A" Or cflo = "U" Then
+        l_iTypes(Counter) = 3
+
+        'assigning the number of postive cf
+        PosCtr = Counter
+
+        Counter = Counter + 1
+        For i = 1 To TDT
+            If TD(i, 2) = "OIL" And PPR = 2 Then GoTo 7240
+            If TD(i, 2) = "GAS" And PPR = 1 Then GoTo 7240
+            cflo = Left(TD(i, 4), 1)
+
+            If cflo = "-" Or cflo = "T" Or cflo = "A" Or cflo = "U" Then
                 MatchTitles(TD(i, 1), (ColumnNm(Counter))) 'FINDS MATCHING SHORT REPORT TITLE
-				' Capture type and user-defined variable code for this profile
-				l_iTypes(Counter) = 8
-				l_sCodes(Counter) = TD(i, 1)
-				Counter = Counter + 1
-			End If
-7240: Next i
-		
-		Counter = Counter - 1 'to offset the for/next loop for incrementing an extra 1
-		If OPXP <> 0 Then
-			Counter = Counter + 1
+                ' Capture type and user-defined variable code for this profile
+                l_iTypes(Counter) = 8
+                l_sCodes(Counter) = TD(i, 1)
+                Counter = Counter + 1
+            End If
+7240:   Next i
+
+        Counter = Counter - 1 'to offset the for/next loop for incrementing an extra 1
+        If OPXP <> 0 Then
+            Counter = Counter + 1
             ColumnNm(Counter) = ("OPEREXP")
-			l_iTypes(Counter) = 5
-		End If
-		If CPXP <> 0 Then
-			Counter = Counter + 1
+            l_iTypes(Counter) = 5
+        End If
+        If CPXP <> 0 Then
+            Counter = Counter + 1
             ColumnNm(Counter) = ("CAPITAL")
             l_iTypes(Counter) = 4
         End If
@@ -1513,9 +1513,9 @@ AfDeflate:
         ConCur = sCur 'for consolidation
 
         ' 3 Feb 2004 JWD (C0776) Remove writes, replaced with report object
-        ''''Write #5, 10, YR, 0, LG, Counter%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
-        ''''Call WriteFour(Counter%, ColumnNm$())    'COLUMN HEADS
-        ''''Call WriteOne(AtcfCtr%, DUM())           'DATA
+        ''Write #5, 10, YR, 0, LG, Counter%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
+        ''Call WriteFour(Counter%, ColumnNm$())    'COLUMN HEADS
+        ''Call WriteOne(AtcfCtr%, DUM())           'DATA
 
         Dim oPg1 As CGiantRptPageD1
         oPg1 = g_oReport.NewAfterTaxCashflowRptPage
@@ -1622,8 +1622,8 @@ AfDeflate:
 
         'Page type, Start year, Page counter, life of field, number of columns, page title, column length
         ' 3 Feb 2004 JWD (C0776) Remove writes
-        ''''Write #5, 13, YR, 0, LG, 9, "DEFLATED CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
-        '''30040  WRITE #5, 13, YR, 0, LG, 9, "DEFLATED CASH FLOW", 10, WINT, PRTA, sCur
+        ''Write #5, 13, YR, 0, LG, 9, "DEFLATED CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
+        ''30040  WRITE #5, 13, YR, 0, LG, 9, "DEFLATED CASH FLOW", 10, WINT, PRTA, sCur
 
         ' Deflated Cashflow Column Names
 
@@ -1649,7 +1649,7 @@ AfDeflate:
 
 
         ' 3 Feb 2004 JWD (C0776) Remove writes
-        ''''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9)
+        ''Write #5, ColumnNm$(1), ColumnNm$(2), ColumnNm$(3), ColumnNm$(4), ColumnNm$(5), ColumnNm$(6), ColumnNm$(7), ColumnNm$(8), ColumnNm$(9)
 
         Dim oPg2 As IGiantRptPageAssignStd
         oPg2 = g_oReport.NewStandardRptPage
@@ -1681,7 +1681,7 @@ AfDeflate:
 
         For i = 1 To LG
             ' 3 Feb 2004 JWD (C0776) Remove writes
-            ''''Write #5, DFL(i), COCF(i), COCCF(i), CODCF(i), COCDCF(i), GVCF(i), GVCCF(i), GVDCF(i), GVCDCF(i)
+            ''Write #5, DFL(i), COCF(i), COCCF(i), CODCF(i), COCDCF(i), GVCF(i), GVCCF(i), GVDCF(i), GVCDCF(i)
             ' 6 Dec 2005 JWD (C0846) Add new cash flow symbols to call
             oPg2.SetProfileValues(i, DFL(i), COCF(i), COCCF(i), CODCF(i), COCDCF(i), TDPCF(i), TDPCCF(i), TDPDCF(i), TDPCDCF(i), NOCCF(i), NOCCCF(i), NOCDCF(i), NOCCDCF(i), GVCF(i), GVCCF(i), GVDCF(i), GVCDCF(i))
             ' was:
@@ -1772,17 +1772,17 @@ AfDeflate:
         Next i
         '10-18-95  end of changed section
 
-        ''' 9 Feb 2004 JWD (C0783) Remove output of STATETAK.SUM file
-        '''        'now, write the values out to file
-        '''      flno% = FreeFile
-        '''        'values used for Run summary page for each run
-        '''      If RNU = 1 Then
-        '''         Open sRptDir + "STATETAK.SUM" For Output As #flno%
-        '''      Else
-        '''         Open sRptDir + "STATETAK.SUM" For Append As #flno%
-        '''      End If
-        '''      Write #flno%, StateTake!(1), StateTake!(2), StateTake!(3), StateTake!(4), StateTake!(5), StateTake!(6)
-        '''      Close #flno%
+        '' 9 Feb 2004 JWD (C0783) Remove output of STATETAK.SUM file
+        ''        'now, write the values out to file
+        ''      flno% = FreeFile
+        ''        'values used for Run summary page for each run
+        ''      If RNU = 1 Then
+        ''         Open sRptDir + "STATETAK.SUM" For Output As #flno%
+        ''      Else
+        ''         Open sRptDir + "STATETAK.SUM" For Append As #flno%
+        ''      End If
+        ''      Write #flno%, StateTake!(1), StateTake!(2), StateTake!(3), StateTake!(4), StateTake!(5), StateTake!(6)
+        ''      Close #flno%
 
         ' 14 Oct 2004 JWD (C0845) Remove conditional, always do indicators page
         'If RF$(5) = "ALL" Or RF$(5) = "VAR" Or RF$(5) = "SUM" Then
@@ -1796,29 +1796,29 @@ AfDeflate:
         'Page type, Start year, Page counter, life of field, number of columns, page title, column length
 
         ' 3 Feb 2004 JWD (C0776) Remove writes
-        ''''Write #5, 11, YR, 0, LG, 6, "ECONOMIC SUMMARY", 12, FinalWin, FINALPARTIC, sCur
+        ''Write #5, 11, YR, 0, LG, 6, "ECONOMIC SUMMARY", 12, FinalWin, FINALPARTIC, sCur
 
         'present values
-        ''''Write #5, gn(4), gn(5), gn(6), gn(7), gn(8), gn(9)
+        ''Write #5, gn(4), gn(5), gn(6), gn(7), gn(8), gn(9)
         ss = "########.###" : TS = "#########.##"
-        ''''Write #5, "Co. Income", ESPV(1, 1), ESPV(1, 2), ESPV(1, 3), ESPV(1, 4), ESPV(1, 5), ESPV(1, 6)
-        ''''Write #5, "Co. Oper. Costs", ESPV(2, 1), ESPV(2, 2), ESPV(2, 3), ESPV(2, 4), ESPV(2, 5), ESPV(2, 6)
-        ''''Write #5, "Co. Capital", ESPV(3, 1), ESPV(3, 2), ESPV(3, 3), ESPV(3, 4), ESPV(3, 5), ESPV(3, 6)
-        ''''Write #5, "Co. Royalty/Tax", ESPV(4, 1), ESPV(4, 2), ESPV(4, 3), ESPV(4, 4), ESPV(4, 5), ESPV(4, 6)
-        ''''Write #5, "Co. Cash Flow", ESPV(9, 1), ESPV(9, 2), ESPV(9, 3), ESPV(9, 4), ESPV(9, 5), ESPV(9, 6)
-        ''''Write #5, "Co. Payout, Years", ESPV(10, 1), ESPV(10, 2), ESPV(10, 3), ESPV(10, 4), ESPV(10, 5), ESPV(10, 6)
-        ''''Write #5, "Co. Risk Return Ratio", ESPV(11, 1), ESPV(11, 2), ESPV(11, 3), ESPV(11, 4), ESPV(11, 5), ESPV(11, 6)
-        ''''Write #5, "Co. Profitability Index", ESPV(12, 1), ESPV(12, 2), ESPV(12, 3), ESPV(12, 4), ESPV(12, 5), ESPV(12, 6)
-        ''''Write #5, "Co. Government Take, %", ESPV(13, 1), ESPV(13, 2), ESPV(13, 3), ESPV(13, 4), ESPV(13, 5), ESPV(13, 6)
-        ''''Write #5, "Co. State Take, %", StateTake!(1), StateTake!(2), StateTake!(3), StateTake!(4), StateTake!(5), StateTake!(6)
-        ''''Write #5, "Gv. Cash Flow", ESPV(5, 1), ESPV(5, 2), ESPV(5, 3), ESPV(5, 4), ESPV(5, 5), ESPV(5, 6)
-        ''''Write #5, "Gv. Payout, Years", ESPV(6, 1), ESPV(6, 2), ESPV(6, 3), ESPV(6, 4), ESPV(6, 5), ESPV(6, 6)
-        ''''Write #5, "Gv. Risk Return Ratio", ESPV(7, 1), ESPV(7, 2), ESPV(7, 3), ESPV(7, 4), ESPV(7, 5), ESPV(7, 6)
-        ''''Write #5, "Gv. Profitability Index", ESPV(8, 1), ESPV(8, 2), ESPV(8, 3), ESPV(8, 4), ESPV(8, 5), ESPV(8, 6)
-        ''''Write #5, "   Company DCF Rate of Return:", RR, 0, 0, 0, 0, 0
-        ''''Write #5, "Government DCF Rate of Return:", RRB, M3, Y3, 0, 0, 0  'M3 is month, Y3 is year of discount date
+        ''Write #5, "Co. Income", ESPV(1, 1), ESPV(1, 2), ESPV(1, 3), ESPV(1, 4), ESPV(1, 5), ESPV(1, 6)
+        ''Write #5, "Co. Oper. Costs", ESPV(2, 1), ESPV(2, 2), ESPV(2, 3), ESPV(2, 4), ESPV(2, 5), ESPV(2, 6)
+        ''Write #5, "Co. Capital", ESPV(3, 1), ESPV(3, 2), ESPV(3, 3), ESPV(3, 4), ESPV(3, 5), ESPV(3, 6)
+        ''Write #5, "Co. Royalty/Tax", ESPV(4, 1), ESPV(4, 2), ESPV(4, 3), ESPV(4, 4), ESPV(4, 5), ESPV(4, 6)
+        ''Write #5, "Co. Cash Flow", ESPV(9, 1), ESPV(9, 2), ESPV(9, 3), ESPV(9, 4), ESPV(9, 5), ESPV(9, 6)
+        ''Write #5, "Co. Payout, Years", ESPV(10, 1), ESPV(10, 2), ESPV(10, 3), ESPV(10, 4), ESPV(10, 5), ESPV(10, 6)
+        ''Write #5, "Co. Risk Return Ratio", ESPV(11, 1), ESPV(11, 2), ESPV(11, 3), ESPV(11, 4), ESPV(11, 5), ESPV(11, 6)
+        ''Write #5, "Co. Profitability Index", ESPV(12, 1), ESPV(12, 2), ESPV(12, 3), ESPV(12, 4), ESPV(12, 5), ESPV(12, 6)
+        ''Write #5, "Co. Government Take, %", ESPV(13, 1), ESPV(13, 2), ESPV(13, 3), ESPV(13, 4), ESPV(13, 5), ESPV(13, 6)
+        ''Write #5, "Co. State Take, %", StateTake!(1), StateTake!(2), StateTake!(3), StateTake!(4), StateTake!(5), StateTake!(6)
+        ''Write #5, "Gv. Cash Flow", ESPV(5, 1), ESPV(5, 2), ESPV(5, 3), ESPV(5, 4), ESPV(5, 5), ESPV(5, 6)
+        ''Write #5, "Gv. Payout, Years", ESPV(6, 1), ESPV(6, 2), ESPV(6, 3), ESPV(6, 4), ESPV(6, 5), ESPV(6, 6)
+        ''Write #5, "Gv. Risk Return Ratio", ESPV(7, 1), ESPV(7, 2), ESPV(7, 3), ESPV(7, 4), ESPV(7, 5), ESPV(7, 6)
+        ''Write #5, "Gv. Profitability Index", ESPV(8, 1), ESPV(8, 2), ESPV(8, 3), ESPV(8, 4), ESPV(8, 5), ESPV(8, 6)
+        ''Write #5, "   Company DCF Rate of Return:", RR, 0, 0, 0, 0, 0
+        ''Write #5, "Government DCF Rate of Return:", RRB, M3, Y3, 0, 0, 0  'M3 is month, Y3 is year of discount date
 
-        ''''Close #5
+        ''Close #5
 
 
         Dim oPg3 As CGiantRptPageB1
@@ -2215,12 +2215,12 @@ AfDeflate:
                 AC(XI, 11) = AC(XI, 11) + NGCFU(x, iNGCFU + 1)
             End If
 
-            '''          ' 10 Feb 2005 JWD (C0856) Add accumulation of net cash flows for 3d party, NOC, & Govt
-            '''          AC(XI, gc_nAC_CMPNCF) = AC(XI, gc_nAC_CMPNCF) + (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * EffInts(x, gc_nEffInts_WIN) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * EffInts(x, gc_nEffInts_WOX) + CNREIM(x) - C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * EffInts(x, gc_nEffInts_WFN)) * EF * a_fCurrFactor(x)
-            '''          AC(XI, gc_nAC_3DPNCF) = AC(XI, gc_nAC_3DPNCF) + (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * (1 - EffInts(x, gc_nEffInts_WIN)) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * (1 - EffInts(x, gc_nEffInts_WOX)) - CNREIM(x) + C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * (1 - EffInts(x, gc_nEffInts_WFN))) * EF * a_fCurrFactor(x)
-            '''          AC(XI, gc_nAC_NOCNCF) = AC(XI, gc_nAC_NOCNCF) + ((GPCFV(x) - GNCFV(x)) * EffInts(x, gc_nEffInts_PAR) - GREPAY(x) - GOPEX(x) * EffInts(x, gc_nEffInts_POX) + GFINAN(x) * EffInts(x, gc_nEffInts_PFN)) * EF * a_fCurrFactor(x)
-            '''          AC(XI, gc_nAC_GRSREV) = AC(XI, gc_nAC_GRSREV) + (GREV(x) - GPCFV(x) + GNCFV(x)) * EF * a_fCurrFactor(x)
-            '''          ' End (C0856)
+            ''          ' 10 Feb 2005 JWD (C0856) Add accumulation of net cash flows for 3d party, NOC, & Govt
+            ''          AC(XI, gc_nAC_CMPNCF) = AC(XI, gc_nAC_CMPNCF) + (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * EffInts(x, gc_nEffInts_WIN) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * EffInts(x, gc_nEffInts_WOX) + CNREIM(x) - C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * EffInts(x, gc_nEffInts_WFN)) * EF * a_fCurrFactor(x)
+            ''          AC(XI, gc_nAC_3DPNCF) = AC(XI, gc_nAC_3DPNCF) + (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * (1 - EffInts(x, gc_nEffInts_WIN)) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * (1 - EffInts(x, gc_nEffInts_WOX)) - CNREIM(x) + C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * (1 - EffInts(x, gc_nEffInts_WFN))) * EF * a_fCurrFactor(x)
+            ''          AC(XI, gc_nAC_NOCNCF) = AC(XI, gc_nAC_NOCNCF) + ((GPCFV(x) - GNCFV(x)) * EffInts(x, gc_nEffInts_PAR) - GREPAY(x) - GOPEX(x) * EffInts(x, gc_nEffInts_POX) + GFINAN(x) * EffInts(x, gc_nEffInts_PFN)) * EF * a_fCurrFactor(x)
+            ''          AC(XI, gc_nAC_GRSREV) = AC(XI, gc_nAC_GRSREV) + (GREV(x) - GPCFV(x) + GNCFV(x)) * EF * a_fCurrFactor(x)
+            ''          ' End (C0856)
 
             AC(XI, gc_nAC_TPS) = AC(XI, gc_nAC_TPS) + gna_ACFX(x, gna_ACFX_TPS) * EF * a_fCurrFactor(x)
             AC(XI, gc_nAC_TNG) = AC(XI, gc_nAC_TNG) + gna_ACFX(x, gna_ACFX_TNG) * EF * a_fCurrFactor(x)
@@ -2266,12 +2266,12 @@ AfDeflate:
             D8(XI, 10) = AC(x, 10)
             D8(XI, 11) = AC(x, 11)
 
-            '''        ' 10 Feb 2005 JWD (C0856)
-            '''        D8(XI, gc_nAC_CMPNCF) = AC(x, gc_nAC_CMPNCF)
-            '''        D8(XI, gc_nAC_3DPNCF) = AC(x, gc_nAC_3DPNCF)
-            '''        D8(XI, gc_nAC_NOCNCF) = AC(x, gc_nAC_NOCNCF)
-            '''        D8(XI, gc_nAC_GRSREV) = AC(x, gc_nAC_GRSREV)
-            '''        ' End (C0856)
+            ''        ' 10 Feb 2005 JWD (C0856)
+            ''        D8(XI, gc_nAC_CMPNCF) = AC(x, gc_nAC_CMPNCF)
+            ''        D8(XI, gc_nAC_3DPNCF) = AC(x, gc_nAC_3DPNCF)
+            ''        D8(XI, gc_nAC_NOCNCF) = AC(x, gc_nAC_NOCNCF)
+            ''        D8(XI, gc_nAC_GRSREV) = AC(x, gc_nAC_GRSREV)
+            ''        ' End (C0856)
 
             D8(XI, gc_nAC_TPS) = AC(x, gc_nAC_TPS)
             D8(XI, gc_nAC_TNG) = AC(x, gc_nAC_TNG)
@@ -2369,12 +2369,12 @@ AfDeflate:
                 AC(x, 11) = AC(x, 11) + NGCFU(x, iNGCFU + 1)
             End If
 
-            '''        ' 10 Feb 2005 JWD (C0856) Add accumulation of net cash flows for 3d party, NOC, & Govt
-            '''        AC(x, gc_nAC_CMPNCF) = (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * EffInts(x, gc_nEffInts_WIN) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * EffInts(x, gc_nEffInts_WOX) + CNREIM(x) - C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * EffInts(x, gc_nEffInts_WFN)) * EF * a_fCurrFactor(x)
-            '''        AC(x, gc_nAC_3DPNCF) = (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * (1 - EffInts(x, gc_nEffInts_WIN)) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * (1 - EffInts(x, gc_nEffInts_WOX)) - CNREIM(x) + C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * (1 - EffInts(x, gc_nEffInts_WFN))) * EF * a_fCurrFactor(x)
-            '''        AC(x, gc_nAC_NOCNCF) = ((GPCFV(x) - GNCFV(x)) * EffInts(x, gc_nEffInts_PAR) - GREPAY(x) - GOPEX(x) * EffInts(x, gc_nEffInts_POX) + GFINAN(x) * EffInts(x, gc_nEffInts_PFN)) * EF * a_fCurrFactor(x)
-            '''        AC(x, gc_nAC_GRSREV) = (GREV(x) - GPCFV(x) + GNCFV(x)) * EF * a_fCurrFactor(x)
-            '''        ' End (C0856)
+            ''        ' 10 Feb 2005 JWD (C0856) Add accumulation of net cash flows for 3d party, NOC, & Govt
+            ''        AC(x, gc_nAC_CMPNCF) = (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * EffInts(x, gc_nEffInts_WIN) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * EffInts(x, gc_nEffInts_WOX) + CNREIM(x) - C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * EffInts(x, gc_nEffInts_WFN)) * EF * a_fCurrFactor(x)
+            ''        AC(x, gc_nAC_3DPNCF) = (((GPCFV(x) - GNCFV(x)) * (1 - EffInts(x, gc_nEffInts_PAR)) + GREPAY(x)) * (1 - EffInts(x, gc_nEffInts_WIN)) - GOPEX(x) * (1 - EffInts(x, gc_nEffInts_POX)) * (1 - EffInts(x, gc_nEffInts_WOX)) - CNREIM(x) + C3DPTY(x) + GFINAN(x) * (1 - EffInts(x, gc_nEffInts_PFN)) * (1 - EffInts(x, gc_nEffInts_WFN))) * EF * a_fCurrFactor(x)
+            ''        AC(x, gc_nAC_NOCNCF) = ((GPCFV(x) - GNCFV(x)) * EffInts(x, gc_nEffInts_PAR) - GREPAY(x) - GOPEX(x) * EffInts(x, gc_nEffInts_POX) + GFINAN(x) * EffInts(x, gc_nEffInts_PFN)) * EF * a_fCurrFactor(x)
+            ''        AC(x, gc_nAC_GRSREV) = (GREV(x) - GPCFV(x) + GNCFV(x)) * EF * a_fCurrFactor(x)
+            ''        ' End (C0856)
 
             AC(x, gc_nAC_TPS) = AC(x, gc_nAC_TPS) + gna_ACFX(x, gna_ACFX_TPS) * EF * a_fCurrFactor(x)
             AC(x, gc_nAC_TNG) = AC(x, gc_nAC_TNG) + gna_ACFX(x, gna_ACFX_TNG) * EF * a_fCurrFactor(x)
@@ -2411,12 +2411,12 @@ AfDeflate:
             AC(x, 10) = AC(x, 10) + D8(x, 10)
             AC(x, 11) = AC(x, 11) + D8(x, 11)
 
-            '''        ' 10 Feb 2005 JWD (C0856) Add new positions
-            '''        AC(x, gc_nAC_CMPNCF) = AC(x, gc_nAC_CMPNCF) + D8(x, gc_nAC_CMPNCF)
-            '''        AC(x, gc_nAC_3DPNCF) = AC(x, gc_nAC_3DPNCF) + D8(x, gc_nAC_3DPNCF)
-            '''        AC(x, gc_nAC_NOCNCF) = AC(x, gc_nAC_NOCNCF) + D8(x, gc_nAC_NOCNCF)
-            '''        AC(x, gc_nAC_GRSREV) = AC(x, gc_nAC_GRSREV) + D8(x, gc_nAC_GRSREV)
-            '''        ' End (C0856)
+            ''        ' 10 Feb 2005 JWD (C0856) Add new positions
+            ''        AC(x, gc_nAC_CMPNCF) = AC(x, gc_nAC_CMPNCF) + D8(x, gc_nAC_CMPNCF)
+            ''        AC(x, gc_nAC_3DPNCF) = AC(x, gc_nAC_3DPNCF) + D8(x, gc_nAC_3DPNCF)
+            ''        AC(x, gc_nAC_NOCNCF) = AC(x, gc_nAC_NOCNCF) + D8(x, gc_nAC_NOCNCF)
+            ''        AC(x, gc_nAC_GRSREV) = AC(x, gc_nAC_GRSREV) + D8(x, gc_nAC_GRSREV)
+            ''        ' End (C0856)
 
             AC(x, gc_nAC_TPS) = AC(x, gc_nAC_TPS) + D8(x, gc_nAC_TPS)
             AC(x, gc_nAC_TNG) = AC(x, gc_nAC_TNG) + D8(x, gc_nAC_TNG)
@@ -2472,11 +2472,11 @@ AfDeflate:
                 CC(1, 3) = my3(x, 3)
                 CC(1, 4) = my3(x, 5) * WINC(x) * EF * a_fCurrFactor(my3(x, 3) - YR + 1) * GPRATE(x)
 
-                '''          ' 10 Feb 2005 JWD (C0856) Add capture of 3d party & NOC capital amounts
-                '''          CC(1, gc_nCC_CMP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * EffIntsX(x, gc_nEffIntsX_WIN)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                '''          CC(1, gc_nCC_3DP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * (1 - EffIntsX(x, gc_nEffIntsX_WIN))) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                '''          CC(1, gc_nCC_NOC) = (my3(x, gc_nMY3_AMT) * EffIntsX(x, gc_nEffIntsX_PAR)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                '''          ' End (C0856)
+                ''          ' 10 Feb 2005 JWD (C0856) Add capture of 3d party & NOC capital amounts
+                ''          CC(1, gc_nCC_CMP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * EffIntsX(x, gc_nEffIntsX_WIN)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                ''          CC(1, gc_nCC_3DP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * (1 - EffIntsX(x, gc_nEffIntsX_WIN))) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                ''          CC(1, gc_nCC_NOC) = (my3(x, gc_nMY3_AMT) * EffIntsX(x, gc_nEffIntsX_PAR)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                ''          ' End (C0856)
 
                 CC(1, gc_nCC_TCX) = my3Ex(x, 0) * EF * a_fCurrFactor(my3(x, 3) - YR + 1)
                 CC(1, gc_nCC_OCX) = my3Ex(x, 1) * EF * a_fCurrFactor(my3(x, 3) - YR + 1)
@@ -2495,11 +2495,11 @@ AfDeflate:
 
                         CC(y, 4) = CC(y, 4) + (my3(x, 5) * WINC(x) * EF * a_fCurrFactor(my3(x, 3) - YR + 1) * GPRATE(x))
 
-                        '''              ' 10 Feb 2005 JWD (C0856) Add capture of 3d party & NOC capital amounts
-                        '''              CC(y, gc_nCC_CMP) = CC(y, gc_nCC_CMP) + (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * EffIntsX(x, gc_nEffIntsX_WIN)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                        '''              CC(y, gc_nCC_3DP) = CC(y, gc_nCC_3DP) + (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * (1 - EffIntsX(x, gc_nEffIntsX_WIN))) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                        '''              CC(y, gc_nCC_NOC) = CC(y, gc_nCC_NOC) + (my3(x, gc_nMY3_AMT) * EffIntsX(x, gc_nEffIntsX_PAR)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                        '''              ' End (C0856)
+                        ''              ' 10 Feb 2005 JWD (C0856) Add capture of 3d party & NOC capital amounts
+                        ''              CC(y, gc_nCC_CMP) = CC(y, gc_nCC_CMP) + (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * EffIntsX(x, gc_nEffIntsX_WIN)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                        ''              CC(y, gc_nCC_3DP) = CC(y, gc_nCC_3DP) + (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * (1 - EffIntsX(x, gc_nEffIntsX_WIN))) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                        ''              CC(y, gc_nCC_NOC) = CC(y, gc_nCC_NOC) + (my3(x, gc_nMY3_AMT) * EffIntsX(x, gc_nEffIntsX_PAR)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                        ''              ' End (C0856)
 
                         CC(y, gc_nCC_TCX) = CC(y, gc_nCC_TCX) + my3Ex(x, 0) * EF * a_fCurrFactor(my3(x, 3) - YR + 1)
                         CC(y, gc_nCC_OCX) = CC(y, gc_nCC_OCX) + my3Ex(x, 1) * EF * a_fCurrFactor(my3(x, 3) - YR + 1)
@@ -2518,11 +2518,11 @@ nexty:          Next y
                     CC(AddCCT + CCT, 3) = my3(x, 3)
                     CC(AddCCT + CCT, 4) = my3(x, 5) * WINC(x) * EF * a_fCurrFactor(my3(x, 3) - YR + 1) * GPRATE(x)
 
-                    '''            ' 10 Feb 2005 JWD (C0856) Add capture of 3d party & NOC capital amounts
-                    '''            CC(AddCCT + CCT, gc_nCC_CMP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * EffIntsX(x, gc_nEffIntsX_WIN)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                    '''            CC(AddCCT + CCT, gc_nCC_3DP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * (1 - EffIntsX(x, gc_nEffIntsX_WIN))) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                    '''            CC(AddCCT + CCT, gc_nCC_NOC) = (my3(x, gc_nMY3_AMT) * EffIntsX(x, gc_nEffIntsX_PAR)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
-                    '''            ' End (C0856)
+                    ''            ' 10 Feb 2005 JWD (C0856) Add capture of 3d party & NOC capital amounts
+                    ''            CC(AddCCT + CCT, gc_nCC_CMP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * EffIntsX(x, gc_nEffIntsX_WIN)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                    ''            CC(AddCCT + CCT, gc_nCC_3DP) = (my3(x, gc_nMY3_AMT) * (1 - EffIntsX(x, gc_nEffIntsX_PAR)) * (1 - EffIntsX(x, gc_nEffIntsX_WIN))) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                    ''            CC(AddCCT + CCT, gc_nCC_NOC) = (my3(x, gc_nMY3_AMT) * EffIntsX(x, gc_nEffIntsX_PAR)) * EF * a_fCurrFactor(my3(x, gc_nMY3_XYR) - YR + 1)
+                    ''            ' End (C0856)
 
                     CC(AddCCT + CCT, gc_nCC_TCX) = my3Ex(x, 0) * EF * a_fCurrFactor(my3(x, 3) - YR + 1)
                     CC(AddCCT + CCT, gc_nCC_OCX) = my3Ex(x, 1) * EF * a_fCurrFactor(my3(x, 3) - YR + 1)
@@ -2606,7 +2606,7 @@ nexty:          Next y
             'ReDim NGCFT(LG, 12), NGCFA(LG, 12), NGCFU(LG, 12)
             'ReDim PAY(LG), ATCF(LG), DUM(LG, 25)
             '>>>>>> End (C0527)
-            ''''REDIM DFL(LG)
+            ''REDIM DFL(LG)
             ReDim COCF(LG)
             ReDim COCCF(LG)
             ReDim CODCF(LG)
@@ -2637,7 +2637,7 @@ nexty:          Next y
             ReDim GFINAN(LG)
             ReDim CNREIM(LG)
             ReDim C3DPTY(LG)
-            '''            ReDim EffInts(LG, gc_nEffIntsSIZED2)
+            ''            ReDim EffInts(LG, gc_nEffIntsSIZED2)
             ' End (C0846)
 
             ReDim gna_ACFX(LG, 26)
@@ -2702,24 +2702,24 @@ nexty:          Next y
             NGCFU(x, 1) = AC(x, 11)
             NGCFU(x, 2) = AC(x, 11)
 
-            '''          ' 10 Feb 2005 JWD (C0856) Compute the total net cash flow and the respective effective interests
-            '''          GPCFV(x) = AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)
-            '''          ' 5 Jun 2006 JWD (C0898) Change to only compute EffInts() values when company + 3d party ncf is sufficiently large to be valid. Change to range of values considered zero instead of exact match to zero. Compensates for round-off errors that lead to divide by zero.
-            '''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF)) > 0.0000009 Then
-            '''            EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
-            '''          End If
-            '''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)) > 0.0000009 Then
-            '''            EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
-            '''          End If
-            '''          ' was:
-            '''          'If AC(x, gc_nAC_CMPNCF) <> 0 Then
-            '''          '  EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
-            '''          '  EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
-            '''          'End If
-            '''          ' End (C0898)
-            '''
-            '''          GREV(x) = AC(x, gc_nAC_GRSREV) + GPCFV(x)
-            '''          ' End (C0856)
+            ''          ' 10 Feb 2005 JWD (C0856) Compute the total net cash flow and the respective effective interests
+            ''          GPCFV(x) = AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)
+            ''          ' 5 Jun 2006 JWD (C0898) Change to only compute EffInts() values when company + 3d party ncf is sufficiently large to be valid. Change to range of values considered zero instead of exact match to zero. Compensates for round-off errors that lead to divide by zero.
+            ''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF)) > 0.0000009 Then
+            ''            EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
+            ''          End If
+            ''          If Abs(AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_NOCNCF)) > 0.0000009 Then
+            ''            EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
+            ''          End If
+            ''          ' was:
+            ''          'If AC(x, gc_nAC_CMPNCF) <> 0 Then
+            ''          '  EffInts(x, gc_nEffInts_WIN) = AC(x, gc_nAC_CMPNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF))
+            ''          '  EffInts(x, gc_nEffInts_PAR) = AC(x, gc_nAC_NOCNCF) / (AC(x, gc_nAC_3DPNCF) + AC(x, gc_nAC_CMPNCF) + AC(x, gc_nAC_NOCNCF))
+            ''          'End If
+            ''          ' End (C0898)
+            ''
+            ''          GREV(x) = AC(x, gc_nAC_GRSREV) + GPCFV(x)
+            ''          ' End (C0856)
 
             gna_ACFX(x, gna_ACFX_TPS) = AC(x, gc_nAC_TPS)
             gna_ACFX(x, gna_ACFX_TNG) = AC(x, gc_nAC_TNG)
@@ -2732,10 +2732,10 @@ nexty:          Next y
 
         Next x
 
-        '''        ' 7 Jan 2005 JWD (C0846) Add allocation of MY3 related arrays
-        '''        ReDim GMY3(CCT)
-        '''        ReDim EffIntsX(CCT, gc_nEffIntsXSIZED2)
-        '''        ' End (C0846)
+        ''        ' 7 Jan 2005 JWD (C0846) Add allocation of MY3 related arrays
+        ''        ReDim GMY3(CCT)
+        ''        ReDim EffIntsX(CCT, gc_nEffIntsXSIZED2)
+        ''        ' End (C0846)
 
         If CCT = 0 Then
             GoTo 40160
@@ -2756,22 +2756,22 @@ nexty:          Next y
             WINC(x) = 1
             GPRATE(x) = 1
 
-            '''          ' 10 Feb 2005 JWD (C0856)
-            '''          GMY3(x) = CC(x, gc_nCC_AMT) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)
-            '''          If CC(x, gc_nCC_AMT) <> 0 Then
-            '''             ' 8 Jun 2006 JWD (C0900) Change to check divisor for zero + near-zero values before dividing
-            '''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP)) > 0.0000009 Then
-            '''               EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
-            '''             End If
-            '''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)) > 0.0000009 Then
-            '''               EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
-            '''             End If
-            '''             ' was:
-            '''             '  EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
-            '''             '  EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
-            '''             ' End (C0900)
-            '''          End If
-            '''          ' End (C0856)
+            ''          ' 10 Feb 2005 JWD (C0856)
+            ''          GMY3(x) = CC(x, gc_nCC_AMT) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)
+            ''          If CC(x, gc_nCC_AMT) <> 0 Then
+            ''             ' 8 Jun 2006 JWD (C0900) Change to check divisor for zero + near-zero values before dividing
+            ''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP)) > 0.0000009 Then
+            ''               EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
+            ''             End If
+            ''             If Abs(CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC)) > 0.0000009 Then
+            ''               EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
+            ''             End If
+            ''             ' was:
+            ''             '  EffIntsX(x, gc_nEffIntsX_WIN) = CC(x, gc_nCC_CMP) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP))
+            ''             '  EffIntsX(x, gc_nEffIntsX_PAR) = CC(x, gc_nCC_NOC) / (CC(x, gc_nCC_CMP) + CC(x, gc_nCC_3DP) + CC(x, gc_nCC_NOC))
+            ''             ' End (C0900)
+            ''          End If
+            ''          ' End (C0856)
 
             my3Ex(x, 0) = CC(x, gc_nCC_TCX)
             my3Ex(x, 1) = CC(x, gc_nCC_OCX)
@@ -2807,15 +2807,15 @@ nexty:          Next y
         ' GDP 24 Apr 2003
         ' Reinstated the below code - CF() array is written out as the Cashflow column
         ' in the After Tax Cashflow report when a CONSOL line is encountered
-        ''' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
-        '''        flno% = FreeFile
-        '''        Open FChuong$ For Output As #flno%
+        '' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
+        ''        flno% = FreeFile
+        ''        Open FChuong$ For Output As #flno%
         For x = 1 To LG
             CF(x) = PSCF(x, PS + 1) - NGCF(x, NEG + 1)
-            '''          Write #flno%, CF(x)
+            ''          Write #flno%, CF(x)
             CF(0) = CF(0) + CF(x)
         Next x
-        '''        Close #flno%
+        ''        Close #flno%
 
         'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
         'GoSub TotalArrays 'total PSCF(), NGCF(), NGCFY(), NGCFA(), NGCFU()
@@ -2850,14 +2850,14 @@ TotalArrays:
         ' GDP 24 Apr 2003
         ' Reinstated below code as the CF() array is used in reporting the
         ' after tax cash flow when CONSOL is in country file
-        ''' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
-        '''      Open FChuong$ For Output As #1
+        '' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
+        ''      Open FChuong$ For Output As #1
         For x = 1 To LG
             CF(x) = PSCF(x, PS + 1) - NGCF(x, NEG + 1)
-            '''        Write #1, CF(x)
+            ''        Write #1, CF(x)
             CF(0) = CF(0) + CF(x)
         Next x
-        '''      Close #1
+        ''      Close #1
 
         For x = 1 To LG
             If DFL(x) <> 0 Then
@@ -2907,17 +2907,17 @@ ErrHandler:
         ' GDP 24 Apr 2003
         ' Reinstated below code as the CF() array is used in reporting the
         ' after tax cash flow when CONSOL is in country file
-        ''' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
-        '''      Open FChuong$ For Output As #1
+        '' 9 Feb 2004 JWD (C0783) Remove output to CHUONG.DAT
+        ''      Open FChuong$ For Output As #1
 
         Dim x As Single, y As Single
 
         For x = 1 To LG
             CF(x) = PSCF(x, PS + 1) - NGCF(x, NEG + 1)
-            '''        Write #1, CF(x)
+            ''        Write #1, CF(x)
             CF(0) = CF(0) + CF(x)
         Next x
-        '''      Close #1
+        ''      Close #1
 
         For x = 1 To LG
             If DFL(x) <> 0 Then
@@ -3165,20 +3165,20 @@ ErrHandler:
                         rD5X = rD5X * GPRATE(i) * WINC(i)
                     End If
                 Case eEntityID_3rdParty
-                    '''             ' Use grossed-up amount
-                    '''             rD5X = GMY3(i) * (1 - EffIntsX(i, gc_nEffIntsX_PAR)) * (1 - EffIntsX(i, gc_nEffIntsX_WIN))
+                    ''             ' Use grossed-up amount
+                    ''             rD5X = GMY3(i) * (1 - EffIntsX(i, gc_nEffIntsX_PAR)) * (1 - EffIntsX(i, gc_nEffIntsX_WIN))
                     rD5X = my3Ex(i, 2) - my3Ex(i, 3) ' 3dparty = Group - Company
                 Case eEntityID_NOC
-                    '''             ' Use grossed-up amount
-                    '''             'rD5X = GMY3(i) * EffIntsX(i, gc_nEffIntsX_PAR)
+                    ''             ' Use grossed-up amount
+                    ''             'rD5X = GMY3(i) * EffIntsX(i, gc_nEffIntsX_PAR)
                     rD5X = my3Ex(i, 1) - my3Ex(i, 2) ' NOC = Operating - Group
                 Case eEntityID_Government
-                    '''             ' Use grossed-up amount
-                    '''             If my3(i, gc_nMY3_CAT) = 1 Then      ' only thing for government is bonuses
-                    '''                 rD5X = 0 - GMY3(i)     ' and these are incomes to government.
-                    '''             Else
-                    '''                 rD5X = 0
-                    '''             End If
+                    ''             ' Use grossed-up amount
+                    ''             If my3(i, gc_nMY3_CAT) = 1 Then      ' only thing for government is bonuses
+                    ''                 rD5X = 0 - GMY3(i)     ' and these are incomes to government.
+                    ''             Else
+                    ''                 rD5X = 0
+                    ''             End If
                     rD5X = my3Ex(i, 0) - my3Ex(i, 1) ' govt = total - operating
             End Select
 
@@ -3363,7 +3363,7 @@ ErrHandler:
             ' plus negative cash flows defined in fiscal model (excluding
             ' "T" cash flow variables, which go from Company to third party)
 
-            '''         rUDCF(i, 11) = GREV(i) - GPCFV(i) + GNCFV(i)
+            ''         rUDCF(i, 11) = GREV(i) - GPCFV(i) + GNCFV(i)
             rUDCF(i, 11) = gna_ACFX(i, gna_ACFX_TPS) - gna_ACFX(i, gna_ACFX_TNG) - gna_ACFX(i, gna_ACFX_OPS) + gna_ACFX(i, gna_ACFX_ONG)
 
             '!!! TODO: Need to add in the capex attributable to the govt so this is net of capex
@@ -3406,11 +3406,11 @@ ErrHandler:
 
             ' 20 Dec 2004 JWD (C0846) New code to determine cash flows for 3rd pary and NOC
             ' Third party cash flow
-            '''         rUDCF(i, 12) = ((GPCFV(i) - GNCFV(i)) * (1 - EffInts(i, gc_nEffInts_PAR)) + GREPAY(i)) * (1 - EffInts(i, gc_nEffInts_WIN)) - GOPEX(i) * (1 - EffInts(i, gc_nEffInts_POX)) * (1 - EffInts(i, gc_nEffInts_WOX)) - CNREIM(i) + C3DPTY(i) + (GFINAN(i) * (1 - EffInts(i, gc_nEffInts_WFN)) * (1 - EffInts(i, gc_nEffInts_PFN)))
+            ''         rUDCF(i, 12) = ((GPCFV(i) - GNCFV(i)) * (1 - EffInts(i, gc_nEffInts_PAR)) + GREPAY(i)) * (1 - EffInts(i, gc_nEffInts_WIN)) - GOPEX(i) * (1 - EffInts(i, gc_nEffInts_POX)) * (1 - EffInts(i, gc_nEffInts_WOX)) - CNREIM(i) + C3DPTY(i) + (GFINAN(i) * (1 - EffInts(i, gc_nEffInts_WFN)) * (1 - EffInts(i, gc_nEffInts_PFN)))
             rUDCF(i, 12) = gna_ACFX(i, gna_ACFX_GPS) - gna_ACFX(i, gna_ACFX_CPS) - gna_ACFX(i, gna_ACFX_GNG) + gna_ACFX(i, gna_ACFX_CNG)
 
             ' NOC cash flow
-            '''         rUDCF(i, 13) = (GPCFV(i) - GNCFV(i)) * EffInts(i, gc_nEffInts_PAR) - GOPEX(i) * EffInts(i, gc_nEffInts_POX) - GREPAY(i) + (GFINAN(i) * EffInts(i, gc_nEffInts_PFN))
+            ''         rUDCF(i, 13) = (GPCFV(i) - GNCFV(i)) * EffInts(i, gc_nEffInts_PAR) - GOPEX(i) * EffInts(i, gc_nEffInts_POX) - GREPAY(i) + (GFINAN(i) * EffInts(i, gc_nEffInts_PFN))
             rUDCF(i, 13) = gna_ACFX(i, gna_ACFX_OPS) - gna_ACFX(i, gna_ACFX_GPS) - gna_ACFX(i, gna_ACFX_ONG) + gna_ACFX(i, gna_ACFX_GNG)
             ' End (C0846)
 
@@ -3463,12 +3463,12 @@ ErrHandler:
             End If
         Next i
 
-        '''        For www = 1 To LG
-        '''            gna_ACFX(www, 18) = rUDCF(www, 5)
-        '''            gna_ACFX(www, 20) = rUDCF(www, 12)
-        '''            gna_ACFX(www, 22) = rUDCF(www, 13)
-        '''            gna_ACFX(www, 24) = rUDCF(www, 11)
-        '''        Next www
+        ''        For www = 1 To LG
+        ''            gna_ACFX(www, 18) = rUDCF(www, 5)
+        ''            gna_ACFX(www, 20) = rUDCF(www, 12)
+        ''            gna_ACFX(www, 22) = rUDCF(www, 13)
+        ''            gna_ACFX(www, 24) = rUDCF(www, 11)
+        ''        Next www
 
 
 

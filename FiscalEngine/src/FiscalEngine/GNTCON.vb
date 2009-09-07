@@ -70,10 +70,7 @@ Module GNTCON
 		'  -> Add declaration of loop index symbols i and j.
 		'     (C0856)
 		'---------------------------------------------------------
-		Dim iNGCFA As Short
-		Dim iNGCFT As Short
-		Dim iNGCFU As Short
-		' 9 Feb 2005 JWD (C0856) Add symbols for loop indexes
+        ' 9 Feb 2005 JWD (C0856) Add symbols for loop indexes
 		Dim i As Short
 		Dim j As Short
 		' End (C0856)
@@ -255,13 +252,8 @@ Module GNTCON
 		'  -> Add symbol declaration for loop indexes i and j.
 		'     (C0856)
 		'---------------------------------------------------------
-		Dim iNGCFA As Short
-		Dim iNGCFT As Short
-		Dim iNGCFU As Short
-		' 9 Feb 2005 JWD (C0856) Add symbols for loop indexes
-		Dim i As Short
-		Dim j As Short
-		' End (C0856)
+        ' 9 Feb 2005 JWD (C0856) Add symbols for loop indexes
+        ' End (C0856)
 		'---------------------------------------------------------
 17900: 
         FileOpen(1, TempDir & GNTCON_Renamed, OpenMode.Output)

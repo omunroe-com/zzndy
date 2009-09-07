@@ -42,6 +42,6 @@ Friend Class CCMGiantRunSummarySeqB
     End Function
 
     Private Function IDPersistClassMap_MakeObjectOfClass(ByVal TheClassName As String) As IDPersistObject Implements IDPersistClassMap.MakeObjectOfClass
-
+        Throw New NotImplementedException()
     End Function
 End Class

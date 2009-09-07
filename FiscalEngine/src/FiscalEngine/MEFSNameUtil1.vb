@@ -38,19 +38,16 @@ Module MEFSNameUtil1
 	Public Function GetFilePart(ByRef sFilePath As String) As String
 		
 		Dim i As Short
-		
+        GetFilePart = ""
 		If Len(sFilePath) < 4 Then
-			GetFilePart = ""
-			Exit Function
+            Exit Function
 		End If
 		
 		For i = Len(sFilePath) To 1 Step -1
 			If Mid(sFilePath, i, 1) = "\" Then
-				If i = Len(sFilePath) Then
-					GetFilePart = ""
-				Else
-					GetFilePart = Mid(sFilePath, i + 1)
-				End If
+                If i <> Len(sFilePath) Then
+                    GetFilePart = Mid(sFilePath, i + 1)
+                End If
 				Exit Function
 			End If
 		Next 
@@ -67,19 +64,16 @@ Module MEFSNameUtil1
 	Public Function GetPathPart(ByRef sFilePath As String) As String
 		
 		Dim i As Short
-		
+        GetPathPart = ""
 		If Len(sFilePath) < 3 Then
-			GetPathPart = ""
-			Exit Function
+            Exit Function
 		End If
 		
 		For i = Len(sFilePath) To 1 Step -1
 			If Mid(sFilePath, i, 1) = "\" Then
-				If i = Len(sFilePath) Then
-					GetPathPart = ""
-				Else
-					GetPathPart = Left(sFilePath, i - 1)
-				End If
+                If i <> Len(sFilePath) Then
+                    GetPathPart = Left(sFilePath, i - 1)
+                End If
 				Exit Function
 			End If
 		Next 
