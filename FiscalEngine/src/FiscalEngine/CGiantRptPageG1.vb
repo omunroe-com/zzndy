@@ -110,11 +110,11 @@ Friend Class CGiantRptPageG1
     End Property
 
 
-    Private Property IDGiantRptPageStd_Values() As Single() Implements IDGiantRptPageStd.Values
+    Private Property IDGiantRptPageStd_Values() As Single(,) Implements IDGiantRptPageStd.Values
         Get
             IDGiantRptPageStd_Values = VB6.CopyArray(ma_rValues)
         End Get
-        Set(ByVal Value() As Single)
+        Set(ByVal Value(,) As Single)
             ma_rValues = VB6.CopyArray(Value)
         End Set
     End Property
@@ -254,119 +254,119 @@ Friend Class CGiantRptPageG1
 
         m_sVarCode = VariableCode
     End Sub
-	
-	
-	'=====================================================================
-	' IGiantTimeSeriesRptPage Interface
-	'
-	
-	''''
-	'''' Add the values to the specified array, beginning with specified row.
-	''''
-	'''' StartRow is the subscript 1 index value into which the first
-	'''' page profile will be copied:
-	''''   ValuesArray(StartRow, x) = ma_rValues(0, x),
-	''''       for x = LBound(ma_rValues, 2) To UBound(ma_rValues,2)
-	''''
-	'''' Assumes that the ValuesArray() is dimensioned to accomodate the
-	'''' data to be added.
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesValues _
-	''''    ( _
-	''''    ByRef ValuesArray() As Single, _
-	''''    ByRef StartRow As Long _
-	''''    )
-	'''
-	'''    Dim i As Long
-	'''    Dim j As Long
-	'''    Dim L As Long
-	'''
-	'''    L = LBound(ValuesArray, 2)
-	'''
-	'''    For i = 0 To UBound(ma_rValues, 2)
-	'''        For j = 0 To UBound(ma_rValues, 1)
-	'''            ValuesArray(j + StartRow, i + L) = ma_rValues(j, i)
-	'''        Next j
-	'''    Next i
-	'''
-	'''    StartRow = StartRow + UBound(ma_rValues, 1) + 1
-	'''
-	'''End Sub
-	'''
-	''''
-	'''' Append the interests associated with the time series
-	'''' profiles for this page to the values array starting
-	'''' with the specified "row" (StartRow).
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesInterests _
-	''''    ( _
-	''''    ByRef ValuesArray() As Single, _
-	''''    ByRef StartRow As Long _
-	''''    )
-	'''
-	'''    Dim j As Long
-	'''    Dim ub As Long
-	'''    Dim lb As Long
-	'''
-	'''    lb = LBound(ValuesArray, 2)
-	'''    ub = UBound(ma_rValues, 1)
-	'''
-	'''    For j = 0 To ub
-	'''        ValuesArray(j + StartRow, lb + 0) = m_oHeader.CompanyWorkingInterest
-	'''        ValuesArray(j + StartRow, lb + 1) = m_oHeader.GovernmentParticipation
-	'''    Next j
-	'''
-	'''    StartRow = StartRow + ub + 1
-	'''
-	'''End Sub
-	'''
-	''''
-	'''' Append the names associated with the time series
-	'''' profiles for this page to the names array starting
-	'''' with the specified "row" (StartRow).
-	''''
-	'''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesNames _
-	''''    ( _
-	''''    ByRef NamesArray() As String, _
-	''''    ByRef StartRow As Long, _
-	''''    ByVal ReportText As CReportText, _
-	''''    ByVal VariableTitles As IVariableTitlesA _
-	''''    )
-	'''
-	'''    Dim j As Long
-	'''    Dim ub As Long
-	'''    Dim lb As Long
-	'''    Dim l_ttl As String
-	'''    Dim l_pt As Integer
-	'''
-	'''    lb = LBound(NamesArray, 2)
-	'''    ub = UBound(ma_rValues, 1)
-	'''
-	'''    l_pt = m_oHeader.PageType
-	'''
-	'''    With ReportText
-	'''        If l_pt = 7 Or l_pt = 8 Then
-	'''            ' Depreciation/Cost Recovery has full variable title in section title
-	'''            l_ttl = VariableTitles.LongTitle(m_sVarCode)
-	'''        Else
-	'''            ' IRR worksheets have variable code only in section title
-	'''            l_ttl = m_sVarCode
-	'''        End If
-	'''        For j = 0 To ub
-	'''            NamesArray(j + StartRow, lb + 0) = Replace(.SectionTitle(l_pt), "|1|", l_ttl)
-	'''            NamesArray(j + StartRow, lb + 1) = .RowTitle(l_pt, j + 1)
-	'''        Next j
-	'''    End With
-	'''
-	'''    StartRow = StartRow + ub + 1
-	'''
-	'''End Sub
-	'''
-	'''Private Property Get IGiantTimeSeriesRptPage_ProfileElementCount() As Integer
-	'''    IGiantTimeSeriesRptPage_ProfileElementCount = m_oHeader.Rows
-	'''End Property
-	'''
-	'''Private Property Get IGiantTimeSeriesRptPage_TimeSeriesProfileCount() As Integer
-	'''    IGiantTimeSeriesRptPage_TimeSeriesProfileCount = m_oHeader.Columns
-	'''End Property
+
+
+    '=====================================================================
+    ' IGiantTimeSeriesRptPage Interface
+    '
+
+    ''''
+    '''' Add the values to the specified array, beginning with specified row.
+    ''''
+    '''' StartRow is the subscript 1 index value into which the first
+    '''' page profile will be copied:
+    ''''   ValuesArray(StartRow, x) = ma_rValues(0, x),
+    ''''       for x = LBound(ma_rValues, 2) To UBound(ma_rValues,2)
+    ''''
+    '''' Assumes that the ValuesArray() is dimensioned to accomodate the
+    '''' data to be added.
+    ''''
+    '''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesValues _
+    ''''    ( _
+    ''''    ByRef ValuesArray() As Single, _
+    ''''    ByRef StartRow As Long _
+    ''''    )
+    '''
+    '''    Dim i As Long
+    '''    Dim j As Long
+    '''    Dim L As Long
+    '''
+    '''    L = LBound(ValuesArray, 2)
+    '''
+    '''    For i = 0 To UBound(ma_rValues, 2)
+    '''        For j = 0 To UBound(ma_rValues, 1)
+    '''            ValuesArray(j + StartRow, i + L) = ma_rValues(j, i)
+    '''        Next j
+    '''    Next i
+    '''
+    '''    StartRow = StartRow + UBound(ma_rValues, 1) + 1
+    '''
+    '''End Sub
+    '''
+    ''''
+    '''' Append the interests associated with the time series
+    '''' profiles for this page to the values array starting
+    '''' with the specified "row" (StartRow).
+    ''''
+    '''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesInterests _
+    ''''    ( _
+    ''''    ByRef ValuesArray() As Single, _
+    ''''    ByRef StartRow As Long _
+    ''''    )
+    '''
+    '''    Dim j As Long
+    '''    Dim ub As Long
+    '''    Dim lb As Long
+    '''
+    '''    lb = LBound(ValuesArray, 2)
+    '''    ub = UBound(ma_rValues, 1)
+    '''
+    '''    For j = 0 To ub
+    '''        ValuesArray(j + StartRow, lb + 0) = m_oHeader.CompanyWorkingInterest
+    '''        ValuesArray(j + StartRow, lb + 1) = m_oHeader.GovernmentParticipation
+    '''    Next j
+    '''
+    '''    StartRow = StartRow + ub + 1
+    '''
+    '''End Sub
+    '''
+    ''''
+    '''' Append the names associated with the time series
+    '''' profiles for this page to the names array starting
+    '''' with the specified "row" (StartRow).
+    ''''
+    '''Private Sub IGiantTimeSeriesRptPage_AppendTimeSeriesNames _
+    ''''    ( _
+    ''''    ByRef NamesArray() As String, _
+    ''''    ByRef StartRow As Long, _
+    ''''    ByVal ReportText As CReportText, _
+    ''''    ByVal VariableTitles As IVariableTitlesA _
+    ''''    )
+    '''
+    '''    Dim j As Long
+    '''    Dim ub As Long
+    '''    Dim lb As Long
+    '''    Dim l_ttl As String
+    '''    Dim l_pt As Integer
+    '''
+    '''    lb = LBound(NamesArray, 2)
+    '''    ub = UBound(ma_rValues, 1)
+    '''
+    '''    l_pt = m_oHeader.PageType
+    '''
+    '''    With ReportText
+    '''        If l_pt = 7 Or l_pt = 8 Then
+    '''            ' Depreciation/Cost Recovery has full variable title in section title
+    '''            l_ttl = VariableTitles.LongTitle(m_sVarCode)
+    '''        Else
+    '''            ' IRR worksheets have variable code only in section title
+    '''            l_ttl = m_sVarCode
+    '''        End If
+    '''        For j = 0 To ub
+    '''            NamesArray(j + StartRow, lb + 0) = Replace(.SectionTitle(l_pt), "|1|", l_ttl)
+    '''            NamesArray(j + StartRow, lb + 1) = .RowTitle(l_pt, j + 1)
+    '''        Next j
+    '''    End With
+    '''
+    '''    StartRow = StartRow + ub + 1
+    '''
+    '''End Sub
+    '''
+    '''Private Property Get IGiantTimeSeriesRptPage_ProfileElementCount() As Integer
+    '''    IGiantTimeSeriesRptPage_ProfileElementCount = m_oHeader.Rows
+    '''End Property
+    '''
+    '''Private Property Get IGiantTimeSeriesRptPage_TimeSeriesProfileCount() As Integer
+    '''    IGiantTimeSeriesRptPage_TimeSeriesProfileCount = m_oHeader.Columns
+    '''End Property
 End Class

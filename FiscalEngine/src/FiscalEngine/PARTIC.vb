@@ -61,9 +61,9 @@ Module PARTIC
 		Dim m9 As Single
 		Dim param As Short
 		Dim DefAmount As Single
-		Dim VarRates As Object
-		Dim ratein As Object
-		Dim sRateInV As Object
+        Dim VarRates() As Single
+        Dim ratein(,) As Single
+        Dim sRateInV() As String
 		Dim ck As String
 		'-----------------------------------------------------------------------
 		' This program calculates government participation effects.
@@ -189,7 +189,7 @@ Module PARTIC
 						'UPGRADE_WARNING: Couldn't resolve default property of object VarRates(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 						'UPGRADE_WARNING: Couldn't resolve default property of object ratein(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 						'UPGRADE_WARNING: Couldn't resolve default property of object sRateInV(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-						RateCalc(Numvar, "PARTIC", "PAR", DefAmount, sRateInV(), ratein(), Ratetot, param, VarRates())
+                        RateCalc(Numvar, "PARTIC", "PAR", DefAmount, sRateInV, ratein, Ratetot, param, VarRates)
 						For j = 1 To LG
 							'UPGRADE_WARNING: Couldn't resolve default property of object VarRates(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 							PARTRATE(j) = VarRates(j) / 100
@@ -201,7 +201,7 @@ Module PARTIC
 						'UPGRADE_WARNING: Couldn't resolve default property of object VarRates(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 						'UPGRADE_WARNING: Couldn't resolve default property of object ratein(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 						'UPGRADE_WARNING: Couldn't resolve default property of object sRateInV(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-						RateCalc(Numvar, "PARTIC", "POX", DefAmount, sRateInV(), ratein(), Ratetot, param, VarRates())
+                        RateCalc(Numvar, "PARTIC", "POX", DefAmount, sRateInV, ratein, Ratetot, param, VarRates)
 						For j = 1 To LG
 							'UPGRADE_WARNING: Couldn't resolve default property of object VarRates(j). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 							If VarRates(j) <> -999 Then

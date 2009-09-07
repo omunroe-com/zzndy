@@ -185,16 +185,16 @@ RowTitle_Error:
         map_dat = My.Resources.fmt10_1024
 
 		'UPGRADE_WARNING: Lower bound of array zzz_map was changed from 1 to 0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'
-		ReDim zzz_map(((UBound(map_dat) - LBound(map_dat) + 1) / 2))
+        ReDim zzz_map(map_dat.Length / 2)
 		
 		' Reconstruct the integer array data from the byte array.
 		' Bytes are integers stored in "little-endian" fashion,
 		' i. e. lower order byte is at lower subscript, high
 		' order byte is a succeeding subscript.
-		For i = LBound(zzz_map) To UBound(zzz_map)
-			p = (i - 1) * 2
-			zzz_map(i) = map_dat(p) + map_dat(p + 1) * 256
-		Next i
+        For i = 0 To zzz_map.Length - 2
+            p = i * 2
+            zzz_map(i) = map_dat(p) + map_dat(p + 1) * 256
+        Next i
 		
 		' Load the row text
 		'UPGRADE_WARNING: Lower bound of array zzz_OT was changed from 1,1 to 0,0. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="0F1C9BE1-AF9D-476E-83B1-17D43BECFF20"'

@@ -167,8 +167,8 @@ Module FISCAL1B
 	'=========================================================
 	Sub FiscalDef()
 		Dim CRE As Object
-		Dim ded As Object
-		Dim dumrev As Object
+        Dim ded() As Single
+        Dim dumrev() As Single
 		'---------------------------------------------------------
 		' Modifications:
 		' 8 Feb 1996 JWD
@@ -2534,7 +2534,7 @@ ReEnterWIN:
             ReDim dumrev(LG)
 11001:
             'UPGRADE_WARNING: Couldn't resolve default property of object dumrev(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-            RetrieveValues(TD(iX, i + 4), TD(iX, 3), dumrev())
+            RetrieveValues(TD(iX, i + 4), TD(iX, 3), dumrev)
 18754:
             For ii = 1 To LG
 11002:          'UPGRADE_WARNING: Couldn't resolve default property of object dumrev(ii). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
@@ -3034,7 +3034,7 @@ ReEnterWIN:
 20700:      'MUST BE STANDARD CODE FROM DATA FILE OR COUNTRY ANNUAL FORECASTS
             ReDim ded(LG)
             'UPGRADE_WARNING: Couldn't resolve default property of object ded(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-            RetrieveValues(TD(iX, i + 7), "", ded())
+            RetrieveValues(TD(iX, i + 7), "", ded)
             For j = 1 To LG
                 'UPGRADE_WARNING: Couldn't resolve default property of object ded(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
                 DDT(j, i) = ded(j)

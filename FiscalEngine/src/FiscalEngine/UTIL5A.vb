@@ -432,7 +432,7 @@ Module UTIL5A
 
         'These items are needed to print a worksheet detailing
         '  the rate based variables results
-        Dim Ttls(14) As Object
+        Dim Ttls(14) As String
         Dim WkSht(LG, 14) As Single
         'This array stores the sun of the annual values for the
         '  subsequent variables
@@ -2304,7 +2304,7 @@ RetrieveUserValues:
     Sub CeilDef(ByRef PGMCall As String, ByRef x As Short, ByRef matcher() As String, ByRef CeilAns() As Single)
         Dim MatchPrc As Short
         Dim loopy As Single
-        Dim dumt As Object
+        Dim dumt() As Single
         '--------------------------------------------------------------------
         Dim ck As Short
         Dim i As Short
@@ -2339,7 +2339,7 @@ a10770:     Next j
 a11000:     ' get annual array for code entered
             ReDim dumt(LG)
             'UPGRADE_WARNING: Couldn't resolve default property of object dumt(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-            RetrieveValues(matcher(i + 2), matcher(2), dumt())
+            RetrieveValues(matcher(i + 2), matcher(2), dumt)
 
             For j = 1 To LG
                 'UPGRADE_WARNING: Couldn't resolve default property of object dumt(j). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
@@ -2406,7 +2406,7 @@ a20560:     Next j
 a20700:     ' MUST BE STANDARD CODE FROM DATA FILE OR COUNTRY ANNUAL FORECASTS
             ReDim dumt(LG)
             'UPGRADE_WARNING: Couldn't resolve default property of object dumt(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-            RetrieveValues(matcher(i + 5), "", dumt()) '"" means use whatever level we are at (WIN, PAR)
+            RetrieveValues(matcher(i + 5), "", dumt) '"" means use whatever level we are at (WIN, PAR)
             For j = 1 To LG
                 'UPGRADE_WARNING: Couldn't resolve default property of object dumt(j). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
                 CeilAns(j) = CeilAns(j) - dumt(j)
@@ -4065,7 +4065,7 @@ ratecalcerror:
         '     get OPC and multiply the two together to return the datacol!()
 9714:
         Dim wrkcol(UBound(Datacol)) As Single
-        Dim codes(12) As Single
+        Dim codes(12) As String
 
         Select Case Cat
             Case "OIL" 'OIL = OIL * OPC

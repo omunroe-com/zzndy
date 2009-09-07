@@ -2395,7 +2395,7 @@ Module FORECAST
         End If
 
         Dim Datacol(arraysize) As Single
-        Dim cats(nocategories) As Single 'make arrays exist
+        Dim cats(nocategories) As String 'make arrays exist
 
         'NOTE: these are base data categories (+ PDC (oil & gas))
         ' GDP 20 Jan 2003
@@ -2409,7 +2409,7 @@ Module FORECAST
         ' 16 May 2005 JWD (C0877) Add OX6-O20
         category = "OILGASOV1OV2OV3OV4OV5OV6OV7OV8OV9OV0RESWINOPCGPCOP1OP2OP3OP4OP5OP6OP7OP8OP9OP0OX1OX2OX3OX4OX5OX6OX7OX8OX9OX0O11O12O13O14O15O16O17O18O19O20AJ1AJ2AJ3AJ4AJ5AJ6AJ7AJ8AJ9AJ0A11A12A13A14A15A16A17A18A19A20"
         For i = 1 To nocategories
-            cats(i) = CSng(Mid(category, (i - 1) * 3 + 1, 3))
+            cats(i) = Mid(category, (i - 1) * 3 + 1, 3)
         Next i
         category = ""
         '--------------------------------------------------------------------
@@ -3147,14 +3147,14 @@ Module FORECAST
         '>>>>>> End 13 Jun 2001
 
 
-        mtd(1) = CSng("TOT") : mtd(2) = CSng("PRI")
-        salacc(1) = CSng("NO") : salacc(2) = CSng("YES")
-        eblendt(1) = CSng("PRD") : eblendt(2) = CSng("BEG")
-        eblendt(3) = CSng("DIS") : eblendt(4) = CSng("LIF")
+        mtd(1) = ("TOT") : mtd(2) = ("PRI")
+        salacc(1) = ("NO") : salacc(2) = ("YES")
+        eblendt(1) = ("PRD") : eblendt(2) = ("BEG")
+        eblendt(3) = ("DIS") : eblendt(4) = ("LIF")
 
-        mtd(1) = CSng("TOT") : mtd(2) = CSng("PRI")
+        mtd(1) = ("TOT") : mtd(2) = ("PRI")
 
-        eblacc(1) = CSng("YES") : eblacc(2) = CSng("NO")
+        eblacc(1) = ("YES") : eblacc(2) = ("NO")
 
         '<<<<<< 13 Jun 2001 JWD
         z = "ALLEXPDEV" & CPXCategoryCodesString
@@ -3567,6 +3567,12 @@ Module FORECAST
         Dim DisMo As Short
         Dim DisYr As Short
         Dim i As Short
+
+        If GNL Is Nothing Then
+            GNL = New GNLType()
+        End If
+
+
         '--------------------------------------------------------------------
         'reads Giant data (.GNT) file (version 5.0)
         'called by GntRData sub

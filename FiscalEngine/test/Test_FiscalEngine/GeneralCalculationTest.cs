@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 using IAMPEEngine;
@@ -16,7 +15,7 @@ namespace Test_FiscalEngine
     public class GeneralCalculationTest
     {
         private TestContext testContextInstance;
-       
+
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
@@ -54,18 +53,16 @@ namespace Test_FiscalEngine
         [TestInitialize]
         public void MyTestInitialize()
         {
+            string dataPath = Path.GetFullPath( Path.Combine( Environment.CurrentDirectory, @"..\..\..\data" ) );
+            string workingPath = Path.GetFullPath( Environment.CurrentDirectory );
 
-            string dataPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\data"));
-            string workingPath = Path.GetFullPath(Environment.CurrentDirectory);
-
-            CalculationConfigManager ccm = new CalculationConfigManager(dataPath, workingPath);
+            CalculationConfigManager ccm = new CalculationConfigManager( dataPath, workingPath );
 
             ccm.SetupConfigs();
 
             testContextInstance.Properties.Add( "ccm", ccm );
         }
 
-       
 
         //Use TestCleanup to run code after each test has run
         //[TestCleanup()]
@@ -82,8 +79,12 @@ namespace Test_FiscalEngine
         [TestMethod]
         public void CompareCalculationTest()
         {
-            var ccm = testContextInstance.Properties[ "ccm" ] as CalculationConfigManager;
-            if(ccm==null)Assert.Fail("Configuration management was not correctly set up.");
+            CalculationConfigManager ccm = testContextInstance.Properties[ "ccm" ] as CalculationConfigManager;
+            if ( ccm == null )
+            {
+                Assert.Fail( "Configuration management was not correctly set up." );
+                return; // Hint for resharper;
+            }
 
             FiscalEngine.FiscalEngine dotnet = new FiscalEngine.FiscalEngine();
             AMPEEngine original = new AMPEEngine();
@@ -96,7 +97,7 @@ namespace Test_FiscalEngine
                         dotnet.AsIMainexec.CalculateEconomics( calculationCase.StartFile );
                         break;
                     case ECalculationCaseType.Vb6:
-                        original.AsIMainexec.CalculateEconomics(calculationCase.StartFile);
+                        original.AsIMainexec.CalculateEconomics( calculationCase.StartFile );
                         break;
                 }
             }

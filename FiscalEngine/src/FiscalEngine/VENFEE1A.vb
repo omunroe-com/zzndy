@@ -759,7 +759,7 @@ Module VENFEE1A
             Dim ColHdr(14) As Single
 
             For ivc = 1 To 14
-                ColHdr(ivc) = CSng("dummy")
+                ColHdr(ivc) = ("dummy")
             Next ivc
 
             ColHdr(7) = CSng(VB6.Format(QtrDisRate, "##.###%"))

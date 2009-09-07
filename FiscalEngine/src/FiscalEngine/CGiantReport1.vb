@@ -277,96 +277,96 @@ Friend Class CGiantReport1
 
     End Sub
 	
-	''''Public Function TimeSeriesOutputValues _
-	'''''    ( _
-	'''''    ) As Single()
-	''''
-	''''    Dim l_rows As Long
-	''''    Dim l_columns As Long
-	''''    Dim a_rValues() As Single
-	''''    Dim l_page As IGiantTimeSeriesRptPage
-	''''
-	''''    ' Go through the report, getting the count of
-	''''    ' profiles (rows in the output array) and the
-	''''    ' 'life' (number of columns in output array).
-	''''    l_rows = TimeSeriesProfileCount
-	''''    l_columns = MaxProfileElementCount
-	''''
-	''''    ' Allocate the time series output arrays
-	''''    ReDim a_rValues(1 To l_rows, 1 To l_columns)
-	''''
-	''''    ' reuse l_rows as start row
-	''''    l_rows = 1
-	''''    For Each l_page In m_oTSPages
-	''''        With l_page
-	''''            .AppendTimeSeriesValues a_rValues(), l_rows
-	''''        End With
-	''''    Next l_page
-	''''
-	''''    TimeSeriesOutputValues = a_rValues
-	''''
-	''''End Function
-	''''
-	''''Public Function TimeSeriesOutputNames _
-	'''''    ( _
-	'''''    ByVal ReportText As CReportText _
-	'''''    ) As String()
-	''''
-	''''    Dim l_rows As Long
-	''''    Dim a_sNames() As String
-	''''    Dim l_page As IGiantTimeSeriesRptPage
-	''''
-	''''    ' Create a user variable codes list for the
-	''''    ' country file for output report purposes
-	''''    zzzCreateUserVariableCodeList
-	''''
-	''''    ' Go through the report, getting the count of
-	''''    ' profiles (rows in the output array) and the
-	''''    ' 'life' (number of columns in output array).
-	''''    l_rows = TimeSeriesProfileCount
-	''''
-	''''    ' Allocate the time series output arrays
-	''''    ReDim a_sNames(1 To l_rows, 1 To 2)
-	''''
-	''''    ' reuse l_rows as start row
-	''''    l_rows = 1
-	''''    For Each l_page In m_oTSPages
-	''''        With l_page
-	''''            .AppendTimeSeriesNames a_sNames(), l_rows, ReportText, Me
-	''''        End With
-	''''    Next l_page
-	''''
-	''''    TimeSeriesOutputNames = a_sNames
-	''''
-	''''End Function
-	''''
-	''''Public Function TimeSeriesOutputInterests _
-	'''''    ( _
-	'''''    ) As Single()
-	''''
-	''''    Dim l_rows As Long
-	''''    Dim a_rValues() As Single
-	''''    Dim l_page As IGiantTimeSeriesRptPage
-	''''
-	''''    ' Go through the report, getting the count of
-	''''    ' profiles (rows in the output array) and the
-	''''    ' 'life' (number of columns in output array).
-	''''    l_rows = TimeSeriesProfileCount
-	''''
-	''''    ' Allocate the time series output arrays
-	''''    ReDim a_rValues(1 To l_rows, 1 To 2)
-	''''
-	''''    ' reuse l_rows as start row
-	''''    l_rows = 1
-	''''    For Each l_page In m_oTSPages
-	''''        With l_page
-	''''            .AppendTimeSeriesInterests a_rValues(), l_rows
-	''''        End With
-	''''    Next l_page
-	''''
-	''''    TimeSeriesOutputInterests = a_rValues
-	''''
-	''''End Function
+    ''''Public Function TimeSeriesOutputValues _
+    '''''    ( _
+    '''''    ) As Single()
+    ''''
+    ''''    Dim l_rows As Long
+    ''''    Dim l_columns As Long
+    ''''    Dim a_rValues() As Single
+    ''''    Dim l_page As IGiantTimeSeriesRptPage
+    ''''
+    ''''    ' Go through the report, getting the count of
+    ''''    ' profiles (rows in the output array) and the
+    ''''    ' 'life' (number of columns in output array).
+    ''''    l_rows = TimeSeriesProfileCount
+    ''''    l_columns = MaxProfileElementCount
+    ''''
+    ''''    ' Allocate the time series output arrays
+    ''''    ReDim a_rValues(1 To l_rows, 1 To l_columns)
+    ''''
+    ''''    ' reuse l_rows as start row
+    ''''    l_rows = 1
+    ''''    For Each l_page In m_oTSPages
+    ''''        With l_page
+    ''''            .AppendTimeSeriesValues a_rValues(), l_rows
+    ''''        End With
+    ''''    Next l_page
+    ''''
+    ''''    TimeSeriesOutputValues = a_rValues
+    ''''
+    ''''End Function
+    ''''
+    ''''Public Function TimeSeriesOutputNames _
+    '''''    ( _
+    '''''    ByVal ReportText As CReportText _
+    '''''    ) As String()
+    ''''
+    ''''    Dim l_rows As Long
+    ''''    Dim a_sNames() As String
+    ''''    Dim l_page As IGiantTimeSeriesRptPage
+    ''''
+    ''''    ' Create a user variable codes list for the
+    ''''    ' country file for output report purposes
+    ''''    zzzCreateUserVariableCodeList
+    ''''
+    ''''    ' Go through the report, getting the count of
+    ''''    ' profiles (rows in the output array) and the
+    ''''    ' 'life' (number of columns in output array).
+    ''''    l_rows = TimeSeriesProfileCount
+    ''''
+    ''''    ' Allocate the time series output arrays
+    ''''    ReDim a_sNames(1 To l_rows, 1 To 2)
+    ''''
+    ''''    ' reuse l_rows as start row
+    ''''    l_rows = 1
+    ''''    For Each l_page In m_oTSPages
+    ''''        With l_page
+    ''''            .AppendTimeSeriesNames a_sNames(), l_rows, ReportText, Me
+    ''''        End With
+    ''''    Next l_page
+    ''''
+    ''''    TimeSeriesOutputNames = a_sNames
+    ''''
+    ''''End Function
+    ''''
+    ''''Public Function TimeSeriesOutputInterests _
+    '''''    ( _
+    '''''    ) As Single()
+    ''''
+    ''''    Dim l_rows As Long
+    ''''    Dim a_rValues() As Single
+    ''''    Dim l_page As IGiantTimeSeriesRptPage
+    ''''
+    ''''    ' Go through the report, getting the count of
+    ''''    ' profiles (rows in the output array) and the
+    ''''    ' 'life' (number of columns in output array).
+    ''''    l_rows = TimeSeriesProfileCount
+    ''''
+    ''''    ' Allocate the time series output arrays
+    ''''    ReDim a_rValues(1 To l_rows, 1 To 2)
+    ''''
+    ''''    ' reuse l_rows as start row
+    ''''    l_rows = 1
+    ''''    For Each l_page In m_oTSPages
+    ''''        With l_page
+    ''''            .AppendTimeSeriesInterests a_rValues(), l_rows
+    ''''        End With
+    ''''    Next l_page
+    ''''
+    ''''    TimeSeriesOutputInterests = a_rValues
+    ''''
+    ''''End Function
 	
 	'
 	' Function to return the present value table for the run.

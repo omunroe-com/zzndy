@@ -63,7 +63,7 @@ Module CTY2000A
 	'---------------------------------------------------------
 	
 	Const HIVALUE As Short = -32760 'null integer field
-	Const NULVALUE As Double = -3.4E+35 'denotes a NOT ENTERED field (NOT 0!)
+    Const NULVALUE As Single = -3.4E+35 'denotes a NOT ENTERED field (NOT 0!)
 	Const LIFE As Short = -999
 	Const WIN As Short = -998
 	Const REV As Short = -997

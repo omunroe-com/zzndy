@@ -485,7 +485,7 @@ Module CTY1000A
 			arg = DPR(i).tan
 			SearchCodeString(C, arg, 3, ptr)
 			dp(i, 3) = ptr
-			dp(i, 4) = DPR(i).DPR
+            dp(i, 4) = DPR(i).DPR
 			C = "DBLSLNUOPSYDXPSNONDP1DP2DP3CUMDB1SL1SY1"
 			arg = DPR(i).mtd
 			SearchCodeString(C, arg, 3, ptr)
@@ -934,7 +934,7 @@ Module CTY1000A
         Dim Port As Single
         Dim portion As Single
         Dim arg As String
-        Dim Datacol As Object
+        Dim Datacol() As Single
         Dim nocategories As Short
         Dim category As String
         '--------------------------------------------------------------------
@@ -964,7 +964,7 @@ Module CTY1000A
         arraysize = 60
         category = "PR1PR2PR3PR4PR5PRTDP1DP2DP3OT1OT2OT3OT4OT5"
         nocategories = Len(category) \ 3 '14
-        Dim cats(nocategories) As Single
+        Dim cats(nocategories) As String
 
         '<<<<<< 21 Sep 2001 JWD (C0459)
         ' Remove following. B() is dimensioned in caller,
@@ -973,7 +973,7 @@ Module CTY1000A
         '>>>>>> End (C0459)
 
         For i = 1 To nocategories
-            cats(i) = CSng(Mid(category, (i - 1) * 3 + 1, 3))
+            cats(i) = Mid(category, (i - 1) * 3 + 1, 3)
         Next i
         category = ""
 
@@ -982,7 +982,7 @@ Module CTY1000A
             updatea = False
             arg = CStr(cats(i))
             'UPGRADE_WARNING: Couldn't resolve default property of object Datacol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-            CTYForecastDispatch(arg, Datacol(), updatea)
+            CTYForecastDispatch(arg, Datacol, updatea)
             '//////////////////////////////////////////////////////////////////
             If AdjustLastYear Then
                 AdjustLastYear = False
@@ -1000,7 +1000,7 @@ Module CTY1000A
             units(i) = arg
             If updatea <> 0 Then
                 'UPGRADE_WARNING: Couldn't resolve default property of object Datacol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-                ForecastLoadA(i, Datacol(), B)
+                ForecastLoadA(i, Datacol, B)
             End If
         Next i
 
@@ -1799,7 +1799,7 @@ Module CTY1000A
 		'ReDim SEQ(20, 2)              'cost recovery sequence
 		'>>>>>> End (C0341)
 		
-		Dim UserCode(nousercodes) As Single
+        Dim UserCode(nousercodes) As String
 		'list of user defined codes
 		For i = 1 To nousercodes
 			Input(filenum, UserCode(i))
@@ -1836,7 +1836,7 @@ Module CTY1000A
 			Input(filenum, DPR(i).DPR)
 			Input(filenum, DPR(i).mtd)
 			Input(filenum, DPR(i).dbr)
-			Input(filenum, DPR(i).PRD)
+            Input(filenum, DPR(i).PRD)
 			Input(filenum, DPR(i).all)
 			Input(filenum, DPR(i).crd)
 			Input(filenum, DPR(i).int_Renamed)

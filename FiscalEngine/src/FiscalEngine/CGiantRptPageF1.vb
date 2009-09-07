@@ -69,11 +69,11 @@ Friend Class CGiantRptPageF1
     End Property
 
 
-    Private Property IDGiantRptPageStd_Values() As Single() Implements IDGiantRptPageStd.Values
+    Private Property IDGiantRptPageStd_Values() As Single(,) Implements IDGiantRptPageStd.Values
         Get
             IDGiantRptPageStd_Values = VB6.CopyArray(ma_rValues)
         End Get
-        Set(ByVal Value() As Single)
+        Set(ByVal Value(,) As Single)
             ma_rValues = VB6.CopyArray(Value)
         End Set
     End Property

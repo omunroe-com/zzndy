@@ -285,12 +285,12 @@ Module MLoan
 		
         Dim oPg1 As IGiantRptPageAssignStd
 		If RF(5) = "ALL" Or RF(5) = "VAR" Then 'print loan schedule
-			ColumnNm(1) = CSng("LOANAMT")
-			ColumnNm(2) = CSng("LOANBAL")
-			ColumnNm(3) = CSng("PRINCIP")
-			ColumnNm(4) = CSng("INTPAYM")
-			ColumnNm(5) = CSng("TOTPAYM")
-			ColumnNm(6) = CSng("CFEFFEC")
+            ColumnNm(1) = ("LOANAMT")
+            ColumnNm(2) = ("LOANBAL")
+            ColumnNm(3) = ("PRINCIP")
+            ColumnNm(4) = ("INTPAYM")
+            ColumnNm(5) = ("TOTPAYM")
+            ColumnNm(6) = ("CFEFFEC")
 			'Page type, Start Year, Page counter, life of field, number of columns, page title, column length
 			'''       WRITE #5, 14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, WINT, PRTA, sCur
 			''''Write #5, 14, YR, 0, LG, 6, "LOAN SCHEDULE", 10, FinalWin, FINALPARTIC, sCur

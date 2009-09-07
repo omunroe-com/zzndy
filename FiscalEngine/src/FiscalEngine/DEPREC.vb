@@ -288,7 +288,7 @@ Module DEPREC
 		ReDim clngs(LG)
 		'~~~~ReDim FRC(LG)
 		Dim CLRA(LG) As Single
-		Dim ColumnNm(16) As Single
+        Dim ColumnNm(16) As String
 		
 27: 
 28: 
@@ -393,7 +393,7 @@ Module DEPREC
         Dim matcher(10) As String
         ReDim clngs(LG)
         For iPY = 1 To 10
-            matcher(iPY) = CSng(CLG(iYP, iPY))
+            matcher(iPY) = (CLG(iYP, iPY))
         Next iPY
 
         CeilDef("DEPREC", iX, matcher, clngs)
@@ -1312,16 +1312,16 @@ nextlm:             Next iLM
 5009:   ' PRINT DEPRECIATION SCHEDULE
 5010:
 5120:   If bDPCR Then GoTo 5530
-5174:   ColumnNm(1) = CSng("BASEREN")
-5176:   ColumnNm(2) = CSng("BASEEXP")
-5177:   ColumnNm(3) = CSng("BASEDEV")
-5178:   ColumnNm(4) = CSng("BASEOTH")
-5180:   ColumnNm(5) = CSng("BASETOT")
-5182:   ColumnNm(6) = CSng("  OPREN")
-5184:   ColumnNm(7) = CSng("  OPEXP")
-5186:   ColumnNm(8) = CSng("  OPDEV")
-5188:   ColumnNm(9) = CSng("  OPOTH")
-5290:   ColumnNm(10) = CSng("  OPTOT")
+5174:   ColumnNm(1) = ("BASEREN")
+5176:   ColumnNm(2) = ("BASEEXP")
+5177:   ColumnNm(3) = ("BASEDEV")
+5178:   ColumnNm(4) = ("BASEOTH")
+5180:   ColumnNm(5) = ("BASETOT")
+5182:   ColumnNm(6) = ("  OPREN")
+5184:   ColumnNm(7) = ("  OPEXP")
+5186:   ColumnNm(8) = ("  OPDEV")
+5188:   ColumnNm(9) = ("  OPOTH")
+5290:   ColumnNm(10) = ("  OPTOT")
 5298:
 5300:   'Page type, Year start, Page counter, life of field, number of columns, page title, column length
 5302:   ''''Write #5, 8, YR, 0, LG, 10, "DEPRECIATION SCHEDULE" + cdtitle$, 10, FinalWin, FINALPARTIC, sCur
@@ -1351,19 +1351,19 @@ nextlm:             Next iLM
 5504:   ' PRINT COST RECOVERY SCHEDULE
 5506:
 5530:
-5532:   ColumnNm(1) = CSng("BASREN")
-5534:   ColumnNm(2) = CSng("BASEXP")
-5536:   ColumnNm(3) = CSng("BASDEV")
-5538:   ColumnNm(4) = CSng("BASOTH")
-5540:   ColumnNm(5) = CSng("BASOPX")
-5542:   ColumnNm(6) = CSng("BASTOT")
-5544:   ColumnNm(7) = CSng(" CRREN")
-5546:   ColumnNm(8) = CSng(" CREXP")
-5548:   ColumnNm(9) = CSng(" CRDEV")
-5550:   ColumnNm(10) = CSng(" CROTH")
-5552:   ColumnNm(11) = CSng(" CROPX")
-5554:   ColumnNm(12) = CSng(" CRTOT")
-        ColumnNm(13) = CSng("  CLNG")
+5532:   ColumnNm(1) = ("BASREN")
+5534:   ColumnNm(2) = ("BASEXP")
+5536:   ColumnNm(3) = ("BASDEV")
+5538:   ColumnNm(4) = ("BASOTH")
+5540:   ColumnNm(5) = ("BASOPX")
+5542:   ColumnNm(6) = ("BASTOT")
+5544:   ColumnNm(7) = (" CRREN")
+5546:   ColumnNm(8) = (" CREXP")
+5548:   ColumnNm(9) = (" CRDEV")
+5550:   ColumnNm(10) = (" CROTH")
+5552:   ColumnNm(11) = (" CROPX")
+5554:   ColumnNm(12) = (" CRTOT")
+        ColumnNm(13) = ("  CLNG")
 5556:
 5558:   'Page type, Start year, Page counter, life of field, number of columns, page title, column length
         'add a column and shring col didth to 8 to accommodate ceiling value

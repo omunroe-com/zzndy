@@ -134,10 +134,10 @@ Module MRepay
 		
 		Dim REPASING(LG) As Object
 		Dim CXRE(LG, 5) As Object
-		Dim clngx(LG) As Object
+        Dim clngx(LG) As Single
 		Dim CX(LG, 5) As Object
 		ReDim clngs(LG)
-		Dim CLRA(LG) As Object
+        Dim CLRA(LG) As Single
 		Dim ColumnNm(15) As Object
 		
 10001: On Error GoTo 25000
@@ -582,7 +582,7 @@ Module MRepay
 		
     End Sub
 
-    Sub x14000(ByRef clngs, ByRef clngx, ByRef CLRA, ByRef clex, ByRef fd, ByRef Ratetot, ByRef DefAmount, ByRef Numvar, ByRef param)
+    Sub x14000(ByRef clngs() As Single, ByRef clngx() As Single, ByRef CLRA() As Single, ByRef clex As String, ByRef fd As Short, ByRef Ratetot As Short, ByRef DefAmount As Single, ByRef Numvar As Short, ByRef param As Short)
 14000:  ' THIS SUBROUTINE CALCULATES CEILING FOR PARTICIPATION REPAYMENT
         ' FIND CEILING TO MATCH VARIABLE
         ReDim clngs(LG)
@@ -607,7 +607,7 @@ Module MRepay
 
 
 14080:  ' LOOP THRU INCOME
-        Dim matcher(10) As Object
+        Dim matcher(10) As String
         ReDim clngs(LG)
 
         For j = 1 To 10
@@ -653,8 +653,8 @@ contin:
             'UPGRADE_WARNING: Couldn't resolve default property of object ratein(j, 6). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
             ratein(j, 6) = CGR(j, 6)
         Next j
-        defamount = 100
-        RateCalc(numvar, "REPAY", "PAR", defamount, sRateInV, ratein, Ratetot, param, VarRates)
+        DefAmount = 100
+        RateCalc(Numvar, "REPAY", "PAR", DefAmount, sRateInV, ratein, Ratetot, param, VarRates)
 
         For j = 1 To LG
             'UPGRADE_WARNING: Couldn't resolve default property of object VarRates(j). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'

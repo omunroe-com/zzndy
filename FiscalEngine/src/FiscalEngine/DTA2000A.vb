@@ -2320,7 +2320,7 @@ Module DTA2000A
         Dim j As Short
         Dim arg As String
         Dim updatea As Short
-        Dim Datacol As Object
+        Dim Datacol() As Single
         Dim i As Short
         Dim HIVALUE As Single
         '--------------------------------------------------------------------
@@ -2338,9 +2338,9 @@ Module DTA2000A
         600:
         HIVALUE = - 32760
         'forecast EXP, DEV, and CPX group inflators
-        Dim cats(3) As Single
+        Dim cats(3) As String
         Dim grpfound(3) As Single
-        cats (1) = CSng ("EXP") : cats (2) = CSng ("DEV") : cats (3) = CSng ("CPX")
+        cats(1) = "EXP" : cats(2) = "DEV" : cats(3) = "CPX"
         Dim infgrp(LG, 3) As Single
 'to store group annual amounts
         For i = 1 To 3
@@ -2351,7 +2351,7 @@ Module DTA2000A
 'forecastdispatch changes value of arg$ (returns units)
             'UPGRADE_WARNING: Couldn't resolve default property of object Datacol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
             'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-            DTAForecastDispatch (arg, Datacol(), updatea)
+            DTAForecastDispatch(arg, Datacol, updatea)
             If updatea And updatea <> HIVALUE Then
                 grpfound (i) = True
                 For j = 1 To LG
@@ -2375,7 +2375,7 @@ Module DTA2000A
         kk = Len (C)\3
         ReDim cats(kk)
         For i = 1 To kk
-            cats (i) = CSng (Mid (C, (i - 1)*3 + 1, 3))
+            cats(i) = Mid(C, (i - 1) * 3 + 1, 3)
         Next i
         C = ""
         '~~~~~~ was:
@@ -2410,13 +2410,13 @@ Module DTA2000A
 'forecastdispatch changes value of arg$ (returns units)
                 'UPGRADE_WARNING: Couldn't resolve default property of object Datacol(). Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
                 'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-                DTAForecastDispatch (arg, Datacol(), updatea)
+                DTAForecastDispatch(arg, Datacol, updatea)
                 If updatea = HIVALUE Then 'not found
                     Select Case cats (ptr)
-                        Case CDbl ("GEO"), CDbl ("EDH"), CDbl ("EDS"), CDbl ("ADH"), CDbl ("ASC") _
+                        Case "GEO", "EDH", "EDS", "ADH", "ASC" _
                             'EXPLORATION CATEGORIES
                             whichgroup = 1
-                        Case CDbl ("DNP"), CDbl ("DVP"), CDbl ("PLF"), CDbl ("FCL"), CDbl ("TRN"), CDbl ("EOR") _
+                        Case "DNP", "DVP", "PLF", "FCL", "TRN", "EOR" _
                             'DEVELOPMENT CATEGORIES
                             whichgroup = 2
                         Case Else 'cat = BNS,LSE,REN,CP1,CP2,CP3,BAL,BL2,BL3

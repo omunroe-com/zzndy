@@ -54,7 +54,7 @@ Friend Class CEFSFileSeq
 	'
 	
 	
-    Private WriteOnly Property IDStoreSeq_NextItem() As Object Implements IDStoreSeq.NextItem
+    Private WriteOnly Property NextItem() As Object Implements IDStoreSeq.NextItem
         Set(ByVal Value As Object)
 
             Write(m_iHandle, Value)
@@ -62,7 +62,7 @@ Friend Class CEFSFileSeq
         End Set
     End Property
 	
-    Private WriteOnly Property IDStoreSeq_NextItemLineEnd() As Object Implements IDStoreSeq.NextItemLineEnd
+    Private WriteOnly Property NextItemLineEnd() As Object Implements IDStoreSeq.NextItemLineEnd
         Set(ByVal Value As Object)
 
             WriteLine(m_iHandle, Value)

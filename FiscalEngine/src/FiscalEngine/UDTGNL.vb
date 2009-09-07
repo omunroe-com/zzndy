@@ -6,7 +6,7 @@ Module UDTGNL
         'UPGRADE_ISSUE: Declaration type not supported: Array of fixed-length strings. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="934BD4FF-1FF9-47BD-888F-D411E47E78FA"'
         Public ttl(4) As String 'titleline 1-4
         'UPGRADE_ISSUE: Declaration type not supported: Array of fixed-length strings. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="934BD4FF-1FF9-47BD-888F-D411E47E78FA"'
-        Public dt(3) As String 'dates (proj, discov, prod, discnt)
+        Public dt(4) As String 'dates (proj, discov, prod, discnt)
         'UPGRADE_ISSUE: Declaration type not supported: Array of fixed-length strings. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="934BD4FF-1FF9-47BD-888F-D411E47E78FA"'
         Public pcd(2) As String 'price codes (oil and gas)
         Public wdepth As Single 'water depth in meters

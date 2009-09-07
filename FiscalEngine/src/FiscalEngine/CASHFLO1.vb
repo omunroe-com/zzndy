@@ -1422,16 +1422,16 @@ AfDeflate:
 		'assigning repay if there is any
 		If REPY <> 0 Then
 			Counter = Counter + 1
-			ColumnNm(Counter) = CSng(" REPAY ")
+            ColumnNm(Counter) = (" REPAY ")
 			l_iTypes(Counter) = 1
 		End If
 		If fin <> 0 Then
 			Counter = Counter + 1
-			ColumnNm(Counter) = CSng("FINANCE")
+            ColumnNm(Counter) = ("FINANCE")
 			l_iTypes(Counter) = 2
 		End If
 		Counter = Counter + 1
-		ColumnNm(Counter) = CSng(" POSTOT")
+        ColumnNm(Counter) = (" POSTOT")
 		l_iTypes(Counter) = 3
 		
 		'assigning the number of postive cf
@@ -1444,7 +1444,7 @@ AfDeflate:
 			cflo = Left(TD(i, 4), 1)
 			
 			If cflo = "-" Or cflo = "T" Or cflo = "A" Or cflo = "U" Then
-				MatchTitles(TD(i, 1), CStr(ColumnNm(Counter))) 'FINDS MATCHING SHORT REPORT TITLE
+                MatchTitles(TD(i, 1), (ColumnNm(Counter))) 'FINDS MATCHING SHORT REPORT TITLE
 				' Capture type and user-defined variable code for this profile
 				l_iTypes(Counter) = 8
 				l_sCodes(Counter) = TD(i, 1)
@@ -1455,155 +1455,155 @@ AfDeflate:
 		Counter = Counter - 1 'to offset the for/next loop for incrementing an extra 1
 		If OPXP <> 0 Then
 			Counter = Counter + 1
-			ColumnNm(Counter) = CSng("OPEREXP")
+            ColumnNm(Counter) = ("OPEREXP")
 			l_iTypes(Counter) = 5
 		End If
 		If CPXP <> 0 Then
 			Counter = Counter + 1
-			ColumnNm(Counter) = CSng("CAPITAL")
-			l_iTypes(Counter) = 4
-		End If
-		Counter = Counter + 1
-		ColumnNm(Counter) = CSng(" NEGTOT")
-		l_iTypes(Counter) = 6
-		
-		'assigning the number of negative cf
-		NegCtr = Counter - PosCtr
-		
-		Counter = Counter + 1 'page total column
-		ColumnNm(Counter) = CSng("    NCF")
-		l_iTypes(Counter) = 7
-		
-		'checking to see if user have pass allowable limits on POS or NEG
-		'<<<<<< 29 Mar 2002 JWD (C0527)
-		If PS > maximum_count_positive_cashflows - 1 Or NEG > maximum_count_negative_cashflows - 1 Then
-			'~~~~~~ was:
-			'If PS% > 11 Or NEG% > 11 Then
-			'>>>>>> End (C0527)
-			'<<<<<< 19 Mar 2002 JWD (C0500)
-			Error(ErrorCode_ExceededMaxCashFlowCount)
-			'~~~~~~ was:
-			'Error 251
-			'>>>>>> End (C0500)
-		End If
-		
-		'Write out the Values to DUM()
-		For i = 1 To LG
-			AtcfCtr = 1
-			For y = 1 To PS
-				DUM(i, AtcfCtr) = PSCF(i, y)
-				AtcfCtr = AtcfCtr + 1
-			Next y
-			DUM(i, AtcfCtr) = PSCF(i, PS + 1) 'total positives
-			
-			AtcfCtr = AtcfCtr + 1
-			For y = 1 To NEG
-				DUM(i, AtcfCtr) = NGCF(i, y)
-				AtcfCtr = AtcfCtr + 1
-			Next y
-			DUM(i, AtcfCtr) = NGCF(i, NEG + 1) 'total negatives column
-			AtcfCtr = AtcfCtr + 1
-			DUM(i, AtcfCtr) = CF(i) 'page total column
-		Next i
-		
-		
-		'<<<<<< 29 Mar 2002 JWD (C0527)
-		'<Note: No longer concerned with splitting the section if
-		' more than 12 columns. Output all columns in one section>
-		ConCur = sCur 'for consolidation
-		
-		' 3 Feb 2004 JWD (C0776) Remove writes, replaced with report object
-		''''Write #5, 10, YR, 0, LG, Counter%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
-		''''Call WriteFour(Counter%, ColumnNm$())    'COLUMN HEADS
-		''''Call WriteOne(AtcfCtr%, DUM())           'DATA
-		
-		Dim oPg1 As CGiantRptPageD1
-		oPg1 = g_oReport.NewAfterTaxCashflowRptPage
-		With oPg1
-			.SetPageHeader(10, YR, 0, LG, Counter, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur)
-			.SetProfileHeaders(ColumnNm)
-			.SetProfileTypesAndTitles(l_iTypes, l_sCodes)
-			.SetProfileValues(DUM)
-		End With
-		'~~~~~~ was:
-		'   ' Checking to see if there are more than 12 columns for the Afcf report
-		'   ' if there is more than write out 2 pages.
-		'   ' -----------------------------------------------------------------------
-		'ConCur$ = sCur             'for consolidation
-		'If Counter% <= 12 Then
-		'                    'Page type, Start year, Page counter, life of field, number of columns, page title, column length
-		'   Write #5, 10, YR, 0, LG, Counter%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
-		'   Call WriteFour(Counter%, ColumnNm$())    'COLUMN HEADS
-		'   Call WriteOne(AtcfCtr%, DUM())           'DATA
-		'Else                       'write out 2 pages
-		'   'do the positive cashflows first
-		'
-		'   NoPosCol% = PosCtr% + 2
-		'   If NoPosCol% > 12 Then
-		'      NoPosCol% = 12
-		'   End If
-		'                    'Page type, Start year, Page counter, life of field, number of columns, page title, column length
-		'   Write #5, 10, YR, 0, LG, NoPosCol%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
-		'   Call WriteFive(PosCtr%, Counter%, REPY%, FIN%, ColumnNm$())      'Heads
-		'   Call WriteTwo(PosCtr%, AtcfCtr%, REPY%, FIN%, DUM())     'data
-		'          'now do the negative cashflows
-		'   Nonegcol% = NegCtr% + 2
-		'   If Nonegcol% > 12 Then
-		'      Nonegcol% = 12
-		'   End If
-		'                    'Page type, Start year, Page counter, life of field, number of columns, page title, column length
-		'   Write #5, 15, YR, 0, LG, Nonegcol%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
-		'   Call WriteSix(NegCtr%, Counter%, ColumnNm$())    'columns titles
-		'   Call WriteThree(NegCtr%, AtcfCtr%, DUM())        'write out the values
-		'End If     'end of WRITE 1 OR 2 pages test
-		'>>>>>> End (C0527)
-		
-		'--------------------------------------------------------------------------------
-24000: 'THIS CALCULATES PRESENT VALUES AND ROR
-		'=====================================================================
-		'OXY specific items need to be calculated here
-		'THESE ITEMS ARE USED IN GNTOXY1.EXE
-		
-		If xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off Then
-			GoTo 39000
-		End If
-		
-		
-		'calculate WINREV! (sum co. cashflows / proj gross revenues)
-		firstyr = Y3 - YR + 1 'points at discount year in arrays
-		If Left(RF(1), 6) <> "CONSOL" Then
-			'if CONSOL, we get the values of these items from the
-			'  consolidated items in common
-			
-			' Added GDP 24/01/2000 to make sure that this code runs through
-			' OK when the discount date is prior to the project start date
-			If firstyr < 1 Then
-				firstyr = 1
-			End If
-			For q = firstyr To LG
-				' GDP 20 Jan 2003
-				' Replaced revenue calculation with call to ATotalRevenues
-				'OXYGrRev! = OXYGrRev! + ((A(q%, 1) * A(q%, 7)) + (A(q%, 2) * A(q%, 8)) + (A(q%, 3) * A(q%, 9)) + (A(q%, 4) * A(q%, 10)))
-				OXYGrRev = OXYGrRev + ATotalRevenues(q)
-				
-				If PS > 0 Then
-					OXYTtlPos = OXYTtlPos + PSCF(q, PS + 1)
-				End If
-			Next q
-			'(atcf cum + "T" items) / (Fld grs income - grs OPEX - grs CAPEX)
-			'ttlcap! has total capital from grossrpt.exe
-			'OPEX(0) has total operating cost from above
-			
-		End If
-		
-		If OXYGrRev > 0 Then
-			WinRev = OXYTtlPos / OXYGrRev
-		End If
-		
-		'=====================================================================
-		
-		' ie last run of RUN file.
-		'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
+            ColumnNm(Counter) = ("CAPITAL")
+            l_iTypes(Counter) = 4
+        End If
+        Counter = Counter + 1
+        ColumnNm(Counter) = (" NEGTOT")
+        l_iTypes(Counter) = 6
+
+        'assigning the number of negative cf
+        NegCtr = Counter - PosCtr
+
+        Counter = Counter + 1 'page total column
+        ColumnNm(Counter) = ("    NCF")
+        l_iTypes(Counter) = 7
+
+        'checking to see if user have pass allowable limits on POS or NEG
+        '<<<<<< 29 Mar 2002 JWD (C0527)
+        If PS > maximum_count_positive_cashflows - 1 Or NEG > maximum_count_negative_cashflows - 1 Then
+            '~~~~~~ was:
+            'If PS% > 11 Or NEG% > 11 Then
+            '>>>>>> End (C0527)
+            '<<<<<< 19 Mar 2002 JWD (C0500)
+            Error (ErrorCode_ExceededMaxCashFlowCount)
+            '~~~~~~ was:
+            'Error 251
+            '>>>>>> End (C0500)
+        End If
+
+        'Write out the Values to DUM()
+        For i = 1 To LG
+            AtcfCtr = 1
+            For y = 1 To PS
+                DUM(i, AtcfCtr) = PSCF(i, y)
+                AtcfCtr = AtcfCtr + 1
+            Next y
+            DUM(i, AtcfCtr) = PSCF(i, PS + 1) 'total positives
+
+            AtcfCtr = AtcfCtr + 1
+            For y = 1 To NEG
+                DUM(i, AtcfCtr) = NGCF(i, y)
+                AtcfCtr = AtcfCtr + 1
+            Next y
+            DUM(i, AtcfCtr) = NGCF(i, NEG + 1) 'total negatives column
+            AtcfCtr = AtcfCtr + 1
+            DUM(i, AtcfCtr) = CF(i) 'page total column
+        Next i
+
+
+        '<<<<<< 29 Mar 2002 JWD (C0527)
+        '<Note: No longer concerned with splitting the section if
+        ' more than 12 columns. Output all columns in one section>
+        ConCur = sCur 'for consolidation
+
+        ' 3 Feb 2004 JWD (C0776) Remove writes, replaced with report object
+        ''''Write #5, 10, YR, 0, LG, Counter%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
+        ''''Call WriteFour(Counter%, ColumnNm$())    'COLUMN HEADS
+        ''''Call WriteOne(AtcfCtr%, DUM())           'DATA
+
+        Dim oPg1 As CGiantRptPageD1
+        oPg1 = g_oReport.NewAfterTaxCashflowRptPage
+        With oPg1
+            .SetPageHeader(10, YR, 0, LG, Counter, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur)
+            .SetProfileHeaders(ColumnNm)
+            .SetProfileTypesAndTitles(l_iTypes, l_sCodes)
+            .SetProfileValues(DUM)
+        End With
+        '~~~~~~ was:
+        '   ' Checking to see if there are more than 12 columns for the Afcf report
+        '   ' if there is more than write out 2 pages.
+        '   ' -----------------------------------------------------------------------
+        'ConCur$ = sCur             'for consolidation
+        'If Counter% <= 12 Then
+        '                    'Page type, Start year, Page counter, life of field, number of columns, page title, column length
+        '   Write #5, 10, YR, 0, LG, Counter%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
+        '   Call WriteFour(Counter%, ColumnNm$())    'COLUMN HEADS
+        '   Call WriteOne(AtcfCtr%, DUM())           'DATA
+        'Else                       'write out 2 pages
+        '   'do the positive cashflows first
+        '
+        '   NoPosCol% = PosCtr% + 2
+        '   If NoPosCol% > 12 Then
+        '      NoPosCol% = 12
+        '   End If
+        '                    'Page type, Start year, Page counter, life of field, number of columns, page title, column length
+        '   Write #5, 10, YR, 0, LG, NoPosCol%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
+        '   Call WriteFive(PosCtr%, Counter%, REPY%, FIN%, ColumnNm$())      'Heads
+        '   Call WriteTwo(PosCtr%, AtcfCtr%, REPY%, FIN%, DUM())     'data
+        '          'now do the negative cashflows
+        '   Nonegcol% = NegCtr% + 2
+        '   If Nonegcol% > 12 Then
+        '      Nonegcol% = 12
+        '   End If
+        '                    'Page type, Start year, Page counter, life of field, number of columns, page title, column length
+        '   Write #5, 15, YR, 0, LG, Nonegcol%, "AFTER TAX CASH FLOW", 10, FinalWin, FINALPARTIC, sCur
+        '   Call WriteSix(NegCtr%, Counter%, ColumnNm$())    'columns titles
+        '   Call WriteThree(NegCtr%, AtcfCtr%, DUM())        'write out the values
+        'End If     'end of WRITE 1 OR 2 pages test
+        '>>>>>> End (C0527)
+
+        '--------------------------------------------------------------------------------
+24000:  'THIS CALCULATES PRESENT VALUES AND ROR
+        '=====================================================================
+        'OXY specific items need to be calculated here
+        'THESE ITEMS ARE USED IN GNTOXY1.EXE
+
+        If xRunSwitches(RunSwitch_DCF) = RunSwitch_DCF_Off Then
+            GoTo 39000
+        End If
+
+
+        'calculate WINREV! (sum co. cashflows / proj gross revenues)
+        firstyr = Y3 - YR + 1 'points at discount year in arrays
+        If Left(RF(1), 6) <> "CONSOL" Then
+            'if CONSOL, we get the values of these items from the
+            '  consolidated items in common
+
+            ' Added GDP 24/01/2000 to make sure that this code runs through
+            ' OK when the discount date is prior to the project start date
+            If firstyr < 1 Then
+                firstyr = 1
+            End If
+            For q = firstyr To LG
+                ' GDP 20 Jan 2003
+                ' Replaced revenue calculation with call to ATotalRevenues
+                'OXYGrRev! = OXYGrRev! + ((A(q%, 1) * A(q%, 7)) + (A(q%, 2) * A(q%, 8)) + (A(q%, 3) * A(q%, 9)) + (A(q%, 4) * A(q%, 10)))
+                OXYGrRev = OXYGrRev + ATotalRevenues(q)
+
+                If PS > 0 Then
+                    OXYTtlPos = OXYTtlPos + PSCF(q, PS + 1)
+                End If
+            Next q
+            '(atcf cum + "T" items) / (Fld grs income - grs OPEX - grs CAPEX)
+            'ttlcap! has total capital from grossrpt.exe
+            'OPEX(0) has total operating cost from above
+
+        End If
+
+        If OXYGrRev > 0 Then
+            WinRev = OXYTtlPos / OXYGrRev
+        End If
+
+        '=====================================================================
+
+        ' ie last run of RUN file.
+        'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
         x27100(rUDCF, ZD, zp, TorULines, OPXP, CPXP, DRT, ESPV, u1, u2, U3, U11, U12, U4, U7, U13, PAY, ATCF, CODCF, POT, GOVT, GVDCF, iEntityID, eEntityID_Company, iCFCol, X7, U8, GVTK, vpr, iDET, bRMN, eEntityID_3rdParty, eEntityID_NOC, eEntityID_Government, U26, U23, TATCF, TDPCDCF, U27, U36, U33, NATCF, NOCDCF, U37, RR, RRZ, RRT, RRN, RRB, U5, RU, RE, rl, CU, cl, U5L, CM1, CM2) ' CALCULATES ESPV(1 - 13,6) FOR ECONOMIC SUMMARY PAGE
 
 
@@ -1627,25 +1627,25 @@ AfDeflate:
 
         ' Deflated Cashflow Column Names
 
-        ColumnNm(1) = CSng("DEFLATE")
-        ColumnNm(2) = CSng(" COMPCF")
-        ColumnNm(3) = CSng("COMPCCF")
-        ColumnNm(4) = CSng("COMPDCF")
-        ColumnNm(5) = CSng(" COCDCF")
+        ColumnNm(1) = ("DEFLATE")
+        ColumnNm(2) = (" COMPCF")
+        ColumnNm(3) = ("COMPCCF")
+        ColumnNm(4) = ("COMPDCF")
+        ColumnNm(5) = (" COCDCF")
         ' 6 Dec 2005 JWD (C0846)  Add new cash flow columns
-        ColumnNm(6) = CSng("3DPCF")
-        ColumnNm(7) = CSng("3DPCCF")
-        ColumnNm(8) = CSng("3DPDCF")
-        ColumnNm(9) = CSng("3DPCDCF")
-        ColumnNm(10) = CSng("NOCCF")
-        ColumnNm(11) = CSng("NOCCCF")
-        ColumnNm(12) = CSng("NOCDCF")
-        ColumnNm(13) = CSng("NOCCDCF")
+        ColumnNm(6) = ("3DPCF")
+        ColumnNm(7) = ("3DPCCF")
+        ColumnNm(8) = ("3DPDCF")
+        ColumnNm(9) = ("3DPCDCF")
+        ColumnNm(10) = ("NOCCF")
+        ColumnNm(11) = ("NOCCCF")
+        ColumnNm(12) = ("NOCDCF")
+        ColumnNm(13) = ("NOCCDCF")
         ' End (C0846)
-        ColumnNm(14) = CSng(" GOVTCF")
-        ColumnNm(15) = CSng("GOVTCCF")
-        ColumnNm(16) = CSng("GOVTDCF")
-        ColumnNm(17) = CSng("GOVCDCF")
+        ColumnNm(14) = (" GOVTCF")
+        ColumnNm(15) = ("GOVTCCF")
+        ColumnNm(16) = ("GOVTDCF")
+        ColumnNm(17) = ("GOVCDCF")
 
 
         ' 3 Feb 2004 JWD (C0776) Remove writes
@@ -2541,7 +2541,10 @@ nexty:          Next y
         End If
 
 39000:  'UPGRADE_NOTE: Erase was upgraded to System.Array.Clear. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
-        System.Array.Clear(D8, 0, D8.Length)
+        If Not D8 Is Nothing Then
+            System.Array.Clear(D8, 0, D8.Length)
+        End If
+
 
         ' 15 Mar 2004 JWD Condition on being a Mainexec run
         If g_bIsMainexecRun Then
@@ -3246,7 +3249,7 @@ ErrHandler:
 
         End If
     End Sub
-    Sub x27000(ByRef rUDCF As Object(,), ByRef ZD As Single, ByRef zp As Object, ByRef TorULines As Boolean, ByVal OPXP As Object, ByVal CPXP As Object) ' This subroutine sets up for discounting...
+    Sub x27000(ByRef rUDCF(,) As Single, ByRef ZD As Single, ByRef zp As Object, ByRef TorULines As Boolean, ByVal OPXP As Object, ByVal CPXP As Object) ' This subroutine sets up for discounting...
         ' it copies the discountable cashflows into a holding array
         ' and applies any deflator factor and any cashflow adjustment
         ' factors that are independent of data or discount rate....
@@ -3505,7 +3508,7 @@ ErrHandler:
             ' End (C0846)
         End If
     End Sub
-    Sub x27100(ByRef rUDCF As Object, ByRef ZD As Object, ByRef zp As Object, ByRef TorULines As Boolean, ByVal OPXP As Object, ByVal CPXP As Object, ByRef DRT As Object, ByRef ESPV As Object, ByVal u1 As Object, ByVal u2 As Object, ByVal U3 As Object, ByVal U11 As Object, ByVal U12 As Object, ByVal U4 As Object, ByVal U7 As Object, ByVal U13 As Object, ByRef PAY As Object, ByVal ATCF As Object, ByRef CODCF As Object, ByVal POT As Object, ByVal GOVT As Object, ByRef GVDCF As Object, ByRef iEntityID As Object, ByVal eEntityID_Company As Object, ByRef iCFCol As Integer, ByRef X7 As Integer, ByRef U8 As Object, ByRef GVTK As Object, ByRef vpr As Single(), ByRef iDET As Single, ByRef bRMN As Boolean, ByVal eEntityID_3rdParty As Object, ByVal eEntityID_NOC As Object, ByVal eEntityID_Government As Object, ByVal U26 As Object, ByVal U23 As Object, ByVal TATCF As Object, ByRef TDPDCF As Object, ByVal U27 As Object, ByVal U36 As Object, ByVal U33 As Object, ByVal NATCF As Object, ByRef NOCDCF As Object, ByVal U37 As Object, ByRef RR As Object, ByVal RRZ As Object, ByRef RRT As Object, ByRef RRN As Object, ByRef RRB As Object, ByVal U5 As Object, ByRef RU As Object, ByRef RE As Object, ByRef rl As Object, ByRef CU As Object, ByRef cl As Object, ByRef U5L As Object, ByRef CM1 As Object, ByRef CM2 As Object) ' THIS CALCULATES ESPV(1 - 13,6) FOR ECONOMIC SUMMARY PAGE
+    Sub x27100(ByRef rUDCF(,) As Single, ByRef ZD As Object, ByRef zp As Object, ByRef TorULines As Boolean, ByVal OPXP As Object, ByVal CPXP As Object, ByRef DRT As Object, ByRef ESPV As Object, ByVal u1 As Object, ByVal u2 As Object, ByVal U3 As Object, ByVal U11 As Object, ByVal U12 As Object, ByVal U4 As Object, ByVal U7 As Object, ByVal U13 As Object, ByRef PAY As Object, ByVal ATCF As Object, ByRef CODCF As Object, ByVal POT As Object, ByVal GOVT As Object, ByRef GVDCF As Object, ByRef iEntityID As Object, ByVal eEntityID_Company As Object, ByRef iCFCol As Integer, ByRef X7 As Integer, ByRef U8 As Object, ByRef GVTK As Object, ByRef vpr As Single(), ByRef iDET As Single, ByRef bRMN As Boolean, ByVal eEntityID_3rdParty As Object, ByVal eEntityID_NOC As Object, ByVal eEntityID_Government As Object, ByVal U26 As Object, ByVal U23 As Object, ByVal TATCF As Object, ByRef TDPDCF As Object, ByVal U27 As Object, ByVal U36 As Object, ByVal U33 As Object, ByVal NATCF As Object, ByRef NOCDCF As Object, ByVal U37 As Object, ByRef RR As Object, ByVal RRZ As Object, ByRef RRT As Object, ByRef RRN As Object, ByRef RRB As Object, ByVal U5 As Object, ByRef RU As Object, ByRef RE As Object, ByRef rl As Object, ByRef CU As Object, ByRef cl As Object, ByRef U5L As Object, ByRef CM1 As Object, ByRef CM2 As Object) ' THIS CALCULATES ESPV(1 - 13,6) FOR ECONOMIC SUMMARY PAGE
 
         'UPGRADE_ISSUE: GoSub statement is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="C5A1A479-AB8B-4D40-AAF4-DB19A2E5E77F"'
         x27000(rUDCF, ZD, zp, TorULines, OPXP, CPXP) ' accumulate discountable cashflows
