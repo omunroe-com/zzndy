@@ -17,10 +17,10 @@ class FillerGame {
         return sys_get_temp_dir() . '7col-' . $code . '.game';
     }
 
-    private static $minw = 10;
-    private static $maxw = 45;
-    private static $minh = 5;
-    private static $maxh = 25;
+    protected static $minw = 10;
+    protected static $maxw = 45;
+    protected static $minh = 5;
+    protected static $maxh = 25;
 
     private $code = null;
     private $fd = FALSE;
@@ -158,11 +158,6 @@ class FillerGame {
         Comet::log('start');
     }
 
-    protected static function dimensionsOk($w, $h)
-    {
-        return $w>=FillerGame::$minw && $w <= FillerGame::$maxw && $h>=FillerGame::$minh && $h <= FillerGame::$maxh;
-    }
-
     public function cleanup()
     {
         unlink($this->fname);
@@ -173,7 +168,11 @@ function rand_bool($chance = 50) {
     return (rand(1,100) <= $chance);
 }
 
-class FillerException extends Exception
+class FillerException extends Exception {
+    public function __construct($message)
     {
-
+        parent::__construct($message);
+    }
 }
+
+
