@@ -1410,7 +1410,7 @@ AfDeflate:
 
             If Left(TD(i, 4), 1) = "+" Then
                 'here if doing primary product AND if cash flow effect = "+"
-                MatchTitles(TD(i, 1), CStr(ColumnNm(Counter))) 'FINDS MATCHING SHORT REPORT TITLE
+                MatchTitles(TD(i, 1), ColumnNm(Counter)) 'FINDS MATCHING SHORT REPORT TITLE
                 ' Capture type and user-defined variable code for this profile
                 l_iTypes(Counter) = 8
                 l_sCodes(Counter) = TD(i, 1)
@@ -1444,7 +1444,7 @@ AfDeflate:
             cflo = Left(TD(i, 4), 1)
 
             If cflo = "-" Or cflo = "T" Or cflo = "A" Or cflo = "U" Then
-                MatchTitles(TD(i, 1), (ColumnNm(Counter))) 'FINDS MATCHING SHORT REPORT TITLE
+                MatchTitles(TD(i, 1), ColumnNm(Counter)) 'FINDS MATCHING SHORT REPORT TITLE
                 ' Capture type and user-defined variable code for this profile
                 l_iTypes(Counter) = 8
                 l_sCodes(Counter) = TD(i, 1)
