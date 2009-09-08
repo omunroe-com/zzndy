@@ -38,7 +38,7 @@ var popup = null;
 function create()
 {
     filler.makeNext();
-    comet = Comet.open('push.php', {a:'start', f:filler.next.serialize()});
+    comet = Comet.open('mp.php', {a:'start', f:filler.next.serialize()});
 
     popup = $div({'class':'popup'}, [
         $div({'class':'content'}, [
@@ -140,7 +140,7 @@ function ok()
     var e = document.getElementById('msg');
     e.innerHTML = text_input.fmt({'key':key});
 
-    comet = Comet.open('push.php', {a:'join', k: key});
+    comet = Comet.open('mp.php', {a:'join', k: key});
 }
 
 function nogame(key)

@@ -28,7 +28,17 @@
     function reportCode(code)
     {
         console.log('Received code: ' + code);
-        window.setTimeout(function(){Comet.open('push.php', {a:'join', k:code})}, 500);
+        window.setTimeout(function(){Comet.open('mp.php', {a:'join', k:code})}, 500);
+    }
+
+    function reportFirst(party)
+    {
+        console.log('Received starter: ' + party);
+    }
+
+    function reportGame(w, h, f)
+    {
+        console.log("Will be playing {w}x{h} game of {f}".fmt({w:w,h:h,f:f}));
     }
 
     function istart(itsMyTurn)
@@ -38,7 +48,7 @@
 
     var logic = new FillerLogic(mx, my);
 
-    Comet.open('push.php', {a:'start', f:logic.serialize()});
+    Comet.open('mp.php', {a:'start', f:logic.serialize()});
 
 </script>
 </body>

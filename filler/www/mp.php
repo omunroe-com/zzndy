@@ -1,24 +1,26 @@
 <?php
 header('Content-type: text/html');
 
-define(INCL, '../includes/');
-
-require_once INCL . 'FillerGame.php';
-require_once INCL . 'comet.php';
-require_once INCL . 'multiplayer-logic.php';
-
+require_once '../includes/FillerStarter.php';
+require_once '../includes/FillerJoiner.php';
+require_once '../includes/FillerPlayer.php';
 
 $request_valid = false;
 $action = $_GET['a'];
+
 if($action == 'start' && isset($_GET['f']))
 {
     list($w, $h, $f) = split('-', $_GET['f']);
-    $request_valid = start_multiplayer($w, $h, $f);
+
+    $starter = new FillerStarter();
+    $starter->start($w, $h, $f);
 }
 else if($action == 'join' && isset($_GET['k']))
 {
     $code = $_GET['k'];
-    $request_valid = join_multiplayer($code);
+
+    $joiner = new FillerJoiner();
+    $joiner->join($code);
 }
 
 if(!$request_valid)

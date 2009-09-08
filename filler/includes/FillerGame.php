@@ -1,7 +1,6 @@
 <?php
 
-//32x24
-
+require_once 'comet.php';
 
 class FillerGame {
     protected static function makeCode()
@@ -33,7 +32,7 @@ class FillerGame {
      *  @param {string} $mode file open mode
      *  @throw FillerException if file could not be opened
      */
-    private function init($mode)
+    protected function init($mode)
     {
         $this->fname = FillerGame::getFileName($this->code);
         $this->fd = @fopen($this->fname, $mode);
@@ -78,7 +77,7 @@ class FillerGame {
      */
     protected function read()
     {
-        return split("\t", fgets($this->fd));
+        return split("\t", stream_get_line($this->fd, 8096, "\n"));
     }
 
     /**
@@ -105,21 +104,24 @@ class FillerGame {
 
             $this->mtime = $this->getMTime();
             $this->buffer = array();
+            sleep(1); // One way of ensuring synchronization.
         }
     }
 
-/**
- * Call client method. Add optional arguments
- * @param {string} $method name of method on the client
- */
+    /**
+     * Call client method. Add optional arguments
+     * @param {string} $method name of method on the client
+     */
     protected function post($method)
     {
         $args = func_get_args();
         $callStr = "top.$method(";
         if(array_shift($args) !== NULL)
         {
+            $glue = '';
             foreach($args as $arg)
             {
+                $callStr .= $glue;
                 if(is_string($arg))
                 {
                     $callStr .= '"' . addslashes($arg) . '"';
@@ -128,6 +130,7 @@ class FillerGame {
                 {
                     $callStr .= $arg;
                 }
+                $glue = ',';
             }
         }
         $callStr .= ')';

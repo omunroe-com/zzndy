@@ -38,7 +38,7 @@ class FillerStarter extends FillerGame {
 
         // Report accept/reject, first move.
         $starterFirst = $this->readAccept();
-        $this->post('reportFisrt', $starterFirst ? 'us' : 'them');
+        $this->post('reportFirst', $starterFirst ? 'us' : 'them');
     }
 
     /**
