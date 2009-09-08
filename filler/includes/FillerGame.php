@@ -22,18 +22,25 @@ class FillerGame {
     protected static $minh = 5;
     protected static $maxh = 25;
 
-    private $code = null;
-    private $fd = FALSE;
+    protected $code = null;
+    protected $fd = FALSE;
     private $fname = '';
     private $mtime;
+    private $buffer = array();
 
+    /**
+     *  Create or open game file.
+     *  @param {string} $mode file open mode
+     *  @throw FillerException if file could not be opened
+     */
     private function init($mode)
     {
         $this->fname = FillerGame::getFileName($this->code);
         $this->fd = @fopen($this->fname, $mode);
+
         if($this->fd === FALSE)
         {
-            throw new FillerException();
+            throw new FillerFileException($this->code, $mode);
         }
     }
 
@@ -62,45 +69,69 @@ class FillerGame {
 
     public function getCode()
     {
-        if(is_null($this->code))
-        {
-            $i = 0;
-            do{
-                $this->code = FillerGame::makeCode();
-
-                try{
-                    $this->init('x+');
-                }
-                catch(FillerException $ex)
-                {
-                    $this->code = null;
-                    $this->fd = FALSE;
-                }
-            }
-            while(++$i < 3 && $this->fd === FALSE);
-
-            if($this->fd == FALSE)
-            {
-                throw new FillerException();
-            }
-
-            $this->write('START');
-        }
-
         return $this->code;
     }
 
-    private function read()
+    /**
+     *  Read next line from game file
+     *  @return {array} next line from file as array of tab separated values.
+     */
+    protected function read()
     {
-        return fgets($this->fd);
+        return split("\t", fgets($this->fd));
     }
 
-    private function write($str)
+    /**
+     *  Store a line into buffer for later write into file.
+     *  @param {string} $str line to write to file
+     */
+    protected function write($str)
     {
-        fseek($this->fd, 0, SEEK_END);
-        fwrite($this->fd, time() . "\t" . $str . "\n");
-        fflush($this->fd);
-        $this->mtime = $this->getMTime();
+        $this->buffer[] = $str;
+    }
+    /**
+     *  Commit pending write changes into the file.
+     */
+    protected function commit()
+    {
+        if(count($this->buffer) > 0)
+        {
+            fseek($this->fd, 0, SEEK_END);
+            foreach($this->buffer as $line)
+            {
+                fwrite($this->fd, time() . "\t" . $line . "\n");
+            }
+            fflush($this->fd);
+
+            $this->mtime = $this->getMTime();
+            $this->buffer = array();
+        }
+    }
+
+/**
+ * Call client method. Add optional arguments
+ * @param {string} $method name of method on the client
+ */
+    protected function post($method)
+    {
+        $args = func_get_args();
+        $callStr = "top.$method(";
+        if(array_shift($args) !== NULL)
+        {
+            foreach($args as $arg)
+            {
+                if(is_string($arg))
+                {
+                    $callStr .= '"' . addslashes($arg) . '"';
+                }
+                else
+                {
+                    $callStr .= $arg;
+                }
+            }
+        }
+        $callStr .= ')';
+        Comet::push($callStr);
     }
 
     public function getMTime()
@@ -172,6 +203,18 @@ class FillerException extends Exception {
     public function __construct($message)
     {
         parent::__construct($message);
+    }
+}
+
+class FillerFileException extends FillerException{
+    public function __construct($code, $mode = null)
+    {
+        $action = 'open';
+        if($mode == 'x+')
+        {
+            $action = 'create';
+        }
+        parent::__construct("Unable to $action file with code $code.");
     }
 }
 
