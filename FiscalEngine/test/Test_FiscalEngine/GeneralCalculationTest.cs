@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 using IAMPEEngine;
 
@@ -89,8 +91,12 @@ namespace Test_FiscalEngine
             FiscalEngine.FiscalEngine dotnet = new FiscalEngine.FiscalEngine();
             AMPEEngine original = new AMPEEngine();
 
+            Dictionary<string, bool> cases = new Dictionary<string, bool>();
+
             foreach ( CalculationCase calculationCase in ccm )
             {
+                cases[ calculationCase.Name ] = true;
+
                 switch ( calculationCase.Type )
                 {
                     case ECalculationCaseType.DotNet:
@@ -101,6 +107,27 @@ namespace Test_FiscalEngine
                         break;
                 }
             }
+            
+
+            StringBuilder report = new StringBuilder();
+            foreach ( string caseName in cases.Keys )
+            {
+                CalculationCase dotNetCase = ccm.GetCase( caseName, ECalculationCaseType.DotNet );
+                CalculationCase originalCase = ccm.GetCase( caseName, ECalculationCaseType.Vb6 );
+
+                const string fileName = "A2KRUN1.PRN";
+
+                Report dotNetResult = CashflowReader.Read( "new", Path.Combine( dotNetCase.Location, fileName ) );
+                Report originalResult = CashflowReader.Read( "old", Path.Combine( originalCase.Location, fileName ) );
+
+                if(originalResult != dotNetResult)
+                {
+                    report.AppendFormat("Results for case {0} do not match. : {2}{1}{2}{2}", caseName,
+                                         originalResult.GetLastInequalities(), Environment.NewLine );
+                }
+            }
+
+            if(report.Length>0)Assert.Fail(report.ToString());
         }
     }
 }

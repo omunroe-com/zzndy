@@ -14,8 +14,8 @@ namespace Test_FiscalEngine
     /// </summary>
     internal class CalculationConfigManager : IEnumerable<CalculationCase>
     {
-        private const string pathDotnet = "dotnet";
-        private const string pathOriginal = "original";
+        private const string PathDotnet = "dotnet";
+        private const string PathOriginal = "original";
 
         private readonly string _dataPath;
         private readonly string _testPath;
@@ -83,26 +83,26 @@ namespace Test_FiscalEngine
             Assert.IsTrue( Directory.Exists( dataOut ), "Data output folder not found." );
 
 
-            if ( Directory.Exists( pathDotnet ) )
+            if ( Directory.Exists( PathDotnet ) )
             {
-                Directory.Delete( pathDotnet );
+                Directory.Delete( PathDotnet );
             }
-            if ( Directory.Exists( pathOriginal ) )
+            if ( Directory.Exists( PathOriginal ) )
             {
-                Directory.Delete( pathOriginal );
+                Directory.Delete( PathOriginal );
             }
 
-            Assert.IsFalse( Directory.Exists( pathDotnet ), "Cannot setup fresh output folder for dotnet engine." );
-            Assert.IsFalse( Directory.Exists( pathOriginal ), "Cannot setup fresh output folder for original engine." );
+            Assert.IsFalse( Directory.Exists( PathDotnet ), "Cannot setup fresh output folder for dotnet engine." );
+            Assert.IsFalse( Directory.Exists( PathOriginal ), "Cannot setup fresh output folder for original engine." );
 
-            Directory.CreateDirectory( pathDotnet );
-            Directory.CreateDirectory( pathOriginal );
+            Directory.CreateDirectory( PathDotnet );
+            Directory.CreateDirectory( PathOriginal );
 
-            Assert.IsTrue( Directory.Exists( pathDotnet ), "Failed to create working folder for dotnet engine." );
-            Assert.IsTrue( Directory.Exists( pathOriginal ), "Failed to create working folder for original engine." );
+            Assert.IsTrue( Directory.Exists( PathDotnet ), "Failed to create working folder for dotnet engine." );
+            Assert.IsTrue( Directory.Exists( PathOriginal ), "Failed to create working folder for original engine." );
 
-            CopyDir( dataIn, pathDotnet );
-            CopyDir( dataIn, pathOriginal );
+            CopyDir( dataIn, PathDotnet );
+            CopyDir( dataIn, PathOriginal );
         }
 
         private static void CopyDir( string src, string dst )
@@ -137,22 +137,22 @@ namespace Test_FiscalEngine
         {
             _cases = new SortedDictionary<string, CalculationCase>();
 
-            ReadCases( pathDotnet );
-            ReadCases( pathOriginal );
+            ReadCases( PathDotnet );
+            ReadCases( PathOriginal );
 
             foreach ( CalculationCase calculationCase in this )
             {
                 PutWorkingDir( calculationCase, "GNTCONFG.DAT", 5, 6 );
                 PutWorkingDir( calculationCase, "RUNNAME.PRN", 0 );
 
-                SetupA2KRUN( calculationCase, _dataPath );
+                SetupA2KRun( calculationCase, _dataPath );
                 SetupStartup( calculationCase, _testPath );
             }
         }
 
         private static void SetupStartup( CalculationCase calculationCase, string testPath )
         {
-            string name = "GiExStat.tmp";
+            const string name = "GiExStat.tmp";
 
             using ( TextWriter w = new StreamWriter( calculationCase.StartFile ) )
             {
@@ -163,7 +163,7 @@ namespace Test_FiscalEngine
             }
         }
 
-        private static void SetupA2KRUN( CalculationCase calculationCase, string dataPath )
+        private static void SetupA2KRun( CalculationCase calculationCase, string dataPath )
         {
             string path = Path.Combine( calculationCase.Location, "A2KRUN.RUN" );
             FileInfo fi = new FileInfo( path );
@@ -231,8 +231,8 @@ namespace Test_FiscalEngine
         {
             foreach ( string directory in Directory.GetDirectories( Path.Combine( _testPath, path ) ) )
             {
-                ECalculationCaseType type = path == pathDotnet ? ECalculationCaseType.DotNet : ECalculationCaseType.Vb6;
-                _cases.Add( path + "/" + directory, new CalculationCase( directory, type ) );
+                ECalculationCaseType type = path == PathDotnet ? ECalculationCaseType.DotNet : ECalculationCaseType.Vb6;
+                _cases.Add( type + "/" + Path.GetFileName(directory), new CalculationCase( directory, type ) );
             }
         }
 
@@ -249,5 +249,11 @@ namespace Test_FiscalEngine
         }
 
         #endregion
+
+        public CalculationCase GetCase( string name, ECalculationCaseType type )
+        {
+            CalculationCase @case = _cases[ type + "/" + name ];
+            return @case;
+        }
     }
 }
