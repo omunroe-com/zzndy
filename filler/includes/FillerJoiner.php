@@ -15,11 +15,18 @@ class FillerJoiner extends FillerGame {
     {
     // Read game
         $this->code = $code;
-        list($w, $h, $f) = $this->readGame();
+        try{
+            list($w, $h, $f) = $this->readGame();
+        }
+        catch(GameNotFoundException $ex)
+        {
+            $this->post('reportNoGame', $code);
+            return;
+        }
 
         // Report game configuration
         $this->post('reportGame', $w, $h, $f);
-            Comet::log('Got this $f:' . $f);
+        Comet::log('Got this $f:' . $f);
 
         // Select first
         $joinerFirst = rand_bool();
@@ -32,6 +39,7 @@ class FillerJoiner extends FillerGame {
 
         // Report first move
         $this->post('reportFirst', $joinerFirst ? 'us' : 'them');
+        return;
     }
 
     private function readGame()

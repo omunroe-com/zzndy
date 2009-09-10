@@ -35,6 +35,9 @@ initDomGen(['div','p','a', 'input']);
 var comet = null;
 var popup = null;
 
+/**
+ * Show create multiplayer game menu.
+ */
 function create()
 {
     filler.makeNext();
@@ -50,6 +53,45 @@ function create()
     document.body.appendChild(popup);
 }
 
+/**
+ * Show join multiplayer game menu.
+ */
+function join()
+{
+    popup = $div({'class':'popup'}, [
+        $div({'class':'content'}, [
+            $div({'class':'title', 'id':'title'}, 'Enter game key'),
+            $p({'class':'message','id':'msg'}, ['The shared key is ',
+                $input({'id':'key', 'type':'text', 'maxlength':5,'style':'width:8ex', 'onkeypress':'disableEvent(event)', 'onkeyup':'updateOkLink()', 'onsubmit':'alert("submit")'})
+            ]),
+            $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')]),
+            $div({'class':'ok disabled'}, [$a({'id':'ok', 'href':'#ok','onclick':'ok();return false;'}, 'Ok')])
+        ])]);
+
+    document.body.appendChild(popup);
+    document.getElementById("key").focus();
+}
+
+/**
+ * Handle multiplayer menu 'OK' action.
+ */
+function ok()
+{
+    var cls = okLinkClass();
+    if (cls == null || cls.match(/\bdisabled\b/)) return;
+
+    okLinkClass('ok disabled');
+    var key = document.getElementById("key").value;
+
+    var e = document.getElementById('msg');
+    e.innerHTML = text_input.fmt({'key':key});
+
+    comet = Comet.open('mp.php', {a:'join', k: key});
+}
+
+/**
+ * Handle multiplayer menu 'Cancel' action.
+ */
 function cancel()
 {
     function remove(el)
@@ -79,27 +121,47 @@ function reportCode(code)
     e.innerHTML = e.innerHTML.replace(/ \.{3}$/, '');
 }
 
-function istart(flag)
+function reportGame(w, h, fld)
 {
-    var e = document.getElementById('msg');
-    document.getElementById('title').innerHTML = 'Ready to play';
-    e.innerHTML = e.innerHTML.replace(text_wait, (flag ? 'Your move.' : 'The other party has first move.'));
+
 }
 
-function join()
+var timeout = null;
+var secondsLeft = 0;
+function reportFirst(party)
 {
-    popup = $div({'class':'popup'}, [
-        $div({'class':'content'}, [
-            $div({'class':'title', 'id':'title'}, 'Enter game key'),
-            $p({'class':'message','id':'msg'}, ['The shared key is ',
-                $input({'id':'key', 'type':'text', 'maxlength':5,'style':'width:8ex', 'onkeypress':'disableEvent(event)', 'onkeyup':'updateOkLink()', 'onsubmit':'alert("submit")'})
-            ]),
-            $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')]),
-            $div({'class':'ok disabled'}, [$a({'id':'join-ok', 'href':'#ok','onclick':'ok();return false;'}, 'Ok')])
-        ])]);
+    var e = document.getElementById('msg');
+    if (party == 'us')
+    {
+        e.innerHTML = "Ready to play, first move is yours.";
+    }
+    else
+    {
+        e.innerHTML = 'Ready to play, the other party makes first move.';
+    }
 
-    document.body.appendChild(popup);
-    document.getElementById("key").focus();
+    secondsLeft = 3;
+    timeout = window.setTimeout(closeMenu, 1);
+}
+
+function closeMenu()
+{
+    var e = document.getElementById('ok');
+    if (e) {
+        if (--secondsLeft > 0)
+        {
+            e.innerHTML = 'Ok (' + secondsLeft + ')';
+            timeout = window.setTimeout(closeMenu, 1000);
+        }
+        else {
+            e.innerHTML = 'Ok';
+
+            window.clearTimeout(timeout);
+            timeout = null;
+            secondsLeft = 0;
+            ok();
+        }
+    }
 }
 
 function disableEvent(e)
@@ -115,7 +177,7 @@ function updateOkLink()
 
 function okLinkClass(value)
 {
-    var link = document.getElementById("join-ok");
+    var link = document.getElementById("ok");
     if (link != null)
     {
         var parent = link.parentNode;
@@ -126,24 +188,11 @@ function okLinkClass(value)
             return parent.className;
         }
     }
+    
     return null;
 }
 
-function ok()
-{
-    var cls = okLinkClass();
-    if (cls == null || cls.match(/\bdisabled\b/)) return;
-
-    okLinkClass('ok disabled');
-    var key = document.getElementById("key").value;
-
-    var e = document.getElementById('msg');
-    e.innerHTML = text_input.fmt({'key':key});
-
-    comet = Comet.open('mp.php', {a:'join', k: key});
-}
-
-function nogame(key)
+function reportNoGame(key)
 {
     var e = document.getElementById('msg');
     if (key == undefined)

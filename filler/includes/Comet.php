@@ -6,16 +6,15 @@ class Comet
     private static $footer = '</body></html>';
     private static $start = '<script type="text/javascript">';
     private static $end = '</script>';
+    private static $headers_sent = false;
 
     public static function push($js)
     {
-        static $headers_send;
-
-        if(!$headers_send)
+        if(!self::$headers_sent)
         {
             echo self::$header;
             register_shutdown_function('Comet::close');
-            $headers_sent = true;
+            self::$headers_sent = true;
         }
 
         echo self::$start . $js . self::$end;
@@ -24,7 +23,7 @@ class Comet
 
     public static function log($text)
     {
-        Comet::push('console.log("'.str_replace("\n", '\n', $text).'")');
+        self::push('console.log("'.str_replace("\n", '\n', $text).'")');
     }
 
     public static function close()

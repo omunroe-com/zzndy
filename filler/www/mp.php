@@ -14,6 +14,8 @@ if($action == 'start' && isset($_GET['f']))
 
     $starter = new FillerStarter();
     $starter->start($w, $h, $f);
+
+$request_valid = true;
 }
 else if($action == 'join' && isset($_GET['k']))
 {
@@ -21,6 +23,8 @@ else if($action == 'join' && isset($_GET['k']))
 
     $joiner = new FillerJoiner();
     $joiner->join($code);
+
+$request_valid = true;
 }
 
 if(!$request_valid)
