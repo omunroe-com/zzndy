@@ -1,1 +1,0 @@
-c:\lib\tools\resource\rc.exe AESFiscal
