@@ -223,9 +223,19 @@ function getGame() {
 function showFail() {
 }
 
-var mp = new Fsm('mp-menu', showMpMenu);
+/**
+ * Show multiplayer join/create menu.
+ */
+function showMenu()
+{
+    toggleMultiplayerMenu(false);
+}
+
+var mp = new Fsm('no-menu', showMpMenu);
 
 mp
+        .from('no-menu')
+        .to('mp-menu', showMenu).on('showMenu')
         .from('mp-menu')
         .to('get-code', getCode).on('start')
         .to('enter-code', enterCode).on('join')
@@ -245,5 +255,7 @@ mp
         .from('get-game')
         .to('show-fail').on('reportFail')
         .to('show-intro').on('reportAccept');
+
+mp.enable();
 
 

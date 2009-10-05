@@ -26,13 +26,13 @@
 
     <div class="content">
         <div class="menu" id="prompt-multiplayer">
-            <a name="multiplayer" href="index.html#multiplayer" onclick="toggleMultiplayerMenu();return false;">Start
+            <a name="multiplayer" href="index.html#multiplayer" onclick="mp.on('showMenu');return false;">Start
                 mutliplayer</a>
         </div>
         <div class="menu" id="choose-multiplayer" style="display:none">
-            <a name="start" href="index.html#start" onclick="create();return false;">Start a new game</a>
+            <a name="start" href="index.html#start" onclick="mp.on('start');return false;">Start a new game</a>
             or
-            <a name="join" href="index.html#join" onclick="join();return false;">join</a>?
+            <a name="join" href="index.html#join" onclick="mp.on('join');return false;">join</a>?
         </div>
 
         <div style="float:left;width:800px;padding-left:2em">
