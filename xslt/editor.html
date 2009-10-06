@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<label title="XSL"> XSL <br/>
+    <textarea id="ta1" rows="24" cols="50">
+        <xsl:stylesheet id="stylesheet" version="1.0" xmlns="http://www.w3.org/1999/xhtml"
+                        xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="html" indent="yes"/>
+
+            <xsl:param name="myOrder"/>
+
+            <xsl:template match="/">
+
+                <xsl:apply-templates select="/div//div">
+                    <xsl:sort select="." data-type="number" order="{$myOrder}"/>
+                </xsl:apply-templates>
+            </xsl:template>
+
+            <xsl:template match="div">
+                <xsl:copy-of select="."/>
+            </xsl:template>
+        </xsl:stylesheet>
+    </textarea>
+</label>
+<label title="XML"> XML<br/>
+    <textarea id="ta2" rows="24" cols="50">
+        <div id="example">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
+            <div>9</div>
+            <div>10</div>
+        </div>
+    </textarea>
+</label>
+<button onclick="doWork()">Ok</button>
+<label title="Result XML"> Result XML<br/>
+    <textarea id="ta3" rows="24" cols="50">
+        </textarea>
+    </label>
+
+<script type="text/javascript">
+
+    function doWork()
+    {
+        var parser = new DOMParser();
+
+        var xslDoc = parser.parseFromString(document.getElementById('ta1').value, 'text/xml');
+        var xmlDoc = parser.parseFromString(document.getElementById('ta2').value, 'text/xml');
+
+        console.log(xslDoc.documentElement);
+        console.log(xmlDoc.documentElement);
+
+        var xsltProcessor = new XSLTProcessor();
+        xsltProcessor.importStylesheet(xslDoc);
+
+        try{
+        var result = xsltProcessor.transformToDocument(xmlDoc.documentElement, document);
+            var serializer = new XMLSerializer();
+            var prettyString = XML(serializer.serializeToString(result)).toXMLString();
+
+            document.getElementById('ta3').value =result.documentElement.outerHTML;//prettyString; 
+        console.log('result', result.documentElement);
+        }
+        catch(e)
+        {
+            console.log(e);
+            throw e;
+        }
+
+    }
+</script>
+</body>
+</html>
