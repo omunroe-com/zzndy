@@ -246,9 +246,9 @@ function sqr( a ) {
                     case 'n': value = num.toPos(); break;
                     case 'r': value = num.toRoman(); break;
                 }
-                switch (casing)                        {
-                case 'u':value = value.toUpperCase();break;
-                case 'l':value = value.toLowerCase();break;
+                switch (casing) {
+                    case 'u':value = value.toString().toUpperCase();break;
+                    case 'l':value = value.toString().toLowerCase();break;
                 }
 
                 try {
