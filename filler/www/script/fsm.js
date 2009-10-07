@@ -66,20 +66,26 @@ F.disable = function()
 /**
  * Handle event with optional arguments.
  * @param {String} event - event name
- * @param {Array} args - event arguments optional
+ * @param arg - event arguments optional (multiple)
  */
-F.on = function( event, args )
+F.on = function( event, arg )
 {
     if ( !this.enabled )
         throw new Error("Cannot handle " + event + " fsm is not enabled.");
 
     var target = this.current.getTarget(event);
+
+    var args = [];
+    for(var i=1;i<arguments.length;++i)
+        args.push(arguments[i]);
+
     if ( target != null )
     {
+        console.log('handling ' + event + ' with arguments ' + args,arguments);
         target.entry.apply(null, args);
         this.current = target;
     }
-    else console.log('state ' + this.current.name + ' cannot handle event on-' + event);
+    else console.log(this.current.name + ' cannot handle ' + event);
 };
 
 /**

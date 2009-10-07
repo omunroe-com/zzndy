@@ -112,18 +112,19 @@ var text_share = 'Game key is <em title="{key:u} - case insensitive">{key:u}</em
 var text_wait = 'Waiting for the server ...';
 var text_input = 'The shared key is <b>${key:u}</b>. ' + text_wait;
 
+/**
+ * Callback function.
+ * @param {String} code - new game code
+ */
 function reportCode( code )
 {
-    var e = document.getElementById('msg');
-    e.innerHTML = text_share.fmt({key:code});
-
-    e = document.getElementById('title');
-    e.innerHTML = e.innerHTML.replace(/ \.{3}$/, '');
+    console.log('server sent code ' + code);
+    mp.on('reportCode', code);
 }
 
 function reportGame( w, h, fld )
 {
-
+    console.log('have report game');
 }
 
 var timeout = null;
@@ -208,18 +209,26 @@ function reportNoGame( key )
 
 function showMpMenu() {
 }
-function getCode() {
+
+function shareCode(code) {
+    console.log('shareCode:', arguments);
+
+    var e = document.getElementById('msg');
+    e.innerHTML = text_share.fmt({key:code});
+
+    e = document.getElementById('title');
+    e.innerHTML = e.innerHTML.replace(/ \.{3}$/, '');
 }
-function enterCode() {
-}
-function shareCode() {
-}
+
 function showIntro() {
 }
+
 function startMpGame() {
 }
+
 function getGame() {
 }
+
 function showFail() {
 }
 
@@ -237,8 +246,8 @@ mp
         .from('no-menu')
         .to('mp-menu', showMenu).on('showMenu')
         .from('mp-menu')
-        .to('get-code', getCode).on('start')
-        .to('enter-code', enterCode).on('join')
+        .to('get-code', create).on('start')
+        .to('enter-code', join).on('join')
         .from('get-code')
         .to('share-code', shareCode).on('reportCode')
         .to('show-fail', showFail).on('reportFail')
