@@ -1,6 +1,6 @@
 <?php
 
-require_once 'comet.php';
+require_once 'Comet.php';
 
 class FillerGame {
     protected static function makeCode()
@@ -29,7 +29,7 @@ class FillerGame {
 
     /**
      *  Create or open game file.
-     *  @param {string} $mode file open mode
+     *  @param string $mode file open mode
      *  @throw FillerException if file could not be opened
      */
     protected function init($mode)
@@ -82,7 +82,7 @@ class FillerGame {
 
     /**
      *  Store a line into buffer for later write into file.
-     *  @param {string} $str line to write to file
+     *  @param string $str line to write to file
      */
     protected function write($str)
     {
@@ -110,7 +110,7 @@ class FillerGame {
 
     /**
      * Call client method. Add optional arguments
-     * @param {string} $method name of method on the client
+     * @param string $method name of method on the client
      */
     protected function post($method)
     {

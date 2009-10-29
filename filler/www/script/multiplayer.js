@@ -1,5 +1,5 @@
 Comet = {
-    open : function( url, args )
+    open : function(url, args)
     {
         var ifr = document.createElement('iframe');
         ifr.setAttribute('style', 'display:none');
@@ -15,13 +15,13 @@ Comet = {
  * Toggle multiplayer menu options.
  * @param {Boolean} displayRoot - if true display root menu option
  */
-function toggleMultiplayerMenu( displayRoot )
+function toggleMultiplayerMenu(displayRoot)
 {
     var menu1 = document.getElementById('prompt-multiplayer').style;
     var menu2 = document.getElementById('choose-multiplayer').style;
 
     // Auto optimization
-    toggleMultiplayerMenu = function( displayRoot )
+    toggleMultiplayerMenu = function(displayRoot)
     {
         menu1.display = displayRoot ? 'block' : 'none';
         menu2.display = displayRoot ? 'none' : 'block';
@@ -33,7 +33,9 @@ function toggleMultiplayerMenu( displayRoot )
 initDomGen(['div','p','a', 'input']);
 
 var comet = null;
-var popup = null;
+var popup = new MessageBox();
+var cancelBtn = {'title':'Cancel', 'click':'mp.on("cancel")'};
+var okBtn = {'title':'Ok', class:'disabled'};
 
 /**
  * Show create multiplayer game menu.
@@ -43,14 +45,7 @@ function create()
     filler.makeNext();
     comet = Comet.open('mp.php', {a:'start', f:filler.next.serialize()});
 
-    popup = $div({'class':'popup'}, [
-        $div({'class':'content'}, [
-            $div({'class':'title', 'id':'title'}, 'Starting new multiplayer game ...'),
-            $p({'class':'message','id':'msg'}, 'Please wait ...'),
-            $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')])
-        ])]);
-
-    document.body.appendChild(popup);
+    popup.show('Starting new multiplayer game ...', 'Please wait ...', cancelBtn);
 }
 
 /**
@@ -58,18 +53,12 @@ function create()
  */
 function join()
 {
-    popup = $div({'class':'popup'}, [
-        $div({'class':'content'}, [
-            $div({'class':'title', 'id':'title'}, 'Enter game key'),
-            $p({'class':'message','id':'msg'}, ['The shared key is ',
-                $input({'id':'key', 'type':'text', 'maxlength':5,'style':'width:8ex', 'onkeypress':'disableEvent(event)', 'onkeyup':'updateOkLink()', 'onsubmit':'alert("submit")'})
-            ]),
-            $div({'class':'cancel'}, [$a({'href':'#cancel','onclick':'cancel();return false;'}, 'Cancel')]),
-            $div({'class':'ok disabled'}, [$a({'id':'ok', 'href':'#ok','onclick':'ok();return false;'}, 'Ok')])
-        ])]);
+    var form = $p({'class':'message','id':'msg'}, ['The shared key is ',
+        $input({'id':'key', 'type':'text', 'maxlength':5,'style':'width:8ex', 'onkeypress':'disableEvent(event)', 'onkeyup':'updateOkLink()', 'onsubmit':'alert("submit")'})
+    ]);
+    popup.show('Enter game key', form, [okBtn, cancelBtn]);
 
-    document.body.appendChild(popup);
-    document.getElementById("key").focus();
+    document.getElementById('key').focus();
 }
 
 /**
@@ -78,7 +67,7 @@ function join()
 function ok()
 {
     var cls = okLinkClass();
-    if ( cls == null || cls.match(/\bdisabled\b/) ) return;
+    if (cls == null || cls.match(/\bdisabled\b/)) return;
 
     okLinkClass('ok disabled');
     var key = document.getElementById("key").value;
@@ -94,16 +83,17 @@ function ok()
  */
 function cancel()
 {
-    function remove( el )
+    function remove(el)
     {
-        if ( el != null )
+        if (el != null)
         {
             el.parentNode.removeChild(el);
             el = null;
         }
     }
 
-    remove(popup);
+    //remove(popup);
+    popup.hide();
     remove(comet);
     toggleMultiplayerMenu(true);
 }
@@ -116,23 +106,23 @@ var text_input = 'The shared key is <b>${key:u}</b>. ' + text_wait;
  * Callback function.
  * @param {String} code - new game code
  */
-function reportCode( code )
+function reportCode(code)
 {
     console.log('server sent code ' + code);
     mp.on('reportCode', code);
 }
 
-function reportGame( w, h, fld )
+function reportGame(w, h, fld)
 {
     console.log('have report game');
 }
 
 var timeout = null;
 var secondsLeft = 0;
-function reportFirst( party )
+function reportFirst(party)
 {
     var e = document.getElementById('msg');
-    if ( party == 'us' )
+    if (party == 'us')
     {
         e.innerHTML = "Ready to play, first move is yours.";
     }
@@ -148,8 +138,8 @@ function reportFirst( party )
 function closeMenu()
 {
     var e = document.getElementById('ok');
-    if ( e ) {
-        if ( --secondsLeft > 0 )
+    if (e) {
+        if (--secondsLeft > 0)
         {
             e.innerHTML = 'Ok (' + secondsLeft + ')';
             timeout = window.setTimeout(closeMenu, 1000);
@@ -165,7 +155,7 @@ function closeMenu()
     }
 }
 
-function disableEvent( e )
+function disableEvent(e)
 {
     e.cancelBubble = true;
 }
@@ -176,15 +166,15 @@ function updateOkLink()
     okLinkClass((key.value.length == 5) ? 'ok' : 'ok disabled');
 }
 
-function okLinkClass( value )
+function okLinkClass(value)
 {
     var link = document.getElementById("ok");
-    if ( link != null )
+    if (link != null)
     {
         var parent = link.parentNode;
-        if ( parent != null )
+        if (parent != null)
         {
-            if ( value !== undefined )
+            if (value !== undefined)
                 parent.className = value;
             return parent.className;
         }
@@ -193,10 +183,10 @@ function okLinkClass( value )
     return null;
 }
 
-function reportNoGame( key )
+function reportNoGame(key)
 {
     var e = document.getElementById('msg');
-    if ( key == undefined )
+    if (key == undefined)
     {
         e.innerHTML = 'Could not start a game, the server must be full.';
         document.getElementById('title').innerHTML = 'Sorry for inconvenience';
@@ -212,12 +202,7 @@ function showMpMenu() {
 
 function shareCode(code) {
     console.log('shareCode:', arguments);
-
-    var e = document.getElementById('msg');
-    e.innerHTML = text_share.fmt({key:code});
-
-    e = document.getElementById('title');
-    e.innerHTML = e.innerHTML.replace(/ \.{3}$/, '');
+    popup.show('Starting multiplayer game', text_share.fmt({key:code}), cancelBtn);
 }
 
 function showIntro() {
@@ -237,6 +222,7 @@ function showFail() {
  */
 function showMenu()
 {
+    cancel();
     toggleMultiplayerMenu(false);
 }
 
@@ -249,6 +235,7 @@ mp
         .to('get-code', create).on('start')
         .to('enter-code', join).on('join')
         .from('get-code')
+        .to('mp-menu').on('cancel')
         .to('share-code', shareCode).on('reportCode')
         .to('show-fail', showFail).on('reportFail')
         .from('share-code')
