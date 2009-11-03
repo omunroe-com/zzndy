@@ -8,8 +8,8 @@ var filler;
 
 function report_shares( a, b )
 {
-    document.getElementById('player').innerHTML = a.toFixed(2) + '%';
-    document.getElementById('computer').innerHTML = b.toFixed(2) + '%';
+    document.getElementById('player').innerHTML = 'You ' + a.toFixed(2) + '%';
+    document.getElementById('computer').innerHTML = 'Them ' + b.toFixed(2) + '%';
 }
 
 function start()
