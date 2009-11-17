@@ -18,8 +18,9 @@ MB.show = function(title, body, actions)
         var title = element.title;
         var click = (element.click || (name + '()')) + ';return false;';
         var url = '#' + name;
+        var id = element.id || '';
 
-        var elt = $div({'class':name + ' ' + (element.class || '')}, $a({title:title, onclick:click, href:url}, title));
+        var elt = $div({'class':name + ' ' + (element.class || '')}, $a({id:id, title:title, onclick:click, href:url}, title));
         parent.appendChild(elt);
         return parent;
     }

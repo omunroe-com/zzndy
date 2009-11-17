@@ -16,7 +16,7 @@ class FillerStarter extends FillerGame {
      */
     public function start($w, $h, $f)
     {
-    // Check dimensions
+        // Check dimensions
         if(!FillerStarter::dimensionsOk($w, $h))
         {
             throw new InvalidDimensionException($w, $h);

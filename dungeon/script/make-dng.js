@@ -1,10 +1,14 @@
+/**
+ * Setup and render dungeon.
+ */
+
 try
 {
     var out = document.getElementById('dng');
 
-    var cl = ' ';
-    var cm = '~';
-    var ct = '$';
+    var cl = '&#xb7';
+    var cm = '-';
+    var ct = ' ';
 
     function renderDng( dng )
     {
@@ -26,9 +30,8 @@ try
     var height = 40;
     var minDim = 3; // minimal room width or height
     var maxAsp = 2; // maximum room aspect
-    var passage = 2; // passage width;
 
-    var dng = makeDng(width, height, minDim, maxAsp, passage);
+    var dng = makeDng(width, height, minDim, maxAsp);
     renderDng(dng);
 }
 catch( ex )

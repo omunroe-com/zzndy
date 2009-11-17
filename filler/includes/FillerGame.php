@@ -5,8 +5,8 @@ require_once 'Comet.php';
 class FillerGame {
     protected static function makeCode()
     {
-    // Create a code of five characters composed of digits and lowercase letters
-    // except for zero and letter 'o'
+        // Create a code of five characters composed of digits and lowercase letters
+        // except for zero and letter 'o'
         $code = base_convert(mt_rand(1336336, 45435423), 10, 34);
         return str_replace(array('0', 'o'), array('y', 'z'), $code);
     }
@@ -177,14 +177,13 @@ class FillerGame {
 
     public function wait()
     {
-
+        Comet::log('START WAITING: ' . $this->mtime . ', ' . $this->getMTime());
         while($this->mtime >= $this->getMTime())
         {
-            Comet::log('failed: '.$this->mtime.' >= '.$this->getMTime() );
+            Comet::log('waiting ...');
             sleep(1);
         }
-
-        Comet::log('No more wating');
+        Comet::log('DONE WAITING: ' . $this->mtime . ', ' . $this->getMTime());
     }
 
     public function enter()

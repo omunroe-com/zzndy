@@ -13,7 +13,7 @@ class FillerJoiner extends FillerGame {
      */
     public function join($code)
     {
-    // Read game
+        // Read game
         $this->code = $code;
         try{
             list($w, $h, $f) = $this->readGame();

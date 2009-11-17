@@ -35,7 +35,7 @@ initDomGen(['div','p','a', 'input']);
 var comet = null;
 var popup = new MessageBox();
 var cancelBtn = {'title':'Cancel', 'click':'mp.on("cancel")'};
-var okBtn = {'title':'Ok', class:'disabled'};
+var okBtn = {'id':'ok', 'title':'Ok', class:'disabled'};
 
 /**
  * Show create multiplayer game menu.
@@ -169,6 +169,7 @@ function updateOkLink()
 function okLinkClass(value)
 {
     var link = document.getElementById("ok");
+
     if (link != null)
     {
         var parent = link.parentNode;

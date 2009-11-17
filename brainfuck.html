@@ -14,8 +14,8 @@
     </div>
 
     <div class="content">
-        <p>brainfuck "IDE"</p>
-        <a href="#" id="runit">Run</a><br/>
+        <p><a href="http://en.wikipedia.org/wiki/Brainfuck">Brainfuck</a> "IDE"</p>
+        <a href="#" onclick="run(); return false;" id="runit" style="text-decoration: none">&#x25B6; Run</a><br/>
 
         <pre>Clear: <a href="javascript:add(this)" onclick="add(this); return false;">[-]</a>                          Clear prev no zero: <a
                 href="javascript:add(this)" onclick="add(this); return false;">[[-]&lt;]</a>
@@ -29,7 +29,17 @@ Add: <a href="javascript:add(this)" onclick="add(this); return false;">[-&gt;+&l
 
 
         <div id="memory" style="float:right"></div>
-        <label>Input: <input type="text" id="input" value="" style="font-family:monospace; width:80ex"/></label><br/>
+        <div id="hint" style="clear: right; float:right">
+            &gt; move right<br/>
+            &lt; move left<br/>
+            + increment data<br/>
+            - decrement data<br/>
+            . output<br/>
+            , input<br/>
+            [ if data is zero jump after matching ]<br/>
+            ] id data is not zero goto matching [<br/>
+        </div>
+        <label>Input: <input type="text" id="input" value="" style="margin-bottom: .2em; font-family:monospace; width:80ex"/></label><br/>
         <textarea id="edit" cols="80" rows="14"></textarea>
         <textarea id="out" cols="80" rows="6" readonly="readonly"></textarea>
     </div>
@@ -40,8 +50,6 @@ Add: <a href="javascript:add(this)" onclick="add(this); return false;">[-&gt;+&l
     </div>
 </div>
 <script type="text/javascript" language="JavaScript">
-    document.getElementById('runit').onclick = run;
-
     var memoryLimit = 30000;
     var execLimit = 10000;
 

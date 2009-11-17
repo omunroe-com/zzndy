@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<talks>
+
+    <dialog id="WELCOME">
+        <phrase>
+            <prompt>
+                Welcome to the vault.
+            </prompt>
+        </phrase>
+    </dialog>
+
+    <dialog id="RENESCO-50">
+        
+    </dialog>
+
+</talks>
