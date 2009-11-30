@@ -14,15 +14,35 @@ function Skills()
     this.bigGuns = 0;  // rocketlaunchers, miniguns and such
     this.energy = 0;   // lazer, plasma, pulse, gauss weapons.
 
-    this.speech = 0;
+    this.deception = 0;
+    this.persuation = 0;
     this.barter = 0;
 
-    this.traps = 0;
-    this.repair = 0;
+    this.traps = 0;    
+    this.repair = 0;   // mechanics
 
-    this.stealth = 0;
+    this.sneak = 0;
     this.steal = 0;
     this.lockpick = 0;
+}
+
+// Get how many skillpoints it costs to increase skill by one.
+function skillPrice(current)
+{
+    if(current < 101)
+        return 1;
+    else if(current < 126)
+        return 2;
+    else if(current < 151)
+        return 3;
+    else if(current < 176)
+        return 4;
+    else if(current < 201)
+        return 5;
+    else if(current < 301)
+        return 6;
+    
+    return Infinity;
 }
 
 function Character(name, sex)

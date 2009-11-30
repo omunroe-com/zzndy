@@ -101,7 +101,7 @@ pre a {
     font-weight: bold;
     padding: 0 1em;
     color: inherit;
-    text-shadow: 0 .09em 0 rgba( 230, 230, 230, .7 );
+    text-shadow: 0 .09em 0 rgba( 230, 230, 230, .6 );
 }
 
 #menu0 a:first-child, #menu1 a:first-child, #menu2 a:first-child {
@@ -110,7 +110,7 @@ pre a {
 
 #menu0 .selected, #menu1 .selected, #menu2 .selected {
     color: white;
-    text-shadow: 0 .09em 0 rgba( 30, 30, 30, .7 );
+    text-shadow: 0 .09em 0 rgba( 30, 30, 30, .6 );
 }
 
 #menu0 .selected {
@@ -127,12 +127,14 @@ pre a {
 
 #menu0 {
     background-color: #a8a8a8;
+    background-color: #EBCD0B;
     color: #111;
 }
 
 #menu1 {
     border-top: .2ex solid #003153;
     background-color: #bbb;
+    background-color: #149391;
     color: #222;
 }
 
