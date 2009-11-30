@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <title>Speed test</title>
+    </head>
+    <body>
+        <div id="out"></div>
+        <script type="text/javascript">
+
+function out(text)
+{
+    var target = document.getElementById('out');
+    out = function(text)
+    {
+        target.innerHTML += '<div>' + text + '</div>';
+    }
+    out(text);
+}
+
+function dowhile(n)
+{
+    var i=0;
+    var dum = 0;
+    do
+    {
+        dum += .01;
+    }
+    while(++i<n);
+}
+
+function whileloop(n)
+{
+    var i=-1;
+    var dum = 0;
+    while(++i<n)
+    {
+        dum += .01;
+    }
+}
+
+function forcap(n)
+{
+    var dum = 0;
+    for(var i = 0; i<n; ++i)
+    {
+        dum += .01;
+    }
+}
+
+function forcappost(n)
+{
+    var dum = 0;
+    for(var i = 0; i<n; i++)
+    {
+        dum += .01;
+    }
+}
+
+function forlength(n)
+{
+    var dum = 0;
+    var a = new Array(n);
+    a[n-1] = 0.01;
+    for(var i = 0; i < a.length; ++i)
+    {
+        dum += .01;
+    }
+}
+
+function forin(n)
+{
+    var dum = 0;
+    var a = new Array(n);
+    for(var i in a)
+    {
+        dum += .01;
+    }
+}
+
+var num = 2000000000;
+
+function timeit(title, code, num, then)
+{
+    return function(){
+    out(title + ' ' + num + ' times ...');
+    window.setTimeout(function(){
+            var start = (new Date()).getTime();
+            code(num);
+            var end = (new Date()).getTime();
+            var time = end - start;
+            window.setTimeout(function(){
+                out("Total " + (time / 1000).toFixed(2)+ 's, average ' + time/num + 'ms.');
+                out('&nbsp;');
+                then();
+                }, 100);
+            }, 100);
+    }
+}
+
+timeit('do-while', dowhile, num, 
+    timeit('while', whileloop, num, 
+        timeit('for(var i=0; i&lt;n; i++)', forcap, num, 
+            timeit('for(var i=0; i&lt;n; ++i)', forcappost, num, 
+                timeit('for(var i=0; i&lt;array.length; ++i)', forlength, num, 
+                    timeit('for(var i in array)', forin, num))))))();
+
+        </script>
+    </body>
+</head>
+
