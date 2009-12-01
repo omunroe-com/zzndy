@@ -21,22 +21,47 @@ b.alpha = .3;
 grid.color = b.toString();
 
 objects = [grid, xcube, ycube, zcube];
+objects = [];
+
+var colorCount = 0;
+var planeColors = ['rgba(255, 255, 100, 1)', 'rgba(100, 255, 255, 1)',  'rgba(255, 100, 255, 1)'];
+planeColors = ['rgba(255, 180, 0, 1)', 'rgba(230, 0, 180, 1)', 'rgba(0, 180, 230, 1)'];
+
+function makeBox(x, y, z, size)
+{
+    var a = {
+        planes:[
+            makeRounded(x, y, z+2, size, size, .2),
+            roundedxz(makeRounded(x, z, y+2, size, size, .2)),
+            roundedyz(makeRounded(z, y, x+2, size, size, .2)),
+            makeRounded(x, y, z-2, size, size, .2),
+            roundedxz(makeRounded(x, z, y-2, size, size, .2)),
+            roundedyz(makeRounded(z, y, x-2, size, size, .2))
+        ],
+
+        color : planeColors[(colorCount++)%planeColors.length]
+    }
+    return a;
+}
 
 var size = 3.5;
-var planes = [
-    makeRounded(0, 0, 2, size, size, .2),
-    roundedxz(makeRounded(0, 0, 2, size, size, .2)),
-    roundedyz(makeRounded(0, 0, 2, size, size, .2)),
-    makeRounded(0, 0, -2, size, size, .2),
-    roundedxz(makeRounded(0, 0, -2, size, size, .2)),
-    roundedyz(makeRounded(0, 0, -2, size, size, .2))
+var boxes = [
+    makeBox(0,0,0,size),
+    makeBox(size*1.5, 0, 0, size),
+    makeBox(0, size*1.5, 0, size)
 ];
-var planeColors = ['rgba(255, 255, 100, 1)', 'rgba(100, 255, 255, 1)',  'rgba(255, 100, 255, 1)'];
-planeColors = ['rgba(255, 180, 0, 1)'];
+    
+function renderBox(planes, matrix)
+{
+    var i = -1;
+    var n = planes.planes.length;
 
+    while( ++i < n )
+        renderRounded(planes.planes[i], planes.color, matrix);
+}
 
 rotate();
-camera.alpha = -20 * deg;
+camera.alpha = -10 * deg;
 
 function rotate()
 {
@@ -46,15 +71,18 @@ function rotate()
     while( ++i < n )
         renderObj(objects[i]);
 
-    camera.beta += 2 * deg;
+    camera.beta += .2 * deg;
+    camera.alpha -= .05 * deg;
 
     var matrix = mm(camera.worldMatrix, grid.worldMatrix);
 
-    i = -1;
-    n = planes.length;
-    ctx.lineWidth = 3;
-    while( ++i < n )
-        renderRounded(planes[i], planeColors[i % planeColors.length], matrix);
+    ctx.lineWidth = 4;
+
+    i=-1;
+    n = boxes.length;
+    while(++i<n)
+        renderBox(boxes[i], matrix);
+
     ctx.lineWidth = 1;
 
     window.setTimeout(rotate, 20);
