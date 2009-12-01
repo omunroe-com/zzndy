@@ -106,6 +106,10 @@ function mm()
         var n = m1.length;
         var m = m2[0].length;
         var mk = m1[0].length;
+
+        if(m === undefined || mk == undefined)
+            throw new Error(['Multiplying martix by vector not supported. Use [[],[],[]] and such instead.']);
+
         if( mk != m2.length )
             throw new Error(['Cannot multiply matrices ',n,'x',mk,' and ',m2.length,'x',m,'.'].join(''));
 
@@ -181,17 +185,33 @@ function angle( v1, v2 )
 {
     return atan2(len(cross(v1, v2)), dot(v1, v2));
 }
-
-function convert3dTo2d( p, worldMatrix )
+var acrane =0;
+function convert3dTo2d( p, worldMatrix, camera )
 {
     var pos = mm(worldMatrix, [[p[0]], [p[1]], [p[2]], [1]]);
+
+    if(false && camera)
+    {
+        var pp = [
+                [1,0,0,-camera.pos[0]],
+                [0,1,0,-camera.pos[1]],
+                [0,0,1,0],
+                [0,0,1/camera.pos[2],0]
+            ];
+
+        var ppos = mm(pp, [[pos[0][0]], [pos[1][0]], [pos[2][0]], [1]]);
+        return [ppos[0]/ppos[3], ppos[1]/ppos[3], ppos[2]/ppos[3]];
+    }
+
     return [pos[0][0], pos[1][0], pos[2][0]];
 }
 
-CanvasRenderingContext2D.prototype.line3d = function( p1, p2, worldMatrix )
+var C = CanvasRenderingContext2D.prototype;
+
+C.line3d = function( p1, p2, worldMatrix )
 {
-    var cp1 = convert3dTo2d(p1, worldMatrix);
-    var cp2 = convert3dTo2d(p2, worldMatrix);
+    var cp1 = convert3dTo2d(p1, worldMatrix );
+    var cp2 = convert3dTo2d(p2, worldMatrix );
 
     this.beginPath()
             .moveTo(cp1[0] * this.scale, -cp1[1] * this.scale)
@@ -199,29 +219,77 @@ CanvasRenderingContext2D.prototype.line3d = function( p1, p2, worldMatrix )
             .stroke();
 };
 
-CanvasRenderingContext2D.prototype.path3d = function( shape, worldMatrix )
+C.path3d = function( shape, worldMatrix )
 {
     var i = -1, n = shape.length;
 
     var point = convert3dTo2d(shape[n - 1], worldMatrix);
 
-    ctx.moveTo(point[0] * this.scale, -point[1] * this.scale);
+    this.moveTo(point[0] * this.scale, -point[1] * this.scale);
     while( ++i < n )
     {
         var p = shape[i];
         point = convert3dTo2d(p, worldMatrix);
         if( p.length == 3 ) {
-            ctx.lineTo(point[0] * this.scale, -point[1] * this.scale);
+            this.lineTo(point[0] * this.scale, -point[1] * this.scale);
         }
         else if( p.length == 6 )
         {
             var control = convert3dTo2d([p[3],p[4],p[5]], worldMatrix);
-            ctx.quadraticCurveTo(control[0] * this.scale, -control[1] * this.scale, point[0] * this.scale, -point[1] * this.scale);
+            this.quadraticCurveTo(control[0] * this.scale, -control[1] * this.scale, point[0] * this.scale, -point[1] * this.scale);
         }
     }
 
     return this;
 };
+
+C.render = function(obj)
+{
+    if(!(obj instanceof Obj) || (!('pts' in obj && 'edgs' in obj) && !('pths' in obj)))
+        throw new Error('Can only render 3D objects of edges or paths.');
+
+    var matrix = mm(this.camera.worldMatrix, obj.worldMatrix);
+
+    if( obj.color )
+        this.strokeStyle = obj.color;
+    else
+        this.strokeStyle = this.strokeStyleDefault;
+
+    if( 'lineWidth' in obj )
+        this.lineWidth = obj.lineWidth;
+    else
+        this.lineWidth = 1;
+
+    if('pths' in obj)
+    {
+        var c = new Color(this.strokeStyle);
+        c.alpha = .07;
+        this.fillStyle = c.toString();
+
+        var i = -1, n = obj.pths.length;
+        while(++i<n)
+        {
+            var rect = obj.pths[i];
+
+            this
+                .beginPath()
+                .path3d(rect, matrix)
+                .closePath()
+                .stroke()
+                .fill();
+        }
+    }
+    else
+    {
+        var i = -1, n = obj.edgs.length;
+
+        while( ++i < n )
+        {
+            var edge = obj.edgs[i];
+            this.line3d(obj.pts[edge[0]], obj.pts[edge[1]], matrix);
+        }
+    }
+}
 
 function perspectiveTransform( fov, aspect, near, far )
 {
