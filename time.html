@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <title>Time calculator</title>
+        <link rel="stylesheet" href="style/pixelless.css" />
+        <script type="text/javascript" src="unit-expressions/script/expression.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div class="content header">
+                <h1>Time calculator</h1>
+            </div>
+            <div class="content">
+                <p><pre>today - 2 weeks</pre></p>
+                <p><pre>2 weeks ago</pre></p>
+                <p><pre>3 dec 2009 + 11 months 2 days</pre></p>
+                <p><pre>2 feb 1984 + 365 days * 25</pre></p>
+            </div>
+            <div id="empty_footer"></div>
+        </div>
+        <div id="footer">
+            &copy; 2009 Vynogradov
+        </div>
+
+        <script type="text/javascript">
+            function ripExamples(ex)
+            {
+                var shorts = [['yesterday', '1 day ago']];
+                function rectifyAgo(x)
+                {
+                    var i=-1, n=shorts.length;
+                    while(++i<n)
+                    {
+                        x = x.replace(shorts[i][0], shorts[i][1]);
+                    }
+
+                    return x
+                        .replace(/(\d+)\s+(weeks|days|months|years)\s+ago/, 'today - $1 $2')
+                        .replace(/(a\s+)?(day|week|month|year)\s+ago/, "today - 1 $2")
+                }
+
+                return new Expression(rectifyAgo(ex.innerHTML));
+            }
+
+            function Span(num, period)
+            {
+                // TODO: Save all durations separately in order to be able to 
+                //      +properly calculate months or year shifts.
+                this.len = num * len[period];
+            }
+            
+            function parse(obj)
+            {
+                var dat, match;
+                if(obj == 'today')
+                    dat = new Date();
+                else if(!!(match = obj.match(/(\d+)\s+(day|month|year|week)s/g)))
+                {
+                    console.log(match);
+                    dat = new Span(match);
+                }
+                else
+                    dat = new Date(obj);
+                console.log(obj, dat);
+                return dat;
+            }
+
+            function calculate(left, op, right)
+            {
+            }
+
+            function evaluate(expr)
+            {
+                var left = expr.left;
+                var right = expr.right;
+
+                if(left instanceof Expression) left = evaluate(left);
+                if(right instanceof Expression) right = evaluate(right);
+
+                if(typeof left == 'string') left = parse(left);
+                if(typeof right == 'string') right = parse(right);
+
+                return calculate(left, expr.op, right); 
+            }
+
+            var examples = [].map.call(document.getElementsByTagName('pre'), ripExamples);
+            console.log(examples);
+            var values = examples.map(evaluate);
+        </script>
+    </body>
+</html>
