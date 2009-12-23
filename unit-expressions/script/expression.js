@@ -11,12 +11,18 @@
     function tokenize( expr )
     {
         function isEmpty( str ) {
-            return str.replace(/^\s+|\s+$/, '') != '';
+            return str.length != 0;
+        }
+
+        function trim(str) 
+        {
+            return str.replace(/^\s+|\s+$/g, '');
         }
 
         return expr
-                .replace(/([() +\/*^-])/g, '◊$1◊')
+                .replace(/([()+\/*^-])/g, '◊$1◊')
                 .split('◊')
+                .map(trim)
                 .filter(isEmpty);
     }
 

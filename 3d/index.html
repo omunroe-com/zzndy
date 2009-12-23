@@ -9,6 +9,12 @@
     <script src="../script/color.js" type="text/javascript"></script>
     <script src="script/3d.js" type="text/javascript"></script>
     <script src="script/primitives.js" type="text/javascript"></script>
+    <style type="text/css">
+        .content div button, .content div span
+        {
+            width: 3.5em;
+        }
+    </style>
 
 </head>
 <body>
@@ -16,6 +22,16 @@
     <div class="content header"><h1>3d</h1></div>
     <div class="content">
             <canvas id="canvas" width="800px" height="500px"></canvas>
+            <div>
+                <button onclick="inc_x(1)">x +</button>
+                <button onclick="inc_y(1)">y +</button>
+                <button onclick="inc_z(1)">z +</button>
+            </div>
+            <div>
+                <button onclick="inc_x(-1)">x -</button>
+                <button onclick="inc_y(-1)">y -</button>
+                <button onclick="inc_z(-1)">z -</button>
+            </div>
         <div class="empty_footer"></div>
     </div>
 </div>
