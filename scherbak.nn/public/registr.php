@@ -26,15 +26,18 @@ $fname = $http_vars['fname'];
 $lname = $http_vars['lname'];
 $pass1 = $http_vars['pass1'];
 $pass2 = $http_vars['pass2'];
+$comnt = $http_vars['comnt'];
 $error = '';
 
 require_once $include . 'adduser.php';
 require_once $include . 'common.php';
 
+echo $_POST['coment'];
+
 if(isset($email))
 {
     try{
-	    try_add_user($email, $pass1, $pass2, $lname, $fname);
+	    try_add_user($email, $pass1, $pass2, $lname, $fname, $comnt);
     }
     catch(Exception $ex)
     {
@@ -43,9 +46,6 @@ if(isset($email))
 }
 
 ?>
-
-
-
 
 <div id="header">
   <div id="space"></div>
@@ -93,17 +93,25 @@ if(isset($email))
         {
             print_error( REG_FAIL );
 
-            if($error == NAME_EMPTY)
-            print_error()
+            if($error == NAME_EMPTY && $error == USER_EXISTS)
+		    print_error($error);
         }
 
     ?>
     <label for="fname">Ім`я</label><input type="text" name="fname" maxlength="50" size="30" /><br/>
     <label for="lname">Прізвище</label><input type="text" name="lname" maxlength="50" size="30" /><br/>
 <hr />
+    <?php if($error == EMAIL_INVALID) print_error($error)?>
     <label for="email">Ел. пошта</label><input type="email" name="email" maxlength="50" size="30" /><br/>
+    <?php if($error == PASS_EMPTY) print_error($error)?>
     <label for="pass1">Пароль</label><input type="password" name="pass1" maxlength="50" size="30" /><br/>
+    <?php if($error == PASS_MISMATCH) print_error($error)?>
     <label for="pass2">Підтвердіть пароль</label><input type="password" name="pass2" maxlength="50" size="30" /><br/>
+<hr />
+
+    <?php if($error == SHORT_COMMENT) print_error($error)?>
+    <label for="comnt">Коментар</label><br />
+    <textarea rows="6" cols="50" name="comnt"></textarea>
 <hr />
 <textarea rows="6" cols="50">
 УМОВИ

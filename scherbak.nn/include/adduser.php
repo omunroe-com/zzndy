@@ -42,24 +42,27 @@ function check_email_address($email) {
     return true;
 }
 
-function try_add_user($email, $pass1, $pass2, $lname, $fname)
+function try_add_user($email, $pass1, $pass2, $lname, $fname, $comment)
 {
     global $db;
 
     if($pass1 == '')
-        throw new Exception(RegError::$PASS_EMPTY);
+        throw new Exception(PASS_EMPTY);
 
     if($pass1 != $pass2)
-        throw new Exception('PASS_MISTMATCH');
+        throw new Exception(PASS_MISMATCH);
 
     if($lname == '' || $fname == '')
-        throw new Exception('NAME_EMPTY');
+        throw new Exception(NAME_EMPTY);
+
+    if($comment == '')
+    	throw new Exception(SHORT_COMMENT);
 
     if(!check_email_address($email))
-        throw new Exception('WRONG_EMAIL');
+        throw new Exception(WRONG_EMAIL);
 
     if (User::FetchByLogin($email) != null)
-        throw new Exception('USER_EXISTS');
+        throw new Exception(USER_EXISTS);
 
     $stmt = $db->prepare('INSERT INTO sch_users (email, fname, lname, hash, salt) VALUES (?, ?, ?, ?, ?)');
 
@@ -67,5 +70,13 @@ function try_add_user($email, $pass1, $pass2, $lname, $fname)
     $hash = sha1($pass1 . $salt);
 
     $stmt->bind_param('ssssd', $email, $fname, $lname, $hash, $salt);
+    $stmt->execute();
+
+    $res = $db->query('SELECT LAST_INSERT_ID()');
+    $obj = $res->fetch_row();
+    $user_id = $obj[0];
+
+    $stmt = $db->prepare('INSERT INTO sch_applications (user_id, comment) VALUES (?, ?)');
+    $stmt->bind_param('ds', $user_id, $comment);
     $stmt->execute();
 }

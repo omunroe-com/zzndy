@@ -27,6 +27,11 @@ h4 {
 	font-weight:bold;
 }
 
+.error{
+	color: red;
+	font-style: italic;
+}
+
 /* Tips for Elastic layouts 
 1. Since the elastic layouts overall sizing is based on the user's default fonts size, they are more unpredictable. Used correctly, they are also more accessible for those that need larger fonts size since the line length remains proportionate.
 2. Sizing of divs in this layout are based on the 100% font size in the body element. If you decrease the text size overall by using a font-size: 80% on the body element or the #container, remember that the entire layout will downsize proportionately. You may want to increase the widths of the various divs to compensate for this.
