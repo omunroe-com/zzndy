@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shoot</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+
+    <script type="text/javascript" src="../script/canvas.js"></script>
+    <script type="text/javascript" src="script/shooter.js"></script>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+			<h1>Shoot</h1>
+    </div>
+
+    <div class="content">
+
+            <canvas id="canvas" width="800px" height="500px"></canvas>
+
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy;
+        <script type="text/javascript">
+            var a = ['and', 'mail'].join('y@g');
+            var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
+            document.write(b.join(''));
+        </script>
+        2009
+    </div>
+</div>
+<script type="text/javascript">
+
+		function trembl(val, pct)
+{
+		return val * ( 1 - 1 * pct + 1 * Math.random() * pct * 2 ) ;
+}
+
+	var ctx = document.getElementById('canvas').getContext('2d');
+	ctx.strokeStyle = '#eee';
+	ctx.fillStyle = '#eee';
+
+	var pos = new Point(400, 250);
+	var vel = 2, rate = 600, dam = 10, speed = 8, pershot = 1, dist = 1000, clip = 20, reload = 1000;
+
+	var deg = Math.PI / 180;
+
+	var shooters = [];
+	var proj = [];
+
+	for(var i=0;i<10;++i)
+		shooters.push(new  Shooter(pos, Math.PI * 2 * Math.random(), trembl(vel, .1), trembl(rate, .8), dam, trembl(speed, .1), pershot, dist, clip, reload));
+
+
+	window.setInterval(function(){
+				ctx.clearRect(0,0,800,500);
+				shooters.forEach(move);
+				shooters.forEach(render);
+				proj = proj.filter(moveProj);
+				proj.forEach(renderProj);
+				}, 0);
+
+	var frame = 0;
+	function move(shooter)
+{
+		if(shooter.dead > 0)
+		{
+			if(shooter.dead > 10)
+			{
+					shooter.pos = pos;
+					shooter.dead = 0;
+			}
+			else ++shooter.dead;
+		}
+			else
+			{
+
+		if(Math.random() < .5)
+				shooter.dir += (Math.random() * 20 - 10) * deg;
+
+		shooter.pos = shooter.pos.move(shooter.dir, shooter.vel);
+		with(shooter.pos)
+		{
+				if(x>810)x=-10;
+				if(x<-10)x=810;
+				if(y>510)y=-10;
+				if(y<-10)y=510;
+		}
+
+		if(shooter.toShoot(++frame))
+		{
+				var projectiles = shooter.shoot();
+				for(var i=0;i<projectiles.length;++i)
+						proj.push(projectiles[i]);
+		}
+
+		proj.forEach(function(p){
+
+						var dx = p.x - shooter.pos.x;
+						var dy = p.y - shooter.pos.y;
+						var d = Math.sqrt(dx*dx + dy*dy);
+						if(d<p.r){
+						shooter.dead = 1;
+						console.log(++p.shooter.score);
+						}
+						
+						})
+			}
+	}
+
+function moveProj(p)
+{
+		p.move();
+			with(p)
+		{
+				if(x>810)x=-10;
+				if(x<-10)x=810;
+				if(y>510)y=-10;
+				if(y<-10)y=510;
+		}
+
+		return p.dist > 0;
+}
+
+function renderProj(p)
+{
+		ctx.save()
+				.translate(p.x, p.y)
+				.rotate(p.dir)
+				.moveTo(0,0)
+				.lineTo(0, 3)
+				.stroke()
+				.restore();
+}
+
+	function render(shooter)
+	{
+		var s = 3.5;
+		if(shooter.dead > 0)
+
+ctx.save().translate(shooter.pos.x, shooter.pos.y).fillCircle(0, 0, 5*(3+shooter.dead)).restore();
+
+		else
+
+		ctx
+				.save()
+				.translate(shooter.pos.x, shooter.pos.y)
+				.rotate(shooter.dir)
+				.beginPath()
+				.moveTo(-s, -s)
+				.lineTo(s, -s)
+				.lineTo(0, 3*s)
+				.closePath()
+				.stroke()
+				.restore();
+	}
+
+</script>
+</body>
+</html>
