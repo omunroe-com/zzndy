@@ -1,0 +1,94 @@
+*
+{
+	font-family: monospace;
+}
+
+
+html, body
+{
+	padding: 0;
+	margin: 0;
+	height: 100%;
+}
+
+body
+{
+	width: 77em;
+	margin: 0 auto;
+}
+
+#container>header, #container>nav, #container>article
+{
+	display: block;
+}
+
+body>footer
+{
+	display: block;
+	text-align: center;
+	height: 2.5em;
+}
+
+#container {
+    position: relative;
+    _height: 100%; /*IE6*/
+    min-height: 100%;
+    margin-bottom: -2.5em; /*$footer-height*/
+}
+
+#container #empty-footer
+{
+	display: block;
+	height: 2.5em;
+}
+
+header
+{
+	height: 5em;
+}
+
+nav
+{
+	height: 2em;
+}
+
+section.centered
+{
+	display: block;
+	margin: 0 auto;
+}
+
+section.login
+{
+	width: 15em;
+}
+
+.login input
+{	
+	width: 15em; 
+}
+
+.login input[type=submit]
+{
+	width: auto;
+}
+
+h1	{ font-size: 200%; margin-top: 0; }
+section h1 { font-size: 150%; }
+
+td	{vertical-align: top;}
+td.name {width: 10em;}
+
+.grant a{color:green;}
+.deny a {color:red;}
+
+hr	{ 
+	border-color: silver; 
+	border-width: 1px 0 0 0;
+}
+
+a:target
+{
+	color: maroon;
+	font-weight: bold;
+}

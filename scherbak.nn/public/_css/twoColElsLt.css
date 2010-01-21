@@ -32,6 +32,50 @@ h4 {
 	font-style: italic;
 }
 
+form label
+{
+	font-weight: bold;
+	display: block;
+}
+
+form label:after
+{
+	content: ':';
+}
+
+form input
+{
+	font-size: 150%;
+	margin-left: 1em;
+	margin-bottom: .5em;
+}
+
+.logout
+{
+	height: 2em;
+	padding: 0;
+	margin: 0 -1.2em -2em 0;
+	margin-bottom: -2em;
+	text-align: right;
+}
+
+.gallery span
+{
+	display: inline-block;
+	width: auto;
+	background: #fff;
+	padding: .2em .2em 1em;
+	margin: .2em;
+	-webkit-box-shadow: 0 .1em .2em rgba(0,0,0,.5);;
+	-moz-box-shadow: 0 .1em .2em rgba(0,0,0,.5);;
+	box-shadow: 0 .1em .2em rgba(0,0,0,.5);
+}
+
+.gallery a img
+{
+	border: none;
+}
+
 /* Tips for Elastic layouts 
 1. Since the elastic layouts overall sizing is based on the user's default fonts size, they are more unpredictable. Used correctly, they are also more accessible for those that need larger fonts size since the line length remains proportionate.
 2. Sizing of divs in this layout are based on the 100% font size in the body element. If you decrease the text size overall by using a font-size: 80% on the body element or the #container, remember that the entire layout will downsize proportionately. You may want to increase the widths of the various divs to compensate for this.
@@ -208,12 +252,6 @@ table.wider
 {
 	margin-left: -110px;
 	width: 550px;
-}
-
-label
-{
-	display: inline-block;
-	width: 10em;
 }
 
 hr

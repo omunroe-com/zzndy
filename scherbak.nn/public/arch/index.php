@@ -1,0 +1,154 @@
+<?php
+	session_start();
+	
+	if(isset($_GET['file']))
+		if(isset($_SESSION['user']))
+		{
+			header('Location: ./' . $_GET['file']);
+		}
+		else
+		{
+			header('HTTP/1.0 403 Forbidden');
+		}
+
+	require_once $include . 'common.php';
+	require_once $include . 'user.php';
+
+	$error = '';
+	echo 'FILE:' . $_GET['file'];
+	exit;
+
+	if(isset($_GET['logout']))
+	{
+		unset($_SESSION['user']);
+		header('Location: /');
+	}
+
+	if(isset($_POST['login']) && !isset($_SESSION['user']))
+	{
+		$user = User::FetchUser($_POST['login'], $_POST['passwd']);
+		if($user == null)
+			$error = INVALID_LOGIN;
+
+		else
+		{
+			$_SESSION['user'] = $_POST['login'];
+			header('Location: .');
+		}
+	}
+
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Микола Миколайович Щербак</title>
+<link href="../_css/twoColElsLt.css" rel="stylesheet" type="text/css" /><!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.twoColElsLt #sidebar1 { padding-top: 30px; }
+.twoColElsLt #mainContent { zoom: 1; padding-top: 15px; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+<script src="../SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
+<link href="../SpryAssets/SpryMenuBarHorizontal.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery.lightbox-0.5.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/jquery.lightbox-0.5.css" media="screen" />
+</head>
+
+<body class="twoColElsLt">
+<div id="header">
+  <div id="space"></div>
+  <div id="collage"></div>
+  <div id="space1"></div>
+  <div id="menu">
+    <ul id="MenuBar1" class="MenuBarHorizontal">
+      <li><a href="/">Головна</a></li>
+      <li><a href="../biog.html">Біографія</a></li>
+      <li><a href="../science.html">Наукова робота</a></li>
+      <li><a href="../exp.html">Експедиції</a></li>
+      <li><a href="../museum.html">Музей</a></li>
+      <li><a href="#">Apxiв</a></li>
+<li><a href="../about.html">Про сайт</a></li>
+    </ul>
+  </div>
+    <div id="flags">
+      <center><table width="100" height="29" border="0">
+    <tr>
+        <td><a href="../index.html"><img src="../images/ukrflag.gif" alt="UA flag" width="20" height="15" border="1" /></a></td>
+        <td><img src="../images/rusflag.gif" alt="RU flag" width="20" height="15" border="1" /></td>
+        <td><img src="../images/ukflag.gif" alt="UK flag" width="20" height="15" border="1" /></td>
+      </tr>
+      </table>
+      </center>
+     
+</div>
+  <div id="space2"></div>
+</div>  
+<div id="container">
+    <div id="sidebar1">
+      <p><img src="../images/image3.jpg" alt="Portret1" width="200" height="146" align="left" /></p>
+  <!-- end #sidebar1 --></div>
+  <div id="mainContent">
+  <?php if(isset($_SESSION['user'])):
+  	$at = strpos($_SESSION['user'], '@');
+  	$first = substr($_SESSION['user'], 0, $at);
+	$rest = substr($_SESSION['user'], $at + 1, strlen($_SESSION['user']));
+  
+  ?>
+
+	<div class="logout">
+		Logged in as <b><span><?php echo $first?></span>@<span><?php echo $rest?></span></b>, <a href="?logout">logout</a>.
+	</div>
+
+  <?php endif?>
+    <h1> Архів </h1>
+    <?php if(!isset($_SESSION['user'])):?>
+    <p>Архівна частина сайту ММ. Щербака складається з двох частин: загальнодоступної (ця сторінка) та закритої. У закритій частині знаходяться експедиційні щоденники М.М., його спргади, листи, тощо.</p>
+    <p>Для отримання безкоштовного доступу до закритої частини, перейдіть на сторінку <a href="../registr.php" title="Регістрація">регістрації</a>.</p>
+    <?php if (!empty($error))print_error($error);?>
+
+	<p>Якщо ви вже зареєстровані на сайті, введіть свої дані:</p>
+    <form method="post">
+    	<label for="login">Логін</label><input type="text" name="login" />
+	<br />
+	<label for="passwd">Пароль</label><input type="password" name="passwd" />
+	<br />
+	<input type="submit" value="Login"/>
+    </form>
+    <?php else:?>
+
+	<div class="gallery" id="gallery">
+
+		<?php 
+		
+			$files = array('alpha', 'bravo');
+			foreach(glob('thumb/*.png') as $file)
+			{
+				echo '<span><a href="'.substr($file, strpos($file, '/')+1).'"><img src="' . $file . '"/></a></span>';
+			}
+
+		?>
+
+	</div>
+	<script type="text/javascript">
+	$(function(){
+		$('#gallery a').lightBox({
+			imageLoading: '/images/lightbox-ico-loading.gif',
+			imageBtnClose: '/images/lightbox-btn-close.gif',
+			imageBtnPrev: '/images/lightbox-btn-prev.gif',
+			imageBtnNext: '/images/lightbox-btn-next.gif'
+		});
+	})
+	</script>
+
+
+    <?php endif?>
+
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+  </div></div></body>
+</html>

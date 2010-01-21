@@ -1,4 +1,36 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?php
+
+$http_vars = $_POST;
+$email = $http_vars['email'];
+$fname = $http_vars['fname'];
+$lname = $http_vars['lname'];
+$pass1 = $http_vars['pass1'];
+$pass2 = $http_vars['pass2'];
+$comnt = $http_vars['comnt'];
+$error = '';
+
+require_once $include . 'adduser.php';
+require_once $include . 'common.php';
+
+$appl_pending = false;
+session_start();
+if(isset($_SESSION['appl_pending']))
+	$appl_pending = true;
+
+if(isset($email))
+{
+    try{
+	    try_add_user($email, $pass1, $pass2, $lname, $fname, $comnt);
+		$_SESSION['appl_pending'] = 'yes';
+		header('Location: registr.php');
+    }
+    catch(Exception $ex)
+    {
+        $error = $ex->getMessage();
+    }
+}
+
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -16,36 +48,6 @@
 </head>
 
 <body class="twoColElsLt">
-
-
-<?php
-
-$http_vars = $_POST;
-$email = $http_vars['email'];
-$fname = $http_vars['fname'];
-$lname = $http_vars['lname'];
-$pass1 = $http_vars['pass1'];
-$pass2 = $http_vars['pass2'];
-$comnt = $http_vars['comnt'];
-$error = '';
-
-require_once $include . 'adduser.php';
-require_once $include . 'common.php';
-
-echo $_POST['coment'];
-
-if(isset($email))
-{
-    try{
-	    try_add_user($email, $pass1, $pass2, $lname, $fname, $comnt);
-    }
-    catch(Exception $ex)
-    {
-        $error = $ex->getMessage();
-    }
-}
-
-?>
 
 <div id="header">
   <div id="space"></div>
@@ -83,8 +85,16 @@ if(isset($email))
     <h1>Регістрація</h1>
     <p>Для отримання безкоштовного доступу до закритої частини архівів М.М. Щербака, заповніть, будь ласка, регістраційну форму та погодьтесь з умовами користування архівної інформації.</p>
 
-
-
+	<?php
+		if($appl_pending):?>
+		
+		<?php 
+			print_message(APPL_PENDING);
+			unset($_SESSION['appl_pending']);
+		?>
+		
+	<?php else:	?>
+	
 <form name="register" method="post">
     <?php
 
@@ -93,7 +103,7 @@ if(isset($email))
         {
             print_error( REG_FAIL );
 
-            if($error == NAME_EMPTY && $error == USER_EXISTS)
+            if($error == NAME_EMPTY || $error == USER_EXISTS)
 		    print_error($error);
         }
 
@@ -132,7 +142,7 @@ Sed rutrum tempor metus, sed dapibus sem tempus eu. Aliquam pulvinar leo non nib
 
 </form>
 
-
+<?php endif; ?>
 
     <p>&nbsp;</p>
     <p>&nbsp;</p>
