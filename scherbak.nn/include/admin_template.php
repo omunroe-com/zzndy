@@ -23,7 +23,7 @@ function admin_header($title)
 <body>
 <div id="container">
 	<header>
-		<h1><a href="<?php echo $config['home-url']?>" title="home">Scherbaknn.com</a> - <?php echo $title?></h1>
+		<h1><a href="<?php echo $config['home-url']?>" title="home">Scherbaknn.com</a> &mdash; <?php echo $title?></h1>
 	</header>
 	<?php if($title != 'Login'):?>
 	<nav>

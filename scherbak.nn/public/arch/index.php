@@ -1,23 +1,44 @@
 <?php
 	session_start();
+
+	function file_extension($filename)
+	{
+	    $path_info = pathinfo($filename);
+	    return $path_info['extension'];
+	}
 	
 	if(isset($_GET['file']))
-		if(isset($_SESSION['user']))
+	{
+			$mimes = array(
+				'gif' => 'image/gif',	
+				'ief' => 'image/ief',	
+				'jpe' => 'image/jpeg',	
+				'jpeg' => 'image/jpeg',	
+				'jpg' => 'image/jpeg',	
+				'png' => 'image/png',	
+				'tif' => 'image/tiff',	
+				'tiff' => 'image/tiff',	
+				'pdf' => 'application/pdf'	
+			);
+
+
+		$extension = file_extension($_GET['file']);
+		if(strpos($_GET['file'], '..') === FALSE && isset($_SESSION['user']) && isset($mimes[$extension]))
 		{
-			header('Location: ./' . $_GET['file']);
+			header('Content-type: ' . $mimes[$extension]);
+			readfile($_GET['file']);
 		}
 		else
 		{
 			header('HTTP/1.0 403 Forbidden');
+			exit;
 		}
+	}
 
 	require_once $include . 'common.php';
 	require_once $include . 'user.php';
 
 	$error = '';
-	echo 'FILE:' . $_GET['file'];
-	exit;
-
 	if(isset($_GET['logout']))
 	{
 		unset($_SESSION['user']);

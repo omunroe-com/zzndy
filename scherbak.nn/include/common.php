@@ -1,13 +1,22 @@
 <?php
-
-define('PASS_EMPTY', 'PASS_EMPTY');
+define('PASS_EMPTY',    'PASS_EMPTY'  );
 define('PASS_MISMATCH', 'PASS_MISMATCH');
-define('NAME_EMPTY', 'NAME_EMPTY');
-define('USER_EXISTS', 'USER_EXISTS');
+define('NAME_EMPTY',    'NAME_EMPTY'  );
+define('USER_EXISTS',   'USER_EXISTS' );
 define('EMAIL_INVALID', 'EMAIL_INVALID');
+define('APPL_PENDING',  'APPL_PENDING');
+define('INVALID_LOGIN',  'INVALID_LOGIN');
+define('APPLICATION_PENDING',  'APPLICATION_PENDING');
 
 $lang = 'uk';
 require_once $include . $lang . '.php';
+
+function print_message($message)
+{
+    echo '<div class="message">';
+    $message();
+    echo '</div>'; 
+}
 
 function print_error($message)
 {
@@ -64,5 +73,14 @@ function timesince($original) {
     }
 
     return $print;
+}
+
+function send($email, $subj, $body)
+{
+	global $config;
+
+	if($config['email-divert']) $email = $config['email-divert'];
+	$headers = 'From: ' . $config['email'] . '\r\nX-Mailer: PHP for ' . $config['home-url'];
+	return @mail($to, $subject, $body, $headers);
 }
 

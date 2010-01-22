@@ -3,5 +3,5 @@ php_value auto_prepend_file ../../include/config.php
 
 RewriteEngine On
 
-RewriteRule (.*\.(jpe?g|png|pdf)) index.php?file=$1 [NC]
+RewriteRule (.*\.(jpe?g|png|pdf)) index.php?file=$1 [NC,T]
 
