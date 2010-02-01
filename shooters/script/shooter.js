@@ -65,6 +65,11 @@ Shooter.prototype.shoot = function()
 	return [new Projectile(this, pos.x, pos.y, this.dir, this.speed, this.dam, this.dist)];
 }
 
+Shooter.prototype.getVector = function()
+{
+	return new Point(this.x + this.vel * Math.sin(this.dir), this.y + this.vel * Math.cos(this.dir));
+}
+
 Shooter.prototype.toShoot = function(frame)
 {
 	if(this.frame === null || this.frame + this.rate <= frame)
