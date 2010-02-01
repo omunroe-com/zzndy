@@ -35,7 +35,7 @@ if(isset($email))
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Микола Миколайович Щербак</title>
-<link href="_css/twoColElsLt.css" rel="stylesheet" type="text/css" /><!--[if IE]>
+<link href="css/common.css" rel="stylesheet" type="text/css" /><!--[if IE]>
 <style type="text/css"> 
 /* place css fixes for all versions of IE in this conditional comment */
 .twoColElsLt #sidebar1 { padding-top: 30px; }

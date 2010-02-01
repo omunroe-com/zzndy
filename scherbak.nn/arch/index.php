@@ -63,7 +63,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Микола Миколайович Щербак</title>
-<link href="../_css/twoColElsLt.css" rel="stylesheet" type="text/css" /><!--[if IE]>
+<link href="../css/common.css" rel="stylesheet" type="text/css" /><!--[if IE]>
 <style type="text/css"> 
 /* place css fixes for all versions of IE in this conditional comment */
 .twoColElsLt #sidebar1 { padding-top: 30px; }
@@ -116,7 +116,6 @@
   	$at = strpos($_SESSION['user'], '@');
   	$first = substr($_SESSION['user'], 0, $at);
 	$rest = substr($_SESSION['user'], $at + 1, strlen($_SESSION['user']));
-  
   ?>
 
 	<div class="logout">
@@ -143,11 +142,13 @@
 	<div class="gallery" id="gallery">
 
 		<?php 
-		
+			$exts = array('png', 'jpg', 'jpeg');
 			$files = array('alpha', 'bravo');
-			foreach(glob('thumb/*.png') as $file)
+			foreach(glob('thumb/*.*') as $file)
 			{
-				echo '<span><a href="'.substr($file, strpos($file, '/')+1).'"><img src="' . $file . '"/></a></span>';
+				$ext = substr($file, strrpos($file, '.') + 1);
+				if(in_array($ext, $exts))				
+					echo '<span><a href="'.substr($file, strpos($file, '/')+1).'"><img src="' . $file . '"/></a></span>';
 			}
 
 		?>
@@ -159,6 +160,7 @@
 			imageLoading: '/images/lightbox-ico-loading.gif',
 			imageBtnClose: '/images/lightbox-btn-close.gif',
 			imageBtnPrev: '/images/lightbox-btn-prev.gif',
+			imageBlank: '/images/lightbox-blank.gif',
 			imageBtnNext: '/images/lightbox-btn-next.gif'
 		});
 	})
