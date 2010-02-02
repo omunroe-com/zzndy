@@ -9,7 +9,10 @@ $config = array(
 	'admin-pass' => 'password',
 	'admin-email' => 'zzandy+scherbak@gmail.com',
 	'home-url' => 'http://scherbak/',
-	'email-divert' => 'zzandy+sample-mail@gmail.com'
+	'email-divert' => 'zzandy+sample-mail@gmail.com',
+	'default-lang' => 'en'
 	);
+
+$languages = array('en', 'uk', 'ru');
 
 $include = dirname(__FILE__) . '/';
