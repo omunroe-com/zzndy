@@ -26,7 +26,7 @@ $lang = substr($path, 0, $split);
 if(!in_array($lang, $languages))
 	$lang = $config['default-lang'];
 
-$file = substr($path, $split);
+$file = substr($path, $split + 1);
 if($file == '')
 	$file = 'index';
 
@@ -37,7 +37,9 @@ if(file_exists('.public/' . $lang . '/' . $file . '.html'))
 }
 
 echo file_exists('.public');
+echo file_exists('.public/' . $lang);
+echo file_exists('.public/' . $lang . '/' . $file . '.html');
 
 echo 'Path: ';
-echo $lang . ' and ' . $file;
+echo '\'' . $lang . '\' and \'' . $file . '\'';
 
