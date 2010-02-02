@@ -30,6 +30,14 @@ $file = substr($path, $split);
 if($file == '')
 	$file = 'index';
 
+if(file_exists('.public/' . $lang . '/' . $file . '.html'))
+{
+	include '.public/' . $lang . '/' . $file . '.html';
+	exit();
+}
+
+echo file_exists('.public');
+
 echo 'Path: ';
 echo $lang . ' and ' . $file;
 
