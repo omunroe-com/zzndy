@@ -7,9 +7,9 @@ function Point(x, y)
 Point.prototype.move = function(r, d)
 {
 	return new Point(
-					this.x - d*Math.sin(r),
-					this.y + d*Math.cos(r)
-					);
+		this.x - d*Math.sin(r),
+		this.y + d*Math.cos(r)
+	);
 }
 
 function Projectile(shooter, x, y, dir, vel, dam, dist)
