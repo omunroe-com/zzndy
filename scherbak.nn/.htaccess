@@ -1,18 +1,31 @@
-# -FrontPage-
+<IfModule mod_rewrite.c>
 
-IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
+RewriteEngine On
+RewriteBase /
 
-<Limit GET POST>
-order deny,allow
-deny from all
-allow from all
-</Limit>
-<Limit PUT DELETE>
-order deny,allow
-deny from all
-</Limit>
+### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
+RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
+RewriteRule .* - [S=14] 
 
-order allow,deny
-deny from all
-#php_value auto_prepend_file .private/config.php
 
+### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
+RewriteCond %{REQUEST_FILENAME} favicon.ico [NC,OR]
+RewriteCond %{REQUEST_URI} ^/js/ [NC,OR]
+RewriteCond %{REQUEST_URI} ^/css/ [NC]
+RewriteRule .* - [S=14] 
+
+
+### CHECK FOR TRAILING SLASH - Will ignore files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !/$
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteRule ^(.*)$ /$1/ [L,R=301]
+
+### Rewrite paths to files to index.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)\/$ /index.php?path=$1&%{QUERY_STRING} [L]
+
+</IfModule>
+
+DirectoryIndex index.php
+IndexIgnore *

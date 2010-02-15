@@ -202,6 +202,29 @@ form input
 	border: thin solid #F1F1D8;
 	background-repeat: no-repeat;
 }
+
+#colage a, #collage a *{
+	text-decoration: none;
+}
+
+.flag
+{
+	width: 20px;
+	height: 16px;
+	background: url(/images/flags.png) no-repeat;
+	border: 1px outset gray;
+}
+
+.flag.ru
+{
+	background-position: 0 -16px;
+}
+
+.flag.en
+{
+	background-position: 0 -32px;
+}
+
 #footnote {
 	font-size: 60%;
 	margin-bottom: 5px;

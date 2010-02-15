@@ -1,9 +1,14 @@
 <?php
 	session_start();
 
-	if(isset($_SESSION['backpass'])):
+	if(isset($_GET['logout'])):
+		unset($_SESSION['backpass']);
+		header('Location: /');
+		exit();
+
+	elseif(isset($_SESSION['backpass'])):
 		
-	elseif(isset($_POST['pass']) && $_POST['login'] == $config['admin'] && $_POST['pass'] == $config['admin-pass']):
+	elseif(isset($_POST['pass']) && $_POST['login'] == $config['admin'] && sha1($_POST['pass']) == $config['admin-pass']):
 		$_SESSION['backpass'] = true;
 
 	else:

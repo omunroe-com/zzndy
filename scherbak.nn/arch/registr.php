@@ -1,4 +1,5 @@
 <?php
+include_once '../.private/config.php';
 
 $http_vars = $_POST;
 $email = $http_vars['email'];
@@ -35,7 +36,7 @@ if(isset($email))
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Микола Миколайович Щербак</title>
-<link href="css/common.css" rel="stylesheet" type="text/css" /><!--[if IE]>
+<link href="/css/common.css" rel="stylesheet" type="text/css" /><!--[if IE]>
 <style type="text/css"> 
 /* place css fixes for all versions of IE in this conditional comment */
 .twoColElsLt #sidebar1 { padding-top: 30px; }
@@ -43,33 +44,40 @@ if(isset($email))
 /* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
 </style>
 <![endif]-->
-<script src="SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
-<link href="SpryAssets/SpryMenuBarHorizontal.css" rel="stylesheet" type="text/css" />
+<script src="/SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
+<link href="/SpryAssets/SpryMenuBarHorizontal.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body class="twoColElsLt">
 
 <div id="header">
   <div id="space"></div>
-  <div id="collage"></div>
+  <div id="collage">
+<a href="/">
+<h1>ЩЕРБАК</h1>
+<h2>Микола Миколайович</h2>
+<h3>Николай николаевич</h3>
+</a>
+</div>
   <div id="space1"></div>
   <div id="menu">
     <ul id="MenuBar1" class="MenuBarHorizontal">
-      <li><a href="index.html">Головна</a></li>
-      <li><a href="biog.html">Біографія</a></li>
-      <li><a href="science.html">Наукова робота</a></li>
-      <li><a href="exp.html">Експедиції</a></li>
-      <li><a href="museum.html">Музей</a></li>
-      <li><a href="#">Apxiв</a></li>
-<li><a href="about.html">Про сайт</a></li>
+
+<li><a href="/uk/index/">Головна</a></li>
+<li><a href="/uk/bio/">Біографія</a></li>
+<li><a href="/uk/science/">Наукова робота</a></li>
+<li><a href="/uk/expedition/">Експедиції</a></li>
+<li><a href="/uk/museum/">Музей</a></li>
+<li><a href="/arch/">Apxiв</a></li>
+<li><a href="/uk/about/">Про сайт</a></li>
     </ul>
   </div>
     <div id="flags">
       <center><table width="100" height="29" border="0">
     <tr>
-        <td><a href="index.html"><img src="images/ukrflag.gif" alt="UA flag" width="20" height="15" border="1" /></a></td>
-        <td><img src="images/rusflag.gif" alt="RU flag" width="20" height="15" border="1" /></td>
-        <td><img src="images/ukflag.gif" alt="UK flag" width="20" height="15" border="1" /></td>
+        <td><a href="/uk/"><div class="uk flag"></div></a></td>
+        <td><div class="ru flag"></div></td>
+        <td><div class="en flag"></div></td>
       </tr>
       </table>
       </center>
@@ -79,7 +87,7 @@ if(isset($email))
 </div>  
 <div id="container">
     <div id="sidebar1">
-      <p><img src="images/image3.jpg" alt="Portret1" width="200" height="146" align="left" /></p>
+      <p><img src="/images/image3.jpg" alt="Portret1" width="200" height="146" align="left" /></p>
   <!-- end #sidebar1 --></div>
   <div id="mainContent">
     <h1>Регістрація</h1>
