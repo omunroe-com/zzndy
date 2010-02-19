@@ -47,7 +47,6 @@ a:hover:visited {
 
 pre a {
     text-decoration: none;
-
 }
 
 #container {
@@ -75,7 +74,7 @@ pre a {
 }
 
 .content {
-    width: 700pt;
+    width: 120ex;
     margin-left: auto;
     margin-right: auto;
 }
