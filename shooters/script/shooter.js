@@ -4,88 +4,179 @@ function Point(x, y)
 	this.y = y;
 }
 
-Point.prototype.move = function(r, d)
+Point.prototype.add = function(vec)
 {
-	return new Point(
-		this.x - d*Math.sin(r),
-		this.y + d*Math.cos(r)
-	);
+	return new Point(this.x + vec.x, this.y + vec.y);
 }
 
-function Projectile(shooter, x, y, dir, vel, dam, dist)
+Point.prototype.to = function(p)
+{
+	var dx = this.x - p.x;
+	var dy = this.y - p.y;
+	return Math.sqrt(dx*dx + dy*dy);
+}
+
+Point.prototype.toString = function()
+{
+	return ['(', this.x.toFixed(2), ', ', this.y.toFixed(2), ')'].join('');
+}
+
+function Vector(x, y)
 {
 	Point.call(this, x, y);
-	this.dir = dir;
-	this.vel = vel;
+}
+
+Vector.prototype = new Point;
+Vector.prototype.base = Point.prototype;
+
+Vector.prototype.getDir = function()
+{
+	return Math.atan2(this.y, this.x);
+}
+
+Vector.prototype.mul = function(num)
+{
+	return new Vector(this.x * num, this.y * num);
+}
+
+Vector.prototype.abs = function()
+{
+	return Math.sqrt(this.x*this.x + this.y*this.y);
+}
+
+Vector.prototype.norm = function()
+{
+	var d = this.abs();
+	return new Vector(this.x / d, this.y / d);
+}
+
+function Projectile(pos, mov, dam, dist)
+{
+	Movable.call(this, pos, mov);
+	this.maxDist = dist;
+	this.dist = 0;
 	this.dam = dam;
-	this.dist = dist;
-	this.r = 3;
-	this.shooter = shooter;
+	this.dead = 0;
 }
 
-Projectile.prototype = new Point;
-Projectile.prototype.base = Point.prototype;
-
-Projectile.prototype.move = function()
+function Movable(pos, mov)
 {
-	var pos = this.base.move.call(this, this.dir, this.vel);
-	this.x = pos.x;
-	this.y = pos.y;
-
-	this.dist -= this.vel;
+	this.pos = new Point(pos.x, pos.y);
+	this.mov = new Vector(mov.x, mov.y);
 }
 
-function Shooter(pos, dir, vel, rate, dam, speed, pershot, dist, clip, reload)
+Movable.prototype.advance = function()
 {
-	this.pos = pos;
-	this.dir = dir;
-	this.vel = vel;
-
-	this.rate = rate;
-	this.dam = dam;
-	this.speed = speed;
-	this.pershot = pershot;
-
-	this.dist = dist;
-	this.clip = clip;
-	this.reload = reload;
-
-	this.frame = null;
-	this.score = 0;
+	this.pos = this.pos.add(this.mov);
 }
 
-function toDNA(num, max)
-{
+Projectile.prototype = new Movable(new Point(0, 0), new Vector(0, 0));
+Projectile.prototype.base = Movable.prototype;
 
+Projectile.prototype.advance = function()
+{
+	if(this.dead) return;
+
+	var p1 = this.pos;
+	this.base.advance.call(this);
+
+	this.dist += p1.to(this.pos);
+
+	if(this.dist >= this.maxDist) this.dead = 100;
 }
 
-Shooter.prototype.shoot = function()
-{
-	var pos = this.pos.move(this.dir, 5);
-	return [new Projectile(this, pos.x, pos.y, this.dir, this.speed, this.dam, this.dist)];
-}
 
-Shooter.prototype.getVector = function()
+/**
+ * @class Shooter
+ *
+ * @param {Point} pos - shooter initial position
+ * @param {Vector} mov - movement vector
+ * @param {Number} hp - health points
+ * @param {Number} rate - rate of fire - time in milliseconds between shots
+ * @param {Number} dam - projectile damage
+ * @param {Number} speed - projectile speed
+ * @param {Number} dist - projectile max distance
+ * @param {Number} clip - clip size (in shots)
+ * @param {Number} reload - reload time (milliseconds)
+ * @param {Number} spread - projectiles released per shot
+ */
+function Shooter(pos, mov, hp, rate, dam, speed, dist, clip, reload, spread)
 {
-	return new Point(this.x + this.vel * Math.sin(this.dir), this.y + this.vel * Math.cos(this.dir));
-}
-
-Shooter.prototype.toShoot = function(frame)
-{
-	if(this.frame === null || this.frame + this.rate <= frame)
+	if(pos instanceof Shooter)
 	{
-			this.frame = frame;
-			return true;
+		Movable.call(this, pos.pos, pos.mov);
+
+		this.hp = pos.hp;
+		this.rate = pos.rate;
+		this.dam = pos.dam;
+		this.speed = pos.speed;
+		this.dist = pos.dist;
+		this.clip = pos.clip;
+		this.reload = pos.reload;
+		this.spread = pos.spread;
+		this.lastShot = pos.lastShot;
 	}
-	return false;
+	else
+	{
+		Movable.call(this, pos, mov);
+
+		this.hp = hp;
+		this.rate = rate;
+		this.dam = dam;
+		this.speed = speed;
+		this.dist = dist;
+		this.clip = clip;
+		this.reload = reload;
+		this.spread = spread;
+
+		this.lastShot = 0;
+	}
+
+	this.inClip = this.clip;
+	this.reloading = false;
+
 }
 
-Shooter.prototype.toDNA = function()
+Shooter.prototype = new Movable(new Point(0, 0), new Vector(0, 0));
+Shooter.prototype.base = Movable.prototype;
+
+Shooter.prototype.steer = function(rad)
 {
+	var c = Math.cos(rad);
+	var s = Math.sin(rad);
+	var p = this.mov;
 
+	this.mov = new Vector(p.x * c - p.y * s, p.y * c + p.x * s);
 }
 
-Shooter.fromDNA = function(dna)
+Shooter.prototype.readyToShoot = function(ts)
 {
+	var ok = false;
+	if(this.reloading)
+	{
+		ok =  (ts - this.lastShot) > this.reload;
+		if(ok){
+			this.reloading = false;
+			this.inClip = this.clip;
+		}
+	}
+	else
+	{
+		ok = (ts - this.lastShot) >= this.rate;
+	}
 
+	return ok;
 }
+
+Shooter.prototype.shoot = function(ts)
+{
+	if(this.reloading)return [];
+	if(--this.inClip == 0)
+	{
+		this.reloading = true;
+	}
+
+	this.lastShot = ts;
+	return [new Projectile(this.pos, this.mov.norm().mul(this.speed), this.dam, this.dist)];
+}
+
