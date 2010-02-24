@@ -8,11 +8,19 @@
 
     <script type="text/javascript" src="../script/canvas.js"></script>
     <script type="text/javascript" src="script/shooter.js"></script>
+<<<<<<< HEAD
+=======
+    <script type="text/javascript" src="script/ctrl.js"></script>
+>>>>>>> shoot-oo
 </head>
 <body>
 <div id="container">
     <div class="content header">
+<<<<<<< HEAD
 			<h1>Shoot</h1>
+=======
+	<h1>Shot</h1>
+>>>>>>> shoot-oo
     </div>
 
     <div class="content">
@@ -35,6 +43,7 @@
     </div>
 </div>
 <script type="text/javascript">
+<<<<<<< HEAD
 
 		function trembl(val, pct)
 {
@@ -159,6 +168,33 @@ ctx.save().translate(shooter.pos.x, shooter.pos.y).fillCircle(0, 0, 5*(3+shooter
 				.stroke()
 				.restore();
 	}
+=======
+	// Provide testing ground for different kind of shooting agents
+	// with genetic agotirhm
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+var view = new ShootersView(ctx, 800, 500);
+
+var numShooters = 14;
+//function Shooter(pos, mov, hp, rate, dam, speed, dist, clip, reload, spread)
+var deflt = new Shooter(new Point(0, 0), new Vector(2, 0), 100, 700, 20, 10, 500, 20, 3000, 1);
+var arbiter = new ShooterArbiter(deflt, numShooters);
+
+var ctrl = new ShootersController(view, arbiter);
+
+
+function frame()
+{
+	ctrl.frame();
+	ctrl.draw();
+	
+	window.setTimeout(frame, 50);
+}
+
+frame();
+>>>>>>> shoot-oo
 
 </script>
 </body>
