@@ -91,7 +91,7 @@ var barView = new BarView(bar);
 
 var progress = new ProgressMeter(barView);
 
-function report()
+function work()
 {
 	var max = 1000;
 	var i = 0;
@@ -118,7 +118,7 @@ function reset(e)
 
 	try
 	{
-		window.setTimeout(report, 1);
+		window.setTimeout(work, 1);
 	}
 	catch(e){}
 
