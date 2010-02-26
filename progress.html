@@ -6,12 +6,13 @@
     <link rel="stylesheet" href="style/pixelless.css" type="text/css"/>
     <title>Progress</title>
     <style type="text/css">
-	    .progress.frame	{
+	    .progress-frame	{
 		    border: .1em solid #eee;
+		    padding: .1em;
 	    }
 
-	    .progress.bar	{
-		    margin: .1em;
+	    .progress-bar	{
+		    margin-top: .1em;
 		    background-color: #eee;
 		    height: 2em;
 	    }
@@ -23,9 +24,10 @@
         <h1>Progress</h1>
     </div>
     <div class="content">
-	    <div class="progress frame">
-		    <div class="progress bar"></div>
+	    <div class="progress-frame">
+		    <div id="pb1" class="progress-bar"></div>
 	    </div>
+	    <a href="#reset" onclick="reset();return false;">Restart</a>
 
         <div class="empty_footer">
         </div>
@@ -37,11 +39,67 @@
     </div>
 </div>
 <script type="text/javascript">
-	function ProgressMeter()
+function ProgressMeter(view)
+{
+	this._scale = 1;
+	this._progress = 0;
+
+	this._views = [view];
+}
+
+ProgressMeter.prototype.reset = function()
+{
+	this._progress = 0;
+	this._views.forEach(function(v){v.update(0)});
+}
+
+ProgressMeter.prototype.progress = function(pct)
+{
+	if(!this.done() && pct > 0)
 	{
-		this.scale = 1;
-		this.progress = 0;
+		this._progress  = Math.min(100, this._progress + pct);
+		var p = this._progress;
+		this._views.forEach(function(v){v.update(p)});
 	}
+}
+
+ProgressMeter.prototype.done = function()
+{
+	return this._progress >= 100;
+}
+
+function BarView(elt)
+{
+	this.elt = elt;
+}
+
+BarView.prototype.update = function(pct)
+{
+	this.elt.style.width = pct + '%';
+	console.log(this.elt.style.width);
+}
+
+var bar = document.getElementById('pb1');
+var barView = new BarView(bar);
+
+var progress = new ProgressMeter(barView);
+
+function report()
+{
+	progress.progress(1);
+	if(!progress.done())
+		window.setTimeout(report, 10);
+	else
+		console.log('done');
+}
+
+function reset()
+{
+	progress.reset();
+	report();
+}
+
+report();
 </script>
 </body>
 </html>
