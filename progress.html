@@ -51,7 +51,7 @@ function ProgressMeter(view)
 ProgressMeter.prototype.reset = function()
 {
 	this._progress = 0;
-	this._views.forEach(function(v){v.update(0)});
+	this.refresh();
 }
 
 ProgressMeter.prototype.progress = function(pct)
@@ -60,13 +60,20 @@ ProgressMeter.prototype.progress = function(pct)
 	{
 		this._progress  = Math.min(100, this._progress + pct);
 		var p = this._progress;
-		this._views.forEach(function(v){v.update(p)});
+		this.refresh();
 	}
 }
 
 ProgressMeter.prototype.done = function()
 {
 	return this._progress >= 100;
+}
+
+ProgressMeter.prototype.refresh = function()
+{
+	var vs = this._views;
+	var p = this._progress;
+	window.setTimeout(function(){vs.forEach(function(v){v.update(p)})}, 1);
 }
 
 function BarView(elt)
@@ -86,22 +93,34 @@ var progress = new ProgressMeter(barView);
 
 function report()
 {
-	progress.progress(.1);
-	if(!progress.done())
-		window.setTimeout(report, 1);
+	var max = 1000;
+	var i = 0;
+	progress.reset();
+
+	function rep()	{
+		if(i++<max)
+		{
+			progress.progress(100 / max);
+			window.setTimeout(rep, 1);
+		}
+	}
+
+	rep();
 }
 
 function reset(e)
 {
 	try
 	{
-		progress.reset();
-		report();
 		e.target.innerHTML = 'Restart';
 	}
-	catch(e)
+	catch(e){}
+
+	try
 	{
+		window.setTimeout(report, 1);
 	}
+	catch(e){}
 
 	return false;
 }
