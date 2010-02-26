@@ -1,4 +1,15 @@
-function ProgressMeter(view)
+(function(){
+BarView = function(elt)
+{
+	this.elt = elt;
+}
+
+BarView.prototype.update = function(pct)
+{
+	this.elt.style.width = pct + '%';
+}
+
+ProgressMeter = function(view)
 {
 	this._scale = 1;
 	this._progress = 0;
@@ -40,15 +51,4 @@ ProgressMeter.prototype.refresh = function()
 	var p = this._progress;
 	window.setTimeout(function(){vs.forEach(function(v){v.update(p)})}, 1);
 }
-
-
-function BarView(elt)
-{
-	this.elt = elt;
-}
-
-BarView.prototype.update = function(pct)
-{
-	this.elt.style.width = pct + '%';
-}
-
+})()
