@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <link rel="stylesheet" href="style/pixelless.css" type="text/css"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
     <title>Progress</title>
     <style type="text/css">
 	    .progress-frame	{
@@ -46,12 +46,19 @@ function ProgressMeter(view)
 	this._progress = 0;
 
 	this._views = [view];
+	this._scales = [];
 }
 
 ProgressMeter.prototype.reset = function()
 {
 	this._progress = 0;
 	this.refresh();
+}
+
+ProgressMeter.prototype.scale = function(minpct, maxpct)
+{
+	this._scales.push(this._scale);
+	this._scale = 1
 }
 
 ProgressMeter.prototype.progress = function(pct)
@@ -91,21 +98,31 @@ var barView = new BarView(bar);
 
 var progress = new ProgressMeter(barView);
 
+var edge= 0;
+function shrink30()
+{
+	progress.scale(edge, edge+30);
+	edge += 30;
+}
+
+function shrink40()
+{
+	progress.scale(60,100);
+}
+
+function f1(i, max)
+{
+	
+}
+
 function work()
 {
-	var max = 1000;
-	var i = 0;
 	progress.reset();
 
-	function rep()	{
-		if(i++<max)
-		{
-			progress.progress(100 / max);
-			window.setTimeout(rep, 1);
-		}
-	}
+	var max = 500;
 
-	rep();
+	var plan = shrink30.then(f1.repeat(max)).then(shrink30).then(f1.repeat(max)).then(f3);
+	plan();
 }
 
 function reset(e)
