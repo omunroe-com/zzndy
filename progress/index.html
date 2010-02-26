@@ -38,91 +38,29 @@
         &copy; 2008-2010 Vynogradov
     </div>
 </div>
+<script type="text/javascript" src="script/progress.js"></script>
 <script type="text/javascript">
-//<![CDATA[
-function ProgressMeter(view)
-{
-	this._scale = 1;
-	this._progress = 0;
-
-	this._views = [view];
-	this._scales = [];
-}
-
-ProgressMeter.prototype.reset = function()
-{
-	this._progress = 0;
-	this.refresh();
-}
-
-ProgressMeter.prototype.scale = function(minpct, maxpct)
-{
-	this._scales.push(this._scale);
-	this._scale = 1
-}
-
-ProgressMeter.prototype.progress = function(pct)
-{
-	if(!this.done() && pct > 0)
-	{
-		this._progress  = Math.min(100, this._progress + pct);
-		var p = this._progress;
-		this.refresh();
-	}
-}
-
-ProgressMeter.prototype.done = function()
-{
-	return this._progress >= 100;
-}
-
-ProgressMeter.prototype.refresh = function()
-{
-	var vs = this._views;
-	var p = this._progress;
-	window.setTimeout(function(){vs.forEach(function(v){v.update(p)})}, 1);
-}
-
-function BarView(elt)
-{
-	this.elt = elt;
-}
-
-BarView.prototype.update = function(pct)
-{
-	this.elt.style.width = pct + '%';
-}
-
 var bar = document.getElementById('pb1');
 var barView = new BarView(bar);
-
 var progress = new ProgressMeter(barView);
-
-var edge= 0;
-function shrink30()
-{
-	progress.scale(edge, edge+30);
-	edge += 30;
-}
-
-function shrink40()
-{
-	progress.scale(60,100);
-}
-
-function f1(i, max)
-{
-	
-}
 
 function work()
 {
 	progress.reset();
 
-	var max = 500;
+	var i =0;
+	var max = 1500;
 
-	var plan = shrink30.then(f1.repeat(max)).then(shrink30).then(f1.repeat(max)).then(f3);
-	plan();
+	function run()
+	{
+		if(i++<max)
+		{
+			progress.progress(100/max);
+			window.setTimeout(run, 1);
+		}
+	}
+
+	run();
 }
 
 function reset(e)
@@ -141,7 +79,6 @@ function reset(e)
 
 	return false;
 }
-//]]>
 </script>
 </body>
 </html>
