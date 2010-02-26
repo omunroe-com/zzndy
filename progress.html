@@ -27,7 +27,7 @@
 	    <div class="progress-frame">
 		    <div id="pb1" class="progress-bar"></div>
 	    </div>
-	    <a href="#reset" onclick="reset();return false;">Restart</a>
+	    <a href="#reset" onclick="return reset(event)">Start</a>
 
         <div class="empty_footer">
         </div>
@@ -39,6 +39,7 @@
     </div>
 </div>
 <script type="text/javascript">
+//<![CDATA[
 function ProgressMeter(view)
 {
 	this._scale = 1;
@@ -76,7 +77,6 @@ function BarView(elt)
 BarView.prototype.update = function(pct)
 {
 	this.elt.style.width = pct + '%';
-	console.log(this.elt.style.width);
 }
 
 var bar = document.getElementById('pb1');
@@ -86,20 +86,26 @@ var progress = new ProgressMeter(barView);
 
 function report()
 {
-	progress.progress(1);
+	progress.progress(.1);
 	if(!progress.done())
-		window.setTimeout(report, 10);
-	else
-		console.log('done');
+		window.setTimeout(report, 1);
 }
 
-function reset()
+function reset(e)
 {
-	progress.reset();
-	report();
-}
+	try
+	{
+		progress.reset();
+		report();
+		e.target.innerHTML = 'Restart';
+	}
+	catch(e)
+	{
+	}
 
-report();
+	return false;
+}
+//]]>
 </script>
 </body>
 </html>
