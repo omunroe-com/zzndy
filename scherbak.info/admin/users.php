@@ -1,5 +1,4 @@
 <?php
-	include_once '../.private/config.php';
 	require_once $include . 'admin_template.php';
 
 
@@ -11,7 +10,7 @@
 	admin_header('Users');
 ?>
 			<p><?php echo $numusers;?> users registered on site:</p>
-			<table id="users">
+			<table>
 			<thead>
 			<tr>
 				<th>Status</th>
@@ -29,12 +28,6 @@
 			} ?>
 			</tbody>
 			</table>
-				<script src="/js/jquery.js" ></script>		
-				<script src="/js/jquery.tablesorter.min.js"></script>		
-				<script>
-				$(function(){ 
-					$('#users').tablesorter(); 
-				});					
-				</script>
+		
 
 <?php echo admin_footer()?>

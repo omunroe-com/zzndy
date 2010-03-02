@@ -107,7 +107,6 @@ class User
 		return $users;
 	}
 
-	// TODO: Rename to create
 	static public function save($email, $fname, $lname, $pass)
 	{
 		global $db;
@@ -151,8 +150,8 @@ class User
 	$text .= '<td>' . $this->fname() . '</td>';
 	$text .= '<td>' . $this->lname() . '</td>';
 	$text .= '<td>' . $this->email() . '</td>';
-	$text .= '<td><span style="display: none">' . strtotime($this->registered_on()) . '</span>' . wrapdate($this->registered_on()) . '</td>';
-	$text .= '<td><span style="display: none">' . strtotime($this->last_logged_on()) . '</span>' . wrapdate($this->last_logged_on()) . '</td>';
+	$text .= '<td>' . wrapdate($this->registered_on()) . '</td>';
+	$text .= '<td>' . wrapdate($this->last_logged_on()) . '</td>';
 	$text .= '</tr>';
 	$text .= "\n";
 

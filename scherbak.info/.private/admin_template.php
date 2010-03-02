@@ -17,13 +17,13 @@ function admin_header($title)
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title><?php echo $title?> - Scherbak.info</title>
+	<title><?php echo $title?> - Scherbaknn.com</title>
 	<link rel="stylesheet" href="/styles/admin.css" type="text/css" />
 </head>
 <body>
 <div id="container">
 	<header>
-		<h1><a href="<?php echo $config['home-url']?>" title="home">Scherbak.info</a> &mdash; <?php echo $title?></h1>
+		<h1><a href="<?php echo $config['home-url']?>" title="home">Scherbaknn.com</a> &mdash; <?php echo $title?></h1>
 	</header>
 	<?php if($title != 'Login'):?>
 	<nav>

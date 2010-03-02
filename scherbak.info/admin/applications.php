@@ -1,5 +1,4 @@
 <?php
-include_once '../.private/config.php';
 
 require_once $include . 'admin_template.php';
 require_once $include . 'db.php';
