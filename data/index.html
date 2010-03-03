@@ -50,6 +50,33 @@ Fusce odio nunc, hendrerit fringilla egestas a, placerat ultricies velit. Nulla 
 		out.innerHTML = text;
 		out.getElementsByTagName('tr')[0].className += ' selected';
 	}
+
+window.addEventListener('keypress', kp, true, false);
+
+function Key(e)
+{
+	if ((e.charCode == 0 && e.keyCode == 38) || (e.charCode == 106 && e.keyCode == 0))
+		return 'up';
+	else if ((e.charCode == 0 && e.keyCode == 40) || (e.charCode == 107 && e.keyCode == 0))
+		return 'dn';
+	else if((e.charCode == 0 && e.keyCode == 39) || (e.charCode == 108 && e.keyCode == 0))
+		return 'rt';
+	else if((e.charCode == 0 && e.keyCode == 37) || (e.charCode == 104 && e.keyCode == 0))
+		return 'lf';
+	
+	return '<Unsupported>';
+}
+
+function kp(e)
+{
+	switch(Key(e))
+	{
+		case 'up': console.log('up'); break;
+		case 'dn': console.log('down'); break;
+		case 'lf': console.log('left'); break;
+		case 'rt': console.log('right'); break;
+	}
+}
 </script>
 </body>
 </html>
