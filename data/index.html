@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+    <title>Progress</title>
+    <style type="text/css">
+	    .progress-frame	{
+		    border: .1em solid #eee;
+		    padding: .1em;
+	    }
+
+	    .progress-bar	{
+		    margin-top: .1em;
+		    background-color: #eee;
+		    height: 2em;
+	    }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Progress</h1>
+    </div>
+    <div class="content">
+	    <div class="progress-frame">
+		    <div id="pb1" class="progress-bar"></div>
+	    </div>
+	    <a href="#reset" onclick="return reset(event)">Start</a>
+
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; 2008-2010 Vynogradov
+    </div>
+</div>
+<script type="text/javascript" src="script/progress.js"></script>
+<script type="text/javascript">
+var bar = document.getElementById('pb1');
+var barView = new BarView(bar);
+var progress = new ProgressMeter(barView);
+
+function work()
+{
+	progress.reset();
+
+	var i =0;
+	var max = 1500;
+
+	function run()
+	{
+		if(i++<max)
+		{
+			progress.progress(100/max);
+			window.setTimeout(run, 1);
+		}
+	}
+
+	run();
+}
+
+function reset(e)
+{
+	try
+	{
+		e.target.innerHTML = 'Restart';
+	}
+	catch(e){}
+
+	try
+	{
+		window.setTimeout(work, 1);
+	}
+	catch(e){}
+
+	return false;
+}
+</script>
+</body>
+</html>
