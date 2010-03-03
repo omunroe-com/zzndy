@@ -34,6 +34,7 @@ Fusce odio nunc, hendrerit fringilla egestas a, placerat ultricies velit. Nulla 
 <script type="text/javascript" src="script/data.js"></script>
 <script type="text/javascript">
 	var out = document.getElementById('out');
+	var current = null;
 	var text = document.getElementById('txt').interHTML;
 
 	var data = [];
@@ -48,7 +49,8 @@ Fusce odio nunc, hendrerit fringilla egestas a, placerat ultricies velit. Nulla 
 	function print(text)
 	{
 		out.innerHTML = text;
-		out.getElementsByTagName('tr')[0].className += ' selected';
+		current = out.getElementsByTagName('tr')[0];
+		current.className += ' selected';
 	}
 
 window.addEventListener('keypress', kp, true, false);
