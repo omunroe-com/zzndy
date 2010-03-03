@@ -17,3 +17,14 @@
 
 .name	{
 }
+
+.selected
+{
+	background-color: #eee;
+	color: #262626;
+}
+
+table
+{
+	border-collapse: collapse;
+}
