@@ -69,15 +69,41 @@ function Key(e)
 	return '<Unsupported>';
 }
 
+function getNext(el, nodeName)
+{
+	var node = el;
+	do	{
+		node = node.nextSibling;
+	}
+	while(node && node.nodeName.toUpperCase() != nodeName.toUpperCase());
+	
+	return node || el;
+}
+
+function getPrev(el, nodeName)
+{
+	var node = el;
+	do	{
+		node = node.previousSibling;
+	}
+	while(node && node.nodeName.toUpperCase() != nodeName.toUpperCase());
+
+	return node || el;
+}
+
 function kp(e)
 {
+	current.className = '';
+
 	switch(Key(e))
 	{
-		case 'up': console.log('up'); break;
-		case 'dn': console.log('down'); break;
+		case 'up': current = getPrev(current, 'tr'); break;
+		case 'dn': current = getNext(current, 'tr'); break;
 		case 'lf': console.log('left'); break;
 		case 'rt': console.log('right'); break;
 	}
+
+	current.className = 'selected';
 }
 </script>
 </body>
