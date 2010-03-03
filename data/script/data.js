@@ -1,54 +1,31 @@
-(function(){
-BarView = function(elt)
+String.prototype.wrapLetter = function(element, class)
 {
-	this.elt = elt;
+	return this
+		.split('')
+		.map(function(c){return '<' + element + ' class="' + class + '">' + c + '</' + element + '>'})
+		.join('');
 }
 
-BarView.prototype.update = function(pct)
+Node = function(name, type, data)
 {
-	this.elt.style.width = pct + '%';
+	this.getName = function(){return name;}
+	this.getType = function(){return type;}
+	this.getData = function(){return data;}
 }
 
-ProgressMeter = function(view)
+Node.prototype.toString = function()
 {
-	this._scale = 1;
-	this._progress = 0;
-
-	this._views = [view];
-	this._scales = [];
-}
-
-ProgressMeter.prototype.reset = function()
-{
-	this._progress = 0;
-	this.refresh();
-}
-
-ProgressMeter.prototype.scale = function(minpct, maxpct)
-{
-	this._scales.push(this._scale);
-	this._scale = 1
-}
-
-ProgressMeter.prototype.progress = function(pct)
-{
-	if(!this.done() && pct > 0)
+	switch(this.getType())
 	{
-		this._progress  = Math.min(100, this._progress + pct);
-		var p = this._progress;
-		this.refresh();
+		case "DIR":
+			this.toString = function()
+			{
+				return '<table>' + this.getData().map(function(d){return '<tr><td class="type">' + d.getType().wrapLetter('span', 'letter') + '</td><td class="name">' + d.getName().wrapLetter('span', 'letter') + '</td></tr>'}).join('\n') + '</table>';
+			}
+			break;
+		default:
+			this.toString = function(){return '&lt;UNSUPPORTED TYPE&gt;'}
 	}
-}
 
-ProgressMeter.prototype.done = function()
-{
-	return this._progress >= 100;
+	return this.toString();
 }
-
-ProgressMeter.prototype.refresh = function()
-{
-	var vs = this._views;
-	var p = this._progress;
-	window.setTimeout(function(){vs.forEach(function(v){v.update(p)})}, 1);
-}
-})()

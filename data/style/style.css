@@ -1,0 +1,19 @@
+#out	{
+	text-transform: uppercase;
+	font-family: Tahoma;
+	font-size: 8pt;
+	font-weight: bold;
+}
+
+.letter	{
+	width: .8em;
+	display: inline-block;
+	text-align: center;
+}
+
+.type	{
+	width: 3em;
+}
+
+.name	{
+}

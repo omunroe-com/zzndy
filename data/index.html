@@ -4,30 +4,23 @@
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
-    <title>Progress</title>
-    <style type="text/css">
-	    .progress-frame	{
-		    border: .1em solid #eee;
-		    padding: .1em;
-	    }
-
-	    .progress-bar	{
-		    margin-top: .1em;
-		    background-color: #eee;
-		    height: 2em;
-	    }
-    </style>
+    <link rel="stylesheet" href="style/style.css" type="text/css"/>
+    <title>Data</title>
 </head>
 <body>
 <div id="container">
     <div class="content header">
-        <h1>Progress</h1>
+        <h1>Data</h1>
     </div>
     <div class="content">
-	    <div class="progress-frame">
-		    <div id="pb1" class="progress-bar"></div>
-	    </div>
-	    <a href="#reset" onclick="return reset(event)">Start</a>
+	    <div id="out"></div>
+	<div id="txt" style="display: none">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada sagittis lacinia. Vestibulum posuere euismod eleifend. Quisque volutpat est vitae ligula vehicula ullamcorper. Phasellus a nulla ipsum. Nunc imperdiet viverra diam, id consequat nunc ullamcorper eget. Nunc nibh elit, eleifend nec mollis at, pulvinar at massa. Phasellus ultricies mauris sed lacus aliquam in venenatis arcu placerat. Morbi sit amet lacus vel justo fermentum ornare in ac dolor. Aliquam faucibus ante sed lorem ultricies ultrices. Morbi eget orci eros. Phasellus at ipsum odio, vitae molestie ante. Aenean dapibus feugiat mollis. Phasellus ac risus metus. In at magna eget libero accumsan fringilla.
+
+Sed quis urna leo. Vivamus pulvinar elit ut nisi suscipit dignissim. Nam quis justo lectus. Integer in tortor augue, ac tempus est. Morbi dapibus tempor nisl, id bibendum nulla fringilla eget. Nulla non mi in nulla mattis varius ut a risus. Donec elit ante, lacinia eu interdum eu, faucibus et risus. Duis gravida dignissim laoreet. Fusce in odio lectus. Quisque quis diam feugiat risus gravida consequat sit amet interdum nunc. Curabitur consectetur condimentum volutpat. Mauris vitae lectus et ante mattis rutrum sit amet at arcu. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sagittis vestibulum quam id laoreet. Duis accumsan dolor ut eros vestibulum sed volutpat dui dapibus.
+
+Fusce odio nunc, hendrerit fringilla egestas a, placerat ultricies velit. Nulla facilisis ultrices consectetur. Nam id dui nulla, et hendrerit velit. Ut sagittis mauris eget sapien accumsan ac porta massa gravida. Proin condimentum odio ac est rhoncus vel blandit tortor condimentum. Pellentesque eu arcu ante. Cras nec lacus sed erat sollicitudin adipiscing. Nunc fermentum nunc ipsum. Nulla sollicitudin gravida dolor ac molestie. Duis blandit consectetur porttitor. Nam nibh odio, pharetra ut gravida iaculis, mattis quis massa. Suspendisse potenti. Pellentesque sed quam sed lacus dignissim adipiscing ac et elit. Praesent eget diam sem. Proin id purus eu nunc eleifend tempus in et purus. 
+	</div>
 
         <div class="empty_footer">
         </div>
@@ -38,47 +31,24 @@
         &copy; 2008-2010 Vynogradov
     </div>
 </div>
-<script type="text/javascript" src="script/progress.js"></script>
+<script type="text/javascript" src="script/data.js"></script>
 <script type="text/javascript">
-var bar = document.getElementById('pb1');
-var barView = new BarView(bar);
-var progress = new ProgressMeter(barView);
+	var out = document.getElementById('out');
+	var text = document.getElementById('txt').interHTML;
 
-function work()
-{
-	progress.reset();
+	var data = [];
+	var root = new Node('/', 'DIR', data);
 
-	var i =0;
-	var max = 1500;
+	data.push(new Node('Proposition', 'TAB', {}));
+	data.push(new Node('Facilities', 'TAB', {}));
+	data.push(new Node('Proposition', 'TXT', text));
 
-	function run()
+	print(root.toString());
+	
+	function print(text)
 	{
-		if(i++<max)
-		{
-			progress.progress(100/max);
-			window.setTimeout(run, 1);
-		}
+		out.innerHTML = text;
 	}
-
-	run();
-}
-
-function reset(e)
-{
-	try
-	{
-		e.target.innerHTML = 'Restart';
-	}
-	catch(e){}
-
-	try
-	{
-		window.setTimeout(work, 1);
-	}
-	catch(e){}
-
-	return false;
-}
 </script>
 </body>
 </html>
