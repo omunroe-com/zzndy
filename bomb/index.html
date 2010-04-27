@@ -41,13 +41,18 @@
         var n = 30;
         var width = 800;
         var height = 500;
-        var v = 3 / n;
+        var v = 2;
+        var s = .7;
+        var mx, my;
 
         function rnd(n) {
             return Math.round(n * Math.random());
         }
 
         function init() {
+            mx = width + img.width;
+            my = height + img.height;
+
             for (var i = 0; i < n; ++i)
                 points.push(new Point(rnd(width + img.width) - img.width, rnd(height + img.height) - img.height));
 
@@ -59,12 +64,20 @@
 
             for (var i in points) {
                 var point = points[i];
-                point.x -= v * i;
-                point.y += v * i;
+                var f = i * 2 * s / n + 1 - s;
+                point.x -= v * f;
+                point.y += v * f;
 
                 if (point.x < -img.width || point.y > height + img.height) {
-                    point.x = rnd(width + img.width) - img.width;
-                    point.y = -img.height;
+                    var c = rnd(mx + my);
+                    if (c > mx) {
+                        point.x = mx;
+                        point.y = c - mx;
+                    }
+                    else {
+                        point.x = c;
+                        point.y = -img.height;
+                    }
                 }
 
                 ctx.drawImage(img, Math.round(point.x), Math.round(point.y));
