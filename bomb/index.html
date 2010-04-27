@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Bomb</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css" />
+    <script type="text/javascript" src="../script/canvas.js"></script>
+</head>
+<body>
+    <div id="container">
+        <div class="content header">
+            <h1>
+                Bomb</h1>
+        </div>
+        <div class="content">
+            <canvas id="canvas" width="800px" height="500px"></canvas>
+            <div class="empty_footer">
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div class="content">
+            &copy;
+            <script type="text/javascript">
+                var a = ['and', 'mail'].join('y@g');
+                var b = ['<a ', 'href="mai', 'lto:zz', a, '.com?', 'subject=', 'JavaScript Filler', '"', '>Vynogradov<', '/a>'];
+                document.write(b.join(''));
+            </script>
+            2010
+        </div>
+    </div>
+    <script type="text/javascript">
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var img = new Image();
+        img.onload = init;
+        img.src = 'images/bomb.png';
+
+        var points = [];
+        var n = 30;
+        var width = 800;
+        var height = 500;
+        var v = 3 / n;
+
+        function rnd(n) {
+            return Math.round(n * Math.random());
+        }
+
+        function init() {
+            for (var i = 0; i < n; ++i)
+                points.push(new Point(rnd(width + img.width) - img.width, rnd(height + img.height) - img.height));
+
+            frame();
+        }
+
+        function frame() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (var i in points) {
+                var point = points[i];
+                point.x -= v * i;
+                point.y += v * i;
+
+                if (point.x < -img.width || point.y > height + img.height) {
+                    point.x = rnd(width + img.width) - img.width;
+                    point.y = -img.height;
+                }
+
+                ctx.drawImage(img, Math.round(point.x), Math.round(point.y));
+            }
+
+            window.setTimeout(frame, 50);
+        }
+
+        function Point(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+    </script>
+</body>
+</html>
