@@ -1,0 +1,48 @@
+
+#guess_table, #history_table
+{
+	empty-cells: show;
+}
+
+#guess_table td, #history_table td
+{
+	border: 1px solid #4278a7;
+	-moz-border-radius: 3px;
+	text-align: center;
+}
+
+#guess_table td.active
+{
+	background-color: #fffcfb;
+	border: 1px solid #a77842;
+	color: #805010;
+}
+
+.hint, #animator
+{
+	background-color: #f8fcff;
+}
+
+.used
+{
+	background-color: #fffef5;
+}
+
+.win
+{
+	background-color: #e0ffd8;
+}
+.loose
+{
+	background-color: #ffe0d8;
+}
+
+#controls_table
+{
+	width: 100%;
+}
+
+#controls_table td
+{
+	width: 33.3%;
+}

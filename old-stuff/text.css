@@ -1,0 +1,81 @@
+@import url("code.css");
+@import url("general.css");
+
+book
+{
+	display:	block;
+	font-size:	12pt;
+	font-family:	Sans-Serif;
+	padding:	2cm 2cm 1cm 2cm;
+}
+title
+{
+	display:	block;
+	font-family:	serif;
+	font-style:	italic;
+	padding-top:	1.5em;
+	padding-bottom:	0.5em;
+}
+book > title
+{
+	font-size: 2.5em;
+}
+part > title
+{
+	font-size: 2.2em;
+}
+chapter > title
+{
+	font-size: 1.9em;
+}
+section > title
+{
+	font-size: 1.6em;	
+}
+topic > title
+{
+	font-size: 1.3em;
+}
+author
+{
+	display: block;
+	font-family: Serif;
+	padding: .2em .2em 1em 0;
+}
+para
+{
+	display: block;
+	text-align: justify;
+	padding-bottom: 1em;
+	line-height: 1.5em;
+}
+
+phrase
+{
+	padding-right: 1ex;
+}
+
+para:first-letter
+{
+	padding-left: 2em;
+}
+
+part, chapter, topic
+{
+	display: block;
+}
+part
+{
+	padding: .1em .2em 1.5em .5em;
+	page-break-before: always;
+}
+
+chapter
+{
+	padding: .05em .1em 1.2em .3em;
+}
+
+topic
+{
+	padding: .03em .5em 1em .2em;
+}

@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>To Roman</title>
+  <meta name="author" content="Andriy Vynogradov" />
+</head>
+<style><!--
+body	{ background-color: menu; color: menuText; font-family: MONOSPACE; }
+.option	{ text-align: right; }
+input	{ font-family: monospace; }
+#rom	{ background-color: menu; color: menuText;}
+#fld	{ width: 10em; }
+--></style>
+<body>
+<fieldset id=fld>
+<legend id=legenda>Converter</legend>
+<table>
+	<tr>
+		<td class=option>Decimal:</td>
+		<td class=value>
+			<input maxlength=18 size=20 type=text id=dec name=decN tabindex=1 onkeyup="decup()">
+		</td>
+	</tr>
+	<tr>
+		<td class=option>Hexademical:</td>
+		<td class=value>
+			<input maxlength=15 size=20 type=text id=hex name=hexN onkeyup="hexup()">
+		</td>
+	</tr>
+	<tr>
+		<td class=option>Roman:</td>
+		<td class=value>
+			<input type=text size=20 id=rom readonly=true>
+		</td>
+	</tr>
+</table>
+</fieldset>
+<script type="text/javascript"><!--
+var hex = document.getElementById("hex");
+var dec = document.getElementById("dec");
+var rom = document.getElementById("rom");
+function onload()
+{
+	dec.focus();
+	dec.value = "";
+	hex.value = "";
+	rom.value = "";
+}
+function decup()
+{
+	var number = parseInt(dec.value,10);
+	if(isNaN(number))number = 0;
+	hex.value = number.toString(16).toUpperCase();
+	rom.value = toRoman(number);
+}
+function hexup()
+{
+	var number = parseInt(hex.value,16);
+	if(isNaN(number))number = 0;
+	dec.value = number.toString(10);
+	rom.value = toRoman(number);
+}
+function toRoman(num)
+{
+	var replica=new Array('I','V','X','L','C','D','M');
+	var len=String(num).length;
+	var romval='';
+	var decval='';
+	if(num<=0)	{
+		return 'less than 1';
+	}
+	else if(num>3999&&len>3||len>4)	{
+		return 'greater than 3999';
+	}
+	else	{
+	 	for(var i=0; i<len; i++)	{
+			num = String(num);
+			var ch=num.charAt(i);
+			switch(ch)	{
+				case "0":	break;
+				case "3":	romval+=replica[(len-i-1)*2];
+				case "2":	romval+=replica[(len-i-1)*2];
+				case "1":	romval+=replica[(len-i-1)*2];break;
+				case "4":	romval+=replica[(len-i-1)*2]+replica[(len-i-1)*2+1];break;
+				case "9":	romval+=replica[(len-i-1)*2]+replica[(len-i-1)*2+2];break;
+				default:	romval+=replica[(len-i-1)*2+1];
+			}
+			switch(ch){
+				case "8":	romval+=replica[(len-i-1)*2];
+				case "7":	romval+=replica[(len-i-1)*2];
+				case "6":	romval+=replica[(len-i-1)*2];break;
+			}
+		}
+		return romval;
+	}
+}
+--></script>
+</body>
+</html>

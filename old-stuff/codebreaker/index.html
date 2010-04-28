@@ -1,0 +1,244 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+		<title>Code breaker</title>
+		<link rel="stylesheet" href="./styles/general.css" type="text/css" /></link>
+		<link rel="stylesheet" href="./styles/menu.css" type="text/css" /></link>
+		<link rel="stylesheet" href="./styles/options.css" type="text/css" /></link>
+		<link rel="stylesheet" href="./styles/game.css" type="text/css" /></link>
+		<script language="javascript" src="./script/general.js"></script>
+		<script language="javascript" src="./script/lingua.js"></script>
+		<script language="javascript" src="./script/game.js"></script>
+		<script language="javascript" src="./script/menu.js"></script>
+		<script language="javascript" src="./script/selecting.js"></script>
+		<script language="javascript" src="./script/options.js"></script>
+		<script language="javascript" src="./script/guessing.js"></script>
+		<script language="javascript" src="./script/init.js"></script>
+	</head>
+	<body>
+		<center>
+			<table id="container">
+				<tr>
+					<td colspan="2" id="name_text">codebruker</td>
+				</tr>
+				<tr>
+					<td id="selectoid">
+						<!-- menu_table TABLE -->
+						<table class="menu_table">
+							<tr>
+								<td><a id="new_game" onmousedown="javascript:deselect()" onmouseover="javascript:mouse_over(this,1)" onmouseout="javascript:mouse_out(this,1)" onclick="javascript:select(this)"><table>
+											<tr>
+												<td id="new_game_text">N<u>e</u>w&nbsp;game ...</td>
+												<td class="shortcut">Shift+E</td>
+											</tr>
+										</table>
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td><a id="game" onmousedown="javascript:deselect()" onmouseover="javascript:mouse_over(this,1)" onmouseout="javascript:mouse_out(this,1)" onclick="javascript:select(this)"><table ID="Table1">
+											<tr>
+												<td id="game_text"><u>G</u>ame</td>
+												<td class="shortcut">Shift+G</td>
+											</tr>
+										</table>
+									</a>
+							</tr>
+							<tr>
+								<td><a id="options" onmousedown="javascript:deselect()" onmouseover="javascript:mouse_over(this,1)" onmouseout="javascript:mouse_out(this,1)" onclick="javascript:select(this)"><table ID="Table3">
+											<tr>
+												<td id="options_text"><u>O</u>ptions</td>
+												<td class="shortcut">Shift+O</td>
+											</tr>
+										</table>
+									</a>
+							</tr>
+							<tr>
+								<td><a id="statistics" onmousedown="javascript:deselect()" onmouseover="javascript:mouse_over(this,1)" onmouseout="javascript:mouse_out(this,1)" onclick="javascript:select(this)"><table ID="Table4">
+											<tr>
+												<td id="statistics_text"><u>S</u>tatistics</td>
+												<td class="shortcut">Shift+S</td>
+											</tr>
+										</table>
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<td><a id="help" onmousedown="javascript:deselect()" onmouseover="javascript:mouse_over(this,1)" onmouseout="javascript:mouse_out(this,1)" onclick="javascript:select(this)"><table ID="Table5">
+											<tr>
+												<td id="help_text"><u>H</u>elp</td>
+												<td class="shortcut">Shift+H</td>
+											</tr>
+										</table>
+									</a>
+							</tr>
+						</table>
+					</td>
+					<td id="valoid">
+						<div id="new_game_div" class="hidden">
+							<table>
+								<tr>
+									<td>
+										<fieldset>
+											<legend id="game_opt_text">Game options</legend>
+											<table class="inner_half">
+												<tr>
+													<td class="definition" id="tries_text">Tries:</td>
+													<td><input type="text" class="right" id="tries" maxlength="4" size="6" onchange='javascipt:change(this)' onmouseover="javascript:hint(this, 'help_status')" onmouseout="javascript:clear_hint('help_status')" /></td>
+												</tr>
+												<tr>
+													<td class="definition" id="symbols_text">Symbols:</td>
+													<td><input type="text" class="right" id="symbols" maxlength="4" size="6" onchange='javascipt:change(this)' onmouseover="javascript:hint(this, 'help_status')" onmouseout="javascript:clear_hint('help_status')" /></td>
+												</tr>
+												<tr>
+													<td class="definition" id="lenght_text">Code lenght:</td>
+													<td><input type="text" class="right" id="lenght" maxlength="4" size="6" onchange='javascipt:change(this)' onmouseover="javascript:hint(this, 'help_status')" onmouseout="javascript:clear_hint('help_status')" /></td>
+												</tr>
+											</table>
+										</fieldset>
+									</td>
+									<td>
+										<fieldset>
+											<legend id="other_opt_text">Other options</legend>
+											<table class="inner_half">
+												<tr>
+													<td class="definition" id="nickname_text">Nickname:</td>
+													<td><input type="text" class='left' id="nickname" maxlength="16" onchange='javascipt:change_nick(this)' onmouseover="javascript:hint(this, 'help_status')" onmouseout="javascript:clear_hint('help_status')" />
+													</td>
+												</tr>
+												<tr>
+													<td colspan="2" class="center"><button id="start" onmouseover="javascript:hint(this, 'help_status')" onmouseout="javascript:clear_hint('help_status')" onclick="javascript:new_game()">Start</button></td>
+												</tr>
+												<tr>
+													<td colspan="2" class="center"><button id="reset" onmouseover="javascript:hint(this, 'help_status')" onclick="javascript:reset();" onmouseout="javascript:clear_hint('help_status')">Reset to defaults</button></td>
+												</tr>
+											</table>
+										</fieldset>
+									</td>
+								</tr>
+							</table>
+							<fieldset>
+								<legend id="help_opt_text">Help</legend>
+								<span id="help_status"></span>
+							</fieldset>
+						</div>
+						<div id="game_div">
+							<fieldset>
+								<legend id="guess_gm_text">Your guess</legend>
+								<span id="guess_table"></span>
+							</fieldset>
+							<fieldset>
+								<legend id="history_gm_text">History</legend>
+								<span id="history_table"></span>
+							</fieldset>
+							<fieldset>
+								<legend id="controls_gm_text">Controls</legend>
+								<table id="controls_table">
+									<tr>
+										<td id='tries_left_text'>Tries left:</td>
+										<td id='tries_left'></td>
+										<td><button id="end_game" onclick="javascript:loose_game()">End Game</button></td>
+									</tr>
+								</table>
+							</fieldset>
+						</div>
+						<div id="options_div">
+							<fieldset>
+								<legend id="language_text">Language</legend>
+								<span id='lang_selector' class='inner'></span>
+							</fieldset>
+							<fieldset>
+								<legend id="hud_text">Heads Up Display</legend>
+								<table class="inner">
+									<tr>
+										<td width="20px"><input type="checkbox" id="anim_cb" class="checkit"></td>
+										<td id="anim_text">Animation</td>
+									</tr>
+									<tr>
+										<td width="20px"><input type="checkbox" id="cook_cb" class="checkit" checked='true'></td>
+										<td id="cook_text">Use cookies</td>
+									</tr>
+								</table>
+							</fieldset>
+						</div>
+						<div id="statistics_div"><fieldset>
+								<legend id="game_info_text">Game information</legend>
+								<table class="inner">
+									<tr>
+										<td class="definition" id="tries_nfo_text">Tries:</td>
+										<td id="tries2"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="symbols_nfo_text">Symbols:</td>
+										<td id="symbols2"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="lenght_nfo_text">Code lenght:</td>
+										<td id="lenght2"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="combinations_nfo_text">Total combinations:</td>
+										<td id="combinations"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="progress_nfo_text">Average progress neded:</td>
+										<td id="progress"></td>
+									</tr>
+								</table>
+							</fieldset>
+							<fieldset>
+								<legend id="browser_info_text">Browser information</legend>
+								<table class="inner" ID="Table2">
+									<tr>
+										<td class="definition" id="appCodeName_text">Application code:</td>
+										<td id="appCodeName"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="appName_text">Application:</td>
+										<td id="appName"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="userAgent_text">Browser:</td>
+										<td id="userAgent"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="cookieEnabled_text">Use cookies</td>
+										<td id="cookieEnabled"></td>
+									</tr>
+									<tr>
+										<td class="definition" id="install_date_text">Installation date:</td>
+										<td id="install_date"></td>
+									</tr>
+								</table>
+							</fieldset></div>
+						<div id="help_div"><span id='about_text'>
+								<h1>Help for Codebreaker</h1>
+								<p>Codebreaker is one of those good old mindbenders we have all played since 
+									childhood. It had many names and variations an it is one of them.</p>
+								<h2>Rules</h2>
+								<p>Comupter selects a secret combination of symbols. It is composed from a number 
+									os symbols you can select. The code might me even 'AAAA' because multiple 
+									repetitions of the same letter are alowed.</p>
+								<h4>Goal</h4>
+								<p>You task is to find the code. You take limited number of guesses. The sooner you 
+									find your code the better. When you use all of your tries you lose. Each time 
+									you try to guess the code, computer gives you a hint about its code.</p>
+								<h4>Hints</h4>
+								<p>The hint is based on your guess is composed of two numbers. First number tell 
+									how many letters in your guess are on their respective positions. Second number 
+									tells how many symbols are misplased.</p>
+								<p>This means that if you get 0:0 – there are no such symbols in the code at all. 
+									That combination is very useful by the way. If you are guessing acode from 4 
+									symbols the hint 4:0 means victory.</p>
+							</span>
+						</div>
+						<div id="debug"></div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" id="copyright_text">&copy; A.Vynogradov 2005.</td>
+				</tr>
+			</table>
+		</center>
+	</body>
+</html>

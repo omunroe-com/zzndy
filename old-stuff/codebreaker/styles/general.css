@@ -1,0 +1,70 @@
+
+*
+{
+	background-color: transparent;
+	color: #105080;
+	font-family: tahoma, sans-serif;
+	font-size: 8pt;
+	letter-spacing: 1px;
+}
+
+p
+{
+	text-align: justify;
+	padding-left: 1em;
+}
+
+#container
+{
+	width: 800px;
+	height: 100%;
+}
+
+#name_text
+{
+	background-image: url("../images/title.png");
+	background-repeat: no-repeat;
+	height: 64px;
+	padding-left: 31px;
+	font-size: 18pt;
+}
+
+#selectoid
+{
+	width: 200px;
+	padding: 20px;
+	vertical-align: top;
+}
+
+#valoid
+{
+	width: 600px;
+	padding: 20px;
+	background-image: url("../images/border.png");
+	background-repeat: no-repeat;
+}
+
+#valoid div
+{
+	width: 520px;
+	position: absolute;
+	top: 94px;
+	visibility: hidden;
+}
+
+#valoid div.hidden
+{
+	visibility: hidden;
+}
+
+#valoid div.visible
+{
+	visibility: visible;
+}
+
+#copyright_text
+{
+	font-size: 6pt;
+	text-align: right;	
+	height: 1em;
+}

@@ -1,0 +1,37 @@
+code	{
+	white-space: pre;
+	font-size: 10pt;
+	font-family: Monospace;
+}
+important, code error
+{
+	color: Red;
+}
+code keyword
+{
+	color: navy;
+}
+code comment
+{
+	color: Gray;
+}
+code string
+{
+	color: Green;
+}
+code int
+{
+	color: teal;
+}
+code float
+{
+	color: purple;
+}
+code char
+{
+	color: olive;
+}
+code breakpoint
+{
+	border: 1px solid maroon;
+}

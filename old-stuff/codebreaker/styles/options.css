@@ -1,0 +1,59 @@
+
+fieldset
+{
+	border: 1px solid #4278a7;
+	-moz-border-radius: 3px;
+	padding: 5px 20px;
+	margin: 5px;
+	text-align: center;
+}
+
+legend
+{
+	margin: 5px 0;
+}
+
+.center
+{
+	text-align: center;
+}
+
+button
+{
+	border: 2px outset #4278a7;
+	width: 128px;
+}
+
+#help_status
+{
+	display: block;
+	height: 2em;
+	vertical-allign: middle;
+}
+
+.inner
+{
+	width: 500px;
+}
+.inner_half
+{
+	width: 200px;
+	height: 70px;
+}
+
+.inner .definition
+{
+	width: 30%;
+}
+
+input
+{
+	background-color: white;
+	border: 1px solid #4278a7;
+	padding: 2px;
+}
+
+input.right
+{
+	text-align: right;
+}

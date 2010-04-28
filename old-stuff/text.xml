@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet href="text.css" type="text/css" ?>
+<book>
+	<title>XML Demonstration of formatting.</title>
+	<author>A.Vynogradov (using some other resources)</author>
+	<para>
+		<phrase>XML is a great tool for creating highly sructured data.</phrase>
+		<phrase>This format offers great possibilities for structuring, controlling, transforming and transferring data.</phrase>
+		<phrase>Also can it be used for designing of decorated documents such as this.</phrase>
+		<phrase>XML documment is an tree structure.</phrase>
+		<phrase>In such form it is easy to process and manage data.</phrase>
+	</para>
+	<para>
+		<phrase>The <important>XML</important> is a standard proposed and maintained by <i>World Wide Web Consorsium</i>.</phrase>
+		<phrase>the main advantage of the XML is a platform independance.</phrase>
+		<phrase>XML documments could be easily created using any of the text edirs widely avalaible.</phrase>
+		<phrase>Version and encoding information is attached to the documment so it can be parsed under any operating system.</phrase>
+		<phrase>The XML is easy to read by human using <important>
+				<b>any</b>
+			</important> text editor.</phrase>
+		<phrase>Also it is easy to parse such files and to validate them.</phrase>
+	</para>
+	<part>
+		<title>Part 1. Microsoft Help (the selected)</title>
+		<chapter>
+			<title>Copyright</title>
+			<para>
+				<phrase>Information in this document, including URL and other Internet Web site 
+references, is subject to change without notice.</phrase>
+				<phrase>Unless otherwise noted, the 
+example companies, organizations, products, domain names, e-mail addresses, 
+logos, people, places and events depicted herein are fictitious, and no 
+association with any real company, organization, product, domain name, e-mail 
+address, logo, person, place or event is intended or should be inferred.</phrase>
+				<phrase>
+Complying with all applicable copyright laws is the responsibility of the user.</phrase>
+				<phrase>
+Without limiting the rights under copyright, no part of this document may be 
+reproduced, stored in or introduced into a retrieval system, or transmitted in 
+any form or by any means (electronic, mechanical, photocopying, recording, or 
+otherwise), or for any purpose, without the express written permission of 
+Microsoft Corporation.</phrase>
+			</para>
+			<para>
+				<phrase>Microsoft may have patents, patent applications, trademarks, copyrights, or 
+other intellectual property rights covering subject matter in this document.</phrase>
+				<phrase>
+Except as expressly provided in any written license agreement from Microsoft, 
+the furnishing of this document does not give you any license to these patents, 
+trademarks, copyrights, or other intellectual property.</phrase>
+			</para>
+			<para>
+				<phrase>© 1987-2001 Microsoft Corporation.</phrase>
+				<phrase>All rights reserved.</phrase>
+			</para>
+			<para>
+				<phrase>Microsoft, MS-DOS, Windows, Windows NT, Microsoft Press, Active 
+Accessibility, Active Channel, Active Client, Active Desktop, Active Directory, 
+ActiveMovie, Active Platform, ActiveStore, ActiveSync, ActiveX, Authenticode, 
+BackOffice, BizTalk, C#, Chromeffects, ClearType, CodeView, DataTips, Developer 
+Studio, Direct3D, DirectAnimation, DirectDraw, DirectInput, DirectMusic, 
+DirectPlay, DirectShow, DirectSound, DirectX, DirectXJ, FoxPro, the Fox head 
+design, FrontPage, IntelliMouse, IntelliSense, J/Direct, JScript, Liquid Motion, 
+Microsoft QuickBasic, Mobile Explorer, MSDN, MSN, Outlook, PivotChart, 
+PivotTable, PowerPoint, QuickAssembler, Rushmore, SourceSafe, Visual Basic, the 
+Visual Basic logo, Visual C++, Visual FoxPro, Visual InterDev, Visual J++, 
+Visual SourceSafe, Visual Studio, the Visual Studio logo, the Visual Tools logo, 
+Verdana, Win32, Win32s, and Win64 are either registered trademarks or trademarks 
+of Microsoft Corporation in the United States and/or other countries.</phrase>
+			</para>
+			<para>
+				<phrase>The names of actual companies and products mentioned herein may be the 
+trademarks of their respective owners.</phrase>
+			</para>
+		</chapter>
+		<chapter>
+			<title>Multithreading with C++ and MFC</title>
+			<para>
+				<phrase>A "thread" is a path of execution within a process.</phrase>
+				<phrase>When you start Notepad, 
+the operating system creates a process and begins executing the primary thread 
+of that process.</phrase>
+				<phrase>When this thread terminates, so does the process.</phrase>
+				<phrase>This primary 
+thread is supplied to the operating system by the startup code in the form of a 
+function address.</phrase>
+				<phrase>Usually, it is the address of the <b>main</b> or 
+<b>WinMain</b> function that is supplied.</phrase>
+			</para>
+			<section>
+				<title>Section 1</title>
+				<para>
+					<phrase>You can create additional threads in your application if you wish.</phrase>
+					<phrase>You may 
+want to do this to handle background or maintenance tasks when you don't want 
+the user to wait for them to complete.</phrase>
+					<phrase>All threads in MFC applications are 
+represented by <pre>CWinThread</pre> objects.</phrase>
+					<phrase>In most situations, 
+you don't even have to explicitly create these objects; instead call the 
+framework helper function <pre>AfxBeginThread</pre>, which creates the 
+<B>CWinThread</B> object for you.</phrase>
+				</para>
+				<para>
+					<phrase>MFC distinguishes two types of threads: user-interface threads and worker 
+threads.</phrase>
+					<phrase>User-interface threads are commonly used to handle user input and 
+respond to events and messages generated by the user.</phrase>
+					<phrase>Worker threads are 
+commonly used to complete tasks, such as recalculation, that do not require user 
+input.</phrase>
+					<phrase>The Win32 API does not distinguish between types of threads; it just 
+needs to know the thread's starting address so it can begin to execute the 
+thread.</phrase>
+					<phrase>MFC handles user-interface threads specially by supplying a message pump 
+for events in the user interface.</phrase>
+					<phrase><B>CWinApp</B> is an example of a 
+user-interface thread object, as it derives from <B>CWinThread</B> and handles 
+events and messages generated by the user.</phrase>
+				</para>
+			</section>
+			<section>
+				<title>Section 2</title>
+				<para>
+					<phrase>Special attention should be given to situations where more than one thread 
+may require access to the same object.</phrase>
+					<phrase>The article <A href="_core_multithreading.3a_.programming_tips.htm">Multithreading: Programming 
+Tips</A> describes techniques you can use to get around problems that may arise 
+in these situations.</phrase>
+					<phrase>The article <A href="_core_multithreading.3a_.how_to_use_the_synchronization_classes.htm">Multithreading: 
+How to Use the Synchronization Classes</A> describes how to use the classes that 
+are available to synchronize access from multiple threads to a single 
+object.</phrase>
+				</para>
+				<para>
+					<phrase>Writing and debugging multithreaded programming is inherently a complicated 
+and tricky undertaking, as you must ensure that objects are not accessed by more 
+than one thread at a time.</phrase>
+					<phrase>The articles in the Multithreading group do not teach 
+the basics of multithreaded programming, only how to use MFC in your 
+multithreaded program.</phrase>
+					<phrase>The multithreaded MFC samples included in Visual C++ 
+illustrate a few multithreaded Adding Functionality and Win32 APIs not 
+encompassed by MFC, but are only intended to be a starting point.</phrase>
+				</para>
+				<topic>
+					<title>Multithreading: Terminating Threads</title>
+					<para>
+						<phrase>
+				  <b>Normal Thread Termination :</b>
+For a worker thread, normal thread termination is simple: Exit the controlling function and return a value that signifies the reason for termination.</phrase>
+						<phrase>You can use either the AfxEndThread function or a return statement.</phrase>
+						<phrase>Typically, 0 signifies successful completion, but that is up to you.</phrase>
+						<phrase>For a user-interface thread, the process is just as simple: from within the user-interface thread, call PostQuitMessage in the Platform SDK.</phrase>
+						<phrase>The only parameter that PostQuitMessage takes is the exit code of the thread.</phrase>
+						<phrase>As for worker threads, 0 typically signifies successful completion.</phrase>
+					</para>
+					<para>
+						<phrase><b>Premature Thread Termination :</b>
+Terminating a thread prematurely is almost as simple: Call <pre>AfxEndThread</pre> from within the thread.</phrase>
+						<phrase>Pass the desired exit code as the only parameter.</phrase>
+						<phrase>This stops execution of the thread, deallocates the thread's stack, detaches all DLLs attached to the thread, and deletes the thread object from memory.</phrase>
+						<phrase><pre>AfxEndThread</pre> must be called from within the thread to be terminated.</phrase>
+						<phrase>If you want to terminate a thread from another thread, you must set up a communication method between the two threads.</phrase>
+					</para>
+				</topic>
+				<topic>
+					<title>Sample application</title>
+					
+<code><keyword>int</keyword> main(<keyword>int</keyword> argc, <keyword>char</keyword>* argv)
+	{
+		<keyword>const int</keyword> counter;		<comment>/* this is normal but wierd
+					  		declaration of a variable */</comment>
+		<keyword>int</keyword> ice9 = <int>10</int>;			<comment>// normal variable</comment>
+		<keyword>int</keyword> <error>10ton</error> = <float>20.3</float>;		<comment>// errorneous name</comment>
+		cout &lt;&lt; <string>"Hello, World..."</string> &lt;&lt; <char>'\n'</char> &lt;&lt; endl;
+<breakpoint>		cout &lt;&lt; <string>"Break point here"</string> &lt;&lt; endl;				</breakpoint>
+		<keyword>return</keyword> 0;			<comment>/* this is the way application should 
+							normally terminate*/</comment>
+	}
+</code>
+
+				</topic>
+			</section>
+		</chapter>
+	</part>
+	<part>
+		<title>Part 2. <important>Multiple</important> different topics</title>
+		<chapter>
+			<title>XForms - The Next Generation of Web Forms</title>
+			<para>
+				<phrase>
+The <b>XForms User Interface</b> provides a standard set of
+visual controls that are targeted toward replacing today's XHTML form
+controls.</phrase>
+				<phrase>These form controls are directly usable inside XHTML and other XML
+documents, like SVG.</phrase>
+				<phrase>Other groups, such as the Voice Browser Working Group,
+may also independently develop user interface components for XForms.</phrase>
+			</para>
+			<para>
+				<phrase>An important concept in XForms is that forms collect data, which is
+expressed as XML <b>instance data</b>.</phrase>
+				<phrase>Among other duties, the
+XForms Model describes the structure of the instance data.</phrase>
+				<phrase>This is important,
+since like XML, forms represent a structured interchange of data.</phrase>
+				<phrase>Workflow,
+auto-fill, and pre-fill form applications are supported through the use of
+instance data.</phrase>
+			</para>
+			<para>
+				<phrase>Finally, there needs to be a channel for instance data to flow to and from
+the XForms Processor.</phrase>
+				<phrase>For this, the <b>XForms Submit Protocol</b>
+defines how XForms send and receive data, including the ability to suspend
+and resume the completion of a form.
+</phrase>
+			</para>
+		</chapter>
+	</part>
+</book>

@@ -1,0 +1,210 @@
+<html>
+<head>
+<title>tabler</title>
+<style>
+table	{
+	margin: 2em;
+}
+
+.simplex	{
+	border-collapse: collapse;
+}
+.simplex .key	{
+	font-weight: bold;
+	border-right: 1px solid black;
+	padding: 0.2em 1em 0.2em 0.5em;
+	text-align: right;
+	font-family: monospace;
+}
+.simplex .value	{
+	padding: 0.2em 0.5em 0.2em 1em;
+	text-align: left;
+	font-family: monospace;
+}
+.simplex .head .value, .simplex .head .key	{
+	font-weight: bold;
+	border-bottom: 1px solid black;
+}
+.simplex .super	{
+	font-family: sans-serif;
+	font-size: smaller;
+	text-align: center;
+}
+.bumpy	{
+	font: menu;
+	border: 1px solid menu;
+}
+.bumpy .key	{
+	border-width: 1px;
+	border-style: solid;
+	border-color: threedlightshadow threedshadow threeddarkshadow threedlightshadow;
+	background-color: threedface;
+	padding: 1px 4px;
+}
+.bumpy .value	{
+	font: menu;
+	border: 1px solid menu;
+	padding: 1px 4px;
+}
+.bumpy .head .value, .bumpy .head .key	{
+	font-weight: bold;
+	border-width: 1px;
+	border-style: solid;
+	border-color: threedlightshadow threedshadow threeddarkshadow threedlightshadow;
+	background-color: threedface;
+}
+.bumpy .super	{
+	font-size: smaller;
+	text-align: center;
+}
+
+.grad	{
+	border-collapse: collapse;
+	border-color: #F0F9FF; 
+}
+.grad .key, .grad .value {
+	background: url("gradient.png");
+	height: 24px;
+	font-size: 8pt;
+	font-family: sans-serif;
+	border-color: #F0F9FF;
+}
+.grad .key	{
+	font-weight: bold;
+}
+
+
+.grad2	{
+	border-collapse: collapse;
+	border-color: #F0F9FF; 
+}
+.grad2 .key	{
+	background: url("rowa.png");
+	height: 32px;
+	font-family: sans-serif;
+	font-size: 8pt;
+	font-weight: bold;
+}
+.grad2 .rowb	{
+	background: url("rowb.png");
+	height: 32px;
+	width: 16px;
+}
+.grad2 .value	{
+	background: url("rowc.png");
+	height: 32px;
+	font-family: sans-serif;
+	font-size: 8pt;
+	padding: 4px;
+}
+</style>
+</head>
+<body>
+<center>
+<table align=center class="simplex">
+	<tr class="super">
+		<td colspan="3">Table 1. General room parameters.</td>
+	</tr>
+	<tr class="head">
+		<td class="key">param</td>
+		<td class="value">value</td>
+		<td class="value">dimension</td>
+	</tr>
+	<tr>
+		<td class="key">temperature</td>
+		<td class="value">0.07</td>
+		<td class="value"><sup>o</sup>C</td>
+	</tr>
+	<tr>
+		<td class="key">humidity</td>
+		<td class="value">60.56</td>
+		<td class="value">%</td>
+	</tr>
+	<tr>
+		<td class="key">luminoucity</td>
+		<td class="value">1234.56</td>
+		<td class="value">Lum</td>
+	</tr>
+</table>
+<table align=center class="bumpy">
+	<tr class="super">
+		<td colspan="3">Table 1. General room parameters.</td>
+	</tr>
+	<tr class="head">
+		<td class="key">param</td>
+		<td class="value">value</td>
+		<td class="value">dimension</td>
+	</tr>
+	<tr>
+		<td class="key">temperature</td>
+		<td class="value">0.07</td>
+		<td class="value"><sup>o</sup>C</td>
+	</tr>
+	<tr>
+		<td class="key">humidity</td>
+		<td class="value">60.56</td>
+		<td class="value">%</td>
+	</tr>
+	<tr>
+		<td class="key">luminoucity</td>
+		<td class="value">1234.56</td>
+		<td class="value">Lum</td>
+	</tr>
+</table>
+<table align=center class="grad">
+	<tr class="super">
+		<td colspan="3">Table 1. General room parameters.</td>
+	</tr>
+	<tr class="head">
+		<td class="key">param</td>
+		<td class="value">value</td>
+		<td class="value">dimension</td>
+	</tr>
+	<tr>
+		<td class="key">temperature</td>
+		<td class="value">0.07</td>
+		<td class="value"><sup>o</sup>C</td>
+	</tr>
+	<tr>
+		<td class="key">humidity</td>
+		<td class="value">60.56</td>
+		<td class="value">%</td>
+	</tr>
+	<tr>
+		<td class="key">luminoucity</td>
+		<td class="value">1234.56</td>
+		<td class="value">Lum</td>
+	</tr>
+</table>
+<table align=center class="grad2">
+	<tr class="super">
+		<td colspan="3">Table 1. General room parameters.</td>
+	</tr>
+	<tr class="head">
+		<td class="key">param</td>
+		<td class="rowb">:</td>
+		<td class="value">value</td>
+		<td class="value">dimension</td>
+	</tr>
+	<tr>
+		<td class="key">temperature</td>
+		<td class="rowb">:</td>
+		<td class="value">0.07</td>
+		<td class="value"><sup>o</sup>C</td>
+	</tr>
+	<tr>
+		<td class="key">humidity</td>
+		<td class="rowb">:</td>
+		<td class="value">60.56</td>
+		<td class="value">%</td>
+	</tr>
+	<tr>
+		<td class="key">luminoucity</td>
+		<td class="rowb">:</td>
+		<td class="value">1234.56</td>
+		<td class="value">Lum</td>
+	</tr>
+</table>
+</center>
+</body>
+</html>

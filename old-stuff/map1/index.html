@@ -1,0 +1,50 @@
+<html>
+<head>
+	<meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5">
+<meta name=vs_showGrid content="True">
+<title>hints</title>
+	<link rel="next" href="codebreacker.html" \>
+</head>
+<body>
+	<div id=body></div>
+</body>
+
+<script language="javascript"><!--
+
+var wid = 24;
+var hei = 16;
+var res = 10;
+var num = 3;
+var pre = 'ln.';
+var ext = '.gif';
+
+function random(max)
+{
+	return Math.floor(Math.random()*max);
+}
+
+window.onload = new function init()
+{
+	var text = '<table cellpadding=0 cellspacing=0>';
+	for(var i=0; i<hei; ++i)	{
+		text += '<tr>';
+		for(var j=0; j<wid; ++j)	{
+			number = random(num);
+			text += '<td><img id="im_'+i+'_'+j+'"src="'+pre+((number<10)?'0':'')+number+ext+'" /></td>';
+		}
+		text += '</tr>';
+	}
+	document.getElementById('body').innerHTML = text;
+	window.setInterval('tick()', 100);
+}
+function tick()
+{
+	for(var x=0; x<res; ++x)	{
+		i = random(hei);
+		j = random(wid);
+		number = random(num);
+		document.getElementById('im_'+i+'_'+j).src = pre+((number<10)?'0':'')+number+ext;
+	}
+}
+--></script>
+</html>

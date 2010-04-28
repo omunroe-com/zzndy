@@ -1,0 +1,69 @@
+
+.menu_table
+{
+	width: 100%;
+}
+
+.shortcut
+{
+	text-align: right;
+	font-size: smaller;
+}
+
+.menu_table a
+{
+	display: block;
+	border: 1px solid white;
+	-moz-border-radius: 3px;
+	padding: 4px;
+	margin: 0 0 1em 0;
+}
+
+.menu_table a.grayed *
+{
+	color: Silver;
+}
+
+.menu_table a.selected
+{
+	border: 1px solid #4278a7;
+	background-color: #eaf9ff;
+}
+
+.menu_table a.selected *
+{
+	background-color: #eaf9ff;
+}
+
+.menu_table a.over
+{
+	border: 1px solid #e0f0ff;
+	background-color: #f8fcff;
+}
+
+.menu_table a.over *
+{
+	background-color: #f8fcff;
+}
+
+.menu_table a.overgrayed
+{
+	border: 1px solid #e6e6e6;
+	background-color: #fafafa;
+}
+
+.menu_table a.overgrayed *
+{
+	background-color: #fafafa;
+	color: Silver;
+}
+
+.menu_table a table
+{
+	width: 180px;
+}
+.menu_table a table.lang
+{
+	width: 98%;
+}
+
