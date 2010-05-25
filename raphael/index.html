@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Raphael</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+
+    <script type="text/javascript" src="script/raphael.js"></script>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+	<h1>Raphael</h1>
+    </div>
+
+    <div class="content">
+
+            <div id="canvas" width="800px" height="500px"></div>
+
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy;
+        <script type="text/javascript">
+            var a = ['and', 'mail'].join('y@g');
+            var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
+            document.write(b.join(''));
+        </script>
+        2009
+    </div>
+</div>
+<script type="text/javascript">
+	var w = 800, h = 500;
+	var paper = Raphael(document.getElementById('canvas'), w, h);
+	var ellipse = paper.ellipse(w/2, h/2, w/7, h/7);
+	ellipse.attr('stroke', '#fefefe');
+
+	ellipse.hover(function(){this.attr({'fill': 'red'});},
+		function(){this.attr({'fill': 'transparent'});});
+
+	var text = paper.text(w/2 - w/14, h/2, "Hello, Raphael.js");
+	text.scale(5,5);
+	text.attr({'fill': 'red'});
+</script>
+</body>
+</html>
