@@ -16,12 +16,12 @@
 <body>
 <div id="container">
     <div class="content header">
-	<h1>Shot</h1>
+        <h1>Shot</h1>
     </div>
 
     <div class="content">
 
-            <canvas id="canvas" width="900px" height="600px"></canvas>
+        <canvas id="canvas" width="900px" height="600px"></canvas>
 
         <div class="empty_footer">
         </div>
@@ -39,16 +39,19 @@
     </div>
 </div>
 <script type="text/javascript">
-	// Provide testing ground for different kind of shooting agents
+    // Provide testing ground for different kind of shooting agents
 
-	var canvas = document.getElementById('canvas');
-	var ctx = canvas.getContext('2d');
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#eee';
+    ctx.fillStyle = '#eee';
+
     var fps = 24;
-    var frameDelay = 1000/fps;
+    var frameDelay = 1000 / fps;
 
     var view = new ShooterView(ctx, 900, 600);
 
-    var pos = new Point(0,0);
+    var pos = new Point(0, 0);
     var dir = 0; // radians - moving north.
     var mass = 5;
     var speed = 5;
@@ -57,22 +60,25 @@
     var damage = 10;
     var distance = 100;
     var pjSpeed = 20;
-          
+
     var rate = 5;
     var clip = 10;
     var reload = 500;
 
-    var vehicle = new Vehicle(pos, dir, mass, speed);
+    var vehicle = new Vehicle(pos, Math.PI / 4, mass, speed);
     var projectile = new Projectile(damage, speed);
     var gun = new Gun(projectile, distance, rate, clip, reload);
     var sample = new Shooter(vehicle, hp, 1, gun);
 
     var numShooters = 10;
+    var shooters = [];
+    while (shooters.length < numShooters)
+        shooters.push(sample.clone());
+    
     var ctrl = new ShooterController(view, shooters, 900, 600);
 
-    function frame()
-    {
-        ctrl.frame(frameDelay);
+    function frame() {
+        ctrl.frame();
 
         window.setTimeout(frame, frameDelay);
     }

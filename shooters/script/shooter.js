@@ -12,3 +12,8 @@ function Shooter(vehicle, hp, numgun, gun)
     this.numgun = numgun;
     this.gun = gun;
 }
+
+Shooter.prototype.clone = function()
+{
+    return new Shooter(this.vehicle.clone(), this.hp, this.numgun, this.gun.clone());
+};

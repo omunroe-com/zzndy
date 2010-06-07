@@ -8,6 +8,11 @@ function Projectile(damage, speed) {
     this.speed = speed;
 }
 
+Projectile.prototype.clone = function()
+{
+    return new Projectile(this.damage, this.speed);
+};
+
 /**
  * Create new gun
  * @param {Projectile} projectile - type of projectile
@@ -23,3 +28,8 @@ function Gun(projectile, distance, rate, clip, reload) {
     this.clip = clip;
     this.reload = reload;
 }
+
+Gun.prototype.clone = function()
+{
+    return new Gun(this.projectile.clone(), this.distance, this.rate, this.clip, this.reload); 
+};
