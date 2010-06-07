@@ -17,11 +17,11 @@
  */
 (function() {
 
-    var C, G;
+    var C, G, ctx;
 
     if ( !('CanvasRenderingContext2D' in this) ) // WebKit
     {
-        var ctx = document.createElement('canvas').getContext('2d');
+        ctx = document.createElement('canvas').getContext('2d');
         C = ctx.__proto__;
         G = ctx.createLinearGradient(0, 0, 0, 0).__proto__;
         delete ctx;
@@ -33,12 +33,13 @@
         if ( 'CanvasGradient' in this )
             G = CanvasGradient.prototype;
         else {
-            var ctx = document.createElement('canvas').getContext('2d');
+            ctx = document.createElement('canvas').getContext('2d');
             G = ctx.createLinearGradient(0, 0, 0, 0).__proto__;
             delete ctx;
         }
     }
 
+    var level = 0;
     // Make canvas' methods chainable
     ('restore,rotate,save,scale,translate,arc,arcTo,bezierCurveTo,beginPath,clip,closePath,lineTo,moveTo,quadraticCurveTo,rect,stroke,strokeRect,clearRect,fill,fillRect,clip,drawImage,drawImageFromRect')
             .split(',').forEach(function( method ) {
@@ -61,15 +62,14 @@
     {
         return this.beginPath()
                 .arc(x, y, r, 0, Math.PI * 2, true)
-                .closePath()
                 .stroke();
     };
 
     C.fillCircle = function( x, y, r )
     {
+        console.log('circle');
         return this.beginPath()
-                .arc(x, y, r, 0, Math.PI * 2, true)
-                .closePath()
+                .arc(x, y, r, 0, Math.PI * 2, false)
                 .fill();
     };
 

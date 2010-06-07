@@ -18,7 +18,7 @@
 
     <div class="content">
 
-            <canvas id="canvas" width="800px" height="500px"></canvas>
+            <canvas id="canvas" width="900px" height="600px"></canvas>
 
         <div class="empty_footer">
         </div>
@@ -32,35 +32,50 @@
             var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
             document.write(b.join(''));
         </script>
-        2009
+        2009-2010
     </div>
 </div>
 <script type="text/javascript">
 	// Provide testing ground for different kind of shooting agents
-	// with genetic agotirhm
 
 	var canvas = document.getElementById('canvas');
 	var ctx = canvas.getContext('2d');
+    var fps = 24;
+    var frameDelay = 1000/fps;
 
-	var view = new ShootersView(ctx, 800, 500);
+    var view = new ShooterView(ctx, 900, 600);
 
-	var numShooters = 14;
-	//function Shooter(pos, mov, hp, rate, dam, speed, dist, clip, reload, spread)
-	var deflt = new Shooter(new Point(0, 0), new Vector(2, 0), 100, 700, 20, 10, 500, 20, 3000, 1);
-	var arbiter = new ShooterArbiter(deflt, numShooters);
+    var pos = new Point(0,0);
+    var dir = 0; // radians - moving north.
+    var mass = 5;
+    var speed = 5;
 
-	var ctrl = new ShootersController(view, arbiter);
+    var hp = 20;
+    var damage = 10;
+    var distance = 100;
+    var pjSpeed = 20;
+          
+    var rate = 5;
+    var clip = 10;
+    var reload = 500;
 
+    var vehicle = new Vehicle(pos, dir, mass, speed);
+    var projectile = new Projectile(damage, speed);
+    var gun = new Gun(projectile, distance, rate, clip, reload);
+    var sample = new Shooter(vehicle, hp, 1, gun);
 
-	function frame()
-	{
-		ctrl.frame();
-		ctrl.draw();
-		
-		window.setTimeout(frame, 50);
-	}
+    var numShooters = 10;
+    var ctrl = new ShooterController(view, shooters, 900, 600);
 
-	frame();
+    function frame()
+    {
+        ctrl.frame(frameDelay);
+
+        window.setTimeout(frame, frameDelay);
+    }
+
+    frame();
+
 </script>
 </body>
 </html>
