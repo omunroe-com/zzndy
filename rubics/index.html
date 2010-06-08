@@ -1,0 +1,140 @@
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+    <style type="text/css">
+        .ruleset {
+            -moz-column-count: 2;
+            float: left;
+            margin-bottom: 1em;
+        }
+
+        .ruleset1
+        {
+            clear: both;
+        }
+
+        object {
+            padding: .1em;
+        }
+
+        .rule {
+            padding-right: 2em;
+        }
+    </style>
+</head>
+<body>
+<script type="text/javascript">
+    var path = 'files/';
+    var twoMapping = {
+        'rd': 'right-down'
+        , 'ru': 'right-up'
+        , 'bl': 'bottom-left'
+        , 'br': 'bottom-right'
+        , 'cw': 'front-cw'
+        , 'cc': 'front-ccw'
+        , 'tl': 'top-left'
+        , 'tr': 'top-right'
+        , 'dl': 'bottom-left'
+        , 'dr': 'bottom-right'
+    };
+
+    var threeMapping = {
+        'rd': 'right-down-3x3'
+        , 'ru': 'right-up-3x3'
+        ,'ld': 'left-down-3x3'
+        , 'lu': 'left-up-3x3'
+        , 'bl': 'bottom-left-3x3'
+        , 'br': 'bottom-right-3x3'
+        , 'cw': 'front-cw-3x3'
+        , 'cc': 'front-ccw-3x3'
+        , 'tl': 'top-left-3x3'
+        , 'tr': 'top-right-3x3'
+        , 'ml': 'middle-left-3x3'
+        , 'mr': 'middle-right-3x3'
+    };
+
+    var size = 64, stepSize = 24, mapping = twoMapping;
+
+    function Rule(name, steps)
+    {
+        this.size = size;
+        this.name = name;
+        this.stepSize = stepSize;
+        this.steps = steps.split(' ');
+        this.mapping = mapping;
+    }
+
+    Rule.prototype.toString = function()
+    {
+        var code = [];
+        code.push('<table class="desc"><tr>');
+        code.push('<td class="rule"><object data="');
+        code.push(path);
+        code.push(this.name);
+        code.push('.svg" type="image/svg+xml" width="');
+        code.push(this.name.match(/case-[ab]/) ? 290 : this.size);
+        code.push('" height="');
+        code.push(this.size);
+        code.push('"></object></td><td class="steps">');
+
+        var breakIssued = false;
+        for (var i in this.steps)
+        {
+            var step = this.mapping[this.steps[i]];
+            code.push('<object data="');
+            code.push(path);
+            code.push(step);
+            code.push('.svg" type="image/svg+xml" width="');
+            code.push(this.stepSize);
+            code.push('" height="');
+            code.push(this.stepSize);
+            code.push('"></object>');
+            if (i >= this.steps.length / 2 - 1 && !breakIssued)
+            {
+                breakIssued = true;
+                code.push('<br />');
+            }
+        }
+        code.push('</td>');
+        code.push('</tr></table>');
+
+        return code.join('');
+    }
+
+    var twoRules = [
+        new Rule('swap-adjacent', 'cw dr cc dl rd dl ru')
+        , new Rule('swap-diagonal', 'cc rd dl ru dr cw dl')
+    ];
+
+    var twoCases = [
+        new Rule('case-a', 'rd cc ru cc rd cw cw ru cw cw')
+        , new Rule('case-b', 'cw cw rd cw cw ru cw rd cw ru')
+    ];
+
+    size = 84;
+    stepSize = 32;
+    mapping = threeMapping;
+
+    var threeRules = [
+        new Rule('top-center-middle-left', 'tr cc tl cw tl ru tr rd')
+        , new Rule('swap-edges', 'tl cw ru tl rd tr cc')
+        , new Rule('shift-corners-cw', 'tr rd bl ru tl rd br ru')
+        , new Rule('shift-corners-ccw', 'rd bl ru tr rd br ru tl')
+
+        , new Rule('top-center-middle-right', 'tl ru tr rd tr cc tl cw')
+        , new Rule('mirror-edge', 'ru mr ru mr ru mr ru mr')
+        , new Rule('rotate-corner-cw', 'ru bl rd br ru bl rd br')
+        , new Rule('rotate-corner-ccw', 'bl ru br rd bl ru br rd')
+    ];
+
+    var width = 90;
+
+    document.write('<div class="ruleset">' + twoRules.join('') + '</div>');
+    document.write('<br/>');
+    document.write('<div class="ruleset1">' + twoCases.join('') + '</div>');
+    document.write('<hr/>');
+    document.write('<div class="ruleset">' + threeRules.join('') + '</div>');
+</script>
+
+</body>
+</html>
