@@ -42,7 +42,7 @@ ShooterView.prototype.render = function(s) {
                 .rotate(-s.dir)
                 .beginPath()
                 .moveTo(0, 0)
-                .lineTo(0, s.projectile.speed)
+                .lineTo(0, s.projectile.speed / 100)
                 .closePath()
                 .stroke()
                 .restore();

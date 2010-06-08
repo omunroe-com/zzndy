@@ -20,5 +20,7 @@ Shooter.prototype.clone = function()
 
 Shooter.prototype.shoot = function(delay)
 {
-    return this.gun.shoot(delay, this.vehicle.pos, this.vehicle.dir);
+    var p = this.vehicle.pos;
+    var pos = new Point(p.x + this.vehicle.mass * sin(this.vehicle.dir), p.y + this.vehicle.mass * cos(this.vehicle.dir))
+    return this.gun.shoot(delay, pos, this.vehicle.dir);
 };

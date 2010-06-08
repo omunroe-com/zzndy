@@ -18,15 +18,19 @@ Projectile.prototype.clone = function() {
  * @param {Point} pos   - current bullet position
  * @param {Number} dir  - bullet direction
  */
-function Bullet(projectile, pos, dir) {
+function Bullet(projectile, pos, dir, distance) {
     this.projectile = projectile;
     this.pos = new Point(pos.x, pos.y);
     this.dir = dir;
+    this.distance = distance;
+    this.flew = 0;
 }
 
 Bullet.prototype.move = function(delay) {
-    this.pos.x = this.pos.x + this.projectile.speed * sin(this.dir) * delay / 1000;
-    this.pos.y = this.pos.y + this.projectile.speed * cos(this.dir) * delay / 1000;
+    var p = this.pos;
+    this.pos = new Point(p.x + this.projectile.speed * sin(this.dir) * delay / 1000, p.y + this.projectile.speed * cos(this.dir) * delay / 1000);
+
+    this.flew += p.to(this.pos);
 };
 
 /**
@@ -63,7 +67,7 @@ Gun.prototype.shoot = function(delay, pos, dir) {
         if (this.reloadingFor >= this.reload) {
             this.waitingToShoot = this.reloadingFor - this.reload;
             this.reloadingFor = 0;
-            this.loadded = this.clip;
+            this.loaded = this.clip;
         }
         else {
             return [];
@@ -73,13 +77,13 @@ Gun.prototype.shoot = function(delay, pos, dir) {
         this.waitingToShoot += delay
     }
 
-    if (this.waitingToShoot >= this.rate / 1000) {
-        this.waitingToShoot -= this.rate / 1000;
+    if (this.waitingToShoot >= 1000 / this.rate) {
+        this.waitingToShoot -= 1000 / this.rate;
         if (--this.loaded <= 0) {
             this.reloadingFor = this.waitingToShoot;
         }
         else {
-            return new Bullet(this.projectile, pos, dir);
+            return [new Bullet(this.projectile, pos, dir, this.distance)];
         }
     }
 

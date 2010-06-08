@@ -25,6 +25,14 @@ ShooterController.prototype.frame = function() {
     var mw = this.width / 2;
     var mh = this.height / 2;
 
+    function limit(p) {
+        if (p.x > mw)p.x -= mw * 2;
+        else if (p.x < -mw)p.x += mw * 2;
+
+        if (p.y > mh)p.y -= mh * 2;
+        else if (p.y < -mh)p.y += mh * 2;
+    }
+
     var v = this.view;
     var bs = this.bullets;
     var newbs = [];
@@ -36,17 +44,17 @@ ShooterController.prototype.frame = function() {
         s.vehicle.move(delay);
 
         var p = s.vehicle.pos;
-        if (p.x > mw)p.x -= mw * 2;
-        else if (p.x < -mw)p.x += mw * 2;
-
-        if (p.y > mh)p.y -= mh * 2;
-        else if (p.y < -mh)p.y += mh * 2;
+        limit(s.vehicle.pos);
 
         bs = bs.filter(function(b) {
-            if (first)b.move(delay);
+            if (first) {
+                b.move(delay);
+                if(b.flew > b.distance)return false;
+                limit(b.pos);
+            }
 
             if (s.hp > 0 && s.vehicle.isHitBy(b)) {
-                s.hp -= max(0, s.hp - b.projectile.damage);
+                s.hp = max(0, s.hp - b.projectile.damage);
                 return false;
             }
             return true;
@@ -68,6 +76,7 @@ ShooterController.prototype.frame = function() {
         first = false;
         return true;
     });
+
 
     this.bullets = bs.concat(newbs);
     this.bullets.forEach(v.render);

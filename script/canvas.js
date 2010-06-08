@@ -67,7 +67,6 @@
 
     C.fillCircle = function( x, y, r )
     {
-        console.log('circle');
         return this.beginPath()
                 .arc(x, y, r, 0, Math.PI * 2, false)
                 .fill();
