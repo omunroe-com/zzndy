@@ -25,9 +25,8 @@ function Bullet(projectile, pos, dir) {
 }
 
 Bullet.prototype.move = function(delay) {
-    if (delay == 0)return;
-    this.pos.x = this.pos.x + this.projectile.speed * sin(this.dir) * 1000 / delay;
-    this.pos.y = this.pos.y + this.projectile.speed * cos(this.dir) * 1000 / delay;
+    this.pos.x = this.pos.x + this.projectile.speed * sin(this.dir) * delay / 1000;
+    this.pos.y = this.pos.y + this.projectile.speed * cos(this.dir) * delay / 1000;
 };
 
 /**

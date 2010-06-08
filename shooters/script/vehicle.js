@@ -39,9 +39,8 @@ function Vehicle(pos, dir, mass, speed) {
 }
 
 Vehicle.prototype.move = function(delay) {
-    if (delay == 0)return;
-    this.pos.x = this.pos.x + this.speed * sin(this.dir) * 1000 / delay;
-    this.pos.y = this.pos.y + this.speed * cos(this.dir) * 1000 / delay;
+    this.pos.x = this.pos.x + this.speed * sin(this.dir) * delay / 1000;
+    this.pos.y = this.pos.y + this.speed * cos(this.dir) * delay / 1000;
 };
 
 var k = 2;
