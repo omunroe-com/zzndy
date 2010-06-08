@@ -1,12 +1,26 @@
+/**
+ * Create new point
+ * @param {Number} x
+ * @param {Number} y
+ */
 function Point(x, y) {
     this.x = x;
     this.y = y;
 }
 
+Point.prototype.to = function(p) {
+    var dx = this.x - p.x;
+    var dy = this.y - p.y;
+    return Math.sqrt(dx * dx + dy * dy);
+};
+
+Point.prototype.toString = function() {
+    return '( ' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ')';
+};
+
 var sin = Math.sin;
 var cos = Math.cos;
-function rnd(n)
-{
+function rnd(n) {
     return Math.random() * n;
 }
 
@@ -25,15 +39,20 @@ function Vehicle(pos, dir, mass, speed) {
 }
 
 Vehicle.prototype.move = function(delay) {
-    this.pos.x = this.pos.x + this.speed * sin(this.dir);
-    this.pos.y = this.pos.y + this.speed * cos(this.dir);
+    if (delay == 0)return;
+    this.pos.x = this.pos.x + this.speed * sin(this.dir) * 1000 / delay;
+    this.pos.y = this.pos.y + this.speed * cos(this.dir) * 1000 / delay;
 };
 
 var k = 2;
 Vehicle.prototype.steer = function(delay) {
-    this.dir += rnd(k/mass) - k/(mass*2);
+    this.dir += rnd(k / mass) - k / (mass * 2);
 };
 
 Vehicle.prototype.clone = function() {
     return new Vehicle(new Point(this.pos.x, this.pos.y), this.dir, this.mass, this.speed);
+};
+
+Vehicle.prototype.isHitBy = function(bullet) {
+    return this.pos.to(bullet.pos) < this.mass;
 };

@@ -17,3 +17,8 @@ Shooter.prototype.clone = function()
 {
     return new Shooter(this.vehicle.clone(), this.hp, this.numgun, this.gun.clone());
 };
+
+Shooter.prototype.shoot = function(delay)
+{
+    return this.gun.shoot(delay, this.vehicle.pos, this.vehicle.dir);
+};
