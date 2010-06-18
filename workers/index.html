@@ -5,6 +5,11 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
     <title>Webworker</title>
+    <style type="text/css">
+	    #out	{
+		    text-shadow: 0 0.05em .1em #000;
+	    }
+    </style>
 </head>
 <body>
 <div id="container">
@@ -13,7 +18,7 @@
     </div>
 
     <div class="content">
-	<pre id="out"></pre>
+	<div id="out"></div>
         <div class="empty_footer">
         </div>
     </div>
@@ -30,7 +35,7 @@
 
 	worker.onmessage = function(event)
 	{
-		out.innerHTML = event.data;
+		out.innerHTML = (event.data * 100).toFixed(2) + '%';
 	}
 </script>
 </body>
