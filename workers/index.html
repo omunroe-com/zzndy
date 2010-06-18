@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+    <title>Webworker</title>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Webworker</h1>
+    </div>
+
+    <div class="content">
+	<pre id="out"></pre>
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; 2010 Vynogradov
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+	var worker = new Worker('script/progress.js');
+
+	var out = document.getElementById('out');
+
+	worker.onmessage = function(event)
+	{
+		out.innerHTML += event.data;
+	}
+</script>
+</body>
+</html>
