@@ -7,18 +7,21 @@
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
 
     <script type="text/javascript" src="../script/canvas.js"></script>
+    <script type="text/javascript" src="script/shooter-view.js"></script>
+    <script type="text/javascript" src="script/gun.js"></script>
+    <script type="text/javascript" src="script/vehicle.js"></script>
     <script type="text/javascript" src="script/shooter.js"></script>
-    <script type="text/javascript" src="script/ctrl.js"></script>
+    <script type="text/javascript" src="script/shooter-controller.js"></script>
 </head>
 <body>
 <div id="container">
     <div class="content header">
-	<h1>Shot</h1>
+        <h1>Shot</h1>
     </div>
 
     <div class="content">
 
-            <canvas id="canvas" width="800px" height="500px"></canvas>
+        <canvas id="canvas" width="900px" height="600px"></canvas>
 
         <div class="empty_footer">
         </div>
@@ -32,35 +35,59 @@
             var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
             document.write(b.join(''));
         </script>
-        2009
+        2009-2010
     </div>
 </div>
 <script type="text/javascript">
-	// Provide testing ground for different kind of shooting agents
-	// with genetic agotirhm
+    // Provide testing ground for different kind of shooting agents
 
-	var canvas = document.getElementById('canvas');
-	var ctx = canvas.getContext('2d');
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#eee';
+    ctx.fillStyle = '#eee';
 
-	var view = new ShootersView(ctx, 800, 500);
+    var fps = 24;
+    var frameDelay = 1000 / fps;
 
-	var numShooters = 14;
-	//function Shooter(pos, mov, hp, rate, dam, speed, dist, clip, reload, spread)
-	var deflt = new Shooter(new Point(0, 0), new Vector(2, 0), 100, 700, 20, 10, 500, 20, 3000, 1);
-	var arbiter = new ShooterArbiter(deflt, numShooters);
+    var view = new ShooterView(ctx, 900, 600);
 
-	var ctrl = new ShootersController(view, arbiter);
+    var pos = new Point(0, 0);
+    var dir = 0; // radians - moving north.
+    var mass = 5;
+    var speed = 80; // units per second
 
+    var hp = 20;
+    var damage = 100;
+    var distance = 1000;
+    var pjSpeed = 200;
 
-	function frame()
-	{
-		ctrl.frame();
-		ctrl.draw();
-		
-		window.setTimeout(frame, 50);
-	}
+    var rate = 10;
+    var clip = 10;
+    var reload = 500;
 
-	frame();
+    var vehicle = new Vehicle(pos, Math.PI / 4, mass, speed);
+    var projectile = new Projectile(damage, pjSpeed);
+    var gun = new Gun(projectile, distance, rate, clip, reload);
+    var sample = new Shooter(vehicle, hp, 1, gun);
+
+    var numShooters = 5;
+    var shooters = [];
+    while (shooters.length < numShooters){
+        var clone = sample.clone();
+        clone.vehicle.dir = rnd(4 * Math.PI);
+        shooters.push(clone);
+    }
+    
+    var ctrl = new ShooterController(view, shooters, 900, 600);
+
+    function frame() {
+        ctrl.frame();
+
+        window.setTimeout(frame, frameDelay);
+    }
+
+    frame();
+
 </script>
 </body>
 </html>
