@@ -1,88 +1,86 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-	<head>
-		<title>Plot</title>
-		<script type="text/javascript" src="script/util.js"></script>
-		<script type="text/javascript" src="script/canvas.js"></script>
-		<link rel="stylesheet" type="text/css" href="style/common.css" />
-	</head>
-	<body>
-		<div id="target"></div>
-		<script type="text/javascript">
-			var w = 800;
-			var h = 500;
+<head>
+    <title>Plot</title>
 
-			var canvas = document.createElement('canvas');
-			canvas.setAttribute('width', w+'px');
-			canvas.setAttribute('height', h+'px');
-			var ctx = canvas.getContext('2d');
-			document.getElementById('target').appendChild(canvas);
+    <script type="text/javascript" src="script/util.js"></script>
 
-			ctx.strokeStyle = 'red';
+    <script type="text/javascript" src="script/canvas.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="style/common.css" />
+</head>
+<body>
+    <div id="target">
+    </div>
 
-			var data1 = [[0,0], [1,10],[2,3],[3,12],[4,0],[5,7]];
-			var data2 = [[0,9], [1,0],[2,13],[3,2],[4,12],[5,3]];
-			var data3 = [[0,1], [1,2],[2,3],[3,4],[4,5],[5,6]];
+    <script type="text/javascript">
+        var w = 800;
+        var h = 500;
 
-	function mkreduce(fn){
-return 			function (max, current)
-			{
-				return [fn(max[0], current[0]), fn(max[1], current[1])];
-			}
-	}
+        var canvas = document.createElement('canvas');
+        canvas.setAttribute('width', w + 'px');
+        canvas.setAttribute('height', h + 'px');
+        var ctx = canvas.getContext('2d');
+        document.getElementById('target').appendChild(canvas);
 
-var getmax =  mkreduce(Math.max);
-var getmin = mkreduce(Math.min);
-
-			var max = data3.reduce(getmax, data2.reduce(getmax, data1.reduce(getmax)));
-			var min = data3.reduce(getmin, data2.reduce(getmin, data1.reduce(getmin)));
-
-			var dx = max[0] - min[0];
-			var dy = max[1] - min[1];
-
-			var mar = .1;
-
-var				scalex = w / ((1 + 2 * mar) * dx);
-var				scaley = h / ((1 + 2 * mar) * dy);
-
-				origin = [
-				(w - dx*scalex) / 2, 
-				(h + dy*scaley) / 2
-				];
+        ctx.strokeStyle = 'red';
 
 
-function drawline(start, end, i)
-{
-	if(i<=1)
-		ctx.fillCircle(origin[0] + start[0]*scalex,origin[1] -  start[1]*scaley, 4)
-		ctx.fillCircle(origin[0] + end[0]*scalex,origin[1] -  end[1]*scaley, 4)
+        var data1 = [[0, 0], [1, 10], [2, 3], [3, 12], [4, 0], [5, 7]];
+        var data2 = [[0, 9], [1, 0], [2, 13], [3, 2], [4, 12], [5, 3]];
+        var data3 = [[0, 1], [1, 2], [2, 4], [3, 8], [4, 16], [5, 13]];
 
-	ctx.beginPath();
-	ctx.moveTo(origin[0] + start[0]*scalex,origin[1] -  start[1]*scaley);
-	ctx.lineTo(origin[0] + end[0]*scalex,origin[1] - end[1]*scaley);
-	ctx.stroke();
+        function mkreduce(fn) {
+            return function(max, current) {
+                return [fn(max[0], current[0]), fn(max[1], current[1])];
+            }
+        }
 
-return end;
-}
+        var getmax = mkreduce(Math.max);
+        var getmin = mkreduce(Math.min);
 
-function draw()
-{
-	ctx.strokeStyle = '#0047AB';
-	ctx.fillStyle = '#0047AB';
-	data1.reduce(drawline);
-	ctx.strokeStyle = '#d00000';
-	ctx.fillStyle = '#d00000';
-	data2.reduce(drawline);
-	ctx.strokeStyle = '#20899f';
-	ctx.fillStyle = '#20899f';
-	data3.reduce(drawline);
-}
+        var max = data3.reduce(getmax, data2.reduce(getmax, data1.reduce(getmax)));
+        var min = data3.reduce(getmin, data2.reduce(getmin, data1.reduce(getmin)));
 
-ctx.lineWidth = 3;
-draw();
+        var dx = max[0] - min[0];
+        var dy = max[1] - min[1];
 
+        var mar = .1;
 
-		</script>
-	</body>
+        var scalex = w / ((1 + 2 * mar) * dx);
+        var scaley = h / ((1 + 2 * mar) * dy);
+
+        origin = [(w - dx * scalex) / 2, (h + dy * scaley) / 2];
+
+        function drawline(start, end, i) {
+            if (i <= 1)
+                ctx.fillCircle(origin[0] + start[0] * scalex, origin[1] - start[1] * scaley, 4)
+            ctx.fillCircle(origin[0] + end[0] * scalex, origin[1] - end[1] * scaley, 4)
+
+            ctx.beginPath();
+            ctx.moveTo(origin[0] + start[0] * scalex, origin[1] - start[1] * scaley);
+            ctx.lineTo(origin[0] + end[0] * scalex, origin[1] - end[1] * scaley);
+            ctx.stroke();
+
+            return end;
+        }
+
+        function draw() {
+            ctx.strokeStyle = '#0047AB';
+            ctx.fillStyle = '#0047AB';
+            data1.reduce(drawline);
+            ctx.strokeStyle = '#d00000';
+            ctx.fillStyle = '#d00000';
+            data2.reduce(drawline);
+            ctx.strokeStyle = '#20899f';
+            ctx.fillStyle = '#20899f';
+            data3.reduce(drawline);
+        }
+
+        ctx.lineWidth = 3;
+        draw();
+
+    </script>
+
+</body>
 </html>
