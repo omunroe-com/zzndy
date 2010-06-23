@@ -19,14 +19,19 @@
 
 	    .filled
 	    {
-		    background-color: #eee;
-		    color:#232323;
-		    text-shadow: 0 0.05em .1em #fff;
+		    overflow: hidden;
 	    }
 
 	    .empty
 	    {
 		    text-shadow: 0 0.05em .1em #000;
+	    }
+
+	    .progress
+	    {
+		    background-color: #eee;
+		    color:#232323;
+		    text-shadow: 0 0.05em .1em #fff;
 	    }
     </style>
 </head>
@@ -38,8 +43,10 @@
 
     <div class="content">
 	<div class="holder">
-		    <div class="filled" id="filled"></div>
-		    <div class="empty" id="empty"></div>
+		<div class="empty" id="empty">0.00 %</div>
+		<div class="filled" id="filled">
+			<div class="progress" id="progress">0.00 %</div>
+		</div>
 	</div>
 	<div id="out"></div>
         <div class="empty_footer">
@@ -55,17 +62,24 @@
 	var worker = new Worker('script/work.js');
 
 	var out = document.getElementById('out');
+
 	var empty = document.getElementById('empty');
 	var filled = document.getElementById('filled');
+	var progress = document.getElementById('progress');
+	progress.style.width = empty.clientWidth + 'px';
+	filled.style.marginTop = '-' + empty.clientHeight + 'px';
 
 	worker.onmessage = function(event)
 	{
-		var data = (event.data * 100).toFixed(2) + ' %';
+		var progressPct = event.data * 100;
+		var data = progressPct.toFixed(2) + ' %';
 
 		out.innerHTML = data;
 		empty.innerHTML = data;
-		filled.innerHTML = data;
-		filled.style.width = data;
+		progress.innerHTML = data;
+		filled.style.width = progressPct + '%';
+
+		empty.width = progressPct + '%';
 	}
 </script>
 </body>
