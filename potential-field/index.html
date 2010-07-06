@@ -7,13 +7,7 @@
     <script type="text/javascript" src="../script/canvas.js"></script>
     <script type="text/javascript" src="script/vector.js"></script>
     <script type="text/javascript" src="script/pf.js"></script>
-    <title>Potential field</title>
-    <style type="text/css">
-        canvas {
-            border: 1px solid;
-            cursor: none;
-        }
-    </style>
+    <title>Potential fields</title>
 </head>
 <body>
 <div id="container">
@@ -29,7 +23,7 @@
 </div>
 <div id="footer">
     <div class="content">
-        &copy; Copyright
+        &copy;&nbsp;2009&ndash;2010&nbsp;Vynogradov
     </div>
 </div>
 <script type="text/javascript">
@@ -84,7 +78,7 @@
             .clearRect(0, 0, width, height)
             .beginPath()
             .moveTo(mouse.x, mouse.y - 5)
-            .lineTo(mouse.x, mouse.y + 5)
+	    .lineTo(mouse.x, mouse.y + 5)
             .stroke()
             .beginPath()
             .moveTo(mouse.x - 5, mouse.y)
