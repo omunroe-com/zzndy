@@ -19,7 +19,7 @@
 
     A.toString = function()
     {
-        return this.value.toFixed(2) + ' ' + this.unit.name;
+        return this.value.toFixed(2) + '\u00a0' + this.unit.name;
     };
 
     A.plus = function( amount )
