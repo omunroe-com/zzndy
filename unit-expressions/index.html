@@ -41,9 +41,6 @@
         out.innerHTML += [].join.call ( arguments, '' ) + '\n';
     }
 
-var inp = new Expression(document.getElementById('input').innerHTML);
-console.log(inp);
-
     Unit.system ( 'metric' )
             .base ( 'lenght' ).unit ( 'm' )
             .unit ( 'km' ).equals ( 1000, 'm' )
@@ -73,38 +70,6 @@ console.log(inp);
             .unit ( 'mile' ).equals ( 1609.344, 'm' )
             .unit ( 'mph' ).equals ( 1.609344, 'km/h' );
 
-
-    /*
-     Unit.add ( 'm', 'length' );
-     Unit.add ( 'km', 1000, 'm' );
-     Unit.add ( 'cm', 0.01, 'm' );
-     Unit.add ( 'mm', 0.1, 'cm' );
-
-     Unit.add ( 's', 'time' );
-     Unit.add ( 'min', 60, 's' );
-     Unit.add ( 'h', 60, 'min' );
-     Unit.add ( 'day', 24, 'h' );
-     Unit.add ( 'year', 365.25, 'day' );
-
-     Unit.add ( 'm/s', 'velocity' );
-     Unit.add ( 'km/h', 10 / 36, 'm/s' );
-
-
-     Unit.system ( 'imperial' );
-     Unit.add ( 'in', 2.54, 'cm' );
-     Unit.add ( 'ft', 12, 'in' );
-     Unit.add ( 'ft', 30.48, 'cm' );
-     Unit.add ( 'yd', 3, 'ft' );
-     Unit.add ( 'yd', 91.44, 'cm' );
-     Unit.add ( 'mile', 1609.344, 'm' );
-
-     Unit.system ( 'imperial' );
-     Unit.add ( 'mph', 1.609344, 'km/h' );
-     */
-
-	    console.log('hehe');
-	    console.log(new Amount(inp.left.left));
-
     var v1 = new Amount ( '100 m/s' );
     var v2 = new Amount ( '75 mph' );
 
@@ -112,8 +77,8 @@ console.log(inp);
     println ( 'v2 = ', v2.as ( 'km/h' ) );
 
     var vs = v1.plus ( v2 );
-    println ( 'v1 + v2 = ', vs.as ( 'km/h' ) );
-    println ( ' in m/s ', vs.as ( 'km/h' ).as ( 'm/s' ) );
+    console.log(vs.as('mph'));
+    println ( 'v1 + v2 = ', vs.as ( 'km/h' ), ' or ', vs.as ( 'm/s' ), ' or ', vs.as('mph') );
 
     println ( v1, ' + ', v2, ' = ', vs );
     println ( 'Expected value 133.52800 m/s' );
@@ -122,6 +87,8 @@ console.log(inp);
     var t = new Amount ( '1 s' );
 
     println ( l, ' / (', t, ' * ', t, ') = ', l.div ( t.mul ( t ) ) );
+
+    var inp = new Expression(document.getElementById('input').innerHTML);
 
 </script>
 </body>

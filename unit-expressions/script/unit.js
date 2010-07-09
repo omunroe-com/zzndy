@@ -62,7 +62,7 @@ Unit.prototype.toString = function()
  */
 Unit.prototype.show = function( n, unitName )
 {
-    return Unit.convert ( n, Unit.get ( unitName ), this );
+    return Unit.convert ( n, this, Unit.get ( unitName ) );
 };
 
 /**
@@ -144,6 +144,8 @@ Unit.equals = function( rate, other )
  */
 Unit.convert = function( n, fromUnit, toUnit )
 {
+    if ( fromUnit == toUnit )
+        return n;
     if ( !(toUnit.name in fromUnit.conversions) )
         throw new Error ( 'Cannot convert from ' + fromUnit.name + ' to ' + toUnit.name + '.' );
     return n / fromUnit.conversions[toUnit.name].ratio;
@@ -250,7 +252,7 @@ function addUnit( unit )
 
 function getUnit( name )
 {
-	name = name.toString().replace(/\s+/g, '');
+    name = name.toString().replace(/\s+/g, '');
     if ( !(name in units) ) throw new Error ( 'Unit ' + name + ' not defined.' );
     return units[name];
 }
