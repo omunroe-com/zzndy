@@ -39,7 +39,7 @@
 
     A.div = function(amount)
     {
-	    return new Amount(this.value * amount.value, Unit.get((new Expression('/', this.unit.name, amount.unit.name))));
+	return new Amount(this.value * amount.value, Unit.get((new Expression('/', this.unit.name, amount.unit.name))));
     }
 
     A.as = function( unit )
