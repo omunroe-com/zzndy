@@ -4,9 +4,35 @@
     <title>Krypto</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css" />
+
     <script type="text/javascript" src="../script/domgen.js"></script>
+
     <script type="text/javascript" src="script/deck.js"></script>
+
     <script type="text/javascript" src="script/krypto.js"></script>
+
+    <style type="text/css">
+        .card
+        {
+            display: inline-block;
+            width: 2em;
+            height: 3em;
+            background-color: #eee;
+            border-radius: .2em;
+            -moz-border-radius: .2em;
+            margin: .1em;
+            -moz-box-shadow: 0 .1em .15em rgba(0,0,0,.5);
+            -webkit-box-shadow: 0 .1em .15em rgba(0,0,0,.7);
+        }
+        .spades, .clubs
+        {
+            color: black;
+        }
+        .diamonds, .hearts
+        {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <div id="container">
@@ -14,7 +40,8 @@
             <h1>Krypto</h1>
         </div>
         <div class="content">
-        <div id="out"></div>
+            <div id="out">
+            </div>
             <div class="empty_footer">
             </div>
         </div>
@@ -22,21 +49,55 @@
     <div id="footer">
         <div class="content">
             &copy;
+
             <script type="text/javascript">
                 var a = ['and', 'mail'].join('y@g');
                 var b = ['<a ', 'href="mai', 'lto:zz', a, '.com?', 'subject=', 'JavaScript Filler', '"', '>Vynogradov<', '/a>'];
                 document.write(b.join(''));
             </script>
+
             2010
         </div>
     </div>
+
     <script type="text/javascript">
 
         var deck = new Deck(36); 
-        console.log(deck.deck);
+        var runs = [];
+        var run;
 
+while((run = deck.deal(6)).length == 6)
+    runs.push(run);
         var out = document.getElementById('out');
         initDomGen();
+
+    runs.map(displayRun);
+
+
+function displayRun(run)
+{
+    out.appendChild( $div(run.map(function(card){
+            var suit = card[card.length - 1];
+            switch(suit)
+            {
+case '\u2660':
+suit = 'spades';
+break;
+case '\u2665':
+suit = 'hearts';
+break;
+case '\u2666':
+suit = 'diamonds';
+break;
+case '\u2663':
+suit = 'clubs';
+break;
+            }
+            return $span({'class' : suit + ' card'}, card);
+            })));
+}
+
+
 
         function rnd(n) {
             return Math.floor(n * Math.random());
@@ -59,5 +120,6 @@
         (0).to(n-1).forEach(function(i){if(i>0)out.innerHTML += (i==n-1) ? '=' : ' _ ';out.appendChild(input(rnd(10)+1))});
 
     </script>
+
 </body>
 </html>
