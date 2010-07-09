@@ -5,6 +5,8 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css" />
     <script type="text/javascript" src="../script/domgen.js"></script>
+    <script type="text/javascript" src="script/deck.js"></script>
+    <script type="text/javascript" src="script/krypto.js"></script>
 </head>
 <body>
     <div id="container">
@@ -29,6 +31,9 @@
         </div>
     </div>
     <script type="text/javascript">
+
+        var deck = new Deck(36); 
+        console.log(deck.deck);
 
         var out = document.getElementById('out');
         initDomGen();
