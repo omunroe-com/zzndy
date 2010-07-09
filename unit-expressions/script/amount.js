@@ -19,7 +19,7 @@
 
     A.toString = function()
     {
-        return this.value.toFixed(2) + this.unit.name;
+        return this.value.toFixed(2) + ' ' + this.unit.name;
     };
 
     A.plus = function( amount )
@@ -36,6 +36,11 @@
     {
         return new Amount(this.value * amount.value, Unit.get((new Expression('*', this.unit.name, amount.unit.name))));
     };
+
+    A.div = function(amount)
+    {
+	    return new Amount(this.value * amount.value, Unit.get((new Expression('/', this.unit.name, amount.unit.name))));
+    }
 
     A.as = function( unit )
     {

@@ -116,6 +116,8 @@ Unit.alias = function( alias )
 {
     if ( lastUnit === undefined )
         throw new Error ( 'Define a unit before assigning an alias.' );
+
+    units[alias] = units[lastUnit];
     return Unit;
 };
 
@@ -248,6 +250,7 @@ function addUnit( unit )
 
 function getUnit( name )
 {
+	name = name.toString().replace(/\s+/g, '');
     if ( !(name in units) ) throw new Error ( 'Unit ' + name + ' not defined.' );
     return units[name];
 }
