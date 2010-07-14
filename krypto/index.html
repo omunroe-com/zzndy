@@ -70,6 +70,11 @@
 		    return this.reduce(function(a,b){return a+b});
 	    }
 
+	function rnd(n)
+	{
+		return Math.round(n * Math.random());
+	}
+
 
         var deck = new Deck(36); 
         var runs = [];
@@ -85,50 +90,35 @@ while((run = deck.deal(6)).length == 6)
 
 function displayRun(run)
 {
-    out.appendChild( $div(run.map(function(card){
-            var suit = card[card.length - 1];
-            switch(suit)
+        out.appendChild( $div(run.map(function(card){
+        var suit = card[card.length - 1];
+        switch(suit)
             {
-case '\u2660':
-suit = 'spades';
-break;
-case '\u2665':
-suit = 'hearts';
-break;
-case '\u2666':
-suit = 'diamonds';
-break;
-case '\u2663':
-suit = 'clubs';
-break;
+		case '\u2660':
+			suit = 'spades';
+			break;
+		case '\u2665':
+			suit = 'hearts';
+			break;
+		case '\u2666':
+			suit = 'diamonds';
+			break;
+		case '\u2663':
+			suit = 'clubs';
+			break;
             }
             return $span({'class' : suit + ' card'}, card);
             })));
 }
 
-
-
         function rnd(n) {
             return Math.floor(n * Math.random());
-        }
-
-        Number.prototype.to = function(n)   {
-            var res = [this];
-            for(var i = this; i<n; ++i)
-                res.push(i+1);
-
-            return res;
         }
 
         function input(t)
         {
             return $input({type: 'text', value: t, readonly: 'readonly', size: 1});
 	}
-
-function rnd(n)
-{
-	return Math.round(n * Math.random());
-}
 
 	var n = 5;
 	var nums = [];
@@ -155,8 +145,10 @@ function operators(num){
 	}
 }
 
+function getOperatorAllocation(n){
+
 var allow = [];
-for(var i=0;i<nums.length-1;++i)allow.push(i+1);
+for(var i=0;i<n;++i)allow.push(i+1);
 
 var comb = [];
 var i =-1;
@@ -179,26 +171,90 @@ while(++i<allow.length){
 	}
 	comb = r;
 }
-comb = comb.filter(function(v){return v.sum()==max;});
+return comb.filter(function(v){return v.sum()==max;});
+}
+ var jem =0 ;
 
-console.log(comb.join('\n'));
+function check(variant)
+{
+        var formula = nums.clone();
+        var n=0;
+        for(var i=0;i<variant.length;++i)
+        {
+                if(variant[i].length >0)
+                formula.splice.apply(formula, [i+2+n, 0].concat(variant[i]));
+                n+=variant[i].length;
+        }
+        if(rnd(100)==7){
+        console.log(formula, calculate(formula));
+        if(++jem>20)throw new Error();
+        }
+}
 
-console.log(nums);
-console.log(allow);
+function calculate(rpn)
+{
+        var stack = [];
+        for(var i=0;i<rpn.length;++i)
+        {
+                var p = rpn[i];
+                switch(p)
+                {
+                        case '+':
+                                var a = stack.pop();
+                                var b = stack.pop();
+                                var c = a+b;
+                                stack.push(c);
+                                break;
+                        case '-':
+                                var a = stack.pop();
+                                var b = stack.pop();
+                                var c = a-b;
+                                stack.push(c);
+                                break;
+                        case '*':
+                                var a = stack.pop();
+                                var b = stack.pop();
+                                var c = a*b;
+                                stack.push(c);
+                                break;
+                        case '/':
+                                var a = stack.pop();
+                                var b = stack.pop();
+                                var c = a/b;
+                                stack.push(c);
+                                break;
+                        default:
+                                stack.push(p);
+                                break;
+                }
+        }
+        return stack.pop();
+}
+
+
+var comb = getOperatorAllocation(nums.length - 1);
 
 var opit = operators(nums.length - 1);
 var set;
 
 while((set = opit())!=null)
 {
-	var i=-1, n = nums.length-1;
-	while(++i<n)
-	{
-	}
+        for(var i=0;i<set.length;++i)
+        {
+                for(var j=0;j<comb.length;++j)
+                {
+                        var setcopy = set.clone();
+                        var variant = [];
+                        for(var k=0;k<comb[j].length;++k){
+                                var ops = [];
+                                for(var t=0;t<comb[j][k];++t)ops.push(setcopy.pop());
+                                variant.push(ops);
+                        }
 
+                        check(variant);
+                }
+        }
 }
-
-
     </script>
 
 </body>
