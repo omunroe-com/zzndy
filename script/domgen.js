@@ -62,10 +62,16 @@
 
             var elt = mkEmptyElt(name, attrs);
 
-            for ( var i = 0; i < children.length; ++i ) {
-                if ( typeof children[i] == 'string' ) children[i] = document.createTextNode(children[i]);
-                elt.appendChild(children[i]);
-            }
+            function appendChildren(ch){
+            for ( var i = 0; i < ch.length; ++i ) {
+                if ( ch[i] instanceof Array ) appendChildren(ch[i]);
+                else    {
+                    if ( typeof ch[i] == 'string' ) ch[i] = document.createTextNode(ch[i]);
+                    elt.appendChild(ch[i]);
+                }
+            }}
+
+            appendChildren(children);
 
             return elt;
         }

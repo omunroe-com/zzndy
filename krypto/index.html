@@ -32,12 +32,19 @@
         {
             color: red;
         }
+        .operator
+        {
+            font-size: 300%;
+            vertical-align: middle;
+            font-family: Georgia;
+        }
     </style>
 </head>
 <body>
     <div id="container">
         <div class="content header">
-            <h1>Krypto</h1>
+            <h1>
+                Krypto</h1>
         </div>
         <div class="content">
             <div id="out">
@@ -62,223 +69,230 @@
 
     <script type="text/javascript">
 
-	    Array.prototype.clone = function(){
-		    return this.map(function(a){return a});
-	    }
+        Array.prototype.clone = function() {
+            return this.map(function(a) { return a });
+        }
 
-	    Array.prototype.sum = function(){
-		    return this.reduce(function(a,b){return a+b});
-	    }
+        Array.prototype.sum = function() {
+            return this.reduce(function(a, b) { return a + b });
+        }
 
-	function rnd(n)
-	{
-		return Math.round(n * Math.random());
-	}
+        function rnd(n) {
+            return Math.round(n * Math.random());
+        }
 
-
-        var deck = new Deck(36); 
-        var runs = [];
-        var run;
-
-while((run = deck.deal(6)).length == 6)
-    runs.push(run);
-        var out = document.getElementById('out');
-        initDomGen();
-
-    runs.map(displayRun);
-
-
-function displayRun(run)
-{
-        out.appendChild( $div(run.map(function(card){
-        var suit = card[card.length - 1];
-        switch(suit)
-            {
-		case '\u2660':
-			suit = 'spades';
-			break;
-		case '\u2665':
-			suit = 'hearts';
-			break;
-		case '\u2666':
-			suit = 'diamonds';
-			break;
-		case '\u2663':
-			suit = 'clubs';
-			break;
-            }
-            return $span({'class' : suit + ' card'}, card);
-            })));
-}
 
         function rnd(n) {
             return Math.floor(n * Math.random());
         }
 
-        function input(t)
-        {
-            return $input({type: 'text', value: t, readonly: 'readonly', size: 1});
-	}
-
-	var n = 5;
-	var nums = [];
-	for(var i=0;i<n;++i)nums.push(rnd(10)+1);
-
-function operators(num){
-	var n=[0,0,0,0];
-	for(var k=0;k<num;++k)n.push(0);
-	var ops = ['+', '-', '*', '/'];
-
-	return function()
-	{
-		if(n[num-1]>=ops.length)return null;
-		var res = [];
-		var i;
-		for(i=0;i<num;++i)
-			res.unshift(ops[n[i]]);
-		
-		i=0;
-		++n[i];
-		while(n[i] >= ops.length && i<num-1){n[i]=0;++n[++i];}
-
-		return res;
-	}
-}
-
-function getOperatorAllocation(n){
-
-var allow = [];
-for(var i=0;i<n;++i)allow.push(i+1);
-
-var comb = [];
-var i =-1;
-var max = 4;
-while(++i<allow.length){
-	var r= [];
-	if(comb.length ==0)
-		for(var j=0;j<=allow[i];++j)r.push([j]);
-	else{
-		for(var j=0;j<comb.length;++j)
-		{
-			for(var k=0;k<=allow[i];++k){
-			var a = comb[j].clone();
-			a.push(k);
-			if(a.sum()<=allow[i])
-				r.push(a);
-			}
-
-		}
-	}
-	comb = r;
-}
-return comb.filter(function(v){return v.sum()==max;});
-}
- var jem =0 ;
-
-function check(variant)
-{
-        var formula = nums.clone();
-        var n=0;
-        for(var i=0;i<variant.length;++i)
-        {
-                if(variant[i].length >0)
-                formula.splice.apply(formula, [i+2+n, 0].concat(variant[i]));
-                n+=variant[i].length;
+        function input(t) {
+            return $input({ type: 'text', value: t, readonly: 'readonly', size: 1 });
         }
-        if(rnd(100)==7){
-        console.log(formula,rpn2infix(formula), calculate(formula));
-        if(++jem>20)throw new Error();
+
+        var n = 5;
+        var nums = [];
+        for (var i = 0; i < n; ++i) nums.push(rnd(10) + 1);
+
+        function operators(num) {
+            var n = [0, 0, 0, 0];
+            for (var k = 0; k < num; ++k) n.push(0);
+            var ops = ['+', '-', '*', '/'];
+
+            return function() {
+                if (n[num - 1] >= ops.length) return null;
+                var res = [];
+                var i;
+                for (i = 0; i < num; ++i)
+                    res.unshift(ops[n[i]]);
+
+                i = 0;
+                ++n[i];
+                while (n[i] >= ops.length && i < num - 1) { n[i] = 0; ++n[++i]; }
+
+                return res;
+            }
         }
-}
 
-function calculate(rpn)
-{
-        var stack = [];
-        for(var i=0;i<rpn.length;++i)
-        {
-                var p = rpn[i];
-                switch(p)
-                {
-                        case '+':
-                                var a = stack.pop();
-                                var b = stack.pop();
-                                var c = a+b;
-                                stack.push(c);
-                                break;
-                        case '-':
-                                var a = stack.pop();
-                                var b = stack.pop();
-                                var c = a-b;
-                                stack.push(c);
-                                break;
-                        case '*':
-                                var a = stack.pop();
-                                var b = stack.pop();
-                                var c = a*b;
-                                stack.push(c);
-                                break;
-                        case '/':
-                                var a = stack.pop();
-                                var b = stack.pop();
-                                var c = a/b;
-                                stack.push(c);
-                                break;
-                        default:
-                                stack.push(p);
-                                break;
-                }
-        }
-        return stack.pop();
-}
+        function getOperatorAllocation(n) {
 
-function rpn2infix(rpn)
-{
-	var res = rpn.clone();
-	
-        for(var i=0;i<rpn.length;++i)
-        {
-                var p = rpn[i];
-                switch(p)
-                {
-                        case '+':
-                        case '-':
-                        case '*':
-                        case '/':
-				var a = res.pop();
-				var b = res.pop();
-				var c = '(' + a + p + b + ')';
-				res.push(c);
-				break;
-				default:res.push(p);
-		}
-	}
+            var allow = [];
+            for (var i = 0; i < n; ++i) allow.push(i + 1);
 
-	return res.pop();
-}
-
-var comb = getOperatorAllocation(nums.length - 1);
-
-var opit = operators(nums.length - 1);
-var set;
-
-while((set = opit())!=null)
-{
-        for(var i=0;i<set.length;++i)
-        {
-                for(var j=0;j<comb.length;++j)
-                {
-                        var setcopy = set.clone();
-                        var variant = [];
-                        for(var k=0;k<comb[j].length;++k){
-                                var ops = [];
-                                for(var t=0;t<comb[j][k];++t)ops.push(setcopy.pop());
-                                variant.push(ops);
+            var comb = [];
+            var i = -1;
+            var max = 4;
+            while (++i < allow.length) {
+                var r = [];
+                if (comb.length == 0)
+                    for (var j = 0; j <= allow[i]; ++j) r.push([j]);
+                else {
+                    for (var j = 0; j < comb.length; ++j) {
+                        for (var k = 0; k <= allow[i]; ++k) {
+                            var a = comb[j].clone();
+                            a.push(k);
+                            if (a.sum() <= allow[i])
+                                r.push(a);
                         }
 
-                        check(variant);
+                    }
                 }
+                comb = r;
+            }
+            return comb.filter(function(v) { return v.sum() == max; });
         }
-}
+
+    var jay = 0;
+
+        function check(nums, variant, target) {
+            var formula = nums.clone();
+            var n = 0;
+            for (var i = 0; i < variant.length; ++i) {
+                if (variant[i].length > 0)
+                    formula.splice.apply(formula, [i + 2 + n, 0].concat(variant[i]));
+                n += variant[i].length;
+            }
+
+            var c =calculate(formula) ;
+            if (c == target) return formula;
+            else return null;
+        }
+
+        function calculate(rpn) {
+            var stack = [];
+            for (var i = 0; i < rpn.length; ++i) {
+                var p = rpn[i];
+                switch (p) {
+                    case '+':
+                        var a = stack.pop();
+                        var b = stack.pop();
+                        var c = a + b;
+                        stack.push(c);
+                        break;
+                    case '-':
+                        var a = stack.pop();
+                        var b = stack.pop();
+                        var c = a - b;
+                        stack.push(c);
+                        break;
+                    case '*':
+                        var a = stack.pop();
+                        var b = stack.pop();
+                        var c = a * b;
+                        stack.push(c);
+                        break;
+                    case '/':
+                        var a = stack.pop();
+                        var b = stack.pop();
+                        var c = a / b;
+                        stack.push(c);
+                        break;
+                    default:
+                        stack.push(p);
+                        break;
+                }
+            }
+            return stack.pop();
+        }
+
+        function rpn2infix(rpn) {
+            var res = rpn.clone();
+
+            for (var i = 0; i < rpn.length; ++i) {
+                var p = rpn[i];
+                switch (p) {
+                    case '+':
+                    case '-':
+                    case '*':
+                    case '/':
+                        var a = res.pop();
+                        var b = res.pop();
+                        var c = '(' + a + p + b + ')';
+                        res.push(c);
+                        break;
+                    default: res.push(p);
+                }
+            }
+
+            return res.pop();
+        }
+
+        var comb = getOperatorAllocation(nums.length - 1);
+        function checkNumbers(numbers, target) {
+            var result = []
+            var opit = operators(numbers.length - 1);
+            var set;
+
+            while ((set = opit()) != null) {
+                for (var i = 0; i < set.length; ++i) {
+                    for (var j = 0; j < comb.length; ++j) {
+                        var setcopy = set.clone();
+                        var variant = [];
+                        for (var k = 0; k < comb[j].length; ++k) {
+                            var ops = [];
+                            for (var t = 0; t < comb[j][k]; ++t) ops.push(setcopy.pop());
+                            variant.push(ops);
+                        }
+
+                        var res = check(numbers, variant, target);
+                        if(res != null)
+                            result.push(res);
+                    }
+                }
+            }
+            return result;
+        }
+
+
+
+        var deck = new Deck(36);
+        var runs = [];
+        var run;
+
+        while ((run = deck.deal(6)).length == 6)
+            runs.push(run);
+        var out = document.getElementById('out');
+        initDomGen();
+
+        out.appendChild($table(runs.map(displayRun)));
+
+        function evaluate(run) {
+            var score = [];
+            var start = 0;
+            var len = run.length;
+            if (arguments.length == 3) {
+                start = arguments[1];
+                len = arguments[2];
+            }
+            else if (arguments.length == 2)
+                len = arguments[1];
+
+            for (var i = 0; i < len; ++i) {
+                score.push(Deck.eval(run[start + i]));
+            }
+            return score;
+        }
+
+        function displayRun(run) {
+            var input = evaluate(run, 5).reverse();
+            var target = evaluate(run, 4, 1)[0];
+            var operators = rpn2infix(checkNumbers(input, target)[0]).split(/\d+/g);
+            console.log(operators);
+
+            return $tr(run.map(function(card, i) {
+                var suit = Deck.symbols[card[card.length - 1]];
+                return [
+                    $td(
+                        {'class': 'operator'},
+                        (i == run.length - 1) ? '=' : operators[i]
+                        ), 
+                    $td(
+                        { 'class': suit + ' card', title: Deck.eval(card) }, 
+                        card
+                        )
+                    ];
+            }));
+        }
     </script>
 
 </body>
