@@ -114,10 +114,52 @@ break;
         function input(t)
         {
             return $input({type: 'text', value: t, readonly: 'readonly', size: 1});
-        }
+	}
 
-        var n = 6;
-        (0).to(n-1).forEach(function(i){if(i>0)out.innerHTML += (i==n-1) ? '=' : ' _ ';out.appendChild(input(rnd(10)+1))});
+function rnd(n)
+{
+	return Math.round(n * Math.random());
+}
+
+	var n = 5;
+	var nums = [];
+	for(var i=0;i<n;++i)nums.push(rnd(10)+1);
+
+function operators(num){
+	var n=[0,0,0,0];
+	for(var k=0;k<num;++k)n.push(0);
+	var ops = ['+', '-', '*', '/'];
+
+	return function()
+	{
+		if(n[num-1]>=ops.length)return null;
+		var res = [];
+		var i;
+		for(i=0;i<num;++i)
+			res.unshift(ops[n[i]]);
+		
+		i=0;
+		++n[i];
+		while(n[i] >= ops.length && i<num-1){n[i]=0;++n[++i];}
+
+		return res;
+	}
+}
+
+	function checkAll(nums)
+{
+	
+}
+
+console.log(nums);
+
+var opit = operators(nums.length - 1);
+var set;
+
+while((set = opit())!=null)
+{
+}
+
 
     </script>
 
