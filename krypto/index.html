@@ -186,7 +186,7 @@ function check(variant)
                 n+=variant[i].length;
         }
         if(rnd(100)==7){
-        console.log(formula, calculate(formula));
+        console.log(formula,rpn2infix(formula), calculate(formula));
         if(++jem>20)throw new Error();
         }
 }
@@ -231,6 +231,30 @@ function calculate(rpn)
         return stack.pop();
 }
 
+function rpn2infix(rpn)
+{
+	var res = rpn.clone();
+	
+        for(var i=0;i<rpn.length;++i)
+        {
+                var p = rpn[i];
+                switch(p)
+                {
+                        case '+':
+                        case '-':
+                        case '*':
+                        case '/':
+				var a = res.pop();
+				var b = res.pop();
+				var c = '(' + a + p + b + ')';
+				res.push(c);
+				break;
+				default:res.push(p);
+		}
+	}
+
+	return res.pop();
+}
 
 var comb = getOperatorAllocation(nums.length - 1);
 
