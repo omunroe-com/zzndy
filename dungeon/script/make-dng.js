@@ -5,6 +5,7 @@
 try
 {
     var out = document.getElementById('dng');
+    out = {};
 
     var cl = '&#xb7';
     var cm = '-';

@@ -1,39 +1,201 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
-    <link rel="stylesheet" href="style/dng.css" type="text/css"/>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css" />
+    <link rel="stylesheet" href="style/dng.css" type="text/css" />
     <title>Dungeon generation</title>
+
     <script type="text/javascript" src="../script/util.js"></script>
+
     <script type="text/javascript" src="script/dng.js"></script>
+
     <style type="text/css">
         #out
         {
-            font-family:monospace;
-            font-size:90%;
+            font-family: monospace;
+            font-size: 90%;
         }
+        table.dungeon
+        {
+            border-collapse: collapse;
+        }
+        table.dungeon td
+        {
+            font-size: 1px;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+        table.dungeon td div
+        {
+            width: 8px;
+            height: 8px;
+        }
+        .w0
+        {
+            background-image: url(image/tiles.png);
+            background-position: 0 0;
+        }
+        .w1
+        {
+            background-image: url(image/tiles.png);
+            background-position: -8px 0;
+        }
+        .w2
+        {
+            background-image: url(image/tiles.png);
+            background-position: -16px 0;
+        }
+        .w3
+        {
+            background-image: url(image/tiles.png);
+            background-position: -24px 0;
+        }
+        .w4
+        {
+            background-image: url(image/tiles.png);
+            background-position: -8px 0;
+            -moz-transform: matrix(0, -1, -1, 0, 0, 0);
+        }
+        .w5
+        {
+            background-image: url(image/tiles.png);
+            background-position: -32px 0;
+        }
+        .w6
+        {
+            background-image: url(image/tiles.png);
+            background-position: -24px 0;
+            -moz-transform: matrix(0, 1, 1, 0, 0, 0);
+        }
+        .w7
+        {
+            background-image: url(image/tiles.png);
+            background-position: -40px 0;
+        }
+        .v0
+        {
+            background-image: url(image/tiles.png);
+            background-position: 0 -8px;
+        }
+        .v1
+        {
+            background-image: url(image/tiles.png);
+            background-position: -8px -8px;
+        }
+        .v2
+        {
+            background-image: url(image/tiles.png);
+            background-position: -16px -8px;
+        }
+        .v3
+        {
+            background-image: url(image/tiles.png);
+            background-position: -24px -8px;
+            -moz-transform: scale(-1, -1);
+        }
+        .v4
+        {
+            background-image: url(image/tiles.png);
+            background-position: -8px -8px;
+            -moz-transform: matrix(0, -1, -1, 0, 0, 0);
+        }
+        .v5
+        {
+            background-image: url(image/tiles.png);
+            background-position: -32px -8px;
+        }
+        .v6
+        {
+            background-image: url(image/tiles.png);
+            background-position: -24px -8px;
+           -moz-transform: matrix(0, 1, 1, 0, 0, 0);
+        }
+        .v7
+        {
+            background-image: url(image/tiles.png);
+            background-position: -40px -8px;
+        }
+        
+        .t1
+        {
+        	-moz-transform: rotate(90deg);
+        }
+        
+        .t2
+        {
+        	-moz-transform: rotate(180deg);
+        }
+        
+        .t3
+        {
+        	-moz-transform: rotate(270deg);
+        }
+        
+        .w6.t1, .v6.t1, .w4.t1, .v4.t1
+        {
+        	-moz-transform: rotate(0);
+        	}
+        	.w6.t2, .v6.t2, .w4.t2, .v4.t2
+        {
+        	-moz-transform: matrix(0, -1, -1, 0, 0, 0);
+        	}
+        	
+        	.w6.t3, .v6.t3, .w4.t3, .v4.t3
+        	{
+        		-moz-transform: rotate(180deg);
+        	}
+        
     </style>
 </head>
 <body>
-<div id="container">
-    <div class="content header">
-        <h1>Dungeon generation</h1>
-    </div>
-
-    <div class="content">
-        <div id="dng"></div>
-
-        <div class="empty_footer">
+    <div id="container">
+        <div class="content header">
+            <h1>
+                Dungeon generation</h1>
+        </div>
+        <div class="content">
+        
+        
+        <div style="width: 8px; height:8px" class="w3 t0"></div>
+        <div style="width: 8px; height:8px" class="w6 t0"></div>
+        
+        
+            <div id="dng"><pre>                                                                               
+                          ##############                                       
+   ########################............#                                       
+   #.........................###.......#     ###################               
+   #...........#############.###.......#   ###.................#               
+   #...........#           ##..........#   #...#.......#######.###             
+   #...........###############.#####.#######.#.........#     #...# ######      
+   #...........................................#.......#     ###.###....#      
+   #.##########################..######.##.#.###########       #...#....#      
+   #.........#                #....#.........#                 ###......#      
+   #########.###              #.##.#.###.#.###                   ###....#      
+           #...#     ##########.##...#...#.#                       ######      
+           ###.#     #.........`.........#.#                                   
+       #######.#######.########.######...#.#                                   
+       #.................................#.#                                  
+       #........#####.##......#.######.....#                                   
+       #..............##........#    #######                                   
+       ##########################                                              
+                                                                               
+                                </pre>
+            </div>
+            <div class="empty_footer">
+            </div>
         </div>
     </div>
-</div>
-<div id="footer">
-    <div class="content">
-        &copy; Vynogradov 2009
+    <div id="footer">
+        <div class="content">
+            &copy; Vynogradov 2009
+        </div>
     </div>
-</div>
-<script type="text/javascript" src="script/make-dng.js"></script>
+    <!--<script type="text/javascript" src="script/make-dng.js"></script>-->
+
+    <script type="text/javascript" src="script/render.js"></script>
+
 </body>
 </html>
