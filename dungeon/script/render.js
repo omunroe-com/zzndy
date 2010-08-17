@@ -33,39 +33,43 @@ try {
             var n6 = (i < h - 1 && j > 0) ? map[i + 1][j - 1] : c;
             var n7 = (j > 0) ? map[i][j - 1] : c;
 
-
-            function getImageId(c, n0, n1, n2) {
-                return parseInt((c == n0 ? '0' : '1') + (c == n1 ? '0' : '1') + (c == n2 ? '0' : '1'), 2);
+            function getImageId(n0, n1, n2, n3) {
+                return parseInt(('#' == n3 ? '1' : '0') + ('#' == n2 ? '1' : '0') + ('#' == n1 ? '1' : '0') + ('#' == n0 ? '1' : '0'), 2);
             }
 
-            var i0 = getImageId(c, n7, n0, n1);
-            var i1 = getImageId(c, n1, n2, n3);
-            var i2 = getImageId(c, n3, n4, n5);
-            var i3 = getImageId(c, n5, n6, n7);
+            var i0 = getImageId(n1, n0, n7, c);
+            var i1 = getImageId(n2, n1, c, n3);
+            var i2 = getImageId(n3, c, n5, n4);
+            var i3 = getImageId(c, n7, n6, n5);
 
             var cls = (c == "#" ? 'w' : 'v'); // wall or void
 
+            if(i == 0){
             row1.push('<td><div class="');
-            row1.push(cls + i0 + ' t0');
+            row1.push('t'+ i0 + ' ' + i + '-' + j);
             row1.push('"><div></td>');
+            }
 
             row1.push('<td><div class="');
-            row1.push(cls + i1 + ' t1');
+            row1.push('t' + i1);
             row1.push('"><div></td>');
 
+            if(j == 0){
             row2.push('<td><div class="');
-            row2.push(cls + i3 + ' t3');
+            row2.push('t' + i3);
             row2.push('"><div></td>');
+            }
 
             row2.push('<td><div class="');
-            row2.push(cls + i2+ ' t2');
+            row2.push('t' + i2);
             row2.push('"><div></td>');
         }
 
         text.push('<tr>');
-
+if(i==0){
         text.push(row1.join(''));
         text.push('</tr><tr>');
+}
         text.push(row2.join(''));
 
         text.push('</tr>');
