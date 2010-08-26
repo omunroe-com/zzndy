@@ -48,7 +48,12 @@
 			<div class="progress" id="progress">0.00 %</div>
 		</div>
 	</div>
-	<div id="out"></div>
+        <div id="out"></div>
+        <div id="msg"></div>
+        <ol>
+        <li>I want to be able to run more than one progressing operation, e.g. have like two progressbars.</li>
+        <li>I want background work to be executed in several concurent threads each with it's own weight coefitient.</li>
+        </ol>
         <div class="empty_footer">
         </div>
     </div>
@@ -58,29 +63,53 @@
         &copy; 2010 Vynogradov
     </div>
 </div>
+
 <script type="text/javascript" language="JavaScript">
 	var worker = new Worker('script/work.js');
 
 	var out = document.getElementById('out');
+	var msg = document.getElementById('msg');
 
-	var empty = document.getElementById('empty');
-	var filled = document.getElementById('filled');
-	var progress = document.getElementById('progress');
-	progress.style.width = empty.clientWidth + 'px';
-	filled.style.marginTop = '-' + empty.clientHeight + 'px';
+    var view = new ProgressView('empty', 'filled', 'progress');
 
-	worker.onmessage = function(event)
+    var messages = [];
+    var maxLength = 3;
+
+    // event.data.progress is total execution progress
+    // event.data.messages is an array of messages
+	worker.onmessage = function(e)
 	{
-		var progressPct = event.data * 100;
-		var data = progressPct.toFixed(2) + ' %';
+		var progressPct = e.data.progress * 100;
+        view.display(progressPct);
 
-		out.innerHTML = data;
-		empty.innerHTML = data;
-		progress.innerHTML = data;
-		filled.style.width = progressPct + '%';
+        if(e.data.messages != null && e.data.messages != [])
+            messages = messages.concat(e.data.messages);
 
-		empty.width = progressPct + '%';
+        if(messages.length > maxLength)
+            messages = messages.splice(messages.length - maxLength, maxLength);
+
+        msg.innerHTML = messages.join('<br />');
 	}
+
+    function ProgressView(emptyId, filledId, progressId)
+    {
+        var empty = document.getElementById(emptyId);
+        var filled = document.getElementById(filledId);
+        var progress = document.getElementById(progressId);
+        progress.style.width = empty.clientWidth + 'px';
+        filled.style.marginTop = '-' + empty.clientHeight + 'px';
+
+        this.display = function(progressPct)    {
+            var data = progressPct.toFixed(2) + ' %';
+
+            out.innerHTML = data;
+            empty.innerHTML = data;
+            progress.innerHTML = data;
+            filled.style.width = progressPct + '%';
+
+            empty.width = progressPct + '%';
+        }
+    }
 </script>
 </body>
 </html>
