@@ -18,9 +18,8 @@ progress.report = function(progress)
 
 var prog = -1;
 
-var max1 = 800;
-var max2 = 400;
-
+var max1 = 500 + Math.floor(Math.random() * 500);
+var max2 = 200 + Math.floor(Math.random() * 300);
 
 function frame()
 {

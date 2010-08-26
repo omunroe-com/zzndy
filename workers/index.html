@@ -42,16 +42,12 @@
     </div>
 
     <div class="content">
-	<div class="holder">
-		<div class="empty" id="empty">0.00 %</div>
-		<div class="filled" id="filled">
-			<div class="progress" id="progress">0.00 %</div>
-		</div>
-	</div>
-        <div id="out"></div>
+        <div id="pg1"></div>
+        <div id="pg2" style="margin-top: .1em"></div>
+
         <div id="msg"></div>
         <ol>
-        <li>I want to be able to run more than one progressing operation, e.g. have like two progressbars.</li>
+        <li><del>I want to be able to run more than one progressing operation, e.g. have like two progressbars</del>.</li>
         <li>I want background work to be executed in several concurent threads each with it's own weight coefitient.</li>
         </ol>
         <div class="empty_footer">
@@ -66,43 +62,59 @@
 
 <script type="text/javascript" language="JavaScript">
 	var worker = new Worker('script/work.js');
+	var worke2 = new Worker('script/work.js');
 
-	var out = document.getElementById('out');
 	var msg = document.getElementById('msg');
 
-    var view = new ProgressView('empty', 'filled', 'progress');
+    var view = new ProgressView('pg1');
+    var vie2 = new ProgressView('pg2');
 
     var messages = [];
-    var maxLength = 3;
+    var maxLength = 10;
 
     // event.data.progress is total execution progress
     // event.data.messages is an array of messages
-	worker.onmessage = function(e)
+	function getHandler(v)
 	{
-		var progressPct = e.data.progress * 100;
-        view.display(progressPct);
+        return function(e)
+        {
+		    var progressPct = e.data.progress * 100;
+            v.display(progressPct);
 
-        if(e.data.messages != null && e.data.messages != [])
-            messages = messages.concat(e.data.messages);
+            if(e.data.messages != null && e.data.messages != [])
+                messages = messages.concat(e.data.messages);
 
-        if(messages.length > maxLength)
-            messages = messages.splice(messages.length - maxLength, maxLength);
+            if(messages.length > maxLength)
+                messages = messages.splice(messages.length - maxLength, maxLength);
 
-        msg.innerHTML = messages.join('<br />');
+            msg.innerHTML = messages.join('<br />');
+        }
 	}
 
-    function ProgressView(emptyId, filledId, progressId)
+    worker.onmessage = getHandler(view);
+    worke2.onmessage = getHandler(vie2);
+
+    function ProgressView(holderId) //emptyId, filledId, progressId)
     {
-        var empty = document.getElementById(emptyId);
-        var filled = document.getElementById(filledId);
-        var progress = document.getElementById(progressId);
+        var holder = document.getElementById(holderId);
+        holder.className += ' holder';
+
+        var empty = holder.appendChild(document.createElement('div'));
+        var filled = holder.appendChild(document.createElement('div'));
+        var progress = filled.appendChild(document.createElement('div'));
+
+        empty.className = 'empty';
+        filled.className = 'filled';
+        progress.className = 'progress';
+
+        empty.innerHTML = "..."
+
         progress.style.width = empty.clientWidth + 'px';
         filled.style.marginTop = '-' + empty.clientHeight + 'px';
 
         this.display = function(progressPct)    {
             var data = progressPct.toFixed(2) + ' %';
 
-            out.innerHTML = data;
             empty.innerHTML = data;
             progress.innerHTML = data;
             filled.style.width = progressPct + '%';
