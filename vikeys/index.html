@@ -8,6 +8,12 @@
 
     <script type="text/javascript" src="../script/canvas.js"></script>
     <script type="text/javascript" src="script/vikeys.js"></script>
+    <style type="text/css">
+    	#out	{
+		font-family: monospace;
+		font-size: 200%;
+	}
+    </style>
 </head>
 <body>
 <div id="container">
@@ -17,7 +23,7 @@
 
     <div class="content">
 
-        <canvas id="canvas" width="900px" height="600px"></canvas>
+        <canvas id="canvas" width="100px" height="100px"></canvas>
 	<div id="out"></div>
 
         <div class="empty_footer">
@@ -42,7 +48,7 @@
 	var height = parseInt(canvas.height, 10);
 
 	ctx.translate(width/2, height/2);
-	ctx.scale(100, 100);
+	ctx.scale(50, 50);
 	ctx.fillStyle = '#eeeeee';
 	var vik = new ViKeysTrainer(canvas, document.getElementById('out'));
 	vik.start();

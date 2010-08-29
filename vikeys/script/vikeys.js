@@ -38,7 +38,7 @@ this.ViKeysTrainer = function(canvas, stdout)
 		{
 			ctx.clearRect(-1, -1, 2, 2);
 			draw(ctx, d);
-			stdout.innerHTML = d + '. ' + dir[d];
+			stdout.innerHTML = dir[d];
 			if(++d>=dir.length)d = 1;
 			window.setTimeout(f, 800);
 		}
