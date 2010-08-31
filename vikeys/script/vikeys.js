@@ -27,20 +27,50 @@ function draw(c, d)
 	draw(c,d);
 }
 
-this.ViKeysTrainer = function(canvas, stdout)
+this.ViKeysTrainer = function(ctx, stdout)
 {
-	var ctx = canvas.getContext('2d');
-
 	this.start = function()
 	{
 		var d = 1;
+        var handle;
+        var score = 0;
+        var lvl = 0;
+        var delay = 1200;
+        var special = ['yubn.'];
+
+        function out(msg)  {
+            stdout.innerHTML = ['Score: ', score, '; ', msg].join('');
+        }
+
+        window.onkeypress = function(e)
+        {
+                if(dir[d].charCodeAt(0) == e.charCode)
+                {
+                    window.clearTimeout(handle);
+                    score += lvl;
+                    out('Bingo');
+                    handle = window.setTimeout(f, 300);
+                }
+                else
+                {
+                    window.clearTimeout(handle);
+                    out('Wrong, <em>' + dir[d] + '</em> expected.');
+                    handle = window.setTimeout(f, 300);
+                }
+        }
+
 		var f = function()
 		{
+            var nd;
+            do{
+                nd = 1 + Math.floor(Math.random()*(dir.length - 1));
+                }while(nd == d || (lvl < special.length && special[lvl].indexOf(dir[nd]) != -1));
+                
+            d = nd;
+            out(dir[d]);
 			ctx.clearRect(-1, -1, 2, 2);
 			draw(ctx, d);
-			stdout.innerHTML = dir[d];
-			if(++d>=dir.length)d = 1;
-			window.setTimeout(f, 800);
+			handle = window.setTimeout(f, delay);
 		}
 
 		f();
