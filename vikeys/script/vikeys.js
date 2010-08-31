@@ -42,21 +42,22 @@ this.ViKeysTrainer = function(ctx, stdout)
             stdout.innerHTML = ['Score: ', score, '; ', msg].join('');
         }
 
-        window.onkeypress = function(e)
+        function okp(e)
         {
-                if(dir[d].charCodeAt(0) == e.charCode)
-                {
-                    window.clearTimeout(handle);
-                    score += lvl;
-                    out('Bingo');
-                    handle = window.setTimeout(f, 300);
-                }
-                else
-                {
-                    window.clearTimeout(handle);
-                    out('Wrong, <em>' + dir[d] + '</em> expected.');
-                    handle = window.setTimeout(f, 300);
-                }
+            window.removeEventListener('keypress', okp, false);
+            window.clearTimeout(handle);
+
+            if(dir[d].charCodeAt(0) == e.charCode)
+            {
+                score += Math.round((5+Math.pow(lvl+1, 1.5)*5)/5)*5;
+                out('Bingo');
+                handle = window.setTimeout(f, 300);
+            }
+            else
+            {
+                out('Wrong, <em>' + dir[d] + '</em> expected.');
+                handle = window.setTimeout(f, 300);
+            }
         }
 
 		var f = function()
@@ -64,9 +65,13 @@ this.ViKeysTrainer = function(ctx, stdout)
             var nd;
             do{
                 nd = 1 + Math.floor(Math.random()*(dir.length - 1));
-                }while(nd == d || (lvl < special.length && special[lvl].indexOf(dir[nd]) != -1));
+            }while(nd == d || (lvl < special.length && special[lvl].indexOf(dir[nd]) != -1));
                 
             d = nd;
+
+            window.removeEventListener('keypress', okp, false);
+            window.addEventListener('keypress', okp, false);
+            
             out(dir[d]);
 			ctx.clearRect(-1, -1, 2, 2);
 			draw(ctx, d);
