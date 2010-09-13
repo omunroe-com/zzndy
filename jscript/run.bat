@@ -1,0 +1,1 @@
+wscript /NoLogo script.js
