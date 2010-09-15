@@ -119,14 +119,22 @@ try {
     }
 
     var url = 'http://bash.org/?random1';
+    var max = 10;
 
-    while (quotes.length < 5000) {
+    while (quotes.length < max) {
         ajaxGet(url + '&rn=' + (new Date()).getTime(), fn, false);
-        echo('Have ' + quotes.length + ' quotes, ' + (5000 - quotes.length) + ' to go.');
+        var got = quotes.length;
+        echo('Have ' + got + ' quotes, ' + (max - got) + ' to go.');
     }
 
-    echo(quotes.length);
+    echo('Saving ' + quotes.length + ' quotes.');
+    var fso = WScript.CreateObject("Scripting.FileSystemObject");
+    var f = fso.CreateTextFile('quotes.html', true);
+    f.Write('<html><body>');
+    f.Write(quotes.map(function (t) { return t.text}).join('<hr/>\n\n'));
 
+    f.Write('</body></html>');
+    f.Close();
 }
 catch (ex) {
     echo('Error: ' + ex.message);
