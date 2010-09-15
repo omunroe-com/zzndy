@@ -1,6 +1,6 @@
 try {
     function echo(text) {
-        WScript.Echo(text);
+        WScript.StdOut.Write(text);
     }
 
     String.prototype.startsWith = function (text) {
@@ -68,7 +68,7 @@ try {
     function store(vals) {
         for (var i = 0; i < vals.length; ++i) quotes.push(vals[i]);
 
-     }
+    }
 
     var fn = function (data) {
         var text = data.replace(/\r?\n/g, '').split(/(<p\/>)?\s*<p class="quote">/).map(function (t) {
@@ -83,61 +83,77 @@ try {
         }).filter(function (t) { return t.text != '' && t.score > 1000 && t.id != -1 && quotes.indexOf(function (n) { return n.id == t.id }) == -1 });
 
         store(text);
+    }
 
-        //        var waitForQuote = true;
-        //        var quote = "";
-        //        var quotes = [];
-        //        for (var i = 0; i < text.length; ++i) {
-        //            var line = text[i];
-        //            if (waitForQuote) {
-        //                if (line.startsWith('<p class="quote">')) {
-        //                    waitForQuote = false;
-        //                    if (line.endsWith('</p>')) {
-        //                        waitForQuote = true;
-        //                        quotes.push(line);
-        //                    }
-        //                    else {
-        //                        quote += line;
-        //                    }
+    function fmtTime(time) {
+        var ns = 1000;
+        var nm = ns * 60;
+        var nh = nm * 60;
 
-        //                }
-        //            }
-        //            else {
-        //                if (line.endsWith('</p>')) {
-        //                    waitForQuote = true;
-        //                    quotes.push(quote + line);
-        //                    quote = '';
-        //                }
-        //                else {
-        //                    quote += line;
-        //                }
-        //            }
-        //        }
-        //        WScript.Echo(quotes[1]);
-        //        WScript.Echo(quotes[5]);
-        //        WScript.Echo(quotes[10]);
+        var h = (time - time % nh) / nh;
+        time -= h * nh;
+
+        var m = (time - time % nm) / nm;
+        time -= m * nm;
+
+        var s = (time - time % ns) / ns;
+
+        function f(n, t) {
+            return n > 0 ? n + ' ' + t + (n == 1 ? '' : 's') + ' ' : '';
+        }
+
+        return f(h, 'hour') + f(m, 'minute') + f(s, 'second');
     }
 
     var url = 'http://bash.org/?random1';
-    var max = 10;
+    var max = 5000;
+    var mlen = 0;
+
+    var start = (new Date()).getTime();
+    var last = 0;
+    var zeroed = 0;
 
     while (quotes.length < max) {
+        // Load quotes bypassing explorer's caching.
         ajaxGet(url + '&rn=' + (new Date()).getTime(), fn, false);
+        var time = (new Date()).getTime();
         var got = quotes.length;
-        echo('Have ' + got + ' quotes, ' + (max - got) + ' to go.');
+
+        // Safeguard agains to restrictive conditions
+        if (last == got) {
+            ++zeroed;
+            // Stop extraction if we faile to get any resources for some time.
+            if (zeroed > 20) {
+                echo('\nUnable to get more quotes.\n');
+                break;
+            }
+        }
+        else
+            last = got;
+
+        var left = (max * (time - start)) / got;
+        var msg = '\rLoading quotes - ' + fmtTime(left) + 'left.';
+
+        // Needed to clear previous messages' leftovers.
+        var mlen = Math.max(mlen, msg.length);
+
+        echo(msg + (new Array(Math.max(mlen - msg.length + 1, 0))).join(' '));
     }
 
-    echo('Saving ' + quotes.length + ' quotes.');
-    var fso = WScript.CreateObject("Scripting.FileSystemObject");
-    var f = fso.CreateTextFile('quotes.html', true);
-    f.Write('<html><body>');
-    f.Write(quotes.map(function (t) { return t.text}).join('<hr/>\n\n'));
+    var msg = '\rSaving ' + quotes.length + ' quotes.';
+    echo(msg + (new Array(Math.max(mlen - msg.length + 1, 0))).join(' ') + '\n');
 
+    var fso = WScript.CreateObject("Scripting.FileSystemObject");
+    var f = fso.CreateTextFile('quotes.html', true, -1);
+
+    f.Write('<html><body>');
+    f.Write(quotes.map(function (t) { return t.text }).join('<hr/>\n\n'));
     f.Write('</body></html>');
+
     f.Close();
 }
 catch (ex) {
-    echo('Error: ' + ex.message);
+    echo('Error: ' + ex.message + '\n');
 }
 
 
