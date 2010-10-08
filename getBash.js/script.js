@@ -80,7 +80,7 @@ try {
                 score: mt && mt[1] || -1,
                 text: t
             }
-        }).filter(function (t) { return t.text != '' && t.score > 1000 && t.id != -1 && quotes.indexOf(function (n) { return n.id == t.id }) == -1 });
+        }).filter(function (t) { return t.text != '' && t.score > 3000 && t.id != -1 && quotes.indexOf(function (n) { return n.id == t.id }) == -1 });
 
         store(text);
     }
