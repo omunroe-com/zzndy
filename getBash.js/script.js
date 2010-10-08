@@ -146,7 +146,9 @@ try {
     var fso = WScript.CreateObject("Scripting.FileSystemObject");
     var f = fso.CreateTextFile('quotes.html', true, -1);
 
-    f.Write('<html><body>');
+    f.Write('<html>');
+    f.Write('<head><base src="http://www.bash.org/" /></head>');
+    f.Write('<body>');
     f.Write(quotes.map(function (t) { return t.text }).join('<hr/>\n\n'));
     f.Write('</body></html>');
 
