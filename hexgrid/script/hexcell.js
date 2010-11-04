@@ -17,6 +17,15 @@ HexCell = function(width, side)	{
 
     var H = HexCell.prototype;
 
+H.getEdges = function(origin)	{
+    origin.y = -origin.y;
+    var vs =  this.vertices.map(function(v){
+        return v.plus(origin); 
+    });
+    
+    return [[vs[0], vs[1]],[vs[1], vs[2]],[vs[2], vs[3]],[vs[3], vs[4]],[vs[4], vs[5]],[vs[5], vs[0]]];
+}
+
 H.makePath = function(origin, ctx, noNeedToClose)	{
 	ctx.moveTo(origin.x + this.vertices[0].x, origin.y - this.vertices[0].y)
 	.lineTo(origin.x + this.vertices[1].x, origin.y - this.vertices[1].y)

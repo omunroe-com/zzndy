@@ -28,4 +28,8 @@
         if ( arguments.length == 2 ) return this.x >= 0 && this.y >= 0 && this.x <= x1 && this.y <= y1;
         return this.x >= x1 && this.y >= y1 && this.x <= x2 && this.y <= y2;
     };
+
+    P.plus = function(point)    {
+        return new Point(this.x + point.x, this.y + point.y);
+    }
 }(window));
