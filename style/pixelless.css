@@ -2,15 +2,17 @@ html, body {
     padding: 0;
     margin: 0;
     height: 100%;
-    font: normal 11pt / 1.65em Tahoma;
+    font: normal 11pt / 1.65em "Tahoma";
+    font-family: Tahoma, Geneva, sans-serif;
     font-weight: 500;
-    background-color: #262626;
-    color: #eee;
+    background-color: #12110f;
+    color: gray;
 }
 
 h1, h2, h3 {
     font-family: Georgia, "Times New Roman", serif;
     text-shadow: 0 .06em .09em #000;
+    color: silver;
 }
 
 h1, h2, h3, h4, h5 {
@@ -30,19 +32,19 @@ input, textarea {
 }
 
 a {
-    color: #67aefe;
+    color: silver;
 }
 
 a:visited {
-    color: #e66cff
+    color: gray;
 }
 
 a:hover {
-    color: #fff;
+    color: white;
 }
 
 a:hover:visited {
-    color: #fec1fe
+    color: silver;
 }
 
 pre a {
@@ -93,7 +95,6 @@ pre a {
 	line-height: 2em;
 	color: #35352a;
 	margin-left: .5em;
-	text-shadow: 0 0 .3em rgba(255, 255, 255, .5);
 }
 
 #menu0 a:first-child, #menu1 a:first-child, #menu2 a:first-child {
@@ -114,14 +115,19 @@ pre a {
 
 
 #menu0 a	{
-	font-size: 120%;
+	font-weight: bold;
+	text-shadow: 0 .09em .1em rgba(0,0,0,.5);
 }
 
 #menu0	{
 	background-color: #EBCD0B;
+	background-color: silver;
+	color: gray;
 }
 
 #menu1	{
     background-color: #149391;
+    background-color: gray;
+    color: black;
 }
 
