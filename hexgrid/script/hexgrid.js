@@ -30,12 +30,28 @@ H.hexOk = function(i, j) {
 };
 
 H.makeAllPaths = function(ctx) {
-    ctx.beginPath();
+    var all = []
     for (var i = 0; i < this.rows; ++i)
-        for (var j = 0; j < this.cols; ++j)
-            this.makePath(i, j, ctx)
+        for (var j = 0; j < this.cols; ++j) {
+        if(this.hexOk(i, j)){
+            var e = this.hex.getEdges(getCoords.call(this, i, j), ctx);
+ // TODO: Filter out edges is spacing is zero
+ //           if(spacing == 0)
+             all.push(e[0], e[1], e[2], e[3], e[4], e[5]);
+             }
+        }
 
-    return ctx.closePath();
+    this.makeAllPaths = function(ctx){
+        ctx.beginPath();
+        var i=-1, n = all.length;
+        while(++i<n)    {
+            var e = all[i];
+            ctx.moveTo(e[0].x, e[0].y).lineTo(e[1].x, e[1].y);
+        }
+        return ctx.closePath();
+    }
+
+    return this.makeAllPaths(ctx);
 };
 
 H.traceBorder = function(ctx) {
@@ -77,7 +93,6 @@ H.traceBorder = function(ctx) {
 
 H.strokeAll = function(ctx) {
     this.traceBorder(ctx).stroke();
-
     return this.makeAllPaths(ctx).stroke();
 };
 

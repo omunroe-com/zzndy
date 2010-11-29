@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VI Keys Trainer</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+
+    <script type="text/javascript" src="../script/canvas.js"></script>
+    <script type="text/javascript" src="script/vikeys.js"></script>
+    <style type="text/css">
+    	#out	{
+		font-family: monospace;
+		font-size: 200%;
+	}
+    </style>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>VI Keys Trainer</h1>
+    </div>
+
+    <div class="content">
+
+        <canvas id="canvas" width="100px" height="100px"></canvas>
+	<div id="out"></div>
+
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy;
+        <script type="text/javascript">
+            var a = ['and', 'mail'].join('y@g');
+            var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Filler', '"', '>Vynogradov<', '/a>'];
+            document.write(b.join(''));
+        </script>
+        2010
+    </div>
+</div>
+<script type="text/javascript">
+	var canvas = document.getElementById('canvas');
+	var ctx = canvas.getContext('2d');
+	var width = parseInt(canvas.width, 10);
+	var height = parseInt(canvas.height, 10);
+
+	ctx.translate(width/2, height/2);
+	ctx.scale(50, 50);
+    ctx.lineWidth = 1/50;
+	var vik = new ViKeysTrainer(ctx, document.getElementById('out'));
+	vik.start();
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <link rel="stylesheet" href="style/pixelless.css" type="text/css" />
+    <title>MSec</title>
+    <style type="text/css">
+        td
+        {
+            padding: .4em .5em;
+            line-height: 1em;
+        }
+        b
+        {
+            text-shadow: 0 .15em .03em black;
+            display: block;
+        }
+        span
+        {
+            font-size: 80%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="content header">
+            <h1>
+                MSec</h1>
+        </div>
+        <div class="content">
+            <div id="target">
+            </div>
+            <div class="empty_footer">
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div class="content">
+            &copy; 2010 Vynogradov
+        </div>
+    </div>
+    <script type="text/javascript" language="JavaScript">
+        var target = document.getElementById('target');
+        var buffer = [];
+
+        for (var i = 1; i < 10; ++i) {
+            out(
+            fmt(100 * i, 100 * i, 's'),
+            fmt(1000 * i, i, 'Ksec'),
+            fmt(100000 * i, 100 * i, 'Ksec'),
+            fmt(1000000 * i, i, 'Msec'),
+            fmt(10000000 * i, 10 * i, 'Msec'),
+            fmt(100000000 * i, 100 * i, 'Msec'));
+        }
+
+        flush();
+
+        function out() {
+            buffer.push('<tr><td width="', (100 / arguments.length).toFixed(2), '%">', [].join.call(arguments, '</td><td>'), '</td></tr>\n');
+        }
+
+        function flush() {
+            target.innerHTML = '<table>' + buffer.join('') + '</table>';
+            buffer = [];
+        }
+
+        function fmt(secs, outnum, suffix) {
+            return ['<b>', outnum, suffix, '</b>', makedate(secs)].join('');
+        }
+
+        function makedate(secs) {
+            var r = Math.floor;
+            var scales = [
+            [1, 'second'],
+            [60, 'minute'],
+            [60 * 60, 'hour'],
+            [24 * 60 * 60, 'day'],
+            [30 * 24 * 60 * 60, 'month'],
+            [365 * 24 * 60 * 60, 'year']
+        ];
+
+            var len = scales.length;
+
+            makedate = function (secs) {
+                var values = [];
+
+                values.push(secs % scales[1][0]);
+
+                for (var i = 1; i < len - 1; ++i) {
+                    values.push(r((secs % scales[i + 1][0]) / scales[i][0]));
+                }
+
+                values.push(r(secs / scales[len - 1][0]));
+                var str = ['<span title="'];
+
+                str.push('">');
+
+                for (var i = len - 1; i >= 0; --i) {
+                    var v = values[i];
+                    if (v > 0) {
+                        str.push(v, '&nbsp;', scales[i][1], v == 1 ? '' : 's');
+                        if (i > 0 && values[i - 1] * scales[i - 1][0] > v * scales[i][0] / 10) {
+                            var v = values[i - 1];
+                            str.push('&nbsp;', v, '&nbsp;', scales[i - 1][1], v == 1 ? '' : 's');
+                        }
+
+                        break;
+                    }
+                }
+                str.push('</span>');
+
+                return str.join('');
+            }
+
+            return makedate(secs);
+        }
+
+    </script>
+</body>
+</html>

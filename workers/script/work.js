@@ -2,16 +2,24 @@
 importScripts('progress.js');
 
 var progress = new ProgressBar();
+var n = 0;
+var msg = ["Hello world", "Loading confidential data", "Decoding", "Decoupling", "Dechunking chunks", "Spewing Spwe"];
+
 progress.report = function(progress)
 {
-	postMessage(progress);
+	postMessage({
+        progress:progress, 
+        messages:[
+            msg[Math.round(++n/10)%msg.length], 
+            msg[Math.round((++n*2)/15)%msg.length]
+        ]
+    });
 }
 
 var prog = -1;
 
-var max1 = 800;
-var max2 = 400;
-
+var max1 = 500 + Math.floor(Math.random() * 500);
+var max2 = 200 + Math.floor(Math.random() * 300);
 
 function frame()
 {

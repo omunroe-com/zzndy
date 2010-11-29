@@ -9,17 +9,12 @@
     <script type="text/javascript" src="../script/geometry.js"></script>
     <script type="text/javascript" src="script/hexcell.js"></script>
     <script type="text/javascript" src="script/hexgrid.js"></script>
-    <title>Hexademical grid</title>
-    <style type="text/css">
-        canvas {
-            border: 1px solid;
-        }
-    </style>
+    <title>Hexagonal grid</title>
 </head>
 <body>
 <div id="container">
     <div class="content header">
-        <h1>Hexademical grid</h1>
+        <h1>Hexagonal grid</h1>
     </div>
 
     <div class="content">
@@ -34,11 +29,13 @@
     </div>
 </div>
 <script type="text/javascript" language="JavaScript">
+    if(!('console' in this))console = {log:function(){}}
+
     var ctx = document.getElementById('target').getContext('2d');
     var off = new Point(400.5, 250.5);
     ctx.translate(off.x, off.y);
-    ctx.strokeStyle = 'rgba(215, 215, 215, .5)';
-    var grid = new HexGrid(15, 19, 40, 2);
+    ctx.strokeStyle = 'rgba(215, 215, 215, .3)';
+    var grid = new HexGrid(27, 27, 20, 0);
     console.log(grid.cap)
     grid.strokeAll(ctx);
 
@@ -47,19 +44,26 @@
         return new Point(e.clientX - e.target.offsetLeft, e.clientY - e.target.offsetTop);
     }
 
+    function time() {
+        return (new Date()).getTime();
+    }
+
     function click( e )
     {
+        var start = time();
         var pos = getPos(e);
 
         ctx.clearRect(-off.x, -off.y, 800, 500)
 
         var coords = grid.getAt(pos.x - off.x, pos.y - off.y);
         var i = coords[0], j = coords[1];
-        grid.fill(i, j, ctx)
+        ctx.fillStyle = 'rgba(155, 266, 200, .8)';
+        grid.fill(i, j, ctx);
         grid.strokeAll(ctx);
+        console.log(time() - start);
     }
 
-    document.getElementById('target').onclick = click;
+    document.getElementById('target').addEventListener('mousemove', click, false);//.onclick = click;
 
 </script>
 </body>

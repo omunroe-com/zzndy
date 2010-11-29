@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>Amphitheatre</title>
+		<script type="text/javascript" src="../script/util.js"></script>
+		<script type="text/javascript" src="../script/canvas.js"></script>
+		<link rel="stylesheet" type="text/css" href="../style/common.css" />
+	</head>
+	<body>
+		<div id="target"></div>
+		<script type="text/javascript">
+            var maxx = 800;
+            var maxy = 500;
+
+			var canvas = document.createElement('canvas');
+			canvas.setAttribute('width', maxx + 'px');
+			canvas.setAttribute('height', maxy + 'px');
+			var ctx = canvas.getContext('2d');
+			document.getElementById('target').appendChild(canvas);
+
+            ctx.save()
+                .translate(maxx/2, maxy/2)
+                .scale(1, -1)
+                .strokeStyle = '#d7d7d7';
+            
+            ctx.strokeCircle(0,0,30);
+
+            function onmove(e)
+            {
+                var x = e.clientX - e.target.offsetLeft - maxx/2;
+                var y = -(e.clientY - e.target.offsetTop - maxy/2);
+                ctx.clearRect(-maxx/2, -maxy/2, maxx, maxy)
+                    .beginPath()
+                    .moveTo(0, 0)
+                    .lineTo(x, y)
+                    .stroke()
+                    .strokeCircle(x, y, 5);
+            }
+
+            //canvas.addEventListener('mousemove', onmove, false);
+
+            function cos(x){return Math.cos(x);}
+            function sin(x){return Math.sin(x);}
+            function deg(x){return x * Math.PI / 180;}
+            function rnd(a,b){return a + Math.random() * (b - a)}
+
+            function Spectator(x, y, angle, dist, wide)
+            {
+                this.x = x;
+                this.y = y;
+                this.dist = dist;
+                this.angle = angle;
+                this.wide = wide;
+
+                this.draw = function(ctx)    {
+                ctx.save()
+                ctx.fillStyle = 'rgba(255, 100, 100, .05)';
+                ctx.translate(x, y)
+                    .strokeCircle(0,0,dist/25)
+                    .beginPath()
+                    .moveTo(0,0)
+                    .lineTo(dist*cos(angle - wide / 2), dist*sin(angle - wide / 2))
+                    .lineTo(dist*cos(angle + wide / 2), dist*sin(angle + wide / 2))
+                    .closePath()
+                    .fill()
+                    .restore();
+                }
+            }
+
+            var spec = [];
+            var num = 50;
+            var numrow = 4;
+
+            var start = deg(100);
+            var end = deg(320);
+            var firstRow = 100;
+            var rowDist = 40;
+
+            for(var i=0;i<num / numrow;++i)
+            {
+                for(var j=0;j<numrow;++j)
+                {
+                    var angle = start + (i + .5*(j%2)) * (end - start) / (num / numrow);
+                    var s = new Spectator(
+                        (firstRow + rowDist * j) * cos(angle),
+                        (firstRow + rowDist * j) * sin(angle),
+                        angle - deg(180) + rnd(deg(-10), deg(10)), 200 + rnd(-20, 20), deg(20)
+                    );
+
+                    s.draw(ctx);
+                    spec.push(s);
+                }
+            }
+
+		</script>
+	</body>
+</html>

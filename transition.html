@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>Hover</title>
+    <style type="text/css">
+        .button
+        {
+           -moz-border-radius: .2em;
+           padding: .2em;
+            -moz-transition-property: -moz-box-shadow;
+            -moz-transition-duration: .5s;
+           -moz-box-shadow: 0 .06em .3em rgba(0,0,0,.1);
+           display: inline-block;
+        }
+
+        .button:hover
+        {
+            -moz-transition-property: -moz-box-shadow;
+            -moz-transition-duration: .5s;
+            -moz-transition-timing-function: ease;
+            -moz-box-shadow: 0 .15em .4em rgba(0,0,0,.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="button">Hover me</div>
+</body>
+</html>

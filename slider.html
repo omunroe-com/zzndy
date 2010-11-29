@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <link rel="stylesheet" href="style/pixelless.css" type="text/css" />
+    <script type="text/javascript" src="../script/canvas.js" ></script>
+    <title>Slider</title>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="content header">
+            <h1>Slider</h1>
+        </div>
+        <div class="content">
+            <div id="slider">50 of 0 to 100</div>
+            <div class="empty_footer">
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div class="content">
+            &copy; 2010 Vynogradov
+        </div>
+    </div>
+    <script type="text/javascript" language="JavaScript">
+        var sliderElt = document.getElementById('slider');
+        var slider = new Slider(sliderElt);
+
+        function Slider(slider) {
+            function parseValue(str)
+            {
+                var [val, res] = str.split(' of ');
+                var [min, max] = res.split(' to ');
+                return [parseInt(min, 10), parseInt(max, 10), parseInt(val, 10)];
+            }
+
+            var w = parseInt(slider.clientWidth, 10);
+            var h = parseInt(slider.clientHeight, 10) * 2;
+            var v = slider.innerHTML;
+            var [min, max, val] = parseValue(v);
+
+            var can = document.createElement('canvas')
+            can.setAttribute('width', w + 'px');
+            can.setAttribute('height', h + 'px');
+            slider.parentNode.replaceChild(can, slider);
+
+            var ctx = can.getContext('2d');
+            var color = '#0493e1';
+            var color2 = 'rgba(0, 0, 0, .4)';
+            var pad = 4;
+            var thick = 3;
+
+            function draw() {
+                var end = (w - pad*2) * val / (max - min);
+                var hei = Math.floor((h-thick)/2);
+
+
+                ctx.fillStyle = color2;
+                ctx.fillRect(pad, hei, w-pad*2, thick);
+                ctx.fillStyle = color;
+                ctx.fillRect(pad, hei, end, thick);
+                ctx.fillRect(end + pad - pad/2, hei - 5, pad, 4);
+                ctx.fillRect(end + pad - pad/2, hei + 4, pad, 4);
+                ctx.fillStyle = 'rgba(255, 255, 255, .4444)';
+                ctx.fillRect(end + pad - pad/2, hei - 1, pad, 5);
+            }
+            
+            this.__defineGetter__('value', function(){
+                return val; 
+            });
+
+            this.__defineSetter__('value', function(value){
+                if(value >= min && value <= max)    {
+                    val = value;
+                    draw();
+                }
+            })
+
+            draw();
+        }
+    </script>
+</body>
+</html>
