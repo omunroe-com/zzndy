@@ -36,6 +36,9 @@ function Vehicle(pos, dir, mass, speed) {
     this.dir = dir;
     this.mass = mass;
     this.speed = speed;
+
+    this.sd = rnd(100) < 50 ? 1 : -1; 
+    this.sa = rnd(.2);
 }
 
 Vehicle.prototype.move = function(delay) {
@@ -43,9 +46,10 @@ Vehicle.prototype.move = function(delay) {
     this.pos.y = this.pos.y + this.speed * cos(this.dir) * delay / 1000;
 };
 
-var k = 2;
 Vehicle.prototype.steer = function(delay) {
-    this.dir += rnd(k / mass) - k / (mass * 2);
+    this.dir += this.sd * this.sa;
+    if(rnd(100) < 20) 
+	    this.sd = rnd(100) < 50 ? 1 : -1; 
 };
 
 Vehicle.prototype.clone = function() {

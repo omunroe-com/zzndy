@@ -79,7 +79,7 @@ Gun.prototype.shoot = function(delay, pos, dir) {
 
     if (this.waitingToShoot >= 1000 / this.rate) {
         this.waitingToShoot -= 1000 / this.rate;
-        if (--this.loaded <= 0) {
+        if (this.loaded-- <= 0) {
             this.reloadingFor = this.waitingToShoot;
         }
         else {
