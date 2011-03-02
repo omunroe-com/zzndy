@@ -47,7 +47,6 @@ namespace Progress
     public class FakeTask : ProgressBase
     {
         private readonly int _durationMs;
-        private float _progress;
 
         #region Implementation of IProgress
 
@@ -73,7 +72,7 @@ namespace Progress
         }
     }
 
-    public class ParallelProgress : SerialProgress
+    public class ParallelProgress : SerialProgressBase
     {
         public ParallelProgress(IEnumerable<Tuple<int, IProgress>> tasks)
             : base(tasks)
@@ -91,32 +90,19 @@ namespace Progress
                 tasks[i++] = Task.Factory.StartNew(() => tuple1.Item2.Run());
             }
 
-            Task.WaitAll();
+            Task.WaitAll(tasks);
         }
     }
 
-    public class SerialProgress : ProgressBase
+    public abstract class SerialProgressBase : ProgressBase
     {
-        protected readonly IEnumerable<Tuple<int, IProgress>> _tasks;
-
-        protected sealed class TaskRecord
-        {
-            public readonly float magnitude;
-            public float progress;
-
-            public TaskRecord(float work, float progress)
-            {
-                magnitude = work;
-                this.progress = progress;
-            }
-        }
-
+        protected IEnumerable<Tuple<int, IProgress>> _tasks;
         private readonly int _total;
-        protected readonly List<TaskRecord> progresses;
+        protected List<TaskRecord> progresses;
 
-        public SerialProgress(IEnumerable<Tuple<int, IProgress>> tasks)
+        protected SerialProgressBase(IEnumerable<Tuple<int, IProgress>> tasks)
         {
-            _tasks = tasks;
+            this._tasks = tasks;
             _total = tasks.Sum(p => p.Item1);
             progresses = new List<TaskRecord>();
 
@@ -128,6 +114,18 @@ namespace Progress
                 TaskRecord handle = new TaskRecord((float) work / _total, task.Progress);
                 task.Changed += Handle(handle);
                 progresses.Add(handle);
+            }
+        }
+
+        protected sealed class TaskRecord
+        {
+            public readonly float magnitude;
+            public float progress;
+
+            public TaskRecord(float work, float progress)
+            {
+                magnitude = work;
+                this.progress = progress;
             }
         }
 
@@ -145,6 +143,14 @@ namespace Progress
                            Update();
                        };
         }
+    }
+
+    public class SerialProgress : SerialProgressBase
+    {
+        public SerialProgress(IEnumerable<Tuple<int, IProgress>> tasks)
+            : base(tasks)
+        {
+        }
 
         public override void Run()
         {
@@ -157,22 +163,33 @@ namespace Progress
 
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             FakeTask t1 = new FakeTask(5000);
             FakeTask t2 = new FakeTask(1000);
             FakeTask t3 = new FakeTask(2500);
 
-            SerialProgress p = new SerialProgress(
-                new[]
-                    {
-                        new Tuple<int, IProgress>(10, t1),
-                        new Tuple<int, IProgress>(2, t2),
-                        new Tuple<int, IProgress>(5, t3)
-                    }
-                );
+            var tasks = new[]
+                            {
+                                new Tuple<int, IProgress>(10, t1),
+                                new Tuple<int, IProgress>(2, t2),
+                                new Tuple<int, IProgress>(5, t3)
+                            };
 
-            p.Changed += t_Changed;
+            Console.WriteLine("Serial:");
+            Console.WriteLine();
+            RunTasks(tasks, true);
+
+            Console.WriteLine("Parallel:");
+            Console.WriteLine();
+            RunTasks(tasks, false);
+        }
+
+        private static void RunTasks(IEnumerable<Tuple<int, IProgress>> tasks, bool serail)
+        {
+            var p = GetProgress(serail, tasks);
+
+            p.Changed += OnProgressChanged;
 
             Stopwatch watch = Stopwatch.StartNew();
             p.Run();
@@ -182,7 +199,12 @@ namespace Progress
             Console.WriteLine("{0}ms elapsed.", watch.ElapsedMilliseconds);
         }
 
-        private static void t_Changed(object sender, EventArgs e)
+        private static IProgress GetProgress(bool serial, IEnumerable<Tuple<int, IProgress>> tasks)
+        {
+            return serial ? new SerialProgress(tasks) : new ParallelProgress(tasks) as IProgress;
+        }
+
+        private static void OnProgressChanged(object sender, EventArgs e)
         {
             IProgress task = sender as IProgress;
             int pad = 11;
