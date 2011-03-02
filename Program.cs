@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Progress
 {
@@ -71,11 +73,33 @@ namespace Progress
         }
     }
 
+    public class ParallelProgress : SerialProgress
+    {
+        public ParallelProgress(IEnumerable<Tuple<int, IProgress>> tasks)
+            : base(tasks)
+        {
+        }
+
+        public override void Run()
+        {
+            Task[] tasks = new Task[progresses.Count];
+            int i = 0;
+
+            foreach (var tuple in _tasks)
+            {
+                Tuple<int, IProgress> tuple1 = tuple;
+                tasks[i++] = Task.Factory.StartNew(() => tuple1.Item2.Run());
+            }
+
+            Task.WaitAll();
+        }
+    }
+
     public class SerialProgress : ProgressBase
     {
-        private readonly IEnumerable<Tuple<int, IProgress>> _tasks;
+        protected readonly IEnumerable<Tuple<int, IProgress>> _tasks;
 
-        private sealed class TaskRecord
+        protected sealed class TaskRecord
         {
             public readonly float magnitude;
             public float progress;
@@ -88,28 +112,28 @@ namespace Progress
         }
 
         private readonly int _total;
-        private readonly List<TaskRecord> _progresses;
+        protected readonly List<TaskRecord> progresses;
 
         public SerialProgress(IEnumerable<Tuple<int, IProgress>> tasks)
         {
             _tasks = tasks;
             _total = tasks.Sum(p => p.Item1);
-            _progresses = new List<TaskRecord>();
+            progresses = new List<TaskRecord>();
 
             foreach (var tuple in tasks)
             {
                 int work = tuple.Item1;
                 IProgress task = tuple.Item2;
 
-                TaskRecord handle = new TaskRecord((float)work / _total, task.Progress);
+                TaskRecord handle = new TaskRecord((float) work / _total, task.Progress);
                 task.Changed += Handle(handle);
-                _progresses.Add(handle);
+                progresses.Add(handle);
             }
         }
 
         private void Update()
         {
-            Progress = _progresses.Sum(p => p.progress * p.magnitude);
+            Progress = progresses.Sum(p => p.progress * p.magnitude);
         }
 
         private EventHandler Handle(TaskRecord handle)
@@ -150,7 +174,12 @@ namespace Progress
 
             p.Changed += t_Changed;
 
+            Stopwatch watch = Stopwatch.StartNew();
             p.Run();
+            watch.Stop();
+
+            Console.WriteLine();
+            Console.WriteLine("{0}ms elapsed.", watch.ElapsedMilliseconds);
         }
 
         private static void t_Changed(object sender, EventArgs e)
