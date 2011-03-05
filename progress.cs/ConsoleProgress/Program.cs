@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Progress;
 
-namespace Progress
+namespace ConsoleProgress
 {
     internal class Program
     {
@@ -12,7 +13,8 @@ namespace Progress
             FakeTask t2 = new FakeTask(1000);
             FakeTask t3 = new FakeTask(2500);
 
-            Tuple<int, IProgress>[] tasks = new[]
+            Tuple<int, IProgress>[] tasks 
+                = new[]
                                                 {
                                                     new Tuple<int, IProgress>(10, t1),
                                                     new Tuple<int, IProgress>(2, t2),
