@@ -1,5 +1,6 @@
 <?php
 	session_start();
+		$_SESSION['backpass'] = true;
 
 	if(isset($_GET['logout'])):
 		unset($_SESSION['backpass']);
