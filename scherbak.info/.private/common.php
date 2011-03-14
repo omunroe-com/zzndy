@@ -6,7 +6,7 @@ define('USER_EXISTS',   'USER_EXISTS' );
 define('EMAIL_INVALID', 'EMAIL_INVALID');
 define('APPL_PENDING',  'APPL_PENDING');
 define('INVALID_LOGIN',  'INVALID_LOGIN');
-define('APPLICATION_PENDING',  'APPLICATION_PENDING');
+define('ACCESS_DENIED',  'ACCESS_DENIED');
 
 $lang = 'uk';
 require_once $include . $lang . '.php';

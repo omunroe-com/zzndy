@@ -6,6 +6,7 @@ require_once '.private/config.php';
 
 $path = $_GET['path'];
 
+// redirect to deafult language index page
 if($path == '')	{
 	$lang = $_SESSION['lang'];
 	if(!in_array($lang, $languages))
@@ -36,10 +37,12 @@ if(file_exists('.public/' . $lang . '/' . $file . '.html'))
 	exit();
 }
 
-echo file_exists('.public');
-echo file_exists('.public/' . $lang);
-echo file_exists('.public/' . $lang . '/' . $file . '.html');
+if($file == 'arch')
+{
+	echo 'YEAAAHHH';
+	exit();
+}
 
-echo 'Path: ';
-echo '\'' . $lang . '\' and \'' . $file . '\'';
+//echo '\'' . $lang . '\' and \'' . $file . '\'';
 
+header("HTTP/1.0 404 Not Found");

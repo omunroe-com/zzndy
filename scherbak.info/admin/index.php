@@ -1,5 +1,6 @@
 <?php
 
+include_once '../.private/config.php';
 require_once $include . 'admin_template.php';
 
 admin_header('Backend');

@@ -1,4 +1,6 @@
 <?php
+	require_once '../.private/config.php';	
+
 	session_start();
 
 	function file_extension($filename)
@@ -50,7 +52,8 @@
 		$user = User::FetchUser($_POST['login'], $_POST['passwd']);
 		if($user == null)
 			$error = INVALID_LOGIN;
-
+		else if($user->appl_resolution() != 'granted')
+			$error = ACCESS_DENIED;
 		else
 		{
 			$_SESSION['user'] = $_POST['login'];
@@ -81,25 +84,32 @@
 <body class="twoColElsLt">
 <div id="header">
   <div id="space"></div>
-  <div id="collage"></div>
+  <div id="collage">
+<a href="/">
+<h1>ЩЕРБАК</h1>
+<h2>Микола Миколайович</h2>
+<h3>Николай николаевич</h3>
+</a>
+</div>
+
   <div id="space1"></div>
   <div id="menu">
     <ul id="MenuBar1" class="MenuBarHorizontal">
-      <li><a href="/">Головна</a></li>
-      <li><a href="../biog.html">Біографія</a></li>
-      <li><a href="../science.html">Наукова робота</a></li>
-      <li><a href="../exp.html">Експедиції</a></li>
-      <li><a href="../museum.html">Музей</a></li>
-      <li><a href="#">Apxiв</a></li>
-<li><a href="../about.html">Про сайт</a></li>
+<li><a href="/uk/index/">Головна</a></li>
+<li><a href="/uk/bio/">Біографія</a></li>
+<li><a href="/uk/science/">Наукова робота</a></li>
+<li><a href="/uk/expedition/">Експедиції</a></li>
+<li><a href="/uk/museum/">Музей</a></li>
+<li><a href="/arch/">Apxiв</a></li>
+<li><a href="/uk/about/">Про сайт</a></li>
     </ul>
   </div>
     <div id="flags">
       <center><table width="100" height="29" border="0">
     <tr>
-        <td><a href="../index.html"><img src="../images/ukrflag.gif" alt="UA flag" width="20" height="15" border="1" /></a></td>
-        <td><img src="../images/rusflag.gif" alt="RU flag" width="20" height="15" border="1" /></td>
-        <td><img src="../images/ukflag.gif" alt="UK flag" width="20" height="15" border="1" /></td>
+        <td><a href="/uk/"><div class="uk flag"></div></a></td>
+        <td><div class="ru flag"></div></td>
+        <td><div class="en flag"></div></td>
       </tr>
       </table>
       </center>
@@ -126,7 +136,7 @@
     <h1> Архів </h1>
     <?php if(!isset($_SESSION['user'])):?>
     <p>Архівна частина сайту ММ. Щербака складається з двох частин: загальнодоступної (ця сторінка) та закритої. У закритій частині знаходяться експедиційні щоденники М.М., його спргади, листи, тощо.</p>
-    <p>Для отримання безкоштовного доступу до закритої частини, перейдіть на сторінку <a href="../registr.php" title="Регістрація">регістрації</a>.</p>
+    <p>Для отримання безкоштовного доступу до закритої частини, перейдіть на сторінку <a href="registr.php" title="Регістрація">регістрації</a>.</p>
     <?php if (!empty($error))print_error($error);?>
 
 	<p>Якщо ви вже зареєстровані на сайті, введіть свої дані:</p>

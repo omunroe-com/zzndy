@@ -87,8 +87,44 @@ hr	{
 	border-width: 1px 0 0 0;
 }
 
+form.void
+{
+	display: inline;
+}
+
+table.v-middle td
+{
+	vertical-align: middle;
+}
+
 a:target
 {
 	color: maroon;
 	font-weight: bold;
+}
+
+th.headerSortUp, th.headerSortDown
+{
+	padding-bottom: .4em;
+}
+
+th.header:after
+{
+	content: '⇕';
+	font-size: 1.5em;
+	color: blue;
+}
+
+th.headerSortDown:after
+{
+	content: '⇓';
+	font-size: 1.5em;
+	color: blue;
+}
+
+th.headerSortUp:after
+{
+	content: '⇑';
+	font-size: 1.5em;
+	color: blue;
 }
