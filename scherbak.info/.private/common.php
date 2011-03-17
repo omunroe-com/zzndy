@@ -35,13 +35,13 @@ function wrapdate($date)
 function timesince($original) {
     // array of time period chunks
     $chunks = array(
-	array(60 * 60 * 24 * 365 , 'year'),
-	array(60 * 60 * 24 * 30 , 'month'),
-	array(60 * 60 * 24 * 7, 'week'),
-	array(60 * 60 * 24 , 'day'),
-	array(60 * 60 , 'hour'),
-	array(60 , 'min'),
-	array(1 , 'sec'),
+		array(60 * 60 * 24 * 365 , 'year'),
+		array(60 * 60 * 24 * 30 , 'month'),
+		array(60 * 60 * 24 * 7, 'week'),
+		array(60 * 60 * 24 , 'day'),
+		array(60 * 60 , 'hour'),
+		array(60 , 'min'),
+		array(1 , 'sec'),
     );
 
     $today = time(); /* Current unix time  */
@@ -50,13 +50,13 @@ function timesince($original) {
     // $j saves performing the count function each time around the loop
     for ($i = 0, $j = count($chunks); $i < $j; $i++) {
 
-	$seconds = $chunks[$i][0];
-	$name = $chunks[$i][1];
+		$seconds = $chunks[$i][0];
+		$name = $chunks[$i][1];
 
-	// finding the biggest chunk (if the chunk fits, break)
-	if (($count = floor($since / $seconds)) != 0) {
-	    break;
-	}
+		// finding the biggest chunk (if the chunk fits, break)
+		if (($count = floor($since / $seconds)) != 0) {
+			break;
+		}
     }
 
     $print = ($count == 1) ? '1 '.$name : "$count {$name}s";

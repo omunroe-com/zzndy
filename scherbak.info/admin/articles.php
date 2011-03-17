@@ -63,6 +63,9 @@
 		header('Location: articles.php?edit=' . $article->id());
 	}
 
+	/**
+	 * Render - create full html code - of an article.
+	 */
 	function render($article)
 	{
 		global $include;
@@ -83,7 +86,7 @@ MENU;
 		$file = file_get_contents( $include . 'user_template.html' );
 		$contents = str_replace($search, $replace, $file);
 		file_put_contents( $_SERVER['DOCUMENT_ROOT'] . '/.public/' . $article->full_path() . '.html', $contents );
-
+		echo $_SERVER['DOCUMENT_ROOT'] . '/.public/' . $article->full_path() . '.html';
 	}
 
 	function hidden($name, $value, $attrs = array())
@@ -97,7 +100,8 @@ MENU;
 
 	function textbox($name, $value, $len)
 	{
-		echo "<input type=\"text\" value=\"$value\" name=\"$name\" maxlenght=\"$len\" />\n";
+	    $size = $len / 4;
+		echo "<input type=\"text\" value=\"$value\" name=\"$name\" maxlenght=\"$len\" size=\"$size\" />\n";
 	}
 
 	function radios($name, $values, $default)
@@ -155,7 +159,9 @@ MENU;
 	foreach($list as $article)
 	{	
 		echo '<tr><td>';
-		echo '<a href="?edit=' . $article->id() . '">' . $article->full_path() . '</a>';
+		echo '<a href="?edit=' . $article->id() . '" title="Edit article ' . $article->title() . '">' . $article->full_path() . '</a>';
+		echo '</td><td>';
+		echo '&nbsp;&nbsp;<a href="/' . $article->full_path() . '" target="_blank" title="View article ' . $article->title() . '">View</a>&nbsp;&nbsp;';
 		echo '</td><td>';
 		postlink('Del', '', array('delete' => $article->id()), array('onsubmit' => "return confirm('Are you sure to delete {$article->title()} at {$article->full_path()}?')"));
 		echo '</td></tr>';
@@ -182,7 +188,7 @@ MENU;
 
 		hidden('markdown', '', array('id' => 'markdown'));
 		echo '<br/>Title: ';
-		textbox('title', $mode == M_EDIT ? $article->title() : '', 50);?>
+		textbox('title', $mode == M_EDIT ? $article->title() : '', 200);?>
 	<input type="submit" id="submit" value="Save" />
 	<textarea name="article" id="article" style="width:100%; height: 20em;" ><?php
 		echo $article->body();
@@ -203,6 +209,6 @@ MENU;
 		}
 
 		</script>
-<?php } ?>
+<?php } 
 
-<?php echo admin_footer()?>
+ echo admin_footer();

@@ -59,7 +59,7 @@ function admin_footer()
 	<footer id="empty-footer"></footer>
 	</div>
 	<!--<aside></aside>-->
-	<footer>&copy; 2009-2010</footer>
+	<footer>&copy; 2009-2011</footer>
 </body>
 
 </html>

@@ -5,12 +5,12 @@ $config = array(
 	'user' => 'scherbak_info',
 	'pass' => 'vAyUKss2',
 	'email' => 'zzandy+info-scherbaknn@gmail.com',
-	'admin' => '$shm@CH3r',
-	'admin-pass' => '36d3880f4ed11250bc365c14cb40501c9b450df3',
+	'admin' => 'admin',
+	'admin-pass' => 'f20b737dfd7c8fd06e22680cb29977817c900ec5',
 	'admin-email' => 'zzandy+scherbak@gmail.com',
 	'home-url' => 'http://scherbak.info/',
 	'email-divert' => 'zzandy+sample-mail@gmail.com',
-	'default-lang' => 'en'
+	'default-lang' => 'uk'
 	);
 
 $languages = array('en', 'uk', 'ru');

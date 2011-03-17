@@ -22,7 +22,7 @@
 	  <a href="/">
 <h1>ЩЕРБАК</h1>
 <h2>Микола Миколайович</h2>
-<h3>Николай николаевич</h3>
+<h3>Николай Николаевич</h3>
 </a>
 
 </div>
@@ -32,10 +32,10 @@
       <li><a href="index.html">Головна</a>      </li>
       <li><a href="biog.html">Біографія</a></li>
       <li><a href="science.html"><strong>Наукова робота</strong></a></li>
-<li><a href="exp.html">Експедиції</a></li>
-<li><a href="museum.html">Музей</a></li>
-<li><a href="arch">Apxiв</a></li>
-<li><a href="about.html">Про сайт</a></li>
+      <li><a href="exp.html">Експедиції</a></li>
+      <li><a href="museum.html">Музей</a></li>
+      <li><a href="arch">Apxiв</a></li>
+      <li><a href="about.html">Про сайт</a></li>
     </ul>
   </div>
     <div id="flags">
@@ -69,7 +69,7 @@
     Щербак М.М. приймав активну участь у  громадському житті України, плідно співпрацював з закордонними колегами, був  одним з авторів довідника по рептиліях і амфібіях Европи.</p>
 <!-- end #mainContent --></div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
-     <div id="footnote">Copyright © 2009 Scherbak NN. All Rights Reserved</div>
+     <div id="footnote">Copyright © 2009-2011 Scherbak NN. All Rights Reserved.</div>
 <!-- end #container --></div>
 <script type="text/javascript">
 <!--
