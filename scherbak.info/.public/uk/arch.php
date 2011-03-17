@@ -1,5 +1,5 @@
 <?php
-	require_once '../.private/config.php';	
+	require_once '/.private/config.php';	
 
 	session_start();
 
@@ -57,7 +57,17 @@
 		else
 		{
 			$_SESSION['user'] = $_POST['login'];
-			header('Location: .');
+			
+			if(isset($_SESSION['goto']))
+			{
+				$link = $_SESSION['goto'];
+				unset($_SESSION['goto']);
+				header('Location: /' . $link);
+			}
+			else
+			{
+				header('Location: .');
+			}
 		}
 	}
 
@@ -66,7 +76,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Микола Миколайович Щербак</title>
-<link href="../css/common.css" rel="stylesheet" type="text/css" /><!--[if IE]>
+<link href="/css/common.css" rel="stylesheet" type="text/css" /><!--[if IE]>
 <style type="text/css"> 
 /* place css fixes for all versions of IE in this conditional comment */
 .twoColElsLt #sidebar1 { padding-top: 30px; }
@@ -74,8 +84,8 @@
 /* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
 </style>
 <![endif]-->
-<script src="../SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
-<link href="../SpryAssets/SpryMenuBarHorizontal.css" rel="stylesheet" type="text/css" />
+<script src="/SpryAssets/SpryMenuBar.js" type="text/javascript"></script>
+<link href="/SpryAssets/SpryMenuBarHorizontal.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/js/jquery.lightbox-0.5.pack.js"></script>
 <link rel="stylesheet" type="text/css" href="/css/jquery.lightbox-0.5.css" media="screen" />
@@ -100,26 +110,18 @@
 <li><a href="/uk/science/">Наукова робота</a></li>
 <li><a href="/uk/expedition/">Експедиції</a></li>
 <li><a href="/uk/museum/">Музей</a></li>
-<li><a href="/arch/">Apxiв</a></li>
+<li><a href="/uk/arch/">Apxiв</a></li>
 <li><a href="/uk/about/">Про сайт</a></li>
     </ul>
   </div>
     <div id="flags">
-      <center><table width="100" height="29" border="0">
-    <tr>
-        <td><a href="/uk/"><div class="uk flag"></div></a></td>
-        <td><div class="ru flag"></div></td>
-        <td><div class="en flag"></div></td>
-      </tr>
-      </table>
-      </center>
      
 </div>
   <div id="space2"></div>
 </div>  
 <div id="container">
     <div id="sidebar1">
-      <p><img src="../images/image3.jpg" alt="Portret1" width="200" height="146" align="left" /></p>
+      <p><img src="/images/image3.jpg" alt="Portret1" width="200" height="146" align="left" /></p>
   <!-- end #sidebar1 --></div>
   <div id="mainContent">
   <?php if(isset($_SESSION['user'])):
@@ -129,14 +131,14 @@
   ?>
 
 	<div class="logout">
-		Logged in as <b><span><?php echo $first?></span>@<span><?php echo $rest?></span></b>, <a href="?logout">logout</a>.
+		<?php echo LOGGED_IN_AS()?> <b><span><?php echo $first?></span>@<span><?php echo $rest?></span></b>, <a href="?logout"><?php echo LOGOUT()?></a>.
 	</div>
 
   <?php endif?>
-    <h1> Архів </h1>
     <?php if(!isset($_SESSION['user'])):?>
+	<h1> Архів </h1>
     <p>Архівна частина сайту ММ. Щербака складається з двох частин: загальнодоступної (ця сторінка) та закритої. У закритій частині знаходяться експедиційні щоденники М.М., його спргади, листи, тощо.</p>
-    <p>Для отримання безкоштовного доступу до закритої частини, перейдіть на сторінку <a href="registr.php" title="Регістрація">регістрації</a>.</p>
+    <p>Для отримання безкоштовного доступу до закритої частини, перейдіть на сторінку <a href="../register" title="Регістрація">регістрації</a>.</p>
     <?php if (!empty($error))print_error($error);?>
 
 	<p>Якщо ви вже зареєстровані на сайті, введіть свої дані:</p>
@@ -147,8 +149,15 @@
 	<br />
 	<input type="submit" value="Login"/>
     </form>
-    <?php else:?>
+    <?php else:
+		require_once $include . 'article.php';
+		
+		$article = Article::getByPath($_SESSION['lang'], 'arch');
+	    echo $article->html();
+	?>
 
+	
+	
 	<div class="gallery" id="gallery">
 
 		<?php 
@@ -183,5 +192,6 @@
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
-  </div></div></body>
+  </div><!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
+     <div id="footnote">Copyright © 2009-2011 Scherbak NN. All Rights Reserved.</div></div></body>
 </html>

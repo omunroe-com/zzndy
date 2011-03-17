@@ -20,7 +20,6 @@
 				<th>Email/Login</th>
 				<th>Registered</th>
 				<th>Last&nbsp;Logged&nbsp;In</th>
-				<th colspan="2"></th>
 			</tr>
 			</thead>
 			<tbody>

@@ -1,5 +1,5 @@
 <?php
-include_once '../.private/config.php';
+include_once '/.private/config.php';
 
 $http_vars = $_POST;
 $email = $http_vars['email'];
@@ -23,7 +23,7 @@ if(isset($email))
     try{
 	    try_add_user($email, $pass1, $pass2, $lname, $fname, $comnt);
 		$_SESSION['appl_pending'] = 'yes';
-		header('Location: registr.php');
+		header('Location: ../register');
     }
     catch(Exception $ex)
     {
@@ -68,20 +68,12 @@ if(isset($email))
 <li><a href="/uk/science/">Наукова робота</a></li>
 <li><a href="/uk/expedition/">Експедиції</a></li>
 <li><a href="/uk/museum/">Музей</a></li>
-<li><a href="/arch/">Apxiв</a></li>
+<li><a href="/uk/arch/">Apxiв</a></li>
 <li><a href="/uk/about/">Про сайт</a></li>
     </ul>
   </div>
     <div id="flags">
-      <center><table width="100" height="29" border="0">
-    <tr>
-        <td><a href="/uk/"><div class="uk flag"></div></a></td>
-        <td><div class="ru flag"></div></td>
-        <td><div class="en flag"></div></td>
-      </tr>
-      </table>
-      </center>
-     
+         
 </div>
   <div id="space2"></div>
 </div>  

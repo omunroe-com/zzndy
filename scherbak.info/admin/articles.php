@@ -77,7 +77,7 @@
 <li><a href="/uk/science/">Наукова робота</a></li>
 <li><a href="/uk/expedition/">Експедиції</a></li>
 <li><a href="/uk/museum/">Музей</a></li>
-<li><a href="/arch/">Apxiв</a></li>
+<li><a href="/uk/arch/">Apxiв</a></li>
 <li><a href="/uk/about/">Про сайт</a></li>
 MENU;
 

@@ -113,7 +113,7 @@ class Article
 		global $db;
 
 		$stmt = $db->prepare('SELECT article_id, title, body, html FROM sch_articles WHERE lang = ? AND path = ? LIMIT 1');
-		$stmt->bind_param('ss', $lagn, $path);
+		$stmt->bind_param('ss', $lang, $path);
 
 		$stmt->execute();
 		$stmt->bind_result($id, $title, $text, $html);

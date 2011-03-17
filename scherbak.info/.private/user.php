@@ -96,7 +96,8 @@ class User
 		$users = array();
 		$res = $db->query(
 			'SELECT email, fname,  lname, registered_on, last_logged_on, application_id, resolution '
-			. 'FROM sch_users INNER JOIN sch_applications ON sch_applications.user_id = sch_users.user_id ');
+			. 'FROM sch_users INNER JOIN sch_applications ON sch_applications.user_id = sch_users.user_id '
+			. 'WHERE resolution != \'denied\' ');
 
 		if($res)
 		{
@@ -140,22 +141,22 @@ class User
         $this->_lname = $lname;
         $this->_registered_on = $registered_on;
         $this->_last_logged_on = $last_logged_on;
-	$this->_appl_id = $appl_id;
-	$this->_appl_resolution = $appl_resolution;
+		$this->_appl_id = $appl_id;
+		$this->_appl_resolution = $appl_resolution;
     }
 
     public function toAdminString()
     {
-	$text = '<tr>';
-	$text .= '<td><a href="applications.php?#appl-' . $this->_appl_id . '">' . $this->appl_resolution() . '</a></td>';
-	$text .= '<td>' . $this->fname() . '</td>';
-	$text .= '<td>' . $this->lname() . '</td>';
-	$text .= '<td>' . $this->email() . '</td>';
-	$text .= '<td><span style="display: none">' . strtotime($this->registered_on()) . '</span>' . wrapdate($this->registered_on()) . '</td>';
-	$text .= '<td><span style="display: none">' . strtotime($this->last_logged_on()) . '</span>' . wrapdate($this->last_logged_on()) . '</td>';
-	$text .= '</tr>';
-	$text .= "\n";
+		$text = '<tr>';
+		$text .= '<td><a href="applications.php?#appl-' . $this->_appl_id . '">' . $this->appl_resolution() . '</a></td>';
+		$text .= '<td>' . $this->fname() . '</td>';
+		$text .= '<td>' . $this->lname() . '</td>';
+		$text .= '<td>' . $this->email() . '</td>';
+		$text .= '<td><span style="display: none">' . strtotime($this->registered_on()) . '</span>' . wrapdate($this->registered_on()) . '</td>';
+		$text .= '<td><span style="display: none">' . strtotime($this->last_logged_on()) . '</span>' . wrapdate($this->last_logged_on()) . '</td>';
+		$text .= '</tr>';
+		$text .= "\n";
 
-	return $text;
+		return $text;
     }
 }

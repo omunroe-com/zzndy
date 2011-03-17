@@ -9,3 +9,5 @@ function EMAIL_INVALID() {?> Введіть, будьласка, діючу ад
 function SHORT_COMMENT() {?> Будьласка, залиште комментар.<?php }
 function INVALID_LOGIN() {?> Невірний логін або пароль.<?php }
 function ACCESS_DENIED() {?> Вашу заявку ще не розглянули. Вибачте за незручності.<?php }
+function LOGGED_IN_AS(){?> <?php }
+function LOGOUT(){?>Вийти<?php }
