@@ -213,7 +213,7 @@ form input
 	background-repeat: no-repeat;
 }
 
-#colage a, #collage a *{
+#colage a, #collage a *, #colage a:visited, #collage a:visited *{
 	text-decoration: none;
 }
 

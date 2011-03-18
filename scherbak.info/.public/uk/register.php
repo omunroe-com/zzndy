@@ -1,5 +1,4 @@
 <?php
-include_once '/.private/config.php';
 
 $http_vars = $_POST;
 $email = $http_vars['email'];
@@ -14,7 +13,7 @@ require_once $include . 'adduser.php';
 require_once $include . 'common.php';
 
 $appl_pending = false;
-session_start();
+
 if(isset($_SESSION['appl_pending']))
 	$appl_pending = true;
 

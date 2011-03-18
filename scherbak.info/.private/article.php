@@ -1,5 +1,4 @@
 <?php
-
 require_once $include . 'db.php';
 
 class Article
@@ -58,12 +57,21 @@ class Article
 	{
 		global $db;
 
-		$stmt = $db->prepare('SELECT lang, path, title, body, html FROM sch_articles WHERE article_id = ? LIMIT 1');
+		$stmt = $db->prepare('SELECT lang, path, title, body FROM sch_articles WHERE article_id = ? LIMIT 1');
 		$stmt->bind_param('d', $id);
 
 		$stmt->execute();
-		$stmt->bind_result($lang, $path, $title, $text, $html);
+		$stmt->bind_result($lang, $path, $title, $text);
 		$stmt->fetch();
+		$stmt->close();
+		
+		$stmt = $db->prepare('SELECT lang, path, title, html FROM sch_articles WHERE article_id = ? LIMIT 1');
+		$stmt->bind_param('d', $id);
+
+		$stmt->execute();
+		$stmt->bind_result($lang, $path, $title, $html);
+		$stmt->fetch();
+		$stmt->close();
 
 		return new Article($id, $lang, $path, $title, $text, $html);
 	}
@@ -103,7 +111,7 @@ class Article
 
 		$res = $db->query('SELECT LAST_INSERT_ID()');
 		$obj = $res->fetch_row();
-	        $article_id = $obj[0];
+	    $article_id = $obj[0];
 
 		return new Article($article_id, $lang, $path, $title, $text, $html);
 	}
@@ -111,15 +119,22 @@ class Article
 	public static function getByPath($lang, $path)
 	{
 		global $db;
-
-		$stmt = $db->prepare('SELECT article_id, title, body, html FROM sch_articles WHERE lang = ? AND path = ? LIMIT 1');
+		
+		$stmt = $db->prepare('SELECT article_id, title, html FROM sch_articles WHERE lang = ? AND path = ? LIMIT 1');
 		$stmt->bind_param('ss', $lang, $path);
-
 		$stmt->execute();
-		$stmt->bind_result($id, $title, $text, $html);
+		$stmt->bind_result($id, $title, $html);
 		$stmt->fetch();
-
-		return new Article($id, $lang, $path, $title, $text, $html);
+		$stmt->close();
+		
+		$stmt = $db->prepare('SELECT article_id, title, body FROM sch_articles WHERE lang = ? AND path = ? LIMIT 1');
+		$stmt->bind_param('ss', $lang, $path);
+		$stmt->execute();
+		$stmt->bind_result($id, $title, $body);
+		$stmt->fetch();
+		$stmt->close();
+	
+		return new Article($id, $lang, $path, $title, $body, $html);
 	}
 
 	private function __construct($id, $lang, $path, $title, $text, $html)
