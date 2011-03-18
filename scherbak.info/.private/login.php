@@ -19,7 +19,7 @@
 			<form method="post">
 				<p>
 					<label for="login">Login</label><br />
-					<input type="text" name="login" autocomplete="off" />
+					<input type="text" name="login" autocomplete="off" id="login" />
 				</p>
 				<p>
 					<label for="pass">Password</label><br />
@@ -30,6 +30,9 @@
 				</p>
 			</form>
 		</section>
+		<script type="text/javascript">
+			document.getElementById('login').focus();
+		</script>
 <?php 
 		admin_footer();
 exit;

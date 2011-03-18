@@ -1,8 +1,4 @@
-<?php
-	require_once '/.private/config.php';	
-
-	session_start();
-
+﻿<?php
 	function file_extension($filename)
 	{
 	    $path_info = pathinfo($filename);
@@ -155,19 +151,17 @@
 		$article = Article::getByPath($_SESSION['lang'], 'arch');
 	    echo $article->html();
 	?>
-
-	
 	
 	<div class="gallery" id="gallery">
 
 		<?php 
 			$exts = array('png', 'jpg', 'jpeg');
-			$files = array('alpha', 'bravo');
-			foreach(glob('thumb/*.*') as $file)
+			foreach(glob('files/*.*') as $file)
 			{
 				$ext = substr($file, strrpos($file, '.') + 1);
+				$name = substr($file, strpos($file, '/')+1);
 				if(in_array($ext, $exts))				
-					echo '<span><a href="'.substr($file, strpos($file, '/')+1).'"><img src="' . $file . '"/></a></span>';
+					echo "<span><a href=\"/files/$name\"><img src=\"/files/thumbs/$name\"/></a></span>";
 			}
 
 		?>

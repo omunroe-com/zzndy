@@ -64,6 +64,10 @@ form input
 	margin-bottom: -2em;
 	text-align: right;
 }
+.gallery	
+{
+	margin-left: -150px;
+}
 
 .gallery span
 {
