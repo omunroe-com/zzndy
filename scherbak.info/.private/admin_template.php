@@ -17,6 +17,7 @@ function admin_header($title)
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title><?php echo $title?> - Scherbak.info</title>
 	<link rel="stylesheet" href="/styles/admin.css" type="text/css" />
 </head>
@@ -58,8 +59,7 @@ function admin_footer()
 	</article>
 	<footer id="empty-footer"></footer>
 	</div>
-	<!--<aside></aside>-->
-	<footer>&copy; 2009-2011</footer>
+	<footer>&copy; Vynogradov 2009&nbsp;&mdash;&nbsp;2011</footer>
 </body>
 
 </html>

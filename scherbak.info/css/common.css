@@ -1,6 +1,6 @@
 @charset "utf-8";
 body  {
-	font: 100%/150% sans-serif;
+	font: 100%/150% Georgia,"Times New Roman",serif;
 	background: #CFCFB0;
 	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
 	padding: 0;
@@ -14,7 +14,7 @@ h1, h2, h3, h4
 {
 	color: #000;
 	font: 1.8em Georgia,"Times New Roman",serif;
-	text-shadow: 0 .05em .06em black;
+	text-shadow: 0 1px 0 #fff;
 }
 h2 {
 	font-size:1.5em;
@@ -63,10 +63,6 @@ form input
 	margin: 0 -1.2em -2em 0;
 	margin-bottom: -2em;
 	text-align: right;
-}
-.gallery	
-{
-	margin-left: -150px;
 }
 
 .gallery span
@@ -135,6 +131,7 @@ form input
 	padding-bottom: 15px;
 	padding-left: 0;
 	background-color: #F3F3F3;
+	margin-right: 2em;
 }
 .twoColElsLt #sidebar1 h3, .twoColElsLt #sidebar1 p {
 	margin-left: 10px; /* the left and right margin should be given to every element that will be placed in the side columns */
@@ -153,7 +150,7 @@ form input
 	margin-top: 0;
 	margin-right: 1.5em;
 	margin-bottom: 0;
-	margin-left: 14em;
+	margin-left: 2em;
 } 
 
 /* Miscellaneous classes for reuse */
@@ -192,8 +189,7 @@ form input
 	border: 1px solid #8E8E79;
 	background-color: #F3F3F3;
 	text-align: right;
-	height: 30px
-
+	height: 30px;
 }
 
 #flags {
@@ -213,8 +209,8 @@ form input
 	background-repeat: no-repeat;
 }
 
-#colage a, #collage a *, #colage a:visited, #collage a:visited *{
-	text-decoration: none;
+#collage > a	{
+	text-decoration: none !important;
 }
 
 .flag
@@ -251,6 +247,9 @@ ul.MenuBarHorizontal li a
 	float: left;
 	margin-bottom: 1px;
 	width: 670px;
+	
+	text-shadow: 0 1px 0 #fff;
+	font-weight: normal;
 }
 
 #flags
@@ -271,20 +270,15 @@ ul.MenuBarHorizontal li a
 	border-collapse: collapse
 }
 
+table
+{
+	width: 100%;
+}
+
 table tr
 {
 	vertical-align: top;
-}
-
-table tr:nth-child(even)
-{
-	background-color: rgba(201, 207, 176, .1);
-}
-
-table.wider
-{
-	margin-left: -110px;
-	width: 550px;
+	border-bottom: 1px solid silver;
 }
 
 hr
@@ -300,6 +294,7 @@ hr
 	padding: 0;
 	margin: 0 0 0 44px;
 	text-transform: uppercase;
+	text-shadow: 0 1px 1px black;
 }
 
 #collage h2, #collage h3
