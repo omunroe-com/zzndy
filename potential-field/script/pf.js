@@ -164,6 +164,11 @@ C.getForce = function(x, y, x0, y0)
     return force;
 };
 
+C.times = function(m)
+{
+	return new Charge(this.centerforce * m, this.zeroradius * m);
+};
+
 Wall = function(dx, dy, centerforce, zeroradius)
 {
     this.dx = dx;

@@ -28,8 +28,9 @@
 <script type="text/javascript" language="JavaScript">
 	var canvas = document.getElementById('can');
 	var ctx = canvas.getContext('2d');
-	ctx.strokeStyle = 'gold';
+	ctx.strokeStyle = '#555';
 	ctx.translate(0.5, .5);
+	ctx.translate(30,30);
 	var point = new Point(0,0);
 	
 	var height = 500, width = 800;
@@ -42,7 +43,7 @@
 	
 	function frame(t)
 	{
-		ctx.clearRect(0,0,800,500);
+		ctx.clear();
 		
 		ctx.moveTo(0, point.y);
 		ctx.lineTo(point.x, point.y);
@@ -106,7 +107,11 @@
 
 	
 	frame();
-	canvas.addEventListener('mousemove', handle, true, false);
+	//canvas.addEventListener('mousemove', handle, true, false);
+	ctx.bind('mousemove', function(p){
+		point =p;
+		window.mozRequestAnimationFrame(frame);
+	});
 		
 	function handle(e)
 	{

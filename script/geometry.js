@@ -1,5 +1,6 @@
 (function($) {
     $.Point = function( x, y ) {
+		// duck typing
         if ( x instanceof Object && 'x' in x && 'y' in x ) {
             this.x = x.x;
             this.y = x.y;
@@ -23,13 +24,23 @@
         return Math.abs(p.x - this.x) < r && Math.abs(p.y - this.y) < r;
     };
 
-    P.inside = function( x1, y1, x2, y2 )
-    {
-        if ( arguments.length == 2 ) return this.x >= 0 && this.y >= 0 && this.x <= x1 && this.y <= y1;
-        return this.x >= x1 && this.y >= y1 && this.x <= x2 && this.y <= y2;
-    };
-
     P.plus = function(point)    {
         return new Point(this.x + point.x, this.y + point.y);
     }
+	
+	$.Size= function(w, h)
+	{
+		// duck typing
+		if(w instanceof Object && 'w' in w && 'h' in w)
+		{
+			// copy constructor
+			this.w = w.w;
+			this.h = h.w;
+		}
+		else
+		{
+			this.w = w;
+			this.h = h;
+		}
+	}
 }(window));

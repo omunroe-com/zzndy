@@ -15,7 +15,7 @@
  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  IN THE SOFTWARE.
  */
-(function() {
+(function($) {
 
     var C, G, ctx;
 
@@ -41,7 +41,7 @@
 
     var level = 0;
     // Make canvas' methods chainable
-    ('restore,rotate,save,scale,translate,arc,arcTo,bezierCurveTo,beginPath,clip,closePath,lineTo,moveTo,quadraticCurveTo,rect,stroke,strokeRect,clearRect,fill,fillRect,clip,drawImage,drawImageFromRect')
+    ('restore,rotate,save,scale,translate,arc,arcTo,bezierCurveTo,beginPath,clip,closePath,lineTo,moveTo,quadraticCurveTo,rect,stroke,strokeRect,clearRect,fill,fillRect,clip,drawImage,drawImageFromRect,setTransform')
             .split(',').forEach(function( method ) {
         if ( method in C ) {
             var meth = C[method];
@@ -94,9 +94,48 @@
 
     C.clear = function()
     {
-        if ( 'size' in this && 'origin' in this )
-            this.clearRect(this.origin.x, this.origin.y, this.size.w, this.size.h)
-        return this;
+		return this.save()
+			.setTransform(1,0,0,1,0,0)
+			.clearRect(0,0,this.canvas.width,this.canvas.height)
+			.restore();
     };
+	
+	C.bind = function(eventName, handler)
+	{
+		if(eventName == 'mousemove')
+			this.canvas.addEventListener('mousemove', function(e){handler(mouseToCanvas(e))}, true, false);
+			
+		return this;
+	}
+	
+	function mouseToCanvas(e)
+	{
+	    var x = 0,y = 0;
 
-})();
+        if (!e)
+        {
+            e = window.event;
+            x = e.offsetX;
+            y = e.offsetY;
+        }
+        else // we assume DOM modeled javascript
+        {
+            var elt = e.target ;
+            var left = 0;
+            var top = 0 ;
+
+            while (elt.offsetParent)
+            {
+                left += elt.offsetLeft;
+                top += elt.offsetTop;
+                elt = elt.offsetParent;
+            }
+
+            x = e.pageX - left;
+            y = e.pageY - top;
+        }
+
+        return new Point(x, y);
+    }
+
+})(this);

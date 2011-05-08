@@ -8,16 +8,17 @@
     <script type="text/javascript" src="script/vector.js"></script>
     <script type="text/javascript" src="script/pf.js"></script>
     <title>Potential fields</title>
+	<style>canvas{cursor:none}</style>
 </head>
 <body>
 <div id="container">
     <div class="content header">
-        <h1>Potential field</h1>
+        <h1 id="out">Potential field</h1>
     </div>
 
     <div class="content">
         <div id="target"></div>
-        <div class="empty_footer">
+		<div class="empty_footer">
         </div>
     </div>
 </div>
@@ -27,7 +28,21 @@
     </div>
 </div>
 <script type="text/javascript">
-    // init
+	var width = 900;
+    var height = 600;
+	var mul = 7;
+	var drawpf = false;
+	var wrap = true;
+	
+	var md = false;
+	
+	function out(text){
+		var o = document.getElementById('out');
+		out = function(text){o.innerHTML = text};
+		return out(text);
+	}
+
+    // Replace element with new canvas
     function makeCanvas(w, h, at)
     {
         var canvas = document.createElement('canvas');
@@ -38,44 +53,50 @@
 
         var target = document.getElementById(at);
         target.parentNode.replaceChild(canvas, target);
-
+		
         return canvas.getContext('2d').translate(-.5, h - .5).scale(1, -1);
     }
+	
+	function showFps(t)
+	{
+		var frames = 0;
+		var lastframe = (new Date()).getTime();	
+		var animframe = ['.&nbsp;&nbsp;&nbsp;', '&nbsp;.&nbsp;&nbsp;', '&nbsp;&nbsp;.&nbsp;', '&nbsp;&nbsp;&nbsp;.']
+		showFps = function(t)
+		{
+			++frames;
+			var fps = 1000 / (t-lastframe);	
+			lastframe = t;					
+			out(fps.toFixed(0)+'&nbsp;fps');
+			var smoothfps = [fps]
+			
+			showFps = function(t)
+			{
+				++frames;
+				var fps = 1000 / (t-lastframe);	
+				lastframe = t;	
+				var l = smoothfps.length;
+				var i =l-1;
+				if(l<100){
+					smoothfps.push(fps);
+				}
+				else
+				{
+					while(i-->0)
+						smoothfps[i+1] = smoothfps[i];
+					smoothfps[0] = fps;
+				}
+				out((smoothfps.sum()/l).toFixed(0)+'&nbsp;fps'+animframe[Math.floor(frames/5)%4]);				
+			}
+		}
+	}
 
-    function mouseToCanvas(e)
+    function putPointer(t)
     {
-        var x = 0,y = 0;
-
-        if (!e)
-        {
-            e = window.event;
-            x = e.offsetX;
-            y = e.offsetY;
-        }
-        else // we assume DOM modeled javascript
-        {
-            var elt = e.target ;
-            var left = 0;
-            var top = 0 ;
-
-            while (elt.offsetParent)
-            {
-                left += elt.offsetLeft;
-                top += elt.offsetTop;
-                elt = elt.offsetParent;
-            }
-
-            x = e.pageX - left;
-            y = e.pageY - top;
-        }
-
-        mouse = new Point(x, height - y);
-    }
-
-    function putPointer()
-    {
+		showFps(t)
+		
         ctx
-            .clearRect(0, 0, width, height)
+            .clear()
             .beginPath()
             .moveTo(mouse.x, mouse.y - 5)
 	    .lineTo(mouse.x, mouse.y + 5)
@@ -85,93 +106,126 @@
             .lineTo(mouse.x + 5, mouse.y)
             .stroke();
 
-        prev = mouse;
-
-
         field = new PotentialField(n, m);
-        field.apply(mouseCharge, (mouse.x - sx / 2) / sx, (mouse.y - sy / 2) / sy);
-        field = base.add(field);
-
-
-        obj.vel = obj.vel.add(field.getForce(obj.pos.x, obj.pos.y)).div(2);
-        obj.pos.x += obj.vel.x;
-        obj.pos.y += obj.vel.y;
-
+		var charge = md ? mouseCharge.times(1.6) : mouseCharge;
+		field.apply(charge, (mouse.x - sx / 2) / sx, (mouse.y - sy / 2) / sy);
+		field = base.add(field);
+        
+		for(var i=0;i<objects.length;++i){
+			obj = objects[i];
+			obj.vel = obj.vel.add(field.getForce(obj.pos.x, obj.pos.y)).div(2.2*obj.weight);
+			obj.pos.x += obj.vel.x;
+			obj.pos.y += obj.vel.y;
+		}
+		
         renderField();
+		
+		window.mozRequestAnimationFrame(putPointer);
     }
 
-    var mouse = new Point(5.5, 6.6);
-    var prev = mouse;
-
-    var width = 800;
-    var height = 500;
+    var mouse = new Point(0,0);
+    
+   
     var ctx = makeCanvas(width, height, 'target');
+	
+	ctx.bind('mousemove', function(p){mouse = new Point(p.x, height-p.y)});
     ctx.fillStyle = ctx.strokeStyle = '#D7D7D7';
-
-
-    var mul = 3;
-    var m = 8 * mul, n = 5 * mul;
+    
+    var m = width / 100 * mul, n = height / 100 * mul;
     var sx = width / m, sy = height / n;
 
     var base = new PotentialField(n, m);
     var field;
-    var mouseCharge = new Charge(-.3, 5);
-    var vwall = new Wall(0, n, .5, 2);
-    var hwall = new Wall(m, 0, .5, 2);
-    var bar = new Wall(m/2,0, .5,2);
-
-    base.apply(vwall, -.01, 0);
-    base.apply(vwall, m-.99 , 0);
-    base.apply(hwall, 0, -.01);
-    base.apply(hwall, 0, n-.99);
-
-    var obj = {
-        pos:new Point(m / 2, n / 2),
-        vel:new Vector(0, 0)
-    };
+    var mouseCharge = new Charge(-mul / 7 , Math.min(m/3, n/3));
+	var objCharge = mouseCharge.times(.1);
+	
+	var vwall = new Wall(0, n, mul/4, 2);
+	var hwall = new Wall(m, 0, mul/4, 2);
+	
+	base.apply(vwall, -.01, 0);
+	base.apply(vwall, m-.99 , 0);
+	base.apply(hwall, 0, -.01);
+	base.apply(hwall, 0, n-.99);
+	
+	var numObjects = 1000;
+	var objects = [];
+	var i=-1;
+	colors = ['yellow', 'violet', 'pink', 'lime', 'turquoise', 'RoyalBlue', 'OrangeRed', 'orange', 'plum'];
+	while(++i<numObjects)	
+		objects.push({
+			pos:randomRad(m/2, n/2, m/10),
+			vel:new Vector(0, 0),
+			color:colors.pick(),
+			weight: (1).deviate(.5)
+		});
+		
+	function randomRad(x, y, r)
+	{
+		var r = Math.random() * r;
+		var dir = Math.random() * Math.PI * 2;
+	
+		return new Point(x+r * Math.cos(dir), y+r * Math.sin(dir));
+	}
 
     function renderField()
     {
         if (!(field instanceof PotentialField)) return;
 
         ctx.save().translate(sx / 2, sy / 2);
-        var i = -1, n = field.rows;
-        while (++i < n)
-        {
-            var j = -1, m = field.cols;
-            while (++j < m)
-            {
-                var f = field.getForce(j, i);
+		
+		if(drawpf){
+			var i = -1, n = field.rows;
+			while (++i < n)
+			{
+				var j = -1, m = field.cols;
+				while (++j < m)
+				{
+					var f = field.getForce(j, i);
 
-                ctx
-                    .save()
-                    .translate(j * sx, i * sy)
-                    .strokeCircle(0, 0, 1)
-                    .beginPath()
-                    .moveTo(0, 0)
-                    .lineTo(f.x * sx, f.y * sy)
-                    .stroke()
-                    .restore();
-            }
-        }
+					ctx
+						.save()
+						.translate(j * sx, i * sy)
+						//.strokeCircle(0, 0, 1)
+						.beginPath()
+						.moveTo(0, 0)
+						.lineTo(f.x * sx, f.y * sy)
+						.stroke()
+						.restore();
+				}
+			}
+		}
 
-        ctx
-            .save()
-            .translate(obj.pos.x * sx, obj.pos.y * sy)
-            .rotate(obj.vel.angle)
-            .fillRect(-2.5, -2.5, 5, 5)
-            .beginPath()
-            .moveTo(0, 0)
-            .lineTo(obj.vel.abs * sx * 2, 0)
-            .stroke()
-            .restore();
+		var f = ctx.fillColor;
+		var s = ctx.strokeColor;
+		
+		for(var i=0;i<objects.length;++i){
+			obj = objects[i];
+			
+			ctx.fillStyle = ctx.strokeStyle = obj.color;
+			
+			var w= obj.weight;
+			ctx
+				.save()
+				.translate(obj.pos.x * sx, obj.pos.y * sy)
+				.rotate(obj.vel.angle)
+				.fillRect(-w/2, -w/2, w, w)
+				.beginPath()
+				.moveTo(0, 0)
+				.lineTo(obj.vel.abs * sx * 2, 0)
+				.stroke()
+				.restore();
+		}
+		
+		ctx.fillColor = f;
+		ctx.strokeColor = s;
 
         ctx.restore();
     }
 
-    window.setInterval(putPointer, 40);
-    document.getElementById('target').onmousemove = mouseToCanvas;
-
+	ctx.canvas.addEventListener('mousedown', function(){md = true}, false);
+	ctx.canvas.addEventListener('mouseup', function(){md = false}, false);
+	
+	window.mozRequestAnimationFrame(putPointer);
 </script>
 </body>
 </html>
