@@ -4,6 +4,7 @@
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+	<script type="text/javascript" src="../script/util.js"></script>
 	<script type="text/javascript" src="../script/canvas.js"></script>
 	<script type="text/javascript" src="../script/geometry.js"></script>
     <title>Tri</title>
@@ -35,11 +36,57 @@
 	
 	var height = 500, width = 800;
 	
-	var n = 10;
-	var m = 30;
-	var a = 20;
-	var dx = Math.sqrt(3)*a/2;
-	var dy = a/2;
+	var n = 12;
+	var m = 31;
+		
+	function TriangularGrid(m,n,a)
+	{
+		var colors = ['red', 'green', 'blue'];
+	
+		this.__defineGetter__('m', function(){return m});
+		this.__defineGetter__('n', function(){return n});
+		var body = n.times(function(){return m.times(function(){return random(8)})});
+		
+		this.neighbours = function(i,j)
+		{
+			return (i+j)%2
+			/*top  right left  */?[i>0?[i-1,j]:null,j<m-1?[i,j+1]:null,j>0?[i,j-1]:null]
+			/*left right bottom*/:[j>0?[i,j-1]:null,j<m-1?[i,j+1]:null,i<n-1?[i+1,j]:null];
+		}
+		
+		this.each = function(callback)
+		{
+			for(var i=0;i<n;++i)
+				for(var j=0;j<m;++j)
+					callback.call(null, i, j);
+		}
+		
+		var dx = Math.sqrt(3)/2;
+		
+		this.draw = function(ctx, i, j){
+			ctx.strokeStyle = ctx.fillStyle = 'rgb(' + (3).times(body[i][j]*32).join(',') + ')';
+			var y = 3*i/2;
+			var x = dx * j;
+			var alpha=0;
+			if((j+i)%2){
+				y-=.5;
+				alpha=Math.PI;
+			}
+						
+			ctx.save()
+				.translate(x,y)
+				.rotate(alpha)
+				.beginPath(0, -1)
+				.lineTo(dx, .5)
+				.lineTo(-dx, .5)
+				.lineTo(0, -1)
+				.closePath()
+				.fill()				
+				.restore();
+		}
+	}	
+	
+	var grid = new TriangularGrid(m, n);
 	
 	function frame(t)
 	{
@@ -49,76 +96,16 @@
 		ctx.lineTo(point.x, point.y);
 		ctx.stroke(0);
 	
-		for(var i=0;i<n;++i)
-		for(var j=0;j<m;++j)
-		{
-			var y = Math.floor((2*a*i+a*i)/2);
-			var x = dx * j;
-			var alpha=0;
-			if((j+i)%2){
-				y-=a/2;
-				alpha=Math.PI;
-			}
-						
-			ctx.save()
-				.translate(x,y)
-				.rotate(alpha)
-				.beginPath(0, -a)
-				.lineTo(dx, dy)
-				.lineTo(-dx, dy)
-				.lineTo(0, -a)
-				.closePath()
-				.stroke()
-				.restore();
-		}
-
-		//window.mozRequestAnimationFrame(frame);
+		ctx.save().scale(20,20);
+		ctx.lineWidth = 1/20;
+		
+		grid.each(function(i, j){grid.draw(ctx, i, j)})
+		
+		ctx.restore();
 	}
-	
-	function mouseToCanvas(e)
-    {
-        var x = 0,y = 0;
-
-        if (!e)
-        {
-            e = window.event;
-            x = e.offsetX;
-            y = e.offsetY;
-        }
-        else // we assume DOM modeled javascript
-        {
-            var elt = e.target ;
-            var left = 0;
-            var top = 0 ;
-
-            while (elt.offsetParent)
-            {
-                left += elt.offsetLeft;
-                top += elt.offsetTop;
-                elt = elt.offsetParent;
-            }
-
-            x = e.pageX - left;
-            y = e.pageY - top;
-        }
-
-        return new Point(x, y);
-    }
-
 	
 	frame();
-	//canvas.addEventListener('mousemove', handle, true, false);
-	ctx.bind('mousemove', function(p){
-		point =p;
-		window.mozRequestAnimationFrame(frame);
-	});
 		
-	function handle(e)
-	{
-		point = mouseToCanvas(e);
-		window.mozRequestAnimationFrame(frame);
-	}
-	
 </script>
 </body>
 </html>

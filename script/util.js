@@ -92,6 +92,11 @@ function sqr( a ) {
     return a * a;
 }
 
+function random(n)
+{
+	return Math.floor(Math.random()*n);
+}
+
 (function() {
     var S = String.prototype;
     var A = Array.prototype;
@@ -268,6 +273,8 @@ function sqr( a ) {
         return res;
     };
 
+	if(!('each' in Array) && ('forEach' in Array))
+		A.each = A.forEach;
 
     if( !('reduce' in Array) )
         A.reduce = function( fn2, init ) {
@@ -348,7 +355,12 @@ function sqr( a ) {
             return this[i];
         }, this);
     };
-
+	
+	A.random = function()
+	{
+		return this[Math.floor(Math.random()*this.length)];
+	}
+	
     A.shuffle = function () {
         var i = -1, n = this.length;
         while( ++i < n ) {
