@@ -41,7 +41,7 @@
 
     var level = 0;
     // Make canvas' methods chainable
-    ('restore,rotate,save,scale,translate,arc,arcTo,bezierCurveTo,beginPath,clip,closePath,lineTo,moveTo,quadraticCurveTo,rect,stroke,strokeRect,clearRect,fill,fillRect,clip,drawImage,drawImageFromRect,setTransform')
+    ('restore,rotate,save,scale,translate,arc,arcTo,bezierCurveTo,beginPath,clip,closePath,lineTo,moveTo,quadraticCurveTo,rect,stroke,strokeRect,clearRect,fill,fillRect,clip,drawImage,drawImageFromRect,setTransform,fillText,measureText')
             .split(',').forEach(function( method ) {
         if ( method in C ) {
             var meth = C[method];

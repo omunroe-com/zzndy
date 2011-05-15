@@ -97,6 +97,11 @@ function random(n)
 	return Math.floor(Math.random()*n);
 }
 
+function notNull(v)
+{
+	return v != null;
+}
+
 (function() {
     var S = String.prototype;
     var A = Array.prototype;
@@ -379,6 +384,9 @@ function random(n)
     A.prod = function() {
         return this.reduce(mul, 1);
     };
+	A.notNull = function(){
+		return this.filter(notNull);
+	}
 
     F.timeit = function( self, args ) {
         var start = new Date();

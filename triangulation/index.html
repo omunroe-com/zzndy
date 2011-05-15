@@ -32,23 +32,25 @@
 	ctx.strokeStyle = '#555';
 	ctx.translate(0.5, .5);
 	ctx.translate(30,30);
+	
 	var point = new Point(0,0);
 	
 	var height = 500, width = 800;
 	
-	var n = 12;
-	var m = 31;
+	var n = 24;
+	var m = 63;
 		
-	function TriangularGrid(m,n,a)
+	function TriangularGrid(m,n)
 	{
-		var colors = ['red', 'green', 'blue'];
-	
-		this.__defineGetter__('m', function(){return m});
-		this.__defineGetter__('n', function(){return n});
-		var body = n.times(function(){return m.times(function(){return random(8)})});
+		var body = n.times(function(){return m.times(function(){return random(100) < 1 ? 16 : 0})});
 		
 		this.neighbours = function(i,j)
 		{
+			/*
+				 /\ \/\/
+				/\/\ \/
+			*/
+
 			return (i+j)%2
 			/*top  right left  */?[i>0?[i-1,j]:null,j<m-1?[i,j+1]:null,j>0?[i,j-1]:null]
 			/*left right bottom*/:[j>0?[i,j-1]:null,j<m-1?[i,j+1]:null,i<n-1?[i+1,j]:null];
@@ -61,10 +63,35 @@
 					callback.call(null, i, j);
 		}
 		
+		this.cell = function(i, j, v)
+		{
+			if(arguments.length==2)return body[i][j];
+			else return body[i][j] = v;
+		}
+		
+		var nextbody = body;
+		
+		var grid = this;
+		function startnext()
+		{
+			nextbody = n.times(function(i){return m.times(function(j){return body[i][j]})})
+			grid.next = setnext;
+			grid.next.apply(grid, arguments);
+		}
+		
+		function setnext(i, j, v)
+		{
+			if(arguments.length==2)return nextbody[i][j];
+			else return nextbody[i][j] = v;
+		}
+		
+		this.next = startnext;
+		this.shift = function(){body = nextbody; grid.next = startnext}			
+		
 		var dx = Math.sqrt(3)/2;
 		
-		this.draw = function(ctx, i, j){
-			ctx.strokeStyle = ctx.fillStyle = 'rgb(' + (3).times(body[i][j]*32).join(',') + ')';
+		this.draw = function(ctx, i, j)
+		{
 			var y = 3*i/2;
 			var x = dx * j;
 			var alpha=0;
@@ -72,7 +99,8 @@
 				y-=.5;
 				alpha=Math.PI;
 			}
-						
+			
+			ctx.strokeStyle = ctx.fillStyle = 'rgb(' + (3).times(body[i][j]*16).join(',') + ')';
 			ctx.save()
 				.translate(x,y)
 				.rotate(alpha)
@@ -90,18 +118,30 @@
 	
 	function frame(t)
 	{
+		grid.each(function(i,j){
+			var value = grid.cell(i,j);
+			var neighbours = grid.neighbours(i, j).notNull();
+			
+			if(value>neighbours.length){
+				neighbours.each(function(n){
+					grid.next(n[0], n[1], grid.next(n[0], n[1]) + 1);
+				});
+				grid.next(i,j, grid.next(i,j) - neighbours.length);
+			}
+		});		
+		grid.shift();		
+	
 		ctx.clear();
 		
-		ctx.moveTo(0, point.y);
-		ctx.lineTo(point.x, point.y);
-		ctx.stroke(0);
-	
-		ctx.save().scale(20,20);
-		ctx.lineWidth = 1/20;
-		
+		var scale = 10;
+		ctx.save().scale(scale, scale);
+		ctx.lineWidth = 1/scale;
+				
 		grid.each(function(i, j){grid.draw(ctx, i, j)})
 		
 		ctx.restore();
+		
+		window.setTimeout(frame, 100);
 	}
 	
 	frame();
