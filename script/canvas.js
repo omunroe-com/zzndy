@@ -102,8 +102,8 @@
 	
 	C.bind = function(eventName, handler)
 	{
-		if(eventName == 'mousemove')
-			this.canvas.addEventListener('mousemove', function(e){handler(mouseToCanvas(e))}, true, false);
+		if(eventName == 'mousemove' || eventName == 'click')
+			this.canvas.addEventListener(eventName, function(e){handler(mouseToCanvas(e))}, true, false);
 			
 		return this;
 	}
