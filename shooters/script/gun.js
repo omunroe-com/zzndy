@@ -51,7 +51,7 @@ function Gun(projectile, distance, rate, clip, reload, spreadPct) {
     this.clip = clip;
     this.reload = reload;
 	this.spread = Math.atan(spreadPct / 100);
-	this.spreadPct = spreadPct
+	this.spreadPct = spreadPct;
 	
     this.reloadingFor = 0;
     this.loaded = clip;
@@ -61,6 +61,8 @@ function Gun(projectile, distance, rate, clip, reload, spreadPct) {
 	this.isReloading = false;
 	
 	this.clone = function(){return new Gun(projectile, distance, rate, clip, reload, spreadPct)}
+	
+	this.dps = clip * projectile.damage / (reload + clip / rate);
 }
 
 Gun.prototype.ready = function(delay) {

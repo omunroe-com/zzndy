@@ -18,13 +18,17 @@ ShooterView.prototype.render = function(s) {
     if (s instanceof Shooter) {
         if(s.hp > 0){
         var size = s.vehicle.mass;
+		if('color' in s)this.ctx.fillStyle = s.color;
         this.ctx.save()
                 .translate(s.vehicle.pos.x, s.vehicle.pos.y)
                 .rotate(-s.vehicle.dir)
                 .beginPath()
                 .moveTo(-size, -size)
+				.lineTo(0, -size*.8)
                 .lineTo(size, -size)
-                .lineTo(0, 3 * size)
+				.lineTo(size, size)
+                .lineTo(0, 2 * size)
+				.lineTo(-size, size)
                 .closePath()
                 .fill()
                 .restore();

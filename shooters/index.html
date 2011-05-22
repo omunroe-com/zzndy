@@ -53,46 +53,70 @@
 
     var pos = new Point(0, 0);
     var dir = 0;    // radians - moving north.
-    var mass = 2;   // 'size'
+    var mass = 3;   // 'size'
     var speed = 60; // units per second
-    var hp = 20;
+    var hp = 100;
 
-    var damage = 25;    // projecile damage
+    var damage = 10;    // projecile damage
     var distance = 600; // projectile flight distance
     var pjSpeed = 300;  // projectile speed
 
-    var rate = 2000;   // shot rate shots per second
-    var clip = 17;     // clip size
+    var rate = 20000;   // shot rate shots per second
+    var clip = 25;     // clip size
     var reload = 500;  // reload time
 	var spread = 5;    // 5% (100% = 45°)
 
     var vehicle = new Vehicle(pos, Math.PI / 4, mass, speed);
     var projectile = new Projectile(damage, pjSpeed);
-	var gun = new Gun(projectile, distance, rate, clip, reload, spread);
-    var sample = new Shooter(vehicle, hp, [gun]);
-
-    var numShooters = 5;
+	
+	var shotgun = new Gun(projectile, distance, rate, clip, reload, spread);
+	
+	damage = 25;
+	rate = 20;
+	clip = 26;
+	reload = clip * damage / shotgun.dps - clip / rate;
+	spread = .5;
+	
+	projectile = new Projectile(damage, pjSpeed);
+	var rifle = new Gun(projectile, distance, rate, clip, reload, spread);
+    var sample = new Shooter(vehicle, hp, []);
+	
+    var numShooters =5;
     var shooters = [];
     while (shooters.length < numShooters){
         var clone = sample.clone();
-        clone.vehicle.dir = rnd(4 * Math.PI);
+		var dir = clone.vehicle.dir = rnd(4 * Math.PI);
+		clone.vehicle.pos = new Point(speed*sin(dir), speed*cos(dir));
+		var type = rnd(100)<50;
+		clone.guns = [type?shotgun:rifle];
+		clone.color = type ? '#bbf' : '#fbb';
         shooters.push(clone);
     }
     
     var ctrl = new ShooterController(view, shooters, 900, 600);
 	var last = 0;
+	var proceed = true;
 
     function frame(t) {
-		showFps(t);
-		
-		var charge = last == 0 ? 0 : t-last;
-		last = t;
-		
-        ctrl.frame(charge);
-		
-        window.mozRequestAnimationFrame(frame);
+		if(proceed){
+			showFps(t);
+			
+			var charge = last == 0 ? 0 : t-last;
+			last = t;
+			
+			ctrl.frame(charge);
+			
+			window.mozRequestAnimationFrame(frame);
+		}
     }
 
+	ctx.bind('click', function(){
+		proceed = !proceed; 
+		if(proceed)	{
+			last = 0;
+			window.mozRequestAnimationFrame(frame);
+		}
+	});
     window.mozRequestAnimationFrame(frame);
 
 	
