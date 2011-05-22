@@ -17,11 +17,10 @@
 <body>
 <div id="container">
     <div class="content header">
-        <h1>Shoot</h1>
+        <h1 id="out">Shoot</h1>
     </div>
 
     <div class="content">
-
         <canvas id="canvas" width="900px" height="600px"></canvas>
 
         <div class="empty_footer">
@@ -58,13 +57,13 @@
     var speed = 60; // units per second
     var hp = 20;
 
-    var damage = 50;    // projecile damage
-    var distance = 600;  // projectile flight distance
-    var pjSpeed = 300;   // projectile speed
+    var damage = 25;    // projecile damage
+    var distance = 600; // projectile flight distance
+    var pjSpeed = 300;  // projectile speed
 
-    var rate = 2000;       // shot rate shots per second
-    var clip = 17;       // clip size
-    var reload = 500;    // reload time
+    var rate = 2000;   // shot rate shots per second
+    var clip = 17;     // clip size
+    var reload = 500;  // reload time
 	var spread = 5;    // 5% (100% = 45°)
 
     var vehicle = new Vehicle(pos, Math.PI / 4, mass, speed);
@@ -84,6 +83,8 @@
 	var last = 0;
 
     function frame(t) {
+		showFps(t);
+		
 		var charge = last == 0 ? 0 : t-last;
 		last = t;
 		
@@ -94,6 +95,46 @@
 
     window.mozRequestAnimationFrame(frame);
 
+	
+	function out(text){
+		var o = document.getElementById('out');
+		out = function(text){o.innerHTML = text};
+		return out(text);
+	}
+	
+	function showFps(t)
+	{
+		var frames = 0;
+		var lastframe = (new Date()).getTime();	
+		var animframe = ['.&nbsp;&nbsp;&nbsp;', '&nbsp;.&nbsp;&nbsp;', '&nbsp;&nbsp;.&nbsp;', '&nbsp;&nbsp;&nbsp;.']
+		showFps = function(t)
+		{
+			++frames;
+			var fps = 1000 / (t-lastframe);	
+			lastframe = t;					
+			out(fps.toFixed(0)+'&nbsp;fps');
+			var smoothfps = [fps]
+			
+			showFps = function(t)
+			{
+				++frames;
+				var fps = 1000 / (t-lastframe);	
+				lastframe = t;	
+				var l = smoothfps.length;
+				var i =l-1;
+				if(l<100){
+					smoothfps.push(fps);
+				}
+				else
+				{
+					while(i-->0)
+						smoothfps[i+1] = smoothfps[i];
+					smoothfps[0] = fps;
+				}
+				out((smoothfps.sum()/l).toFixed(0)+'&nbsp;fps'+animframe[Math.floor(frames/10)%4]);				
+			}
+		}
+	}
 </script>
 </body>
 </html>

@@ -23,7 +23,7 @@ function Bullet(projectile, pos, dir, distance, spread) {
     this.projectile = projectile;
     this.pos = new Point(pos.x, pos.y);
     this.dir = dir;
-    this.distance = distance;
+    this.distance = distance.dev(spread/100, true);
     this.flew = 0;
 	this.speed = projectile.speed.dev(spread / 100, true);
 }
