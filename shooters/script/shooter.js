@@ -3,24 +3,27 @@
  * @param {Vehicle} vehicle - vehicle type
  * @param {Number} hp       - health points
  * @param {Number} numgun   - number of guns
- * @param {Gun} gun         - gun type
+ * @param {Array} guns      - guns type
  */
-function Shooter(vehicle, hp, numgun, gun)
+function Shooter(vehicle, hp, guns)
 {
     this.vehicle = vehicle;
     this.hp = hp;
-    this.numgun = numgun;
-    this.gun = gun;
+    this.guns = guns;
 }
 
 Shooter.prototype.clone = function()
 {
-    return new Shooter(this.vehicle.clone(), this.hp, this.numgun, this.gun.clone());
+    return new Shooter(this.vehicle.clone(), this.hp, this.guns.map(function(g){return g.clone()}));
 };
 
 Shooter.prototype.shoot = function(delay)
 {
     var p = this.vehicle.pos;
-    var pos = new Point(p.x + this.vehicle.mass * sin(this.vehicle.dir), p.y + this.vehicle.mass * cos(this.vehicle.dir))
-    return this.gun.shoot(delay, pos, this.vehicle.dir);
+    var pos = new Point(p.x + this.vehicle.mass * 1.1 * sin(this.vehicle.dir), p.y + this.vehicle.mass * 1.1 * cos(this.vehicle.dir));
+	var self = this;
+	
+	return this.guns.reduce(function (a, g){	
+		return a.concat(g.shoot(delay, pos, self.vehicle.dir));			
+	}, []);
 };

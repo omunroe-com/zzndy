@@ -17,18 +17,20 @@ Projectile.prototype.clone = function() {
  * @param {Projectile} projectile - type of projectile
  * @param {Point} pos   - current bullet position
  * @param {Number} dir  - bullet direction
+ * @param {Number} spread - bullet velocity spread
  */
-function Bullet(projectile, pos, dir, distance) {
+function Bullet(projectile, pos, dir, distance, spread) {
     this.projectile = projectile;
     this.pos = new Point(pos.x, pos.y);
     this.dir = dir;
     this.distance = distance;
     this.flew = 0;
+	this.speed = projectile.speed.dev(spread / 100, true);
 }
 
 Bullet.prototype.move = function(delay) {
     var p = this.pos;
-    this.pos = new Point(p.x + this.projectile.speed * sin(this.dir) * delay / 1000, p.y + this.projectile.speed * cos(this.dir) * delay / 1000);
+    this.pos = new Point(p.x + this.speed * sin(this.dir) * delay / 1000, p.y + this.speed * cos(this.dir) * delay / 1000);
 
     this.flew += p.to(this.pos);
 };
@@ -40,52 +42,48 @@ Bullet.prototype.move = function(delay) {
  * @param {Number} rate       - rate of fire (shots per second)
  * @param {Number} clip       - clip size
  * @param {Number} reload     - reload time (milliseconds)
+ * @param {Number} spreadPct  - projectile spread in % (100% = 45°) - affect both speed and direction
  */
-function Gun(projectile, distance, rate, clip, reload) {
+function Gun(projectile, distance, rate, clip, reload, spreadPct) {
     this.projectile = projectile;
     this.distance = distance;
     this.rate = rate;
     this.clip = clip;
     this.reload = reload;
-
+	this.spread = Math.atan(spreadPct / 100);
+	this.spreadPct = spreadPct
+	
     this.reloadingFor = 0;
     this.loaded = clip;
     this.waitingToShoot = 0;
+	
+	this.charge = 0;
+	this.isReloading = false;
+	
+	this.clone = function(){return new Gun(projectile, distance, rate, clip, reload, spreadPct)}
 }
-
-Gun.prototype.clone = function() {
-    return new Gun(this.projectile.clone(), this.distance, this.rate, this.clip, this.reload);
-};
 
 Gun.prototype.ready = function(delay) {
 
 };
 
 Gun.prototype.shoot = function(delay, pos, dir) {
-    if (this.reloadingFor > 0) {
-        this.reloadingFor += delay;
-        if (this.reloadingFor >= this.reload) {
-            this.waitingToShoot = this.reloadingFor - this.reload;
-            this.reloadingFor = 0;
-            this.loaded = this.clip;
-        }
-        else {
-            return [];
-        }
-    }
-    else {
-        this.waitingToShoot += delay
-    }
-
-    if (this.waitingToShoot >= 1000 / this.rate) {
-        this.waitingToShoot -= 1000 / this.rate;
-        if (this.loaded-- <= 0) {
-            this.reloadingFor = this.waitingToShoot;
-        }
-        else {
-            return [new Bullet(this.projectile, pos, dir, this.distance)];
-        }
-    }
-
-    return [];
+	this.charge += delay;
+	var bullets = [];
+	
+	while(this.charge >= 0)
+	{
+		var bullet = new Bullet(this.projectile, pos, dir.dev(this.spread), this.distance, this.spreadPct);
+		bullet.move(this.charge);
+		bullets.push(bullet);
+		
+		this.charge -= 1000 / this.rate;
+		
+		if(this.loaded--<0){
+			this.loaded = this.clip;		
+			this.charge -= this.reload;		
+		}
+	}
+	
+	return bullets;
 };

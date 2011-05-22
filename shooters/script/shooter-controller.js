@@ -10,18 +10,17 @@ function ShooterController(view, shooters, width, height) {
     this.shooters = shooters;
     this.width = width;
     this.height = height;
-    this.lastRun = 0;
     this.bullets = [];
 }
 
 var max = Math.max;
 var minhp = -10;
 
-ShooterController.prototype.frame = function() {
-    var time = (new Date).getTime();
-    var delay = this.lastRun == 0 ? 0 : time - this.lastRun;
-    this.lastRun = time;
-
+/**
+ * Progress simulation {charge} miliseconds ahead
+ * @param {Number} charge - number of milliseconds since last frame.
+ */
+ShooterController.prototype.frame = function(delay) {
     var mw = this.width / 2;
     var mh = this.height / 2;
 

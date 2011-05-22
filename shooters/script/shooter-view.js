@@ -26,7 +26,7 @@ ShooterView.prototype.render = function(s) {
                 .lineTo(size, -size)
                 .lineTo(0, 3 * size)
                 .closePath()
-                .stroke()
+                .fill()
                 .restore();
         }
         else{
@@ -50,5 +50,5 @@ ShooterView.prototype.render = function(s) {
 };
 
 ShooterView.prototype.clear = function() {
-    this.ctx.clearRect(-this.width / 2, -this.height / 2, this.width, this.height);
+    this.ctx.clear();
 };

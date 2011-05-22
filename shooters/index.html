@@ -6,6 +6,7 @@
 
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
 
+	<script type="text/javascript" src="../script/util.js"></script>
     <script type="text/javascript" src="../script/canvas.js"></script>
     <script type="text/javascript" src="script/shooter-view.js"></script>
     <script type="text/javascript" src="script/gun.js"></script>
@@ -57,18 +58,19 @@
     var speed = 60; // units per second
     var hp = 20;
 
-    var damage = 100;    // projecile damage
-    var distance = 500;  // projectile flight distance
-    var pjSpeed = 200;   // projectile speed
+    var damage = 50;    // projecile damage
+    var distance = 600;  // projectile flight distance
+    var pjSpeed = 300;   // projectile speed
 
-    var rate = 10;       // shot rate shots per second
-    var clip = 5;        // clip size
+    var rate = 2000;       // shot rate shots per second
+    var clip = 17;       // clip size
     var reload = 500;    // reload time
+	var spread = 5;    // 5% (100% = 45°)
 
     var vehicle = new Vehicle(pos, Math.PI / 4, mass, speed);
     var projectile = new Projectile(damage, pjSpeed);
-    var gun = new Gun(projectile, distance, rate, clip, reload);
-    var sample = new Shooter(vehicle, hp, 1, gun);
+	var gun = new Gun(projectile, distance, rate, clip, reload, spread);
+    var sample = new Shooter(vehicle, hp, [gun]);
 
     var numShooters = 5;
     var shooters = [];
@@ -79,14 +81,18 @@
     }
     
     var ctrl = new ShooterController(view, shooters, 900, 600);
+	var last = 0;
 
-    function frame() {
-        ctrl.frame();
-
-        window.setTimeout(frame, frameDelay);
+    function frame(t) {
+		var charge = last == 0 ? 0 : t-last;
+		last = t;
+		
+        ctrl.frame(charge);
+		
+        window.mozRequestAnimationFrame(frame);
     }
 
-    frame();
+    window.mozRequestAnimationFrame(frame);
 
 </script>
 </body>
