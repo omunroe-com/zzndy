@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flow</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+    <script type="text/javascript" src="../script/util.js"></script>
+    <script type="text/javascript" src="../script/canvas.js"></script>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1 id="out">Flow</h1>
+    </div>
+
+    <div class="content">
+        <canvas id="canvas" width="900px" height="600px"></canvas>
+
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy;
+        Vynogradov
+        2011
+    </div>
+</div>
+<script type="text/javascript">
+    
+    var numBars = 50;
+    var ctx = document.getElementById('canvas').getContext('2d');
+    ctx.fillStyle = '#eee';
+	
+	var values = {
+		bars: numBars.times(function(){return rnd(1) * rnd(1) * 100}),
+		bars2: []
+	}
+    
+    tick();
+    
+    function tick()
+    {
+        values.bars2 = values.bars.clone();
+        numBars.times(equalize);
+        values.bars = values.bars2;
+        report(numBars.map(value).reduce(add).toFixed(2));
+        numBars.times(render1d);
+        window.mozRequestAnimationFrame(tick);
+    }
+    
+    function value(n)
+    {
+        return values.bars[n];
+    }
+
+    function set(n, v)
+    {
+        return values.bars2[n] = v;
+    }
+
+    function getadjacent(n)
+    {
+        var adj = [];
+    
+        adj.push(n==0?(numBars-1):(n-1));
+        adj.push((n==numBars-1)?0:(n+1));
+        
+        return adj;
+    }
+    
+    function equalize(n)
+    {
+	    var v = value(n);
+		
+		// get adjacent cell coordinates.
+        var adj = getadjacent(n);   
+
+		// calculate neighbourhood average.
+        var avg = adj.map(value).reduce(add, v) / (adj.length+1);
+
+        if(avg >= v)return;
+
+        var c = c2 = adj.length;
+
+        do{
+            var c = c2;
+			
+			// get only neighbours with lower than average values.			
+			var a = adj;
+            adj = adj.filter(function(n){return value(n) < avg});
+			c2 = adj.length;			
+			
+            if(c!=c2)
+                avg = adj.map(value).reduce(add, v) / (adj.length+1);
+				
+        }while (c!=c2 && c2 > 0);
+
+        // have adjacent cells left
+        if(c2!=0)   {
+			set(n, avg);
+            adj.map(function(n){set(n,avg)});
+        }
+    }
+    
+    var width = 900;
+    var height = 600;
+    var dx = width / numBars;
+    var dy = height / 100;
+    
+    function render1d(n)
+    {
+        var v = value(n);
+        ctx.fillRect(n*dx, height, dx-1, -v * dy);
+    }
+    
+    function report(text)
+    {
+        var out = document.getElementById('out');
+        report = function(text)
+        {
+            out.innerHTML = text;
+        }
+        
+        report(text);
+    }
+    
+</script>
+</body>
+</html>
