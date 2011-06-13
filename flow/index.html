@@ -6,7 +6,9 @@
 
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
     <script type="text/javascript" src="../script/util.js"></script>
-    <script type="text/javascript" src="../script/canvas.js"></script>
+    <script type="text/javascript" src="../script/geometry.js"></script>
+	<script type="text/javascript" src="../script/canvas.js"></script>
+	
 </head>
 <body>
 <div id="container">
@@ -33,6 +35,7 @@
     var numBars = 50;
     var ctx = document.getElementById('canvas').getContext('2d');
     ctx.fillStyle = '#eee';
+	var currentBar = NaN;
 	
 	var values = {
 		bars: numBars.times(function(){return rnd(1) * rnd(1) * 100}),
@@ -46,15 +49,31 @@
         values.bars2 = values.bars.clone();
         numBars.times(equalize);
         values.bars = values.bars2;
-        report(numBars.map(value).reduce(add).toFixed(2));
+        reportSum(numBars.map(value).reduce(add));
+		
+		ctx.clear();	
+		if(!isNaN(currentBar) && currentBar !== undefined && ! (currentBar < 0) && !(currentBar > numBars) )
+		{
+			
+			ctx.fillStyle = 'rgba(255, 255, 255, .1)';
+			ctx.fillRect(currentBar*dx, 0, dx-1, height);
+			ctx.fillStyle = '#eee';
+		}
         numBars.times(render1d);
-        window.mozRequestAnimationFrame(tick);
+        
+		//window.setTimeout(tick, 150);
+		window.mozRequestAnimationFrame(tick);
     }
     
     function value(n)
     {
         return values.bars[n];
     }
+	
+	function value2(n)
+	{
+		return values.bars2[n];
+	}
 
     function set(n, v)
     {
@@ -79,7 +98,7 @@
         var adj = getadjacent(n);   
 
 		// calculate neighbourhood average.
-        var avg = adj.map(value).reduce(add, v) / (adj.length+1);
+        var avg = adj.map(value2).reduce(add, v) / (adj.length+1);
 
         if(avg >= v)return;
 
@@ -94,14 +113,14 @@
 			c2 = adj.length;			
 			
             if(c!=c2)
-                avg = adj.map(value).reduce(add, v) / (adj.length+1);
+                avg = adj.map(value2).reduce(add, v) / (adj.length+1);
 				
         }while (c!=c2 && c2 > 0);
 
         // have adjacent cells left
         if(c2!=0)   {
 			set(n, avg);
-            adj.map(function(n){set(n,avg)});
+			adj.map(function(n){set(n,avg)});
         }
     }
     
@@ -116,9 +135,31 @@
         ctx.fillRect(n*dx, height, dx-1, -v * dy);
     }
     
+	function reportSum(sum)
+	{
+		var prev = sum;
+		
+		var dmin = 0;
+		var dmax = 0;
+		
+		reportSum = function(sum)
+		{
+			if(sum > prev)
+				dmax += sum - prev
+			else
+				dmin += prev - sum;
+		
+			report(sum.toFixed(2) + ' [+'+dmax.toFixed(2)+', -'+dmin.toFixed(2)+']');
+			prev = sum;
+		}
+		
+		reportSum(sum);
+	}
+	
     function report(text)
     {
         var out = document.getElementById('out');
+		
         report = function(text)
         {
             out.innerHTML = text;
@@ -126,6 +167,15 @@
         
         report(text);
     }
+	
+	ctx.bind('mousemove', function(p){
+		currentBar = Math.floor(p.x / dx);
+	});
+	
+	ctx.bind('click', function(p){
+		currentBar = Math.floor(p.x / dx);
+		values.bars[currentBar] += 100;
+	});
     
 </script>
 </body>

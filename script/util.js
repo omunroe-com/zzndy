@@ -92,9 +92,14 @@ function sqr( a ) {
     return a * a;
 }
 
+function rnd(n)
+{
+	return Math.random()*n;
+}
+
 function random(n)
 {
-	return Math.floor(Math.random()*n);
+	return Math.floor(rnd(n));
 }
 
 function notNull(v)
