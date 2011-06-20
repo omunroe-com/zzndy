@@ -1,27 +1,53 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head><title>Text Ticker</title></head>
+<link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+<style>
+	#target{
+		color: #290;
+		text-shadow: 0 0 .3em #290;
+	}
+</style>
 <body>
+<div id="container">
+    <div class="content header">
+        <h1 id="out">Text Ticker</h1>
+    </div>
 
-<form name="show-em">
-	<textarea name="src" rows="8" cols="50" style="border: 1px solid gray">10 PRINT 'HELLO WORLD'
+    <div class="content">
+        	<textarea id="src" rows="8" cols="50" style="border: 1px solid gray">10 PRINT 'HELLO WORLD'
 20 GOTO 40
 30 PRINT 'INFINITE LOOP'
 40 GOTO 30</textarea>
-	<input type="submit"/>
-</form>
 
-<pre id="target"></pre>
+	<button id="click">Click</button>
+	
+	<pre id="target"></pre>
+
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy;
+        Vynogradov
+        2011
+    </div>
+</div>
+
+
 <script type="text/javascript" src="script/tt.js">
 
 </script>
 <script type="text/javascript">
 
 	var target = document.getElementById('target');
+	var src = document.getElementById('src');
 	
-	document.forms['show-em'].onsubmit = function()	{
-		(new TextTicker(target, this.src.value)).start()
-		return false
+	document.getElementById('click').onclick = function()	{
+		(new TextTicker(target,src.value)).start();
+		return false;
 	}
 </script>
 </body>
