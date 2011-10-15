@@ -8,6 +8,8 @@ $path = $_GET['path'];
 
 function set_lang()
 {
+	return 'uk';
+
 	global $languages;
 	$lang = $_SESSION['lang'];
 	if($lang == null || !in_array($lang, $languages))
