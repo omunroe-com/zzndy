@@ -5,19 +5,20 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
 
     <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
-    <script type="text/javascript" src="../script/util.js"></script>
-    <script type="text/javascript" src="../script/geometry.js"></script>
-	<script type="text/javascript" src="../script/canvas.js"></script>
+    
+	<style type="text/css">
+		pre{font-size: 8pt;line-height:8pt}
+	</style>
 	
 </head>
 <body>
 <div id="container">
     <div class="content header">
-        <h1 id="out">Flow</h1>
+        <h1>Flow</h1>
     </div>
 
     <div class="content">
-        <canvas id="canvas" width="900px" height="600px"></canvas>
+        <pre id="out"></pre>
 
         <div class="empty_footer">
         </div>
@@ -32,151 +33,245 @@
 </div>
 <script type="text/javascript">
     
-    var numBars = 50;
-    var ctx = document.getElementById('canvas').getContext('2d');
-    ctx.fillStyle = '#eee';
-	var currentBar = NaN;
+    var w = 80;
+	var h = 26;
 	
-	var values = {
-		bars: numBars.times(function(){return rnd(1) * rnd(1) * 100}),
-		bars2: []
-	}
-    
-    tick();
-    
-    function tick()
-    {
-        values.bars2 = values.bars.clone();
-        numBars.times(equalize);
-        values.bars = values.bars2;
-        reportSum(numBars.map(value).reduce(add));
-		
-		ctx.clear();	
-		if(!isNaN(currentBar) && currentBar !== undefined && ! (currentBar < 0) && !(currentBar > numBars) )
-		{
-			
-			ctx.fillStyle = 'rgba(255, 255, 255, .1)';
-			ctx.fillRect(currentBar*dx, 0, dx-1, height);
-			ctx.fillStyle = '#eee';
-		}
-        numBars.times(render1d);
-        
-		//window.setTimeout(tick, 150);
-		window.mozRequestAnimationFrame(tick);
-    }
-    
-    function value(n)
-    {
-        return values.bars[n];
-    }
-	
-	function value2(n)
+	function rect(x,y,w,h,f)
 	{
-		return values.bars2[n];
+		var i=y;
+		for(var j=0;j<w;++j)f(i,j+x)
+
+		if(h!=0)
+		{
+			var i=y+h-1
+			for(var j=0;j<w;++j)f(i,j+x)
+		
+			var j=x;
+			for(var i=1;i<h-1;++i)f(i+y,j);
+			
+			if(w!=0)	{
+				var j=x+w-1;
+				for(var i=1;i<h-1;++i)f(i+y,j);
+			}
+		}
+	}
+	
+	function Bukit()
+	{
+		if(arguments[0] instanceof Bukit){
+			this.value = arguments[0].value;
+			this.age = arguments[0].age;
+		}
+		else{
+			this.value = 0;
+			this.age = 0;
+		}
+	}
+	
+	var map = makemap(w,h,function(i,j){
+		return new Bukit();
+	});
+	
+	rect(30,6,15,15, function(i,j){map[i][j].value = '#'})
+	
+	rect(30,9,15,9, function(i,j){map[i][j].value = 0})
+	rect(33,6,9,15, function(i,j){map[i][j].value = 0})
+	
+	function makemap(w,h,f)
+	{
+		var map = [];
+		for(var i=0;i<h;++i)
+		{
+			var row = [];
+			for(var j=0;j<w;++j)row.push(f(i,j));
+			map.push(row);
+		}
+		
+		return map;
+	}
+	
+	// as color component
+	Number.prototype.cc = function()
+	{
+		var s = Math.floor(this).toString(16);
+		return (this < 16 ? '0': '')+ Math.floor(this).toString(16);
 	}
 
-    function set(n, v)
-    {
-        return values.bars2[n] = v;
-    }
-
-    function getadjacent(n)
-    {
-        var adj = [];
-    
-        adj.push(n==0?(numBars-1):(n-1));
-        adj.push((n==numBars-1)?0:(n+1));
-        
-        return adj;
-    }
-    
-    function equalize(n)
-    {
-	    var v = value(n);
+	Array.prototype.shuffle = function(){this.sort(function(){return .5 - Math.random()}); return this}
+	
+	function render(map)
+	{
+		var originalsum = 0;
+		var out = document.getElementById('out');
+		var frame = 0;
 		
-		// get adjacent cell coordinates.
-        var adj = getadjacent(n);   
-
-		// calculate neighbourhood average.
-        var avg = adj.map(value2).reduce(add, v) / (adj.length+1);
-
-        if(avg >= v)return;
-
-        var c = c2 = adj.length;
-
-        do{
-            var c = c2;
-			
-			// get only neighbours with lower than average values.			
-			var a = adj;
-            adj = adj.filter(function(n){return value(n) < avg});
-			c2 = adj.length;			
-			
-            if(c!=c2)
-                avg = adj.map(value2).reduce(add, v) / (adj.length+1);
+		var gettext = function(map){
+			var text = [], sum=0;
+			var i=-1, n = map.length;
+			while(++i<n)
+			{
+				var j = -1, m = map[i].length;
+				while(++j<m)
+				{			
+					var v = map[i][j].value;
+					var c;
 				
-        }while (c!=c2 && c2 > 0);
-
-        // have adjacent cells left
-        if(c2!=0)   {
-			set(n, avg);
-			adj.map(function(n){set(n,avg)});
-        }
-    }
-    
-    var width = 900;
-    var height = 600;
-    var dx = width / numBars;
-    var dy = height / 100;
-    
-    function render1d(n)
-    {
-        var v = value(n);
-        ctx.fillRect(n*dx, height, dx-1, -v * dy);
-    }
-    
-	function reportSum(sum)
-	{
-		var prev = sum;
-		
-		var dmin = 0;
-		var dmax = 0;
-		
-		reportSum = function(sum)
-		{
-			if(sum > prev)
-				dmax += sum - prev
-			else
-				dmin += prev - sum;
-		
-			report(sum.toFixed(2) + ' [+'+dmax.toFixed(2)+', -'+dmin.toFixed(2)+']');
-			prev = sum;
+					if(isNaN(v))
+						c = '#0b8';
+					else
+					{
+						if(v==0)
+							c='#36301a';
+						else{
+							c = '#' + ((56+v*25)/3).cc() + ((56+v*25)/1.5).cc() + (56 + v*25).cc();
+							sum += v;
+						}
+					}
+						
+					text.push('<span style="color:'+c+'">'+(v==0?'.':v)+'</span>');
+				}
+				
+				text.push('<br/>');
+			}
+			
+			return [text, sum];
 		}
 		
-		reportSum(sum);
+		function replaceHtml(el, html) {
+			var oldEl = typeof el === "string" ? document.getElementById(el) : el;
+			var newEl = document.createElement(oldEl.nodeName);
+
+			newEl.id = oldEl.id;
+			newEl.className = oldEl.className;
+
+			newEl.innerHTML = html;
+			oldEl.parentNode.replaceChild(newEl, oldEl);
+
+			return newEl;
+		}
+		
+		render = function(map){
+			var a = gettext(map);
+			var text = a[0];
+			var sum = a[1];
+			
+			if(originalsum==0)originalsum = sum;
+			out = replaceHtml(out, text.join('') + '<br/>' + (frame++) + ': ' + sum + ' = '+ originalsum+(originalsum<sum?' + ':' - ') + Math.abs(sum - originalsum));
+		}
+		
+		render(map);
 	}
 	
-    function report(text)
-    {
-        var out = document.getElementById('out');
+	// Direction
+	//    0
+	//  3 . 1
+	//    2
+	
+	function edge(map, i, j, dir)
+	{
+		i += dir == 0 ? -1 : dir == 2 ? 1 : 0;
+		j += dir == 3 ? -1 : dir == 1 ? 1 : 0;
 		
-        report = function(text)
-        {
-            out.innerHTML = text;
-        }
-        
-        report(text);
-    }
+		return (i>=map.length||i<0||j>=map[i].length||j<0||isNaN(map[i][j].value)) ? null : [i, j];		
+	}
 	
-	ctx.bind('mousemove', function(p){
-		currentBar = Math.floor(p.x / dx);
-	});
+	function balance(o, n)
+	{
+		var di = 1;//Math.random() < .5 ? 1 : -1;
+		var h = o.length;
+		
+		var i = di > 0 ? -1 : h;
+		
+		var coords = [];
+		var i=-1,mi=o.length;
+		while(++i<mi)
+		{
+			var j=-1,mj=o[i].length;
+			while(++j<mj)
+			{
+				coords.push([i,j]);
+			}
+		}
+		
+		coords.shuffle();
+		
+		var k = -1, len = coords.length
+		while(++k<len)
+		{
+			var i = coords[k][0];
+			var j = coords[k][1];
+
+			var oc = o[i][j];
+			var nc = n[i][j];
+		
+			var val = oc.value;
+			++nc.age;
+			
+			if(isNaN(val)) continue;
+				
+			var dir = 0;
+			var edg = [
+				edge(o, i, j, dir),
+				edge(o, i, j, dir+1),
+				edge(o, i, j, dir+2),
+				edge(o, i, j, dir+3),
+			]
+			.shuffle()
+			.filter(function(a){return a!=null})
+			.forEach(function(e)
+			{
+				var nv = n[e[0]][e[1]];
+				
+				if(val < nv.value && nv.value > 1)
+				{
+					++val;
+					--nv.value;
+					nv.age = 0;
+				}
+			});
+			
+			nc.value = nc.value - oc.value + val;
+			
+			if(nc.value == oc.value){
+				if(nc.value == 1 && oc.age > 20)nc.value = 0;
+			}
+			else{
+				nc.age = 0;
+			}
+		}
+	}
 	
-	ctx.bind('click', function(p){
-		currentBar = Math.floor(p.x / dx);
-		values.bars[currentBar] += 100;
-	});
+	function tick()
+	{
+		map[13][37].value = 7;
+		
+		var newmap = makemap(w,h,function(i,j){
+			return new Bukit(map[i][j]);
+		});
+	
+		balance(map, newmap);
+		map = newmap;
+		render(map);
+	
+		if(!manual)
+		{
+			//window.mozRequestAnimationFrame(tick);
+			window.setTimeout(tick, 100);
+		}		
+	}
+	
+	document.onmousedown = function(){
+		if(!(manual = !manual))
+		{
+			tick();
+		}
+	}
     
+	var manual = false;
+	
+	if(manual)render();
+	else tick();
+	
 </script>
 </body>
 </html>
