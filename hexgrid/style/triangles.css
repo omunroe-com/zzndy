@@ -1,0 +1,31 @@
+.hex{font-size:0;line-height:0}
+
+.hex u
+{
+	display: inline-block;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	margin-left: -5px;
+	margin-bottom: 1px;
+}
+
+.hex u{border-color: red}
+.hex u.active{border-color: yellow}
+.hex u.set{border-color: blue}
+
+.hex div:nth-child(even) u:nth-child(odd), .hex div:nth-child(odd) u:nth-child(even)
+{
+	border-right-color: transparent;
+	border-bottom-color: transparent;
+	border-left-color: transparent;
+	border-width: 10px 6px 0 6px;
+}
+
+.hex div:nth-child(even)  u:nth-child(even), .hex div:nth-child(odd) u:nth-child(odd)
+{
+	border-right-color: transparent;
+	border-top-color: transparent;
+	border-left-color: transparent;
+	border-width: 0 6px 10px 6px;
+}

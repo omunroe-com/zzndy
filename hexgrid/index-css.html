@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css"/>
+	<link rel="stylesheet" href="style/triangles.css" type="text/css"/>
+    <script type="text/javascript" src="../script/util.js"></script>
+    <title>Triangular grid</title>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>Triangular grid</h1>
+    </div>
+
+    <div class="content">
+        <div id="map" class="hex">
+		</div>
+        <div class="empty_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; Copyright
+    </div>
+</div>
+<script type="text/javascript" language="JavaScript">
+    if(!('console' in this))console = {log:function(){}}
+
+	function HexGrid(w,h,id)
+	{
+		var div = document.getElementById(id);
+		
+		var row = '<div>'+(new Array(w+1)).join('<u></u>')+'</div>'
+		div.innerHTML = (new Array(h+1)).join(row);
+		
+		var x=0, y=0;
+		var draw = false;
+		
+		return {
+		
+			activate: function(i, j)
+			{
+				if(!draw)
+					div.children[y].children[x].className = '';
+				
+				y=i;
+				x=j
+				
+				div.children[y].children[x].className = 'active';
+			},
+			
+			toggledraw: function()
+			{
+				console.log('yo');
+				draw = !draw;
+			}
+		}
+	}
+	
+	var w=75;
+	var h=36;
+	var grid = new HexGrid(w, h, 'map');
+	
+	
+	var x=  10;
+	var y= 10;
+	grid.activate(x, y);
+	
+	
+	window.onkeydown = function(e)
+	{
+		switch(e.keyCode)
+		{
+		case 37:--y;break;
+		case 38:--x;break;
+		case 39:++y;break;
+		case 40:++x;break;
+		case 13:grid.toggledraw();break;
+		default:console.log(e);break;
+		}
+		
+		grid.activate(x, y);
+	}
+	
+    
+
+</script>
+</body>
+</html>
