@@ -59,12 +59,15 @@
 	function Bukit()
 	{
 		if(arguments[0] instanceof Bukit){
-			this.value = arguments[0].value;
-			this.age = arguments[0].age;
+			var clone = arguments[0]
+			this.value = clone.value;
+			this.age = clone.age;
+			this.processed = false;
 		}
 		else{
 			this.value = 0;
 			this.age = 0;
+			this.processed = false;
 		}
 	}
 	
@@ -72,10 +75,9 @@
 		return new Bukit();
 	});
 	
-	rect(30,6,15,15, function(i,j){map[i][j].value = '#'})
-	
-	rect(30,9,15,9, function(i,j){map[i][j].value = 0})
-	rect(33,6,9,15, function(i,j){map[i][j].value = 0})
+	rect(31,7,13,13, function(i,j){map[i][j].value = '#'})	
+	rect(31,10,13,7, function(i,j){map[i][j].value = 0})
+	rect(34,7,7,13, function(i,j){map[i][j].value = 0})
 	
 	function makemap(w,h,f)
 	{
