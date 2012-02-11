@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>hexes</title>
+	<link rel="stylesheet" href="style/common.css"/>
+	<style type="text/css">
+		body.auto{width: 800px}
+	</style>
+	<script type="text/javascript" src="script/util.js"></script>
+	<script type="text/javascript" src="script/dombuilder.js"></script>
+	<script type="text/javascript" src="script/geometry.js"></script>
+	<script type="text/javascript" src="script/color.class.js"></script>
+	<script type="text/javascript" src="script/canvas.js"></script>
+	<script type="text/javascript" src="script/hexagon.class.js"></script>
+	<script type="text/javascript" src="script/field.class.js"></script>
+	<script type="text/javascript" src="script/snake.class.js"></script>
+</head>
+<body class="auto">
+	<div id="hexes"></div>
+	<script type="text/javascript">
+		//TODO: DRAW BORDER OVER THE FIELD
+		var width = 800, height = 600
+		DomBuilder.apply(this, 'canvas'.split(','))
+		//alert('x')
+
+		function addCanvas(target, w, h, id)	{
+			var element = $canvas({id:id, width:w, height:h}, 'Canvas is not supported. getfirefox.com')
+			target.appendChild(element);
+			
+			return element.getContext('2d')
+		}
+
+		function setupCanvas(ctx, tx, ty, sx, sy, p)	{
+			ctx.translate(tx, ty)
+				.scale(sx, sy)
+				.perspective = p
+
+			ctx.size = new Rect(tx * 2 / sx, ty * 2 / sy)
+			ctx.origin = new Point(-tx/sx, -ty/sy)
+		}
+
+		function renderGrid(ctx, rows, cols, pad)	{
+			var sideColors = ['rgba(255, 50, 50, .2)', 'rgba(50, 255, 50, .2)', 'rgba(50, 50, 255, .2)']
+			var middleColors = ['rgba(255, 255, 50, .25)', 'rgba(50, 255, 255, .25)', 'rgba(255, 50, 255, .25)']
+
+			function setColors(grad, middle, side)	{
+				var sides = side.pick(2)
+				grad.addColorStop(.25, sides[0])
+					.addColorStop(.75, sides[1])
+				ctx.strokeStyle.addColorStop(.5, middle[Math.floor(Math.random()*middle.length)])
+			}
+
+			ctx.strokeStyle = ctx.createLinearGradient(-width/2, -height/2, width/2, height/2)
+			setColors(ctx.strokeStyle, sideColors, middleColors)
+			var fld1 = new HexField(rows, cols, w, pad+.5)
+			fld1.strokeAll(ctx)
+
+			ctx.strokeStyle = ctx.createLinearGradient(width/2, -height/2, -width/2, height/2)
+			setColors(ctx.strokeStyle, sideColors, middleColors)
+			var fld2 = new HexField(rows, cols, w, pad-.5)
+			fld2.strokeAll(ctx)
+
+			ctx.strokeStyle = ctx
+				.createRadialGradient(0, 0, 0, 0, 0, width/2.2)
+				.addColorStop(.4, 'rgba(255, 255, 180, .5)')
+				.addColorStop(1, 'rgba(255, 255, 130, .3)')
+
+			var fld = new HexField(rows, cols, w, pad)
+			
+			fld.strokeAll(ctx)
+		}
+
+		// Color
+		var obstacle = {fill: (new Color('#FB4225', .8)).toString(), stroke:(new Color('#FB4225', .7)).tint(50).toString()}
+		var snake    = {fill: (new Color('#FCC10B', .8)).toString(), stroke:(new Color('#FCC10B', .7)).tint(70).toString()}
+		var bonus    = {fill: (new Color('#57C8FF', .8)).toString(), stroke:(new Color('#57C8FF', .7)).tint(70).toString()}
+		
+		var target = document.getElementById('hexes')
+		
+		var grid = addCanvas(target, width, height, 'grid')
+		var main = addCanvas(target, width, height, 'main')
+
+		document.getElementById('main').style.marginTop = -height + 'px'
+		setupCanvas(grid, width / 2, height / 2, 1, .9, -7e-4)
+		setupCanvas(main, width / 2, height / 2, 1, .9, -7e-4)
+		
+		var w = 29, pad = 2.5, cols = 25, rows = 21
+
+		renderGrid(grid, rows, cols, pad)
+		var ctx = grid
+		
+		var grad = ctx.createLinearGradient(0, 0, 0, height/2)
+			.addColorStop(0, obstacle.fill)
+			.addColorStop(1, (new Color(obstacle.fill)).tint(50).toString())
+		
+		ctx.strokeStyle = obstacle.stroke
+		ctx.fillStyle = obstacle.fill = grad
+		var playable = new HexField(rows, cols, w, pad+ .5)
+		
+		var wings = (function(length, radius){
+			var rval = []
+			for(var i=0; i<length;++i)	{
+				rval.push(new Point(-radius, -i))
+				rval.push(new Point(radius, i))
+				if(!i)continue
+				rval.push(new Point(radius-i, -i))
+				rval.push(new Point(i-radius, i))
+			}
+			return rval
+		})(5, Math.floor(cols / 2) - 5)
+
+		wings.push(new Point(1, 2))
+		wings.push(new Point(1, 1))
+		wings.push(new Point(0, 1))
+		
+		playable.addWalls(wings)
+		playable.fillWalls(ctx)
+
+		ctx = main
+		var grad = ctx.createLinearGradient(0, 0, 0, height/2)
+			.addColorStop(0, snake.fill)
+			.addColorStop(1, (new Color(snake.fill)).tint(50).toString())
+		
+		ctx.strokeStyle = snake.stroke
+		ctx.fillStyle = snake.fill = grad
+
+		var sn = new Snake(new Point(playable.cj+3, playable.ci + 5), Direction.UpLeft, 4)
+		
+		function drawSnake()	{
+			sn.body.forEach(function(point){
+				playable.fill(point.y, point.x, ctx)
+			})
+		}
+		
+		function onkeypress(event)	{
+			if(event.keyCode == 37) sn.goLeft()
+			else if(event.keyCode == 39) sn.goRight()
+		}
+		
+		function moveit()	{
+			ctx.clear()
+			sn.move()
+			drawSnake()
+			sn.body.forEach(function(point){
+				playable.fill(point.y, point.x, ctx)
+			})
+			
+			window.setTimeout(moveit, 100)
+		}
+		
+		document.addEventListener('keypress', onkeypress, false)
+		moveit()
+	
+	</script>
+</body>
+</html>

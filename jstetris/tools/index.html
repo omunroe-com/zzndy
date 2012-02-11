@@ -1,0 +1,210 @@
+<html>
+<head><title>Javascript tetris</title>
+<link rel="StyleSheet" href="../style/common.css" type="text/css"/>
+<meta http-equiv="Content-type" content="text/html; charset=utf8" />
+<link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="farbtastic/farbtastic.css" type="text/css" />
+<style type="text/css">
+		table.figure-designed
+		{
+				border-collapse: collapse;
+				display: inline-table;
+				margin: .5em 1em 1em 0;
+				background: yellow;
+		}
+
+		table.figure-designed td.enabled
+		{
+		}
+
+		table.figure-designed td.disabled
+		{
+				background: #232323;
+		}
+
+		table.figure-designed td
+		{
+				width: 1.7em;
+				height: 2em;
+				border: 1px solid #555;
+		}
+
+		.figure	{
+			float: left;
+		}
+
+		label	{
+			font-size: 60%;
+		}
+
+		input	{
+			border: none;
+			text-align: center;
+			margin: .4em;
+			width: 9em;
+			height: 4em;
+		}
+
+		input.selected	{
+			border: .1em solid #fff;
+			margin: .3em;
+		}
+
+		.color-selector	{
+			float:left;
+		}
+</style>
+</head>
+<body>
+		<center width="800px">
+				<table>
+						<tr>
+								<td id="colors"></td>
+								<td>
+									<div id="farbtastic"></div>
+								</td>
+						</tr>
+				</table>
+				<div id="tootlbar">
+						<a href="javascript:addFigure()">Add figure</a>
+				</div>
+				<table>
+						<tr>
+								<td id="target"></td>
+								<td><pre id="code"></pre></td>
+						</tr>
+				</table>
+		</center>
+<script type="text/javascript" src="../script/common/util.js" ></script>
+<script type="text/javascript" src="../script/domgen.js" ></script>
+<script type="text/javascript" src="../script/color.class.js" ></script>
+<script type="text/javascript" src="../script/jquery.js" ></script>
+<script type="text/javascript" src="farbtastic/farbtastic.js" ></script>
+<script type="text/javascript" src="script/figure-designed.js" ></script>
+<script type="text/javascript">
+	initDomGen();
+
+	var target = document.getElementById('target');
+	var lastFigId = 0;
+	var figures = [];
+
+	var colors =  [
+		new Color(240,134,62), new Color(150,224,89), new Color(75,193,213), new Color(231,96,73),
+		new Color(255,220,29), new Color(221,156,216), new Color(82,133,238), new Color(232,193,251),
+		new Color(216,241,132), new Color(144,183,234), new Color(228,108,148), new Color(248,230,129),
+		new Color(199,131,246), new Color(157,219,231), new Color(229,145,87), new Color(75,193,62),
+		new Color(0,219,129), new Color(199,77,56)
+	];
+
+	var farbtastic = document.getElementById('colors');
+	for(var i=0; i<18; ++i)	{
+		var color = colors[i % colors.length].toString('h');
+		farbtastic.appendChild(
+			$input({
+				type:'text',
+				id:'color-' + i,
+				value: color,
+				style: 'background-color:' + color,
+				onclick: 'colorClicked(this)'
+			})
+		);
+	}
+
+	var currentColor = document.getElementById('color-0');
+	$(currentColor).addClass('selected');
+
+	function farbtasticCallback(color)	{
+		currentColor.style.background = color;
+		var f = $.farbtastic('#farbtastic');
+		currentColor.style.color = f.hsl[2] > 0.5 ? '#000' : '#fff'
+		currentColor.value = color;
+	}
+
+	$('#farbtastic').farbtastic(farbtasticCallback);
+
+	function colorClicked(obj)	{
+			$(currentColor).removeClass('selected');
+			currentColor = obj;
+			$(currentColor).addClass('selected');
+			var f = $.farbtastic('#farbtastic');
+
+			f.setColor(currentColor.value);
+	}
+
+	var opts = [];
+	for(var i=0; i<colors.length; ++i)	{
+			var color = colors[i].toString();
+			opts.push($option({'value': color, style: 'background: ' + color}, color));
+	}
+	document.getElementById('tootlbar').appendChild($select(opts));
+
+	function addFigure()	{
+			var fig = new FigureDesigned(figures.length + 1);
+			fig.render(target);
+
+			var figId = figures.push(fig);
+			document.getElementById('primary-' + figId).style.backgroundColor = colors[figId % colors.length];
+			document.getElementById('revolving-' + figId).style.backgroundColor = colors[figId % colors.length];
+
+			window.setInterval('rotateFigure(' + figId + ')', 200);
+	}
+
+	function rotateFigure(figId)	{
+		var fig = figures[figId - 1];
+		fig.rotation += 90;
+		fig.rotation %= 360;
+
+		var a,b,c,f;
+
+		switch(fig.rotation)	{
+			case 90:
+				a = c = 0;
+				b = f = 1;
+				break;
+			case 180:
+				a = -1;
+				b = 0;
+				c = f = 1;
+				break;
+			case 270:
+				b = -1;
+				a = f = 0;
+				c = 1;
+				break;
+			default: // 0
+				b = c = f = 0;
+				a = 1;
+				break;
+		}
+
+		for(var i=0; i<5; ++i)	{
+			for(var j=0; j<5; ++j)	{
+				fig.revolving[i][j].className = fig.mask[a*i+b*j+c*4][-b*i+a*j+f*4] ? 'enabled' : 'disabled';
+			}
+		}
+	}
+
+	function cellClick(figure, i, j)	{
+		var fig = figures[figure - 1];
+
+		if(fig.mask[i][j] = !fig.mask[i][j])
+			fig.primary[i][j].className = 'enabled';
+		else
+			fig.primary[i][j].className = 'disabled';
+
+		renderCode();
+	}
+
+	function renderCode()	{
+		var text = [];
+
+		for(var i=0; i<figures.length; ++i)	{
+			text.push(figures[i].toText());
+		}
+
+		document.getElementById('code').innerHTML = '[' + text.join(',\n') + '\n]';
+	}
+</script>
+</body>
+
+</html>

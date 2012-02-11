@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_hexnake" default="compile.module.hexnake">
+  <dirname property="module.hexnake.basedir" file="${ant.file.module_hexnake}"/>
+  
+</project>

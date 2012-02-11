@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Unittest for tetris.js</title>
+		<script type="text/javascript" src="../script/common/util.js"></script>
+		<script type="text/javascript" src="../script/block.js"></script>
+		<script type="text/javascript" src="../script/tetris.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			var ctrl = new TetrisController(new TetrisModel());
+			var current = new Blk(ctrl.current.body);
+			ctrl.cw();
+			var rotCw = new Blk(ctrl.current.body);
+			ctrl.ccw();
+			var restored = new Blk(ctrl.current.body);
+			ctrl.ccw();
+			var rotCcw = new Blk(ctrl.current.body);
+			ctrl.rotate();
+			var fwd = new Blk(ctrl.current.body);
+			ctrl.rotate();
+			ctrl.rotate(1);
+			var back = new Blk(ctrl.current.body);
+			
+			fireunit.ok(eq(current, restored), 'original == reversed');
+			fireunit.ok(eq(restored, fwd), "reversed == forwarded");
+			fireunit.ok(eq(fwd, back), "forwarded == backwarded");
+			
+			function eq(blk1, blk2)
+			{
+				return blk1.body.join() == blk2.body.join();
+			}
+		</script>
+	</body>
+</html>

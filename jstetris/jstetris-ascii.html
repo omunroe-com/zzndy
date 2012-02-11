@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Tetris in ASCII</title>
+    <meta name="keywords" content="filler, 7 colors, 7colors, javascript, game"/>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" href="style/common/pixelless.css"/>
+    <script type="text/javascript" src="script/common/util.js"></script>
+    <script type="text/javascript" src="script/common/event.js"></script>
+    <script type="text/javascript" src="script/common/geometry.js"></script>
+    <script type="text/javascript" src="script/timer.class.js"></script>
+    <script type="text/javascript" src="script/tag.class.js"></script>
+    <script type="text/javascript" src="script/blk.js"></script>
+    <script type="text/javascript" src="script/tetris.js"></script>
+    <script type="text/javascript" src="script/tetris-controller.js"></script>
+    <script type="text/javascript" src="script/ascii-tetris-view.js"></script>
+    <style type="text/css">
+        pre b
+        {
+            text-shadow: 0 .1em .2em black;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div class="content header">
+        <h1>JavaScript Tetris in ASCII</h1>
+    </div>
+    <div class="content">
+        <b>
+            <center><pre id="tetris"></pre></center>
+        </b>
+
+        <div class="emtpy_footer">
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="content">
+        &copy; <script type="text/javascript">
+            var a = ['and', 'mail'].join('y@g');
+            var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Tetris ASCII', '">A. Vynogradov</a>'];
+            document.write(b.join(''));
+        </script>
+        2007-2009
+    </div>
+
+</div>
+<script type="text/javascript">
+        var ctrl = new TetrisController(new TetrisModel(), new AssiiTetrisView(Tag.get('#tetris')), new SpeedyRuleSet());
+        ctrl.start();
+</script>
+</body>
+</html>

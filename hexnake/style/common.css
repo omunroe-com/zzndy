@@ -1,0 +1,82 @@
+*	{padding: 0; margin: 0}
+
+html, input	{
+	color: #D7D7D7;
+	background: #262626;
+	font: 8pt/1.5em "Lucida Grande", Geneva, Arial, Verdana, sans-serif;
+}
+
+h1, h2	{
+	font-family: Georgia, "Times New Roman", serif;
+}
+h1, h2, h3, h4, h5	{margin: 1em 0 .5em 0; color: white}
+p{margin: 1em 0}
+ul, ol	{
+	margin: 1em 0 1em 2em;
+	-moz-column-count: 2;
+	-moz-column-gap: 5ex;
+}
+ul	{list-style: disc}
+body	{
+	width: 110ex;
+	margin-top: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.clr	{clear: both}
+
+#header	{
+	font: 500%/2em Haettenschweiler, Impact;
+	color: #199392;
+	padding-left: .3em;
+	font-style: italic;
+	float: left;
+}
+#header span.hi	{color: #DDBD02}
+
+a				{color: #9ACD32; text-decoration: none; border-bottom: 1px solid}
+a:visited		{color: #AAB12B}
+a:hover			{color: #A8FF00; text-decoration: underline; border: none}
+a:hover:visited	{color: #9ACD32}
+
+#controls	{
+	margin-top: 3em;
+	float: right;
+	background: #3E3E3E;
+	border: 1px solid #5A5A5A;
+	padding: 1ex 3ex 1ex 5ex;
+	text-align: right;
+	
+	-webkit-border-radius: 4ex 0 0 4ex;
+	-moz-border-radius: 4ex 0 0 4ex;
+}
+
+#search input	{
+	width: 24ex;
+	padding: .1ex 3ex .2ex 1ex;
+	color: #262626;
+	background: #D7D7D7;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #9E9E9E #EAEAEA #EAEAEA #9E9E9E;
+	-moz-border-radius: 4ex;
+	-webkit-border-radius: 4ex;
+}
+
+#search span	{
+	font-weight: bold;
+	font-size: 110%;
+	vertical-align: top;
+	color: black;
+	margin-left: -2.3ex;
+	cursor: hand;
+	cursor: pointer;
+}
+
+#menu	{padding-top: 1ex}
+#menu a	{padding: 0 2ex; color: white; font-weight: bold; border: none; text-decoration: underline}
+#menu a:hover	{text-decoration: none}
+#menu a:visited	{color: #e0e0e0}
+
+#status	{border-top: 1px solid #5F782C}
