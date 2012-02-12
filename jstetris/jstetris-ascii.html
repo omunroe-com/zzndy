@@ -19,6 +19,7 @@
         {
             text-shadow: 0 .1em .2em black;
         }
+
     </style>
 </head>
 <body>
@@ -42,12 +43,12 @@
             var b = ['<a ', 'href="mai', 'lto:zz',a, '.com?','subject=','JavaScript Tetris ASCII', '">A. Vynogradov</a>'];
             document.write(b.join(''));
         </script>
-        2007-2009
+        2007-2012
     </div>
 
 </div>
 <script type="text/javascript">
-        var ctrl = new TetrisController(new TetrisModel(), new AssiiTetrisView(Tag.get('#tetris')), new SpeedyRuleSet());
+        var ctrl = new TetrisController(new TetrisModel(), new AsciiTetrisView(Tag.get('#tetris')), new SpeedyRuleSet());
         ctrl.start();
 </script>
 </body>

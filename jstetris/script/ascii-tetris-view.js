@@ -1,4 +1,4 @@
-function AssiiTetrisView( target ) {
+function AsciiTetrisView( target ) {
     TetrisView.call(this);
 
     this.target = target;
@@ -23,16 +23,16 @@ function updScore()
     this.scoreTimer.restart();
 }
 
-var V = AssiiTetrisView.prototype = new TetrisView;
-AssiiTetrisView.prototype.base = TetrisView.prototype;
+var V = AsciiTetrisView.prototype = new TetrisView;
+AsciiTetrisView.prototype.base = TetrisView.prototype;
 
-var block = String.fromCharCode(0x2590) + String.fromCharCode(0x2588) + String.fromCharCode(0x258C);
-var space = ' ' + String.fromCharCode(0xb7) + ' ';
-var shadow = ' = ';
+var block = '[+]';
+var space = ' . ';
+var shadow = ' ~ ';
+var bar = ' * '
+var cellWidth = block.length;
+var emptyCell = ' '.x(cellWidth);
 
-block = '[&equiv;]';
-space = ' &middot; ';
-shadow = ' &times; ';
 
 function realCells( cell )
 {
@@ -42,7 +42,7 @@ function realCells( cell )
 
 function tidy( n, w, p )
 {
-    return ((p || '') + n.toFixed(w || 0)).pad(-Blk.width * 3);
+    return ((p || '') + n.toFixed(w || 0)).pad(-Blk.width * cellWidth);
 }
 
 V.render = function()
@@ -74,8 +74,8 @@ V.render = function()
                 if( c.current.body[by][bx] )cells[x] = block;
         }
 
-        out.push(cells.join(''));
-        out.push('    ');
+        out.push(bar + cells.join(''));
+        out.push(bar + emptyCell);
 
         if( y < Blk.height ) {
             out.push(c.next.body[y].map(realCells).join(''));
@@ -84,37 +84,51 @@ V.render = function()
         {
             switch( y ) {
                 case Blk.height + 1:
-                    out.push(' Score:'.pad(Blk.width * 3));
+                    out.push(' Score:'.pad(Blk.width * cellWidth));
                     break;
                 case Blk.height + 2:
                     out.push(tidy(this.currentScore));
                     break;
                 case Blk.height + 3:
-                    out.push(this.latestBonus == 0 ? '   '.x(Blk.width) : tidy(this.latestBonus, 0, '+ '));
+                    out.push(this.latestBonus == 0 ? emptyCell.x(Blk.width) : tidy(this.latestBonus, 0, '+ '));
                     break;
                 case Blk.height + 5:
-                    out.push(' Speed:'.pad(Blk.width * 3));
+                    out.push(' Speed:'.pad(Blk.width * cellWidth));
                     break;
                 case Blk.height + 6:
                     out.push(tidy(c.speed, 1));
                     break;
                 default:
-                    out.push('   '.x(Blk.width));
+                    out.push(emptyCell.x(Blk.width));
+		    break;
             }
         }
 
         out.push('\n');
     }
 
+	out.push(bar.x(m+2));
+	out.push(emptyCell.x(Blk.width+1)+'\n');
+	
     var body = out.join('');
     if( c.state == S_OVER )
     {
         var lines = body.split('\n');
+		var l1 = "=  G  A  M  E  ="; 
+		var l2 = "=  O  V  E  R  =";
+					
         var l = lines[0].length;
-        lines.splice(Math.floor(c.rows / 2) - 1, 3,
-                "=  G  A  M  E  =".pad(-(Math.floor(l / 2) - 5)).pad(l),
-                lines[Math.floor(c.rows / 2)],
-                "=  O  V  E  R  =".pad(-(Math.floor(l / 2) - 5)).pad(l)
+		
+		var a = lines[Math.floor(c.rows / 2) - 1].split('');
+		a.splice(Math.floor(((m+2)*cellWidth-l1.length)/2), l1.length, l1);
+		
+		var b = lines[Math.floor(c.rows / 2) - 1].split('');
+		b.splice(Math.floor(((m+2)*cellWidth-l1.length)/2), l2.length, l2);
+		
+        lines.splice(Math.floor(c.rows / 2) - 1, 3,			
+				a.join(''),
+		        lines[Math.floor(c.rows / 2)],
+                b.join('')
                 );
         body = lines.join('\n');
     }
