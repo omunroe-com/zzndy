@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <link rel="stylesheet" href="../style/pixelless.css" type="text/css" />
+    <title>Dungeon generation</title>
+    <style type="text/css">
+   	#out div{font-family:monospace;font-size:10pt;width:1em;text-align:center; float:left; line-height: 130%}
+	#out div.odd{margin-top:.6em}
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="content header">
+            <h1>
+                Dungeon generation</h1>
+        </div>
+        <div class="content" id="out">
+	
+	
+	</div>
+    </div>
+    <div id="footer">
+        <div class="content">
+            &copy; Vynogradov 2012
+        </div>
+    </div>
+
+    <script type="text/javascript" >
+    
+    	var out = document.getElementById('out');
+	var w = 60;
+	var h = 24;
+
+	var x = w / 2;
+	var y = h / 2;
+
+	var map = [];
+	for(var i=0;i<h;++i)
+	{
+		map.push([]);
+		for(var j=0;j<w;++j)
+			map[i].push(Math.random() < .2 ? '#' : '.');
+	}
+
+	function draw()
+	{
+		var text = [];
+		for(var j=0;j<w;++j)
+		{
+			text.push(j%2 == 0 ? '<div class="odd">' : '<div>');
+			for(var i=0;i<h;++i)
+				text.push(((x==j&&y==i) ? '@' : map[i][j]) + '<br/>');
+
+			text.push('</div>');
+		}
+		out.innerHTML = text.join('');
+	}
+
+	draw();
+
+	window.addEventListener('keydown', function(e){
+		switch(e.keyCode)
+		{
+			case 72:if(e.shiftKey){--x; break}
+			case 103: y-=x%2;--x; break;
+			case 75:case 104: --y;break;
+			case 85:case 105: y-=x%2;++x; break;
+			case 66:case 100: y+=(x+1)%2;--x; break;
+			case 74:case 101: ++y;break;
+			case 76:if(e.shiftKey){++x;break}
+			case 102: y+=(x+1)%2;++x; break;
+			case 97:--x;break;
+			case 99:++x;break;
+		}
+		draw();
+
+	}, false);
+    
+    </script>
+
+</body>
+</html>
