@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>tendrils</title>
+    <style type="text/css">
+	body{background-color: #000}
+        div.field
+        {
+		margin: 0 auto;
+		font-size:9pt;
+        }
+        div.col
+        {
+		margin: 0;
+		float: left;
+		width: 6px;
+        }
+        div.col.odd
+        {
+		margin-top:3px;
+        }
+        div.cell
+        {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div id="target">
+    </div>
+    <script type="text/javascript">
+
+        function rnd(a,b) {
+            switch (arguments.length) {
+                case 0:
+                    return Math.random();
+                    break;
+                case 1:
+                    if(a instanceof Array)
+                        return a[Math.floor(Math.random()*a.length)];
+                    
+                    return Math.random() * a;
+                    break;
+                case 2:
+                    return a + Math.random() * (b - a);
+                    break;
+            }
+        }
+
+        function rndi(a,b) {
+            switch (arguments.length) {
+                case 1:
+                    return Math.floor(Math.random() * a);
+                    break;
+                case 2:
+                    return Math.floor(a + Math.random() * (b - a));
+                    break;
+            }
+        }
+
+        if(!('contains' in Array.prototype))
+            Array.prototype.contains = function(needle){
+                var i=this.length;
+                while(i-->0)if(this[i] == needle)return true;
+                return false;
+            }
+
+        var maxchannel = 0xff;
+        function Color(r, g, b) {
+
+            function bound(a) {
+                if (a < 0) return 0;
+                else if (a > maxchannel) return maxchannel;
+                return a;
+            }
+
+            function octet(a) {
+                a = Math.floor(a).toString(16);
+                return a.length == 1 ? '0' + a : a;
+            }
+
+            r = bound(r);
+            g = bound(g);
+            b = bound(b);
+
+            // make color darker - k between 0 and 1
+            this.dim = function (k) {
+                return new Color(r * k, g * k, b * k);
+            }
+
+            // randomly change color - k between 0 and 1
+            this.deviate = function (k) {
+                return new Color(rnd(r * (1 - k), r * (1 + k)), rnd(g * (1 - k), g * (1 + k)), rnd(b * (1 - k), b * (1 + k)));
+            }
+
+            this.toString = function () {
+                return '#' + octet(r) + octet(g) + octet(b);
+            }
+        }
+
+        Color.random = function () {
+            var wr = .41;
+            var wg = .37;
+            var wb = .22;
+
+            var int = rnd(.5, .7);
+
+            var r = rnd();
+            var g = rnd();
+            var b = rnd();
+
+            switch (rndi(3)) {
+                case 0: r = (int - wg * g - wb * b) / wr;
+                    break;
+                case 1: g = (int - wr * r - wb * b) / wg;
+                    break;
+                case 2: b = (int - wg * g - wr * r) / wb;
+                    break;
+            }
+
+            return new Color(r * maxchannel, g * maxchannel, b * maxchannel);
+        }
+
+        function mkArray(n, newvalfn) {
+            var map = [];
+            
+            var i = -1;
+            while (++i < n) {
+                map.push(newvalfn(i));
+            }
+            
+            return map;
+        }
+
+        function mkMatrix(n, m, newvalfn) {
+            var map = [];
+
+            var i = -1;
+            while (++i < n) {
+                var j = -1;
+                var row = [];
+                while (++j < m) row.push(newvalfn(i, j));
+                
+                map.push(row);
+            }
+
+            return map;
+        }
+
+        function arci(co, r, a) {
+            return [Math.round(co[0] + r * Math.sin(2 * Math.PI * a)), Math.round(co[1] + r * Math.cos(2 * Math.PI * a))];
+        }
+
+        var dirs2n = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 0], [0, -1]];
+        var dirs2n1= [[0, -1], [-1, 0], [0, 1], [1, 1], [1, 0], [1, -1]];
+
+        var numdirs = dirs2n.length;
+
+        function getDir(id, i, j) {
+            if (id < 0 || id > dirs2n.length) id = rndi(dirs2n.length);
+
+            var dir = (j % 2) ? dirs2n1[id] : dirs2n[id];
+            return dir;
+        }
+
+//        numdirs = 4;
+//        getDir = function (id, i, j) {
+//            if (id < 0 || id > numdirs) id = rndi(numdirs);
+
+//            return [[-1, 0], [0, 1], [1, 0], [0, -1]][id];
+//        }
+
+        var allColor = Color.random();
+        console.log(allColor.toString());
+
+        var Walker = function (coord, dir, power) {
+            this.i = coord[0];
+            this.j = coord[1];
+            this.dir = dir;
+            this.power = power;
+            this.fill = allColor.deviate(.2); 
+        }
+
+        function constant(val){return function(){return val}}
+        function args(){return [].join.call(arguments, 'x')}
+
+        var t = document.getElementById('target');
+
+        var aspect = 4/3;
+        var w = 128;
+        var h = Math.floor(w / aspect);
+
+        var empty = new Color(9,9,9);
+
+        function renderMap() {
+            var map = mkMatrix(h, w, constant(empty));
+
+            var getValidNext = function (coord, dirId) {
+                var dir = getDir(dirId, coord[0], coord[1]);
+
+                var i = coord[0] + dir[0];
+                var j = coord[1] + dir[1];
+
+                return (i >= 0 && j >= 0 && i < h && j < w && map[i][j] == empty)
+                    ? { i: i, j: j }
+                    : null;
+            }
+
+            var tryNewDir = function (i, j, fn) {
+                var next = null;
+                var retr = 3;
+                var dir = walker.dir;
+
+                while (retr-- > 0 && next == null) {
+                    var dir = rndi(numdirs);
+
+                    if (!fn || fn(dir))
+                        next = getValidNext([i, j], dir);
+                }
+
+                return [next, dir];
+            }
+
+            var branchSmall = .2;
+            var branchBig = .5;
+            var pbig = .2;
+
+            var numwalkers = numdirs*2;
+            var fillfactor = .25;
+            var startingPower = Math.round(w * h * fillfactor / numwalkers);
+
+            var o = [Math.floor(h / 2), Math.round(w / 2 + w / 8)];
+            var makeWalker = function (i) { var dir = getDir(i, o[0], o[1]); return new Walker([o[0] + dir[0], o[1] + dir[1]], i, startingPower) };
+
+            var walkers = mkArray(numwalkers / 2, makeWalker).concat((function () { o = [Math.floor(h / 2), Math.round(w / 2 - w / 8)]; allColor = Color.random(); return mkArray(numwalkers / 2, makeWalker) })());
+          
+            var walker;
+            var pool = 0;
+
+            while (walker = walkers.pop()) {
+
+                var i = walker.i;
+                var j = walker.j;
+
+                if (walker.power <= 0) {
+                    map[i][j] = walker.fill.dim(.9);
+                    --walker.power; // dead will have -1;
+                }
+                else {
+
+                    map[i][j] = walker.fill;
+                    --walker.power;
+
+                    if (pool > 0) {
+                        var loan = Math.round(rnd(pool));
+                        walker.power += loan;
+                        pool -= loan;
+                    }
+
+                    var next = null;
+
+                    if (rnd() < .1) { // random change of direction
+                        nextdir = tryNewDir(i, j);
+                        next = nextdir[0];
+                        dir = nextdir[1];
+                        if (next) walker.dir = dir;
+                    }
+
+                    if (!next) {
+                        next = getValidNext([i, j], walker.dir);
+
+                        if (!next) { // forced change of direction
+                            nextdir = tryNewDir(i, j);
+                            next = nextdir[0];
+                            dir = nextdir[1];
+
+                            if (next) walker.dir = dir;
+                        }
+                    }
+
+                    if (next) {
+                        walker.i = next.i;
+                        walker.j = next.j;
+			walker.fill = walker.fill.dim(.98);
+
+                        // continue movement
+                        walkers.unshift(walker);
+
+                        var shareRatio = rnd() < pbig ? branchBig : branchSmall;
+                        var share = Math.round(rnd(walker.power * shareRatio));
+
+                        if (share > 0) {
+                            var nextdir = tryNewDir(i, j, function (dir) { return dir != walker.dir && dir != walker.dir });
+                            next = nextdir[0];
+                            dir = nextdir[1];
+
+                            if (next) { // add new spawn to the end
+                                walkers.push({ i: next.i, j: next.j, dir: dir, power: share, parent: walker, fill: walker.fill });
+                                walker.power -= share;
+                            }
+                        }
+                    }
+                    else {
+
+                        if (walker.parent) {
+                            if (walker.parent.power == -1) {
+                                walker.parent.power = walker.power;
+                                walkers.push(walker.parent);
+                            }
+                            else {
+                                walker.parent.power += walker.power;
+                            }
+                        }
+                        else {
+                            
+                            pool += walker.power;                            
+                        }
+
+                        walker.power = -1;
+
+                    }
+                }           
+            }
+
+            console.log('wasted: ' + pool);
+
+            return map;
+        }
+
+	function render() {
+		var map = renderMap();
+
+		var text = ['<div class="field">'];
+
+		for (var j = 0; j < w; ++j) {
+			if (j % 2) text.push('<div class="col odd">');
+			else text.push('<div class="col">');
+
+			for (var i = 0; i < h; ++i) {
+				var col = map[i][j];
+				text.push('<div class="cell" style="color: '+col+'">&#x25cf;</div>');
+			}
+
+			text.push('</div>');
+		}
+
+		text.push('</div>');
+		return text.join('');
+	}
+
+        t.innerHTML = render();
+
+    </script>
+</body>
+</html>
