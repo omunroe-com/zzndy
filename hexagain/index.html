@@ -244,49 +244,24 @@
 		function SuperCell(x, y, rank) {
 			this.x = x;
 			this.y = y;
-			this.a = 3 * rank + (rank & 1);
-			this.b = 3 * rank - (rank & 1) + 1;
-
-			this.a = rank * 3+1;
-			this.b = rank * 3;
+			this.rank = rank;
 		}
 
 		SuperCell.prototype.getCorners = function() {
-			var a = (2 * this.b - this.a) / 3;
-			var b = (this.b + this.a) / 3;
-			var c = (2 * this.a - this.b) / 3;
+			var r = this.rank;
 
-			var $ = this;
-
-			function leftup(x) { return 2 * x + $.b; }
-
-			function top(x) { return (x + $.a) / 2; }
-
-			function rightup(x) { return $.b - x; }
-
-			function rightdown(x) { return 2 * x - $.a; }
-
-			function bottom(x) { return (x - $.b) / 2; }
-
-			function leftdown(x) { return -x - $.a; }
-
-			function pair(x, fn) {
-				return new Point($.x + Math.round(x), $.y + Math.round(fn(x)));
-			}
-
-			return [
-				pair(a - 2 / 3, top),
-				pair(a + 1 / 3, rightup),
-				pair(b - 1 / 3, rightup),
-				pair(b - 1 / 3, rightdown),
-				pair(c + 1 / 3, rightdown),
-				pair(c - 2 / 3, bottom),				   
-				pair(-a + 2 / 3, top),
-				pair(-a - 1 / 3, leftup),
-				pair(-b + 1 / 3, leftup),
-				pair(-b + 1 / 3, leftdown),
-				pair(-c - 1 / 3, leftdown),
-				pair(-c + 2 / 3, bottom)
+			return [new Point(2 * r, r - 1),
+				new Point(2 * r, r),
+				new Point(r, 2 * r),
+				new Point(r - 1, 2 * r),
+				new Point(-r + 1, r + 1),
+				new Point(-r, r),
+				new Point(-2 * r, -r),
+				new Point(-2 * r, -r - 1),
+				new Point(-r - 1, -2 * r),
+				new Point(-r, -2 * r),
+				new Point(r, -r),
+				new Point(r + 1, -r + 1)
 			];
 		};
 
@@ -294,12 +269,15 @@
 			var x = point.x - this.x;
 			var y = point.y - this.y;
 
-			var leftup = 2 * x + this.b;
-			var top = (x + this.a) / 2;
-			var rightup = this.b - x;
-			var rightdown = 2 * x - this.a;
-			var bottom = (x - this.b) / 2;
-			var leftdown = -x - this.a;
+			var a = this.rank * 3 + 1;
+			var b = this.rank * 3;
+
+			var leftup = 2 * x + b;
+			var top = (x + a) / 2;
+			var rightup = b - x;
+			var rightdown = 2 * x - a;
+			var bottom = (x - b) / 2;
+			var leftdown = -x - a;
 
 			return leftup >= y
 				&& top >= y
@@ -364,7 +342,11 @@
 					return cell.value != null && cell.value.type == bedrock;
 				}
 
-				if (adj.some(isBedrock))
+				var n = adj.filter(isBedrock).length;
+
+				if (n > 3)
+					value = { type: bedrock };
+				else if (n > 0)
 					value = { type: stone };
 				else if (rnd(100) < 5)
 					value = { type: stone, seed: true };
@@ -377,6 +359,10 @@
 		for (var i = 0; i < 3; ++i)
 			store.update(function (cell) {
 				var value = cell.value;
+
+				function isStone(cell) {
+					return cell.value != null && cell.value.type == stone;
+				}
 
 				function isSeed(cell) {
 					return 'seed' in cell.value;
@@ -399,9 +385,13 @@
 		ctx.font = "12pt Courier New";
 		var ex = ctx.measureText('X');
 
+		function pointEqual(point) {
+			return function (p) { return p.x == point.x && p.y == point.y }
+		}
+
 		function drawCell(cell) {
 			var s = 16;
-			var q = .95;
+			var q = .97;
 			var x = q * s * cell.pos.x * Math.sqrt(3) / 2;
 			var y = q * -s * (cell.pos.y - cell.pos.x / 2);
 
@@ -409,38 +399,30 @@
 			var fg = '#000';
 			var glyph = '';
 
-			if (cell.value != null) {
+			if (supercell.getCorners().some(pointEqual(cell.pos))) {
+				bg = '#2a2a2a';
+				fg = '#222';
+				glyph = '#';
+			}
+			else if (cell.value != null) {
 				switch (cell.value.type) {
-				case bedrock:
-					bg = '#3a3a3a';
-					fg = '#222';
-					glyph = '%';
-					break;
-				case stone:
-					bg = '#444';
-					fg = '#222';
-					glyph = cell.value.seed ? 'X' : '%';
-					break;
-				default:
-					fg = '#000';
-					bg = '#666';
-					glyph = '.';
+					case bedrock:
+						bg = '#3a3a3a';
+						fg = '#222';
+						glyph = '#';
+						break;
+					case stone:
+						bg = '#444';
+						fg = '#222';
+						glyph = cell.value.seed ? '%' : '#';
+						break;
+					default:
+						fg = '#000';
+						bg = '#666';
+						glyph = '.';
 				}
 			}
-			var r = 11;
-			if (cell.pos.x == 2 * r && cell.pos.y == r - 1) bg = 'red';
-			if (cell.pos.x == 2 * r && cell.pos.y == r) bg = 'red';
-			if (cell.pos.x == r && cell.pos.y == 2 * r) bg = 'green';
-			if (cell.pos.x == r - 1 && cell.pos.y == 2 * r) bg = 'green';
-			if (cell.pos.x == -r + 1 && cell.pos.y == r + 1) bg = 'blue';
-			if (cell.pos.x == -r && cell.pos.y == r) bg = 'blue';
-			if (cell.pos.x == -2 * r && cell.pos.y == -r) bg = 'pink';
-			if (cell.pos.x == -2 * r && cell.pos.y == -r - 1) bg = 'pink';
-			if (cell.pos.x == -r - 1 && cell.pos.y == -2 * r) bg = 'cyan';
-			if (cell.pos.x == -r && cell.pos.y == -2 * r) bg = 'cyan';
-			if (cell.pos.x == r && cell.pos.y == -r) bg = 'yellow';
-			if (cell.pos.x == r + 1 && cell.pos.y == -r + 1) bg = 'yellow';
-
+		
 			ctx.fillStyle = bg;
 			ctx.fillHex(x, y, s);
 
