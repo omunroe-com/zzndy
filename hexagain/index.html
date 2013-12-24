@@ -402,8 +402,8 @@
 		function drawCell(cell) {
 			var s = 16;
 			var q = .95;
-			var x = q*s * cell.pos.x * Math.sqrt(3) / 2;
-			var y = q*-s * (cell.pos.y - cell.pos.x / 2);
+			var x = q * s * cell.pos.x * Math.sqrt(3) / 2;
+			var y = q * -s * (cell.pos.y - cell.pos.x / 2);
 
 			var bg = 'transparent';
 			var fg = '#000';
@@ -411,22 +411,35 @@
 
 			if (cell.value != null) {
 				switch (cell.value.type) {
-					case bedrock:
-						bg = '#3a3a3a';
-						fg = '#222';
-						glyph = '%';
-						break;
-					case stone:
-						bg = '#444';
-						fg = '#222';
-						glyph = cell.value.seed ? 'X' : '%';
-						break;
-					default:
-						fg = '#000';
-						bg = '#666';
-						glyph = '.';
+				case bedrock:
+					bg = '#3a3a3a';
+					fg = '#222';
+					glyph = '%';
+					break;
+				case stone:
+					bg = '#444';
+					fg = '#222';
+					glyph = cell.value.seed ? 'X' : '%';
+					break;
+				default:
+					fg = '#000';
+					bg = '#666';
+					glyph = '.';
 				}
 			}
+			var r = 11;
+			if (cell.pos.x == 2 * r && cell.pos.y == r - 1) bg = 'red';
+			if (cell.pos.x == 2 * r && cell.pos.y == r) bg = 'red';
+			if (cell.pos.x == r && cell.pos.y == 2 * r) bg = 'green';
+			if (cell.pos.x == r - 1 && cell.pos.y == 2 * r) bg = 'green';
+			if (cell.pos.x == -r + 1 && cell.pos.y == r + 1) bg = 'blue';
+			if (cell.pos.x == -r && cell.pos.y == r) bg = 'blue';
+			if (cell.pos.x == -2 * r && cell.pos.y == -r) bg = 'pink';
+			if (cell.pos.x == -2 * r && cell.pos.y == -r - 1) bg = 'pink';
+			if (cell.pos.x == -r - 1 && cell.pos.y == -2 * r) bg = 'cyan';
+			if (cell.pos.x == -r && cell.pos.y == -2 * r) bg = 'cyan';
+			if (cell.pos.x == r && cell.pos.y == -r) bg = 'yellow';
+			if (cell.pos.x == r + 1 && cell.pos.y == -r + 1) bg = 'yellow';
 
 			ctx.fillStyle = bg;
 			ctx.fillHex(x, y, s);
@@ -434,6 +447,7 @@
 			ctx.fillStyle = fg;
 			ctx.fillText(glyph, x - ex.width / 2, y + 4);
 		}
+
 		store.each(drawCell);
 
 	</script>
