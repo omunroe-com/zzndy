@@ -314,6 +314,7 @@
 		var store = new HexStore(extremes, setInitialValue);
 		var bedrock = {};
 		var stone = {};
+		var maxelev = 12;
 
 		// Set initial
 		store.update(function (cell) {
@@ -346,47 +347,18 @@
 
 				if (n > 3)
 					value = { type: bedrock };
-				else if (n > 0)
-					value = { type: stone };
-				else if (rnd(100) < 5)
-					value = { type: stone, seed: true };
+				else if (rnd(100) < .5)
+					value = { type: stone, elev: maxelev };
 			}
 
 			return value;
 		});
 
-		// Grow walls
-		for (var i = 0; i < 3; ++i)
-			store.update(function (cell) {
-				var value = cell.value;
-
-				function isStone(cell) {
-					return cell.value != null && cell.value.type == stone;
-				}
-
-				function isSeed(cell) {
-					return 'seed' in cell.value;
-				}
-
-				if (cell.value.type != bedrock && cell.value.type != stone) {
-					var adj = store.getAdjacent(cell.pos);
-
-					if (adj.some(isSeed)) {
-						if (rnd(100) < 5)
-							value = { type: stone, seed: true };
-						else
-							value = { type: stone };
-					}
-				}
-
-				return value;
-			});
-
 		ctx.font = "12pt Courier New";
 		var ex = ctx.measureText('X');
 
 		function pointEqual(point) {
-			return function (p) { return p.x == point.x && p.y == point.y }
+			return function(p) { return p.x == point.x && p.y == point.y; };
 		}
 
 		function drawCell(cell) {
@@ -411,15 +383,26 @@
 						fg = '#222';
 						glyph = '#';
 						break;
-					case stone:
-						bg = '#444';
+					case stone:						
+						var v = cell.value.elev;
+
+						bg = v > maxelev * .9 ? ('hsl(190, 10%, ' + (100 * v / maxelev) + '%)')
+							: v > maxelev * .6 ? ('hsl(40, 10%, ' + (100 * v / maxelev - 20) + '%)')
+								: v > maxelev * .15 ? ('hsl(80, 80%, ' + .6*(90-100 * v / maxelev) + '%)')
+									: ('hsl(40, 70%, ' + (100 - 100 * v / maxelev) + '%)');
 						fg = '#222';
-						glyph = cell.value.seed ? '%' : '#';
+						glyph = v > maxelev * .9 ? 'A'
+							: v > maxelev * .6 ? '^'
+								: v > maxelev * .3 ? '-'
+									: '=';
+						
+
+							
 						break;
 					default:
-						fg = '#000';
-						bg = '#666';
-						glyph = '.';
+						fg = '#adf';
+						bg = '#369';
+						glyph = '~';
 				}
 			}
 		
@@ -430,7 +413,43 @@
 			ctx.fillText(glyph, x - ex.width / 2, y + 4);
 		}
 
-		store.each(drawCell);
+		function draw() {
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			store.each(drawCell);
+		}
+
+		function update() {
+			function hasRank(cell) {
+				return cell.value != null && 'elev' in cell.value;
+			}
+
+			var change = false;
+			store.update(function(cell) {
+				var value = cell.value;
+
+				if (!('type' in cell.value)) {
+					var adj = store.getAdjacent(cell.pos);
+
+					var rank = adj
+						.filter(hasRank)
+						.reduce(function (rank, cell) { return rank > cell.value.elev ? rank : cell.value.elev; }, 0) - 1;
+
+					rank = Math.floor(rank * (rnd(100) < 25 ? .8 : 1));
+
+					if (rank > 0) {
+						change = true;
+						value = { type: stone, elev: rank };
+					}
+				}
+
+				return value;
+			});
+
+			return change;
+		}
+
+		while (update()) ;
+		draw();
 
 	</script>
 </body>
