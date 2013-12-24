@@ -1,0 +1,442 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Hexagain</title>
+	<style type="text/css">
+		html, body {
+			background-color: #232220;
+			color: #dad6d0;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="can"></canvas>
+
+	<script type="text/javascript">
+		
+		/** rnd() random value from 0 to 1
+		 *  rnd(n) random from 0 to n
+		 *  rnd(n, m) random between n and m
+		 *  rnd(array) random element
+		 */
+		function rnd(a, b) {
+			switch (arguments.length) {
+				case 0:
+					return Math.random();
+				case 1:
+					if (a instanceof Array) 
+						return a[Math.floor(Math.random() * a.length)];
+					else 
+						return a * Math.random();
+				default: // case 2 actually
+					return a + (b - a) * Math.random();
+			}
+		}
+
+		function rndi() {
+			return Math.floor(rnd.apply(null, arguments));
+		}
+
+	</script>
+
+	<script type="text/javascript">
+
+		function Point(x, y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		function Cell(point, value) {
+			this.pos = point;
+			this.value = value;
+		}
+
+	</script>
+
+	<script type="text/javascript">
+
+		//
+		//     world (x y)                this storage (i j) with origin (1 1)
+		//
+		//            (0 1)                      (0 1)
+		//   (-1  0)         (1 1)        (0 0)         (1 2)
+		//            (0 0)                      (1 1)
+		//   (-1 -1)         (1 0)        (1 0)         (1 2)
+		//            (0 -1)                     (2 1)
+		//
+		function HexStore(extremes, fillfunction) {
+			// getWorld(origin) -> 0 0
+			this.origin = [0,0];
+			this.store = [];
+
+			var self = this;
+			var minmax = extremes.reduce(function (current, point) {
+
+				var store = self.getStore(point);
+				var i = store[0];
+				var j = store[1];
+
+				return current == null
+                        ? [i, j, i, j]
+                        : [Math.min(current[0], i),
+                            Math.min(current[1], j),
+                            Math.max(current[2], i),
+                            Math.max(current[3], j)];
+			}, null);
+
+			var mini = minmax[0];
+			var minj = minmax[1];
+			var maxi = minmax[2];
+			var maxj = minmax[3];
+
+			this.origin = [-mini, -minj];
+
+			var n = this.n = maxi - mini + 1;
+			var m = this.m = maxj - minj + 1;
+
+			for (var i = 0; i < n; ++i) {
+				var row = [];
+				for (var j = 0; j < m; ++j) {
+					row.push(fillfunction(new Cell(this.getWorld([i, j]), null)));
+				}
+
+				this.store.push(row);
+			}
+		}
+
+		function halfceil(n) {
+			return (n + (n & 1)) >> 1;
+		}
+
+		HexStore.prototype.getStore = function(world) {
+			var x = world.x;
+			var y = world.y;
+
+			var i0 = this.origin[0];
+			var j0 = this.origin[1];
+
+			var j = x + j0;
+			var i = -y + i0 - halfceil(j0) + halfceil(j);
+
+			return [i, j];
+		};
+
+		HexStore.prototype.getWorld = function(store) {
+			var i = store[0];
+			var j = store[1];
+
+			var i0 = this.origin[0];
+			var j0 = this.origin[1];
+
+			var x = j - j0;
+			var y = i0 - i - halfceil(j0) + halfceil(j);
+
+			return new Point(x, y);
+		};
+
+		HexStore.prototype.each = function(iter) {
+			for (var i = 0; i < this.n; ++i) {
+				for (var j = 0; j < this.m; ++j) {
+					var val = this.store[i][j];
+					if (val != null) {
+						iter(new Cell(this.getWorld([i, j]), val));
+					}
+				}
+			}
+		};
+
+		HexStore.prototype.update = function(iter) {
+			var store = [];
+			for (var i = 0; i < this.n; ++i) {
+				var row = [];
+				for (var j = 0; j < this.m; ++j) {
+					var val = this.store[i][j];
+					if (val != null) {
+						var newval = iter(new Cell(this.getWorld([i, j]), val));
+						if (newval != null)
+							val = newval;
+					}
+					row.push(val);
+				}
+				store.push(row);
+			}
+
+			this.store = store;
+		};
+
+		HexStore.prototype.getAdjacent = function(world) {
+			var $ = this;
+
+			function adj(dx, dy) {
+				var point = new Point(world.x + dx, world.y + dy);
+				var store = $.getStore(point);
+				var i = store[0];
+				var j = store[1];
+
+				var value = (i >= 0 && i < $.n && j >= 0 && j < $.m)
+					? $.store[i][j]
+					: null;
+
+				return new Cell(point, value);
+			}
+
+			return [
+				adj(1, 0),
+				adj(1, 1),
+				adj(0, 1),
+				adj(-1, 0),
+				adj(-1, -1),
+				adj(0, -1)
+			];
+		};
+
+	</script>
+
+	<script type="text/javascript">
+		function fullscreenCanvas(id) {
+			var c = window.document.getElementById(id);
+			var ctx = c.getContext('2d');
+
+			ctx.canvas.width = window.innerWidth;
+			ctx.canvas.height = window.innerHeight;
+			ctx.canvas.style.position = 'absolute';
+			ctx.canvas.style.top = 0;
+			ctx.canvas.style.left = 0;
+
+			return ctx;
+		}
+
+		var ctx = fullscreenCanvas('can');
+		var w = ctx.canvas.width;
+		var h = ctx.canvas.height;
+
+		var q = 1 / Math.sqrt(3);
+
+		ctx.pathHex = function(h) {
+			var dx = q * h / 2;
+			var dy = h / 2;
+
+			this.beginPath();
+			this.moveTo(2 * dx, 0);
+			this.lineTo(dx, -dy);
+			this.lineTo(-dx, -dy);
+			this.lineTo(-2 * dx, 0);
+			this.lineTo(-dx, dy);
+			this.lineTo(dx, dy);
+			this.closePath();
+		};
+
+		ctx.fillHex = function(x, y, h) {
+			this.save();
+			this.translate(x, y);
+			this.pathHex(h);
+			this.fill();
+			this.restore();
+		};
+
+		ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+	</script>
+
+	<script type="text/javascript">
+
+		/* Hexagonal area with same tiling properties as underlying cells.
+		 */
+		function SuperCell(x, y, rank) {
+			this.x = x;
+			this.y = y;
+			this.a = 3 * rank + (rank & 1);
+			this.b = 3 * rank - (rank & 1) + 1;
+
+			this.a = rank * 3+1;
+			this.b = rank * 3;
+		}
+
+		SuperCell.prototype.getCorners = function() {
+			var a = (2 * this.b - this.a) / 3;
+			var b = (this.b + this.a) / 3;
+			var c = (2 * this.a - this.b) / 3;
+
+			var $ = this;
+
+			function leftup(x) { return 2 * x + $.b; }
+
+			function top(x) { return (x + $.a) / 2; }
+
+			function rightup(x) { return $.b - x; }
+
+			function rightdown(x) { return 2 * x - $.a; }
+
+			function bottom(x) { return (x - $.b) / 2; }
+
+			function leftdown(x) { return -x - $.a; }
+
+			function pair(x, fn) {
+				return new Point($.x + Math.round(x), $.y + Math.round(fn(x)));
+			}
+
+			return [
+				pair(a - 2 / 3, top),
+				pair(a + 1 / 3, rightup),
+				pair(b - 1 / 3, rightup),
+				pair(b - 1 / 3, rightdown),
+				pair(c + 1 / 3, rightdown),
+				pair(c - 2 / 3, bottom),				   
+				pair(-a + 2 / 3, top),
+				pair(-a - 1 / 3, leftup),
+				pair(-b + 1 / 3, leftup),
+				pair(-b + 1 / 3, leftdown),
+				pair(-c - 1 / 3, leftdown),
+				pair(-c + 2 / 3, bottom)
+			];
+		};
+
+		SuperCell.prototype.contains = function(point) {
+			var x = point.x - this.x;
+			var y = point.y - this.y;
+
+			var leftup = 2 * x + this.b;
+			var top = (x + this.a) / 2;
+			var rightup = this.b - x;
+			var rightdown = 2 * x - this.a;
+			var bottom = (x - this.b) / 2;
+			var leftdown = -x - this.a;
+
+			return leftup >= y
+				&& top >= y
+				&& rightup >= y
+				&& rightdown <= y
+				&& bottom <= y
+				&& leftdown <= y;
+		};
+
+	</script>
+
+	<script type="text/javascript">
+
+
+		//
+		// fill cell rotation values
+		// scramble the grid
+		// create connectivity algorithm
+		// draw the grid
+		// get user input - rotate-cw, rotate-ccw, toggle lock
+		// show game over stats
+		// create complex shape area
+		// add wrapping
+		//
+
+		var rank = 11;
+		var supercell = new SuperCell(0, 0, rank);
+		var extremes = supercell.getCorners();
+
+		var setInitialValue = function(cell) {
+			return supercell.contains(cell.pos) ? {} : null;
+		};
+
+		var store = new HexStore(extremes, setInitialValue);
+		var bedrock = {};
+		var stone = {};
+
+		// Set initial
+		store.update(function (cell) {
+			var adj = store.getAdjacent(cell.pos);
+			var value = cell.value;
+
+			function isNull(cell) {
+				return cell.value == null;
+			}
+
+			if (adj.some(isNull)) {
+				value = { type: bedrock };
+			}
+
+			return value;
+		});
+
+		// Set walls
+		store.update(function (cell) {
+			var value = cell.value;
+
+			if (cell.value.type != bedrock) {
+				var adj = store.getAdjacent(cell.pos);
+
+				function isBedrock(cell) {
+					return cell.value != null && cell.value.type == bedrock;
+				}
+
+				if (adj.some(isBedrock))
+					value = { type: stone };
+				else if (rnd(100) < 5)
+					value = { type: stone, seed: true };
+			}
+
+			return value;
+		});
+
+		// Grow walls
+		for (var i = 0; i < 3; ++i)
+			store.update(function (cell) {
+				var value = cell.value;
+
+				function isSeed(cell) {
+					return 'seed' in cell.value;
+				}
+
+				if (cell.value.type != bedrock && cell.value.type != stone) {
+					var adj = store.getAdjacent(cell.pos);
+
+					if (adj.some(isSeed)) {
+						if (rnd(100) < 5)
+							value = { type: stone, seed: true };
+						else
+							value = { type: stone };
+					}
+				}
+
+				return value;
+			});
+
+		ctx.font = "12pt Courier New";
+		var ex = ctx.measureText('X');
+
+		function drawCell(cell) {
+			var s = 16;
+			var q = .95;
+			var x = q*s * cell.pos.x * Math.sqrt(3) / 2;
+			var y = q*-s * (cell.pos.y - cell.pos.x / 2);
+
+			var bg = 'transparent';
+			var fg = '#000';
+			var glyph = '';
+
+			if (cell.value != null) {
+				switch (cell.value.type) {
+					case bedrock:
+						bg = '#3a3a3a';
+						fg = '#222';
+						glyph = '%';
+						break;
+					case stone:
+						bg = '#444';
+						fg = '#222';
+						glyph = cell.value.seed ? 'X' : '%';
+						break;
+					default:
+						fg = '#000';
+						bg = '#666';
+						glyph = '.';
+				}
+			}
+
+			ctx.fillStyle = bg;
+			ctx.fillHex(x, y, s);
+
+			ctx.fillStyle = fg;
+			ctx.fillText(glyph, x - ex.width / 2, y + 4);
+		}
+		store.each(drawCell);
+
+	</script>
+</body>
+</html>
+
