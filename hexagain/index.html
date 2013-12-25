@@ -303,7 +303,7 @@
 		// add wrapping
 		//
 
-		var rank = 11;
+		var rank = 25;
 		var supercell = new SuperCell(0, 0, rank);
 		var extremes = supercell.getCorners();
 
@@ -354,15 +354,17 @@
 			return value;
 		});
 
-		ctx.font = "12pt Courier New";
+		ctx.font = "7pt Courier New";
 		var ex = ctx.measureText('X');
 
 		function pointEqual(point) {
 			return function(p) { return p.x == point.x && p.y == point.y; };
 		}
 
+		var skew = 1;
+
 		function drawCell(cell) {
-			var s = 16;
+			var s = 10;
 			var q = .97;
 			var x = q * s * cell.pos.x * Math.sqrt(3) / 2;
 			var y = q * -s * (cell.pos.y - cell.pos.x / 2);
@@ -371,50 +373,44 @@
 			var fg = '#000';
 			var glyph = '';
 
+			var d = 0;
+
 			if (supercell.getCorners().some(pointEqual(cell.pos))) {
 				bg = '#2a2a2a';
 				fg = '#222';
-				glyph = '#';
 			}
 			else if (cell.value != null) {
 				switch (cell.value.type) {
 					case bedrock:
 						bg = '#3a3a3a';
 						fg = '#222';
-						glyph = '#';
 						break;
 					case stone:						
 						var v = cell.value.elev;
 
+						d = 10 * v * (1 - skew);
+						
 						bg = v > maxelev * .9 ? ('hsl(190, 10%, ' + (100 * v / maxelev) + '%)')
 							: v > maxelev * .6 ? ('hsl(40, 10%, ' + (100 * v / maxelev - 20) + '%)')
 								: v > maxelev * .15 ? ('hsl(80, 80%, ' + .6*(90-100 * v / maxelev) + '%)')
 									: ('hsl(40, 70%, ' + (100 - 100 * v / maxelev) + '%)');
 						fg = '#222';
-						glyph = v > maxelev * .9 ? 'A'
-							: v > maxelev * .6 ? '^'
-								: v > maxelev * .3 ? '-'
-									: '=';
-						
-
-							
 						break;
 					default:
 						fg = '#adf';
 						bg = '#369';
-						glyph = '~';
 				}
 			}
 		
 			ctx.fillStyle = bg;
-			ctx.fillHex(x, y, s);
+			ctx.fillHex(x, y-d, s);
 
 			ctx.fillStyle = fg;
 			ctx.fillText(glyph, x - ex.width / 2, y + 4);
 		}
 
 		function draw() {
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			ctx.clearRect(-ctx.canvas.width, -ctx.canvas.height , 2*ctx.canvas.width, 2*ctx.canvas.height);
 			store.each(drawCell);
 		}
 
@@ -448,8 +444,26 @@
 			return change;
 		}
 
-		while (update()) ;
-		draw();
+		
+
+		while (update());
+
+		function drawdf() {
+
+			
+			ctx.save();
+			ctx.scale(1, skew);
+			var start = new Date().getTime();
+			draw();
+			var time = new Date().getTime() - start;
+			console.log(time);
+			ctx.restore();
+
+			skew *= .997;
+			if (skew > .4) window.setTimeout(drawdf, 20);
+		}
+
+		drawdf();
 
 	</script>
 </body>
