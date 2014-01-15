@@ -136,12 +136,35 @@
 
 		HexStore.prototype.each = function(iter) {
 			for (var i = 0; i < this.n; ++i) {
-				for (var j = 0; j < this.m; ++j) {
+				for (var j = 1; j < this.m; j+=2) {
 					var val = this.store[i][j];
 					if (val != null) {
 						iter(new Cell(this.getWorld([i, j]), val));
 					}
 				}
+				
+				for (var j = 0; j < this.m; j += 2) {
+					var val = this.store[i][j];
+					if (val != null) {
+						iter(new Cell(this.getWorld([i, j]), val));
+					}
+				}
+			}
+		};
+
+		HexStore.prototype.set = function(world, conv) {
+			var store = this.getStore(world);
+			var i = store[0];
+			var j = store[1];
+
+			var coordValid = i >= 0 && i < this.n && j >= 0 && j < this.m;
+
+			if (coordValid) {
+				console.log("old", this.store[i][j]);
+				this.store[i][j] = (conv instanceof Function) ?
+					conv(this.store[i][j])
+					: conv;
+				console.log("new", this.store[i][j]);
 			}
 		};
 
@@ -233,6 +256,14 @@
 			this.fill();
 			this.restore();
 		};
+		
+		ctx.strokeHex = function (x, y, h) {
+			this.save();
+			this.translate(x, y);
+			this.pathHex(h);
+			this.stroke();
+			this.restore();
+		};
 
 		ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 	</script>
@@ -303,9 +334,10 @@
 		// add wrapping
 		//
 
-		var rank = 25;
+		var rank = 20;
 		var supercell = new SuperCell(0, 0, rank);
 		var extremes = supercell.getCorners();
+		var cellsize = 14;
 
 		var setInitialValue = function(cell) {
 			return supercell.contains(cell.pos) ? {} : null;
@@ -314,6 +346,9 @@
 		var store = new HexStore(extremes, setInitialValue);
 		var bedrock = {};
 		var stone = {};
+		var raw = {};
+		var polished = {};
+		var door = {};
 		var maxelev = 12;
 
 		// Set initial
@@ -345,10 +380,7 @@
 
 				var n = adj.filter(isBedrock).length;
 
-				if (n > 3)
-					value = { type: bedrock };
-				else if (rnd(100) < .5)
-					value = { type: stone, elev: maxelev };
+				value = { type: n > 3 ? bedrock : stone };
 			}
 
 			return value;
@@ -361,57 +393,56 @@
 			return function(p) { return p.x == point.x && p.y == point.y; };
 		}
 
-		var skew = 1;
+		var cursor = new Point(0, 0);
+
+		function getScreen(world) {
+			var s = cellsize;
+			var q = .95;
+
+			return new Point(
+				q * s * world.x * Math.sqrt(3) / 2,
+				q * -s * (world.y - world.x / 2)
+			);
+		}
+
+		bedrock.color = '#3a3a3a';
+		stone.color =  '#666';
+		raw.color =  '#887';
+		polished.color =  '#98a646';
+		door.color = '#762';
+
+		var brush = stone;
+		var oldbrush = brush;
 
 		function drawCell(cell) {
-			var s = 10;
-			var q = .97;
-			var x = q * s * cell.pos.x * Math.sqrt(3) / 2;
-			var y = q * -s * (cell.pos.y - cell.pos.x / 2);
+			var s = cellsize;
+			var screen = getScreen(cell.pos);
+			var x = screen.x;
+			var y = screen.y;
 
 			var bg = 'transparent';
-			var fg = '#000';
-			var glyph = '';
-
-			var d = 0;
 
 			if (supercell.getCorners().some(pointEqual(cell.pos))) {
 				bg = '#2a2a2a';
-				fg = '#222';
+			} else if (cell.value != null) {
+				bg = cell.value.type.color || 'transparent';
 			}
-			else if (cell.value != null) {
-				switch (cell.value.type) {
-					case bedrock:
-						bg = '#3a3a3a';
-						fg = '#222';
-						break;
-					case stone:						
-						var v = cell.value.elev;
 
-						d = 10 * v * (1 - skew);
-						
-						bg = v > maxelev * .9 ? ('hsl(190, 10%, ' + (100 * v / maxelev) + '%)')
-							: v > maxelev * .6 ? ('hsl(40, 10%, ' + (100 * v / maxelev - 20) + '%)')
-								: v > maxelev * .15 ? ('hsl(80, 80%, ' + .6*(90-100 * v / maxelev) + '%)')
-									: ('hsl(40, 70%, ' + (100 - 100 * v / maxelev) + '%)');
-						fg = '#222';
-						break;
-					default:
-						fg = '#adf';
-						bg = '#369';
-				}
-			}
-		
 			ctx.fillStyle = bg;
-			ctx.fillHex(x, y-d, s);
-
-			ctx.fillStyle = fg;
-			ctx.fillText(glyph, x - ex.width / 2, y + 4);
+			ctx.fillHex(x, y, s);
 		}
 
 		function draw() {
 			ctx.clearRect(-ctx.canvas.width, -ctx.canvas.height , 2*ctx.canvas.width, 2*ctx.canvas.height);
 			store.each(drawCell);
+			
+			var screen = getScreen(cursor);
+			ctx.strokeStyle = 'rgba(255,255,255,.6)';
+			ctx.strokeHex(screen.x, screen.y, cellsize*1.01);
+			ctx.strokeHex(screen.x, screen.y, cellsize*.99);
+
+			ctx.strokeStyle = brush.color;
+			ctx.strokeHex(screen.x, screen.y, cellsize);
 		}
 
 		function update() {
@@ -446,11 +477,9 @@
 
 		
 
-		while (update());
+		//while (update());
 
 		function drawdf() {
-
-			
 			ctx.save();
 			ctx.scale(1, skew);
 			var start = new Date().getTime();
@@ -463,8 +492,113 @@
 			if (skew > .4) window.setTimeout(drawdf, 20);
 		}
 
-		drawdf();
+		//drawdf();
 
+		ctx.scale(1, .8);
+		draw();
+
+		
+
+		window.addEventListener('keydown', function (e) {
+			var upleft = {};
+			var up = {};
+			var upright = {};
+			var downleft = {};
+			var down = {};
+			var downright = {};
+			var left = {};
+			var right = {};
+			var toggle = {};
+
+			var brush1 = {};
+			var brush2 = {};
+			var brush3 = {};
+			var brush4 = {};
+			var brush5 = {};
+
+			function key2action(event) {
+				var map = {
+					103: upleft,
+					104: up,
+					105: upright,
+					100: downleft,
+					101: down,
+					102: downright,
+					97: left,
+					99: right,
+					32: toggle,
+					49: brush1,
+					50: brush2,
+					51: brush3,
+					52: brush4,
+					53: brush5,
+				};
+
+				return map[event.which];
+			}
+
+			var x = cursor.x;
+			var y = cursor.y;
+
+			switch (key2action(e)) {
+			case up:
+				++y;
+				break;
+			case down:
+				--y;
+				break;
+			case upleft:
+				--x;
+				break;
+			case downright:
+				++x;
+				break;
+			case upright:
+				++x;
+				++y;
+				break;
+			case downleft:
+				--x;
+				--y;
+				break;
+			case left:
+				--x;
+				y -= x & 1;
+				break;
+			case right:
+				y += x & 1;
+				++x;
+				break;
+				case brush1:
+					oldbrush = brush;
+					brush = stone;
+					break;
+				case brush2:
+					oldbrush = brush;
+					brush = raw;
+					break;
+				case brush3:
+					oldbrush = brush;
+					brush = polished;
+					break;
+				case brush4:
+					oldbrush = brush;
+					brush = door;
+					break;
+			case toggle:
+				store.set(cursor, function (old) {
+
+					return ("type" in old && old.type == brush)
+						? { type: oldbrush }
+						: { type: brush };
+				});
+				break;
+			}
+
+			cursor = new Point(x, y);
+			draw();
+
+		}, false);
 	</script>
 </body>
 </html>
