@@ -152,6 +152,18 @@
 			}
 		};
 
+		HexStore.prototype.get = function(world) {
+			var store = this.getStore(world);
+			var i = store[0];
+			var j = store[1];
+
+			var coordValid = i >= 0 && i < this.n && j >= 0 && j < this.m;
+
+			return coordValid
+				?this.store[i][j]
+				: null;
+		};
+
 		HexStore.prototype.set = function(world, conv) {
 			var store = this.getStore(world);
 			var i = store[0];
@@ -160,11 +172,9 @@
 			var coordValid = i >= 0 && i < this.n && j >= 0 && j < this.m;
 
 			if (coordValid) {
-				console.log("old", this.store[i][j]);
 				this.store[i][j] = (conv instanceof Function) ?
 					conv(this.store[i][j])
 					: conv;
-				console.log("new", this.store[i][j]);
 			}
 		};
 
@@ -321,8 +331,6 @@
 	</script>
 
 	<script type="text/javascript">
-
-
 		//
 		// fill cell rotation values
 		// scramble the grid
@@ -339,55 +347,17 @@
 		var extremes = supercell.getCorners();
 		var cellsize = 14;
 
-		var setInitialValue = function(cell) {
-			return supercell.contains(cell.pos) ? {} : null;
-		};
-
-		var store = new HexStore(extremes, setInitialValue);
 		var bedrock = {};
 		var stone = {};
 		var raw = {};
 		var polished = {};
 		var door = {};
-		var maxelev = 12;
 
-		// Set initial
-		store.update(function (cell) {
-			var adj = store.getAdjacent(cell.pos);
-			var value = cell.value;
+		var setInitialValue = function(cell) {
+			return supercell.contains(cell.pos) ? { type: stone } : null;
+		};
 
-			function isNull(cell) {
-				return cell.value == null;
-			}
-
-			if (adj.some(isNull)) {
-				value = { type: bedrock };
-			}
-
-			return value;
-		});
-
-		// Set walls
-		store.update(function (cell) {
-			var value = cell.value;
-
-			if (cell.value.type != bedrock) {
-				var adj = store.getAdjacent(cell.pos);
-
-				function isBedrock(cell) {
-					return cell.value != null && cell.value.type == bedrock;
-				}
-
-				var n = adj.filter(isBedrock).length;
-
-				value = { type: n > 3 ? bedrock : stone };
-			}
-
-			return value;
-		});
-
-		ctx.font = "7pt Courier New";
-		var ex = ctx.measureText('X');
+		var store = new HexStore(extremes, setInitialValue);
 
 		function pointEqual(point) {
 			return function(p) { return p.x == point.x && p.y == point.y; };
@@ -406,10 +376,19 @@
 		}
 
 		bedrock.color = '#3a3a3a';
-		stone.color =  '#666';
+		stone.color = 'transparent';
 		raw.color =  '#887';
-		polished.color =  '#98a646';
+		polished.color = '#555452';
 		door.color = '#762';
+
+		var upleft = {};
+		var up = {};
+		var upright = {};
+		var downleft = {};
+		var down = {};
+		var downright = {};
+
+		var dirs = [up, upleft, downleft, down, downright, upright];
 
 		var brush = stone;
 		var oldbrush = brush;
@@ -422,90 +401,217 @@
 
 			var bg = 'transparent';
 
-			if (supercell.getCorners().some(pointEqual(cell.pos))) {
-				bg = '#2a2a2a';
-			} else if (cell.value != null) {
+			if (cell.value != null && cell.value.type != null) {
 				bg = cell.value.type.color || 'transparent';
 			}
 
 			ctx.fillStyle = bg;
-			ctx.fillHex(x, y, s);
+			ctx.fillHex(x, y, s * .8);
+			return // for now
+			ctx.save();
+			ctx.translate(x, y);
+			store.getAdjacent(cell.pos).forEach(function (adj) {
+				if (adj.value != null && adj.value.type == cell.value.type) {
+					var q = 1 / Math.sqrt(3);
+					var dx = q * s / 2;
+					var dy = s / 2;
+
+					ctx.fillRect(-dx, dy, 2 * dx, s / 2);
+
+					ctx.rotate(Math.PI / 3);
+				}
+			});
+
+			ctx.restore();
+
+
 		}
 
+		function drawcursor(screen) {
+			ctx.fillStyle = 'rgba(255,255,255,.6)';
+			ctx.beginPath();
+			ctx.arc(screen.x, screen.y, cellsize / 3, 0, 2 * Math.PI);
+			ctx.fill();
+
+			ctx.fillStyle = brush.color;
+			ctx.beginPath();
+			ctx.arc(screen.x, screen.y, cellsize / 3.2, 0, 2 * Math.PI);
+			ctx.fill();
+
+			ctx.fillStyle = 'rgba(255,255,255,.6)';
+			ctx.beginPath();
+			ctx.arc(screen.x, screen.y, cellsize / 4.2, 0, 2 * Math.PI);
+			ctx.fill();
+		}
+
+		var n = 0;
+		var total = 0;
+
 		function draw() {
+			var start = (new Date).getTime();
+
 			ctx.clearRect(-ctx.canvas.width, -ctx.canvas.height , 2*ctx.canvas.width, 2*ctx.canvas.height);
 			store.each(drawCell);
 			
 			var screen = getScreen(cursor);
-			ctx.strokeStyle = 'rgba(255,255,255,.6)';
-			ctx.strokeHex(screen.x, screen.y, cellsize*1.01);
-			ctx.strokeHex(screen.x, screen.y, cellsize*.99);
-
-			ctx.strokeStyle = brush.color;
-			ctx.strokeHex(screen.x, screen.y, cellsize);
+			
+			drawcursor(screen);
+			var t = ((new Date).getTime() - start);
+			++n;
+			total += t;
+			console.log(t + 'ms', ((total / n)|0) +'ms avg');
 		}
 
-		function update() {
-			function hasRank(cell) {
-				return cell.value != null && 'elev' in cell.value;
+
+
+		function steer(dir, cw)
+		{
+			return dirs[(dirs.indexOf(dir) + (cw ? 1 : -1) + dirs.length) % dirs.length];
+		}
+
+		function adj(dir, coord) {
+			var x = coord.x;
+			var y = coord.y;
+
+			switch (dir) {
+				case up:
+					++y;
+					break;
+				case down:
+					--y;
+					break;
+				case upleft:
+					--x;
+					break;
+				case downright:
+					++x;
+					break;
+				case upright:
+					++x;
+					++y;
+					break;
+				case downleft:
+					--x;
+					--y;
+					break;
 			}
 
-			var change = false;
-			store.update(function(cell) {
-				var value = cell.value;
+			return new Point(x, y);
+		}
 
-				if (!('type' in cell.value)) {
-					var adj = store.getAdjacent(cell.pos);
+		var maxStraight = 6;
 
-					var rank = adj
-						.filter(hasRank)
-						.reduce(function (rank, cell) { return rank > cell.value.elev ? rank : cell.value.elev; }, 0) - 1;
+		ctx.scale(1, .86);
 
-					rank = Math.floor(rank * (rnd(100) < 25 ? .8 : 1));
 
-					if (rank > 0) {
-						change = true;
-						value = { type: stone, elev: rank };
+		// todo: primitives (lines and shapes)
+		// randomized branching
+		// adjacency-aware cell rendering
+
+		var start = new Point(0,0);
+		store.set(start, { type: polished });
+
+		var heads1 = [
+			// current head, direction, since turn, backtrack stack
+			[start, up, rndi(maxStraight/2), []],
+			[start, downleft, rndi(maxStraight / 2), []],
+			[start, downright, rndi(maxStraight / 2), []]
+		];
+		
+		var headses = [heads1];
+
+		function tanh(x) {
+			var exp = Math.exp;
+			return (exp(2 * x) - 1) / (exp(2 * x) + 1);
+		}
+
+		function grow() {
+
+			var draw = false;
+			var more = false;
+
+			headses = headses.map(function (heads) {
+				heads = heads.map(function (head) {
+					var c = head[0];
+					var d = head[1];
+					var t = head[2];
+					var q = head[3];
+
+					var x = t / maxStraight;
+					var splitpos = (1 - tanh(Math.PI - 2 * Math.PI * Math.sin(x) * x)) / 2;
+
+					if (rnd() < splitpos) {
+						t = 0;
+						d = steer(d, (rndi(100) % 2) == 0);
 					}
-				}
 
-				return value;
+					var dir = d;
+					var cw = (rndi(100) % 2) == 0;
+					do {
+						var nextp = adj(d, c);
+						var xx = store.getAdjacent(c);
+						next = store.get(nextp);
+
+						if (next != null && next.type == stone) {
+							var parentAdjacentFound = false;
+
+							function isValidNewHallwayAdjacent(cell) {
+
+								if (cell.value != null) {
+									var cellSolid = cell.value.type == stone;
+									var isParent = pointEqual(cell.pos)(c);
+									var oneOfParentsAdjacent = !parentAdjacentFound && xx.map(function (cell) { return cell.pos }).some(pointEqual(cell.pos));
+									parentAdjacentFound |= oneOfParentsAdjacent
+
+									return cellSolid || isParent || oneOfParentsAdjacent;
+								}
+
+								return false; // cell missing
+							}
+
+							var validNew = store.getAdjacent(nextp).every(isValidNewHallwayAdjacent);
+
+							if (validNew) {
+								draw = true;
+								q.push(c);
+								return [nextp, d,t+1, q];
+							}
+						}
+
+						d = steer(d, cw);
+					} while (dir != d);
+
+
+					var next = q.pop();
+					if (next) return [next, d, t + 1, q];
+
+				}).filter(function (o) { return !!o });
+
+				heads.forEach(function (head) { store.set(head[0], { type: polished }) });
+
+				more |= heads.length > 0;
+
+				return heads;
 			});
 
-			return change;
+			return draw ? more : (more | grow());
 		}
 
-		
-
-		//while (update());
-
-		function drawdf() {
-			ctx.save();
-			ctx.scale(1, skew);
-			var start = new Date().getTime();
+		function frame() {
+			var more = grow();
 			draw();
-			var time = new Date().getTime() - start;
-			console.log(time);
-			ctx.restore();
 
-			skew *= .997;
-			if (skew > .4) window.setTimeout(drawdf, 20);
+			if (more)
+				window.setTimeout(frame, 10);
 		}
 
-		//drawdf();
+		frame();
 
-		ctx.scale(1, .8);
-		draw();
-
-		
+		//while (grow());
+		//draw();
 
 		window.addEventListener('keydown', function (e) {
-			var upleft = {};
-			var up = {};
-			var upright = {};
-			var downleft = {};
-			var down = {};
-			var downright = {};
+			
 			var left = {};
 			var right = {};
 			var toggle = {};
@@ -587,7 +693,6 @@
 					break;
 			case toggle:
 				store.set(cursor, function (old) {
-
 					return ("type" in old && old.type == brush)
 						? { type: oldbrush }
 						: { type: brush };
