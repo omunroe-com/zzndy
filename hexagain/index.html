@@ -332,13 +332,6 @@
 
 	<script type="text/javascript">
 		//
-		// fill cell rotation values
-		// scramble the grid
-		// create connectivity algorithm
-		// draw the grid
-		// get user input - rotate-cw, rotate-ccw, toggle lock
-		// show game over stats
-		// create complex shape area
 		// add wrapping
 		//
 
@@ -393,6 +386,13 @@
 		var brush = stone;
 		var oldbrush = brush;
 
+
+		var seed = 1;
+		function random(n) {
+			var x = Math.sin(seed++) * 10000;
+			return n * (x - Math.floor(x));
+		}
+
 		function drawCell(cell) {
 			var s = cellsize;
 			var screen = getScreen(cell.pos);
@@ -406,20 +406,33 @@
 			}
 
 			ctx.fillStyle = bg;
-			ctx.fillHex(x, y, s * .8);
-			return // for now
+
+			base = 360 * (Math.sin(x/70) + Math.sin(y/80));
+
+			seed = 1000 + (x + 9.32) * (y + 1.23);
+
+
+
+			base = -20
+			ctx.fillStyle = bg == 'transparent' ? bg : 'hsl(' + (base + random(40)) + ', ' + (50 + random(50)) + '%,' + (30 + random(40)) + '%)';
+			//ctx.fillHex(x, y, s * .8);
+
 			ctx.save();
 			ctx.translate(x, y);
+
+			ctx.rotate(-Math.PI / 3);
 			store.getAdjacent(cell.pos).forEach(function (adj) {
 				if (adj.value != null && adj.value.type == cell.value.type) {
+
 					var q = 1 / Math.sqrt(3);
 					var dx = q * s / 2;
 					var dy = s / 2;
 
-					ctx.fillRect(-dx, dy, 2 * dx, s / 2);
+					ctx.fillRect(-dx*1.05, dy, 2 * dx * 1.05, -s * .66);
 
-					ctx.rotate(Math.PI / 3);
+
 				}
+				ctx.rotate(-Math.PI / 3);
 			});
 
 			ctx.restore();
@@ -459,7 +472,7 @@
 			var t = ((new Date).getTime() - start);
 			++n;
 			total += t;
-			console.log(t + 'ms', ((total / n)|0) +'ms avg');
+			//console.log(t + 'ms', ((total / n)|0) +'ms avg');
 		}
 
 
@@ -594,7 +607,7 @@
 				return heads;
 			});
 
-			return draw ? more : (more | grow());
+			return draw || (headses.length == 0) ? more : (more | grow());
 		}
 
 		function frame() {
