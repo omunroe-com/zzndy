@@ -44,6 +44,10 @@
 		function Point(x, y) {
 			this.x = x;
 			this.y = y;
+
+			this.equal = function(p) {
+				return p.x == x && p.y == y;
+			};
 		}
 
 		function Cell(point, value) {
@@ -335,7 +339,7 @@
 		// add wrapping
 		//
 
-		var rank = 20;
+		var rank = 15;
 		var supercell = new SuperCell(0, 0, rank);
 		var extremes = supercell.getCorners();
 		var cellsize = 14;
@@ -352,9 +356,33 @@
 
 		var store = new HexStore(extremes, setInitialValue);
 
-		function pointEqual(point) {
-			return function(p) { return p.x == point.x && p.y == point.y; };
+
+		function blob(x, y, a, b, c, d) {
+			b = b || a;
+			c = c || a;
+			d = d || c;
+
+			if (a + d - c < 1)
+				d = c + 1 - a;
+
+			for (var i = 0; i < b + c - 1; ++i) {
+				for (var j = (i > b-1 ? i - b + 1 : 0); j < (i < d ?  a + i: a+d-1); ++j)
+					store.set(new Point(x + j, y + i), { type: polished });
+			}
 		}
+
+		var hw = 3; // half leaf width
+		var di = 10; // distance from center
+		var le = 2; // leaf length
+
+		blob(di, di, hw, hw, le);//    /
+		blob(-(le + di), -(le + di), hw, hw, le);
+
+		blob(di, -(hw - 1), le, hw, hw); //  \
+		blob(-(le + di), -(hw - 1), le, hw, hw);
+
+		blob(-(hw-1), di, hw, le, hw); //  |
+		blob(-(hw - 1), -(le + di), hw, le, hw);// |
 
 		var cursor = new Point(0, 0);
 
@@ -411,9 +439,6 @@
 
 			seed = 1000 + (x + 9.32) * (y + 1.23);
 
-
-
-			base = -20
 			ctx.fillStyle = bg == 'transparent' ? bg : 'hsl(' + (base + random(40)) + ', ' + (50 + random(50)) + '%,' + (30 + random(40)) + '%)';
 			//ctx.fillHex(x, y, s * .8);
 
@@ -428,7 +453,16 @@
 					var dx = q * s / 2;
 					var dy = s / 2;
 
-					ctx.fillRect(-dx*1.05, dy, 2 * dx * 1.05, -s * .66);
+					ctx.fillRect(-dx * 1.05, dy, 2 * dx * 1.05, -s * .66);
+					
+					/*
+			this.moveTo(2 * dx, 0);
+			this.lineTo(dx, -dy);
+			this.lineTo(-dx, -dy);
+			this.lineTo(-2 * dx, 0);
+			this.lineTo(-dx, dy);
+			this.lineTo(dx, dy);
+					*/
 
 
 				}
@@ -514,7 +548,7 @@
 
 		var maxStraight = 6;
 
-		ctx.scale(1, .86);
+		//ctx.scale(1, .86);
 
 
 		// todo: primitives (lines and shapes)
@@ -572,8 +606,8 @@
 
 								if (cell.value != null) {
 									var cellSolid = cell.value.type == stone;
-									var isParent = pointEqual(cell.pos)(c);
-									var oneOfParentsAdjacent = !parentAdjacentFound && xx.map(function (cell) { return cell.pos }).some(pointEqual(cell.pos));
+									var isParent = cell.pos.equal(c);
+									var oneOfParentsAdjacent = !parentAdjacentFound && xx.map(function (cell) { return cell.pos }).some(cell.pos.equal);
 									parentAdjacentFound |= oneOfParentsAdjacent
 
 									return cellSolid || isParent || oneOfParentsAdjacent;
