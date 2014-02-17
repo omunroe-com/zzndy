@@ -11,7 +11,8 @@
 </head>
 <body>
 	<canvas id="can"></canvas>
-
+	
+	<!-- random -->
 	<script type="text/javascript">
 
 		/** rnd() random value from 0 to 1
@@ -39,6 +40,7 @@
 
 	</script>
 
+	<!-- Point and cell -->
 	<script type="text/javascript">
 
 		function Point(x, y) {
@@ -57,11 +59,12 @@
 
 	</script>
 
+	<!-- Hexstore -->
 	<script type="text/javascript">
 
 		//
 		//     world (x y)                this storage (i j) with origin (1 1)
-		//								  (0 0)\       /(0 2)
+		//                                (0 0)\       /(0 2)
 		//            (0 1)                     \(0 1)/
 		//   (-1  0)         (1 1)        (1 0)\       /(1 2)
 		//            (0 0)                     \(1 1)/
@@ -109,6 +112,7 @@
 		}
 
 		function halfceil(n) {
+			// changing "-" to "+" will change array storage to other configuration
 			return (n - (n & 1)) >> 1;
 		}
 
@@ -229,6 +233,7 @@
 
 	</script>
 
+	<!-- Fullscreen canvas -->
 	<script type="text/javascript">
 		function fullscreenCanvas(id) {
 			var c = window.document.getElementById(id);
@@ -282,6 +287,7 @@
 		ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 	</script>
 
+	<!-- Supercell -->
 	<script type="text/javascript">
 
 		/* Hexagonal area with same tiling properties as underlying cells.
@@ -371,6 +377,123 @@
 			}
 		}
 
+		Point.prototype.times = function (n) {
+			return new Point(this.x * n, this.y * n);
+		}
+
+		Point.prototype.plus = function (p) {
+			return new Point(this.x + p.x, this.y + p.y);
+		}
+
+		function sign(a) {
+			return a < 0 ? -1 : 1;
+		}
+
+		var dirstab = [];
+
+		dirstab[1] = [];
+		dirstab[1][-1] = new Point(-1, 0);
+		dirstab[1][0] = new Point(0, 1);
+		dirstab[1][1] = new Point(1, 1);
+
+		dirstab[-1] = [];
+		dirstab[-1][-1] = new Point(-1, -1);
+		dirstab[-1][0] = new Point(0, -1);
+		dirstab[-1][1] = new Point(1, 0);
+		
+		// http://zvold.blogspot.co.uk/2010/01/bresenhams-line-drawing-algorithm-on_26.html#double_delta_x_integer
+		function line(p1, p2, fn) {
+			var n = 0;
+			var twody = 2 * (p2.y - p1.y) + Math.abs(halfceil(p2.x)) - Math.abs(halfceil(p1.x));
+			var dx = p2.x - p1.x;
+
+			var xs = sign(dx);
+			var ys = sign(twody);
+
+		
+			var hx = p1.x;
+			var hy = p1.y;
+
+			console.log(twody, dx);
+
+			var ver = Math.abs(dx) < Math.abs(twody);
+
+			if (ver) {
+				var ddy = 3 * Math.abs(twody);
+				var ddx = 3 * Math.abs(dx);
+				
+			}
+			else {
+				var ddy = Math.abs(twody);
+				var ddx = Math.abs(dx);
+			}
+
+			console.log(ver ? "h-bound" : "v-bound");
+
+			var e = 0;
+			var points = [new Point(hx, hy)];
+			while (p2.x != hx || p2.y != hy) {
+
+				if (ver) {
+
+					e += ddx;
+					if (e > Math.abs(twody)) {
+						var d = dirstab[ys][xs];
+
+						e -= ddy;
+					}
+					else {
+						var d = dirstab[ys][0];
+						e += ddx;
+					}
+				}
+				else {
+
+					e += ddy;
+					if (e > 0) {
+						d = dirstab[ys][xs]
+						e -= ddx;
+					}
+					else {
+						d = dirstab[-ys][xs]
+						e+=ddx
+					}
+
+				}
+
+				hx += d.x;
+				hy += d.y;
+
+
+				points.push(new Point(hx, hy));
+
+				if (++n > 100) {
+					console.log('overrun');
+					return points;
+				}
+			}
+
+			console.log(p2, points[points.length-1]);
+
+			console.log(points);
+			return points;
+
+
+
+			var points = [];
+
+			var n = 1 + Math.max(Math.abs((p1.x - p2.x) - (p1.y - p2.y)), Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y)));
+			for (var i = 0; i < n; ++i) {
+				
+				var p = p1.times(1 - i / n).plus(p2.times(i / n));
+				points.push(new Point(Math.round(p.x), Math.round(p.y)));
+			}
+
+			return points;
+		}
+
+
+		
 		//var hw = 3; // half leaf width
 		//var di = 10; // distance from center
 		//var le = 2; // leaf length
@@ -386,21 +509,17 @@
 
 		var cursor = new Point(0, 0);
 
+		var sq32 = Math.sqrt(3) / 2;
+
 		function getScreen(world) {
 			var s = cellsize;
 			var q = .95;
 
 			return new Point(
-				q * s * world.x * Math.sqrt(3) / 2,
+				q * s * world.x * sq32,
 				q * -s * (world.y - world.x / 2)
 			);
 		}
-
-		bedrock.color = '#3a3a3a';
-		stone.color = 'transparent';
-		raw.color = '#887';
-		polished.color = '#555452';
-		door.color = '#762';
 
 		var upleft = {};
 		var up = {};
@@ -422,8 +541,11 @@
 		}
 
 		function cellColor(cell) {
-			if (cell.value != null && cell.value.level != null) {
-				return 'hsl(0, 0%, ' + (70 + 30 * (cell.value.level / maxlevel)) + '%)';
+			if (cell.value != null) {
+
+				if (cell.value.type == polished) return 'red';
+				if (cell.value.level != null)
+					return 'hsl(0, 0%, ' + (70 + 30 * (cell.value.level / maxlevel)) + '%)';
 			}
 
 			return 'transparent';
@@ -475,11 +597,33 @@
 			total += t;
 		}
 
+		function ln(a, b, c, d) {
+			line(new Point(a, b), new Point(c, d)).map(function (pos) { store.set(pos, { type: polished }); });
+
+			window.setTimeout(function () {
+				ctx.strokeStyle = 'blue';
+				ctx.beginPath();
+
+				var p = getScreen(new Point(a, b));
+				var q = getScreen(new Point(c, d));
+
+				ctx.moveTo(p.x, p.y);
+				ctx.lineTo(q.x, q.y);
+				ctx.stroke();
+
+				ctx.strokeRect(p.x - 2, p.y - 2, 4, 4);
+
+			}, 100);
+		}
+
+		ln(rndi(41) - 20, rndi(41) - 20, rndi(41) - 20, rndi(41) - 20);
+
 		draw();
 		
 
-		</script>
+	</script>
 
+	<!-- navigation -->
 	<script type="text/javascript">
 
 		window.addEventListener('keydown', function (e) {
