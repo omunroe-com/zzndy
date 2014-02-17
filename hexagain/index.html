@@ -52,6 +52,17 @@
 			};
 		}
 
+		Point.prototype.toString = function () { return this.x + ',' + this.y}
+
+		Point.prototype.times = function (n) {
+			return new Point(this.x * n, this.y * n);
+		}
+
+		Point.prototype.plus = function (p) {
+			return new Point(this.x + p.x, this.y + p.y);
+		}
+
+
 		function Cell(point, value) {
 			this.pos = point;
 			this.value = value;
@@ -342,7 +353,11 @@
 
 	<script type="text/javascript">
 		//
-		// add wrapping
+		// TODO:
+		//	get all hexes within specified hex-distance - see pill
+		//	calculate FOV (maybe by extending line algo)
+		//		calculate illumination (apply light from several sources plus player FOV)
+		//	add wrapping
 		//
 
 		var rank = 15;
@@ -355,7 +370,7 @@
 		var raw = {};
 		var polished = {};
 		var door = {};
-		var maxlevel = 12;
+		var maxlevel = 24;
 
 		var setInitialValue = function (cell) {
 			
@@ -364,277 +379,365 @@
 			return supercell.contains(cell.pos) ? { type: stone, level: (alwaysDy ? 0 : .5)*maxlevel + rndi(.5* maxlevel) } : null;
 		};
 
-		var store = new HexStore(extremes, setInitialValue);
+		function Pill(w, h) {
+			var h = Math.floor(h / 2);
+			var w = Math.floor(w / 2);
+
+			this.extremes = [
+				new Point(0, h),
+				new Point(0, -h),
+				new Point(w, h),
+				new Point(-w, -h),
+				new Point(-w, h - w),
+				new Point(w, -h + w)
+			];
+
+			this.contains = function (pos) {
+				var x = pos.x;
+				var y = pos.y;
+
+				return y <= h && y >= -h && x <= w && x >= -w && y <= x + h && y >= x - h
+			}
+		}
 
 		function blob(x, y, a, b, c, d) {
-			b = b || a;
-			c = c || a;
-			d = d || c;
+				b = b || a;
+				c = c || a;
+				d = d || c;
 
-			if (a + d - c < 1)
-				d = c + 1 - a;
+				if (a + d - c < 1)
+					d = c + 1 - a;
 
-			for (var i = 0; i < b + c - 1; ++i) {
-				for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
-					store.set(new Point(x + j, y + i), { type: polished });
+				for (var i = 0; i < b + c - 1; ++i) {
+					for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
+						store.set(new Point(x + j, y + i), { type: polished });
+				}
 			}
-		}
 
-		Point.prototype.times = function (n) {
-			return new Point(this.x * n, this.y * n);
-		}
+			function sign(a) {
+				return a < 0 ? -1 : 1;
+			}
 
-		Point.prototype.plus = function (p) {
-			return new Point(this.x + p.x, this.y + p.y);
-		}
+			function line(p1, p2) {			
+				var dx = p2.x - p1.x;
+				var dy = 2 * (p2.y - p1.y) - dx;
 
-		function sign(a) {
-			return a < 0 ? -1 : 1;
-		}
+				var sx = dx >= 0 ? 1 : -1;
+				var sy = dy >= 0 ? 1 : -1;
 
-		var dirstab = [];
+				dx = Math.abs(dx);
+				dy = Math.abs(dy);
 
-		dirstab[1] = [];
-		dirstab[1][-1] = new Point(-1, 0);
-		dirstab[1][0] = new Point(0, 1);
-		dirstab[1][1] = new Point(1, 1);
+				var alwaysDy = dy >= dx;
 
-		dirstab[-1] = [];
-		dirstab[-1][-1] = new Point(-1, -1);
-		dirstab[-1][0] = new Point(0, -1);
-		dirstab[-1][1] = new Point(1, 0);
+				var x = p1.x;
+				var y = p1.y;
 
-		var ltx = rndi(-15, 15);
-		var lty = rndi(-15, 15);;
+				var points = [new Point(x, y)];
 
-		// http://zvold.blogspot.co.uk/2010/01/bresenhams-line-drawing-algorithm-on_26.html#double_delta_x_integer
-		function line(p1, p2) {			
-			var dx = p2.x - p1.x;
-			var dy = 2 * (p2.y - p1.y) - dx;
-
-			var sx = dx >= 0 ? 1 : -1;
-			var sy = dy >= 0 ? 1 : -1;
-
-			dx = Math.abs(dx);
-			dy = Math.abs(dy);
-
-			var alwaysDy = dy >= dx;
-
-			var x = p1.x;
-			var y = p1.y;
-
-			var points = [new Point(x, y)];
-
-			var e = 0;
-			var n = 0, limit = 200;
+				var e = 0;
+				var n = 0, limit = 200;
 			
-			while (1) {
-				if (alwaysDy) {
-					e += dx;
-					if (3 * e >= dy) {
+				while (1) {
+					if (alwaysDy) {
+						e += dx;
+						if (3 * e >= dy) {
+							x += sx;
+							y += (sy == sx) ? sy : 0;
+							e -= dy;
+						} else {
+							y += sy;
+							e += dx;
+						}
+					} else {
+						e += dy;
+						if (e > 0) {
+							y += (sy == sx) ? sy : 0;
+							e -= dx;
+						} else {
+							y -= (sx == sy) ? 0 : sy;
+							e += dx;
+						}
 						x += sx;
-						y += (sy == sx) ? sy : 0;
-						e -= dy;
-					} else {
-						y += sy;
-						e += dx;
 					}
-				} else {
-					e += dy;
-					if (e > 0) {
-						y += (sy == sx) ? sy : 0;
-						e -= dx;
-					} else {
-						y -= (sx == sy) ? 0 : sy;
-						e += dx;
+
+					points.push(new Point(x, y));
+
+					if (++n > limit) {
+						console.log('error');
+						break;
 					}
-					x += sx;
+					if(p2.x==x && p2.y==y)
+						break;
 				}
-
-				points.push(new Point(x, y));
-
-				if (++n > limit) {
-					console.log('error');
-					break;
-				}
-				if(p2.x==x && p2.y==y)
-					break;
-			}
 				
-			return points;
-		}
-
-		//var hw = 3; // half leaf width
-		//var di = 10; // distance from center
-		//var le = 2; // leaf length
-
-		//blob(di, di, hw, hw, le);//    /
-		//blob(-(le + di), -(le + di), hw, hw, le);
-
-		//blob(di, -(hw - 1), le, hw, hw); //  \
-		//blob(-(le + di), -(hw - 1), le, hw, hw);
-
-		//blob(-(hw - 1), di, hw, le, hw); //  |
-		//blob(-(hw - 1), -(le + di), hw, le, hw);// |
-
-		var cursor = new Point(0, 0);
-
-		var sq32 = Math.sqrt(3) / 2;
-
-		function getScreen(world) {
-			var s = cellsize;
-			var q = .95;
-
-			return new Point(
-				q * s * world.x * sq32,
-				q * -s * (world.y - world.x / 2)
-			);
-		}
-
-		var upleft = {};
-		var up = {};
-		var upright = {};
-		var downleft = {};
-		var down = {};
-		var downright = {};
-
-		var dirs = [up, upleft, downleft, down, downright, upright];
-
-		var brush = stone;
-		var oldbrush = brush;
-
-
-		var seed = 1;
-		function random(n) {
-			var x = Math.sin(seed++) * 10000;
-			return n * (x - Math.floor(x));
-		}
-
-		function cellColor(cell) {
-			if (cell.value != null) {
-
-				if (cell.value.type == polished) return 'red';
-				if (cell.value.level != null)
-					return 'hsl(0, 0%, ' + (70 + 30 * (cell.value.level / maxlevel)) + '%)';
+				return points;
 			}
 
-			return 'transparent';
+			//var hw = 3; // half leaf width
+			//var di = 10; // distance from center
+			//var le = 2; // leaf length
+
+			//blob(di, di, hw, hw, le);//    /
+			//blob(-(le + di), -(le + di), hw, hw, le);
+
+			//blob(di, -(hw - 1), le, hw, hw); //  \
+			//blob(-(le + di), -(hw - 1), le, hw, hw);
+
+			//blob(-(hw - 1), di, hw, le, hw); //  |
+			//blob(-(hw - 1), -(le + di), hw, le, hw);// |
+
+			var cursor = new Point(0, 0);
+
+			var sq32 = Math.sqrt(3) / 2;
+
+			function getScreen(world) {
+				var s = cellsize;
+				var q = .95;
+
+				return new Point(
+					q * s * world.x * sq32,
+					q * -s * (world.y - world.x / 2)
+				);
+			}
+
+			var upleft = {};
+			var up = {};
+			var upright = {};
+			var downleft = {};
+			var down = {};
+			var downright = {};
+
+			var dirs = [up, upleft, downleft, down, downright, upright];
+
+			var brush = stone;
+			var oldbrush = brush;
+		
+		</script>
+
+	
+	<!-- user input -->
+	<script type="text/javascript">
+
+		function InputManager(mapping) {
+			var $ = this;
+			this.action = null;
+			this.handler = function (event) { $.action = mapping[event.which] };
+
+			window.addEventListener('keydown', this.handler, false);
 		}
 
-		function drawCell(cell) {
-			var s = cellsize;
-			var screen = getScreen(cell.pos);
-			var x = screen.x;
-			var y = screen.y;
+	</script>
 
-			ctx.fillStyle = cellColor(cell);
-			ctx.fillHex(x, y, s);
-
-			ctx.restore();
+	<!-- tetris -->
+	<script type="text/javascript">
+		function HextrisRenderer(ctx) {
+			this.ctx = ctx;
+			this.maxline = 10;
 		}
 
-		function drawcursor(screen) {
-			ctx.fillStyle = 'rgba(255,255,255,.6)';
-			ctx.beginPath();
-			ctx.arc(screen.x, screen.y, cellsize / 3, 0, 2 * Math.PI);
-			ctx.fill();
+		var moving = {};
 
-			ctx.fillStyle = brush.color;
-			ctx.beginPath();
-			ctx.arc(screen.x, screen.y, cellsize / 3.2, 0, 2 * Math.PI);
-			ctx.fill();
+		HextrisRenderer.prototype.draw = function (store) {
+			var $ = this;
+			var maxline = this.maxline;
+			var ctx = this.ctx;
 
-			ctx.fillStyle = 'rgba(255,255,255,.6)';
-			ctx.beginPath();
-			ctx.arc(screen.x, screen.y, cellsize / 4.2, 0, 2 * Math.PI);
-			ctx.fill();
-		}
+			function cellColor(cell) {
+				if (cell.value != null) {
 
-		var n = 0;
-		var total = 0;
+					if (cell.value.type == moving) {
+						return 'hsl(150, 100%, 80%)';
+					}
 
-		function draw() {
-			var start = (new Date).getTime();
+					if (cell.value.level != null) {
+						maxline = Math.max(maxline, cell.value.level);
 
-			ctx.clearRect(-ctx.canvas.width, -ctx.canvas.height, 2 * ctx.canvas.width, 2 * ctx.canvas.height);
+						return 'hsla(0, 0%, ' + (70 + 30 * (cell.value.level / $.maxline)) + '%, .3)';
+					}
+				}
+				return 'transparent';
+			}
+
+			function drawCell(cell) {
+				var s = cellsize;
+				var screen = getScreen(cell.pos);
+				var x = screen.x;
+				var y = screen.y;
+
+				ctx.fillStyle = cellColor(cell);
+
+				if (cell.value != null && cell.value.type != moving) {
+					var k = s / 10;
+					ctx.beginPath();
+					ctx.arc(x + rnd(-k / 2, k / 2), y + rnd(-k / 2, k / 2), k, 0, 2 * Math.PI);
+					ctx.fill();
+				}
+				else {
+					ctx.fillHex(x, y, s);
+				}
+
+				ctx.restore();
+			}
+			
+			console.log(-this.ctx.canvas.width/2, -this.ctx.canvas.height/2,  this.ctx.canvas.width, this.ctx.canvas.height);
+			this.ctx.clearRect(-this.ctx.canvas.width / 2, -this.ctx.canvas.height / 2, this.ctx.canvas.width, this.ctx.canvas.height);
 			store.each(drawCell);
 
-			var screen = getScreen(cursor);
-
-			drawcursor(screen);
-			var t = ((new Date).getTime() - start);
-			++n;
-			total += t;
+			this.maxline = Math.round((this.maxline + maxline) / 2);
 		}
 
-		function ln(a, b, c, d) {
-			line(new Point(a, b), new Point(c, d)).map(function (pos) { store.set(pos, { type: polished }); });
-
-			window.setTimeout(function () {
-				ctx.strokeStyle = 'blue';
-				ctx.beginPath();
-
-				var p = getScreen(new Point(a, b));
-				var q = getScreen(new Point(c, d));
-
-				ctx.moveTo(p.x, p.y);
-				ctx.lineTo(q.x, q.y);
-				ctx.stroke();
-
-				ctx.strokeRect(p.x - 2, p.y - 2, 4, 4);
-
-			}, 100);
+		function Bag(options) {
+			this.numSets = 3;
+			this.options = options;// array of arrays of arrays
+			this.bag = [];
 		}
 
-		ln(0, 0, ltx, lty);
-		ln(0, 0+5, ltx, lty+11);
-		
+		Bag.prototype.draw = function () {
 
-		draw();
-		
+			if (this.bag.length == 0) {
 
+				for(var i=0;i<this.numSets;++i){
+					this.options = this.options.sort(function () { return rnd(3) - 1; });
+
+					for (var j = 0; j < this.options.length; ++j) {
+						var figure = this.options[j];
+						var fig = [];
+
+						for (var k = 0; k < figure.length; ++k) {
+							var point = figure[k];
+							var p = [];
+							for (var l = 0; l > this.options[j][k].length; ++l) {
+								p.push(this.options[j][k][l]);
+							}
+
+							fig.push(p);
+						}
+
+						this.bag.push(fig);
+					}
+				}
+			}
+
+			var val = this.bag.pop();
+
+			console.log(val);
+			return val;
+		};
+
+		function Figure(x, y, points) {
+			this.pos = new Point(x, y);
+			this.points = points;
+		}
+
+		function HextrisController(actionSource, depth, breadth)
+		{
+			this.actionSource = actionSource;
+
+			var depth = this.depth = 31;
+			var breadth = this.breadth = 13;
+
+			this.shape = new Pill(breadth, depth);
+
+			var $ = this;
+			this.preview = new Pill(5, 5);
+			this.previewpos = new Point(breadth, breadth)
+
+			
+			this.fig = null;
+			this.figs = [[[0, -1], [0, 0], [0, 1], [0, 2]],// line
+				[[-2, 0], [-1, 0], [0, 0], [1, 1]],// bend, short-right
+				[[0, 1], [0, 0], [1, 0], [2, 0]],//   bend, short-left
+				[[-1, -1], [0, 0], [0, 1], [1, 2]],//  "s"
+				[[-1, 1], [0, 1], [0, 0], [1, 0]], //  "z"
+				[[-1, 0], [0, 0], [1, 1], [1, 2]], //  "u"
+				[[-1, -1], [0, 0], [0, 1], [1, 0]],//  "y"
+				[[-1, 0], [0, 0], [0, 1], [1, 0]], //  "p"
+				[[-1, -1], [0, 0], [1, 1], [0, 1]], // "d"
+				[[-1, 0], [0, 0], [0, 1], [1, 1]] //   "o"
+			];
+
+			this.bag = new Bag(this.figs);
+
+			function offset(pointoffset) {
+				return function (point) {
+					return point.plus(pointoffset);
+				}
+			}
+
+			this.store = new HexStore($.shape.extremes.concat($.preview.extremes.map(offset($.previewpos))), function (cell) {
+				var h = 15;
+
+				var x = cell.pos.x;
+				var y = cell.pos.y;
+
+				var line = Math.floor(depth / 2) + (x <= 0 ? y : y - x);
+				var col = Math.floor(maxlevel * line / depth);
+
+				return $.shape.contains(cell.pos) || $.preview.contains(cell.pos.plus(new Point(-$.previewpos.x, -$.previewpos.y)))
+				? { level: line }
+					: null;
+			});
+		}
+
+		HextrisController.prototype.tick = function () {
+
+			if (this.fig == null)
+				this.fig = new Figure(0, Math.floor(this.depth / 2) - 2, this.bag.draw());
+
+			for (var i = 0; i < this.fig.points.length; ++i) {
+				var point = this.fig.points[i];
+				this.store.set(new Point(this.fig.pos.x + point[0], this.fig.pos.y + point[1]), { type: moving });
+			}
+
+			return this.store;
+		}
+
+		HextrisController.rotateLeft = {};
+		HextrisController.rotateRight = {};
+		HextrisController.left = {};
+		HextrisController.drop = {};
+		HextrisController.right = {};
+
+		var im = new InputManager({
+			103: HextrisController.rotateLeft,
+			105: HextrisController.rotateRight,
+			100: HextrisController.left,
+			101: HextrisController.drop,
+			102: HextrisController.right,
+		});
+
+		var game = new HextrisController(im, 31, 13);
+		var renderer = new HextrisRenderer(ctx);
+
+		window.setInterval(function () {
+			var store = game.tick();
+			renderer.draw(store);
+		}, 50);
 	</script>
 
 	<!-- navigation -->
 	<script type="text/javascript">
 
-		window.addEventListener('keydown', function (e) {
+		var action = null;
 
-			var left = {};
-			var right = {};
-			var toggle = {};
+		var left = {};
+		var right = {};
+		var toggle = {};
 
-			var brush1 = {};
-			var brush2 = {};
-			var brush3 = {};
-			var brush4 = {};
-			var brush5 = {};
+		var brush1 = {};
+		var brush2 = {};
+		var brush3 = {};
+		var brush4 = {};
+		var brush5 = {};
 
-			function key2action(event) {
-				var map = {
-					103: upleft,
-					104: up,
-					105: upright,
-					100: downleft,
-					101: down,
-					102: downright,
-					97: left,
-					99: right,
-					32: toggle,
-					49: brush1,
-					50: brush2,
-					51: brush3,
-					52: brush4,
-					53: brush5,
-				};
-
-				return map[event.which];
-			}
+		function handleinput() {
+			var donothing = false;
 
 			var x = cursor.x;
 			var y = cursor.y;
 
-			switch (key2action(e)) {
+			switch (action) {
 				case up:
 					++y;
 					break;
@@ -686,12 +789,48 @@
 							: { type: brush };
 					});
 					break;
+				default:
+					donothing = true;
+					break;
 			}
 
-			cursor = new Point(x, y);
-			draw();
+			if (!donothing) {
+				cursor = new Point(x, y);
+				draw();
+				action = null;
+			}
+		}
+		/*
+		window.setInterval(handleinput, 50);
+
+		
+		window.addEventListener('keydown', function (e) {
+			
+			function key2action(event) {
+				var map = {
+					103: upleft,
+					104: up,
+					105: upright,
+					100: downleft,
+					101: down,
+					102: downright,
+					97: left,
+					99: right,
+					32: toggle,
+					49: brush1,
+					50: brush2,
+					51: brush3,
+					52: brush4,
+					53: brush5,
+				};
+
+				return map[event.which];
+			}
+
+			action = key2action(e);
 
 		}, false);
+		*/
 	</script>
 </body>
 </html>
