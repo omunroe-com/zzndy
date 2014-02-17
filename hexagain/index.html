@@ -358,7 +358,10 @@
 		var maxlevel = 12;
 
 		var setInitialValue = function (cell) {
-			return supercell.contains(cell.pos) ? { type: stone, level: rndi(maxlevel) } : null;
+			
+			var alwaysDy = Math.abs(2*cell.pos.y-cell.pos.x) >= Math.abs(cell.pos.x);
+
+			return supercell.contains(cell.pos) ? { type: stone, level: (alwaysDy ? 0 : .5)*maxlevel + rndi(.5* maxlevel) } : null;
 		};
 
 		var store = new HexStore(extremes, setInitialValue);
@@ -400,100 +403,67 @@
 		dirstab[-1][-1] = new Point(-1, -1);
 		dirstab[-1][0] = new Point(0, -1);
 		dirstab[-1][1] = new Point(1, 0);
-		
+
+		var ltx = rndi(-15, 15);
+		var lty = rndi(-15, 15);;
+
 		// http://zvold.blogspot.co.uk/2010/01/bresenhams-line-drawing-algorithm-on_26.html#double_delta_x_integer
-		function line(p1, p2, fn) {
-			var n = 0;
-			var twody = 2 * (p2.y - p1.y) + Math.abs(halfceil(p2.x)) - Math.abs(halfceil(p1.x));
+		function line(p1, p2) {			
 			var dx = p2.x - p1.x;
+			var dy = 2 * (p2.y - p1.y) - dx;
 
-			var xs = sign(dx);
-			var ys = sign(twody);
+			var sx = dx >= 0 ? 1 : -1;
+			var sy = dy >= 0 ? 1 : -1;
 
-		
-			var hx = p1.x;
-			var hy = p1.y;
+			dx = Math.abs(dx);
+			dy = Math.abs(dy);
 
-			console.log(twody, dx);
+			var alwaysDy = dy >= dx;
 
-			var ver = Math.abs(dx) < Math.abs(twody);
+			var x = p1.x;
+			var y = p1.y;
 
-			if (ver) {
-				var ddy = 3 * Math.abs(twody);
-				var ddx = 3 * Math.abs(dx);
-				
-			}
-			else {
-				var ddy = Math.abs(twody);
-				var ddx = Math.abs(dx);
-			}
-
-			console.log(ver ? "h-bound" : "v-bound");
+			var points = [new Point(x, y)];
 
 			var e = 0;
-			var points = [new Point(hx, hy)];
-			while (p2.x != hx || p2.y != hy) {
-
-				if (ver) {
-
-					e += ddx;
-					if (e > Math.abs(twody)) {
-						var d = dirstab[ys][xs];
-
-						e -= ddy;
+			var n = 0, limit = 200;
+			
+			while (1) {
+				if (alwaysDy) {
+					e += dx;
+					if (3 * e >= dy) {
+						x += sx;
+						y += (sy == sx) ? sy : 0;
+						e -= dy;
+					} else {
+						y += sy;
+						e += dx;
 					}
-					else {
-						var d = dirstab[ys][0];
-						e += ddx;
-					}
-				}
-				else {
-
-					e += ddy;
+				} else {
+					e += dy;
 					if (e > 0) {
-						d = dirstab[ys][xs]
-						e -= ddx;
+						y += (sy == sx) ? sy : 0;
+						e -= dx;
+					} else {
+						y -= (sx == sy) ? 0 : sy;
+						e += dx;
 					}
-					else {
-						d = dirstab[-ys][xs]
-						e+=ddx
-					}
-
+					x += sx;
 				}
 
-				hx += d.x;
-				hy += d.y;
+				points.push(new Point(x, y));
 
-
-				points.push(new Point(hx, hy));
-
-				if (++n > 100) {
-					console.log('overrun');
-					return points;
+				if (++n > limit) {
+					console.log('error');
+					break;
 				}
+				if(p2.x==x && p2.y==y)
+					break;
 			}
-
-			console.log(p2, points[points.length-1]);
-
-			console.log(points);
-			return points;
-
-
-
-			var points = [];
-
-			var n = 1 + Math.max(Math.abs((p1.x - p2.x) - (p1.y - p2.y)), Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y)));
-			for (var i = 0; i < n; ++i) {
 				
-				var p = p1.times(1 - i / n).plus(p2.times(i / n));
-				points.push(new Point(Math.round(p.x), Math.round(p.y)));
-			}
-
 			return points;
 		}
 
-
-		
 		//var hw = 3; // half leaf width
 		//var di = 10; // distance from center
 		//var le = 2; // leaf length
@@ -616,7 +586,9 @@
 			}, 100);
 		}
 
-		ln(rndi(41) - 20, rndi(41) - 20, rndi(41) - 20, rndi(41) - 20);
+		ln(0, 0, ltx, lty);
+		ln(0, 0+5, ltx, lty+11);
+		
 
 		draw();
 		
