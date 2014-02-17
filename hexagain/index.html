@@ -13,7 +13,7 @@
 	<canvas id="can"></canvas>
 
 	<script type="text/javascript">
-		
+
 		/** rnd() random value from 0 to 1
 		 *  rnd(n) random from 0 to n
 		 *  rnd(n, m) random between n and m
@@ -24,9 +24,9 @@
 				case 0:
 					return Math.random();
 				case 1:
-					if (a instanceof Array) 
+					if (a instanceof Array)
 						return a[Math.floor(Math.random() * a.length)];
-					else 
+					else
 						return a * Math.random();
 				default: // case 2 actually
 					return a + (b - a) * Math.random();
@@ -45,7 +45,7 @@
 			this.x = x;
 			this.y = y;
 
-			this.equal = function(p) {
+			this.equal = function (p) {
 				return p.x == x && p.y == y;
 			};
 		}
@@ -61,16 +61,16 @@
 
 		//
 		//     world (x y)                this storage (i j) with origin (1 1)
-		//
-		//            (0 1)                      (0 1)
-		//   (-1  0)         (1 1)        (0 0)         (1 2)
-		//            (0 0)                      (1 1)
-		//   (-1 -1)         (1 0)        (1 0)         (1 2)
-		//            (0 -1)                     (2 1)
+		//								  (0 0)\       /(0 2)
+		//            (0 1)                     \(0 1)/
+		//   (-1  0)         (1 1)        (1 0)\       /(1 2)
+		//            (0 0)                     \(1 1)/
+		//   (-1 -1)         (1 0)        (2 0)\       /(2 2)
+		//            (0 -1)                    \(2 1)/
 		//
 		function HexStore(extremes, fillfunction) {
 			// getWorld(origin) -> 0 0
-			this.origin = [0,0];
+			this.origin = [0, 0];
 			this.store = [];
 
 			var self = this;
@@ -109,10 +109,10 @@
 		}
 
 		function halfceil(n) {
-			return (n + (n & 1)) >> 1;
+			return (n - (n & 1)) >> 1;
 		}
 
-		HexStore.prototype.getStore = function(world) {
+		HexStore.prototype.getStore = function (world) {
 			var x = world.x;
 			var y = world.y;
 
@@ -125,7 +125,7 @@
 			return [i, j];
 		};
 
-		HexStore.prototype.getWorld = function(store) {
+		HexStore.prototype.getWorld = function (store) {
 			var i = store[0];
 			var j = store[1];
 
@@ -138,15 +138,15 @@
 			return new Point(x, y);
 		};
 
-		HexStore.prototype.each = function(iter) {
+		HexStore.prototype.each = function (iter) {
 			for (var i = 0; i < this.n; ++i) {
-				for (var j = 1; j < this.m; j+=2) {
+				for (var j = 1; j < this.m; j += 2) {
 					var val = this.store[i][j];
 					if (val != null) {
 						iter(new Cell(this.getWorld([i, j]), val));
 					}
 				}
-				
+
 				for (var j = 0; j < this.m; j += 2) {
 					var val = this.store[i][j];
 					if (val != null) {
@@ -156,7 +156,7 @@
 			}
 		};
 
-		HexStore.prototype.get = function(world) {
+		HexStore.prototype.get = function (world) {
 			var store = this.getStore(world);
 			var i = store[0];
 			var j = store[1];
@@ -164,11 +164,11 @@
 			var coordValid = i >= 0 && i < this.n && j >= 0 && j < this.m;
 
 			return coordValid
-				?this.store[i][j]
+				? this.store[i][j]
 				: null;
 		};
 
-		HexStore.prototype.set = function(world, conv) {
+		HexStore.prototype.set = function (world, conv) {
 			var store = this.getStore(world);
 			var i = store[0];
 			var j = store[1];
@@ -182,7 +182,7 @@
 			}
 		};
 
-		HexStore.prototype.update = function(iter) {
+		HexStore.prototype.update = function (iter) {
 			var store = [];
 			for (var i = 0; i < this.n; ++i) {
 				var row = [];
@@ -201,7 +201,7 @@
 			this.store = store;
 		};
 
-		HexStore.prototype.getAdjacent = function(world) {
+		HexStore.prototype.getAdjacent = function (world) {
 			var $ = this;
 
 			function adj(dx, dy) {
@@ -249,7 +249,7 @@
 
 		var q = 1 / Math.sqrt(3);
 
-		ctx.pathHex = function(h) {
+		ctx.pathHex = function (h) {
 			var dx = q * h / 2;
 			var dy = h / 2;
 
@@ -263,14 +263,14 @@
 			this.closePath();
 		};
 
-		ctx.fillHex = function(x, y, h) {
+		ctx.fillHex = function (x, y, h) {
 			this.save();
 			this.translate(x, y);
 			this.pathHex(h);
 			this.fill();
 			this.restore();
 		};
-		
+
 		ctx.strokeHex = function (x, y, h) {
 			this.save();
 			this.translate(x, y);
@@ -292,7 +292,7 @@
 			this.rank = rank;
 		}
 
-		SuperCell.prototype.getCorners = function() {
+		SuperCell.prototype.getCorners = function () {
 			var r = this.rank;
 
 			return [new Point(2 * r, r - 1),
@@ -310,7 +310,7 @@
 			];
 		};
 
-		SuperCell.prototype.contains = function(point) {
+		SuperCell.prototype.contains = function (point) {
 			var x = point.x - this.x;
 			var y = point.y - this.y;
 
@@ -349,13 +349,13 @@
 		var raw = {};
 		var polished = {};
 		var door = {};
+		var maxlevel = 12;
 
-		var setInitialValue = function(cell) {
-			return supercell.contains(cell.pos) ? { type: stone } : null;
+		var setInitialValue = function (cell) {
+			return supercell.contains(cell.pos) ? { type: stone, level: rndi(maxlevel) } : null;
 		};
 
 		var store = new HexStore(extremes, setInitialValue);
-
 
 		function blob(x, y, a, b, c, d) {
 			b = b || a;
@@ -366,23 +366,23 @@
 				d = c + 1 - a;
 
 			for (var i = 0; i < b + c - 1; ++i) {
-				for (var j = (i > b-1 ? i - b + 1 : 0); j < (i < d ?  a + i: a+d-1); ++j)
+				for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
 					store.set(new Point(x + j, y + i), { type: polished });
 			}
 		}
 
-		var hw = 3; // half leaf width
-		var di = 10; // distance from center
-		var le = 2; // leaf length
+		//var hw = 3; // half leaf width
+		//var di = 10; // distance from center
+		//var le = 2; // leaf length
 
-		blob(di, di, hw, hw, le);//    /
-		blob(-(le + di), -(le + di), hw, hw, le);
+		//blob(di, di, hw, hw, le);//    /
+		//blob(-(le + di), -(le + di), hw, hw, le);
 
-		blob(di, -(hw - 1), le, hw, hw); //  \
-		blob(-(le + di), -(hw - 1), le, hw, hw);
+		//blob(di, -(hw - 1), le, hw, hw); //  \
+		//blob(-(le + di), -(hw - 1), le, hw, hw);
 
-		blob(-(hw-1), di, hw, le, hw); //  |
-		blob(-(hw - 1), -(le + di), hw, le, hw);// |
+		//blob(-(hw - 1), di, hw, le, hw); //  |
+		//blob(-(hw - 1), -(le + di), hw, le, hw);// |
 
 		var cursor = new Point(0, 0);
 
@@ -398,7 +398,7 @@
 
 		bedrock.color = '#3a3a3a';
 		stone.color = 'transparent';
-		raw.color =  '#887';
+		raw.color = '#887';
 		polished.color = '#555452';
 		door.color = '#762';
 
@@ -421,57 +421,24 @@
 			return n * (x - Math.floor(x));
 		}
 
+		function cellColor(cell) {
+			if (cell.value != null && cell.value.level != null) {
+				return 'hsl(0, 0%, ' + (70 + 30 * (cell.value.level / maxlevel)) + '%)';
+			}
+
+			return 'transparent';
+		}
+
 		function drawCell(cell) {
 			var s = cellsize;
 			var screen = getScreen(cell.pos);
 			var x = screen.x;
 			var y = screen.y;
 
-			var bg = 'transparent';
-
-			if (cell.value != null && cell.value.type != null) {
-				bg = cell.value.type.color || 'transparent';
-			}
-
-			ctx.fillStyle = bg;
-
-			base = 360 * (Math.sin(x/70) + Math.sin(y/80));
-
-			seed = 1000 + (x + 9.32) * (y + 1.23);
-
-			ctx.fillStyle = bg == 'transparent' ? bg : 'hsl(' + (base + random(40)) + ', ' + (50 + random(50)) + '%,' + (30 + random(40)) + '%)';
-			//ctx.fillHex(x, y, s * .8);
-
-			ctx.save();
-			ctx.translate(x, y);
-
-			ctx.rotate(-Math.PI / 3);
-			store.getAdjacent(cell.pos).forEach(function (adj) {
-				if (adj.value != null && adj.value.type == cell.value.type) {
-
-					var q = 1 / Math.sqrt(3);
-					var dx = q * s / 2;
-					var dy = s / 2;
-
-					ctx.fillRect(-dx * 1.05, dy, 2 * dx * 1.05, -s * .66);
-					
-					/*
-			this.moveTo(2 * dx, 0);
-			this.lineTo(dx, -dy);
-			this.lineTo(-dx, -dy);
-			this.lineTo(-2 * dx, 0);
-			this.lineTo(-dx, dy);
-			this.lineTo(dx, dy);
-					*/
-
-
-				}
-				ctx.rotate(-Math.PI / 3);
-			});
+			ctx.fillStyle = cellColor(cell);
+			ctx.fillHex(x, y, s);
 
 			ctx.restore();
-
-
 		}
 
 		function drawcursor(screen) {
@@ -497,168 +464,26 @@
 		function draw() {
 			var start = (new Date).getTime();
 
-			ctx.clearRect(-ctx.canvas.width, -ctx.canvas.height , 2*ctx.canvas.width, 2*ctx.canvas.height);
+			ctx.clearRect(-ctx.canvas.width, -ctx.canvas.height, 2 * ctx.canvas.width, 2 * ctx.canvas.height);
 			store.each(drawCell);
-			
+
 			var screen = getScreen(cursor);
-			
+
 			drawcursor(screen);
 			var t = ((new Date).getTime() - start);
 			++n;
 			total += t;
-			//console.log(t + 'ms', ((total / n)|0) +'ms avg');
 		}
 
-
-
-		function steer(dir, cw)
-		{
-			return dirs[(dirs.indexOf(dir) + (cw ? 1 : -1) + dirs.length) % dirs.length];
-		}
-
-		function adj(dir, coord) {
-			var x = coord.x;
-			var y = coord.y;
-
-			switch (dir) {
-				case up:
-					++y;
-					break;
-				case down:
-					--y;
-					break;
-				case upleft:
-					--x;
-					break;
-				case downright:
-					++x;
-					break;
-				case upright:
-					++x;
-					++y;
-					break;
-				case downleft:
-					--x;
-					--y;
-					break;
-			}
-
-			return new Point(x, y);
-		}
-
-		var maxStraight = 6;
-
-		//ctx.scale(1, .86);
-
-
-		// todo: primitives (lines and shapes)
-		// randomized branching
-		// adjacency-aware cell rendering
-
-		var start = new Point(0,0);
-		store.set(start, { type: polished });
-
-		var heads1 = [
-			// current head, direction, since turn, backtrack stack
-			[start, up, rndi(maxStraight/2), []],
-			[start, downleft, rndi(maxStraight / 2), []],
-			[start, downright, rndi(maxStraight / 2), []]
-		];
+		draw();
 		
-		var headses = [heads1];
 
-		function tanh(x) {
-			var exp = Math.exp;
-			return (exp(2 * x) - 1) / (exp(2 * x) + 1);
-		}
+		</script>
 
-		function grow() {
-
-			var draw = false;
-			var more = false;
-
-			headses = headses.map(function (heads) {
-				heads = heads.map(function (head) {
-					var c = head[0];
-					var d = head[1];
-					var t = head[2];
-					var q = head[3];
-
-					var x = t / maxStraight;
-					var splitpos = (1 - tanh(Math.PI - 2 * Math.PI * Math.sin(x) * x)) / 2;
-
-					if (rnd() < splitpos) {
-						t = 0;
-						d = steer(d, (rndi(100) % 2) == 0);
-					}
-
-					var dir = d;
-					var cw = (rndi(100) % 2) == 0;
-					do {
-						var nextp = adj(d, c);
-						var xx = store.getAdjacent(c);
-						next = store.get(nextp);
-
-						if (next != null && next.type == stone) {
-							var parentAdjacentFound = false;
-
-							function isValidNewHallwayAdjacent(cell) {
-
-								if (cell.value != null) {
-									var cellSolid = cell.value.type == stone;
-									var isParent = cell.pos.equal(c);
-									var oneOfParentsAdjacent = !parentAdjacentFound && xx.map(function (cell) { return cell.pos }).some(cell.pos.equal);
-									parentAdjacentFound |= oneOfParentsAdjacent
-
-									return cellSolid || isParent || oneOfParentsAdjacent;
-								}
-
-								return false; // cell missing
-							}
-
-							var validNew = store.getAdjacent(nextp).every(isValidNewHallwayAdjacent);
-
-							if (validNew) {
-								draw = true;
-								q.push(c);
-								return [nextp, d,t+1, q];
-							}
-						}
-
-						d = steer(d, cw);
-					} while (dir != d);
-
-
-					var next = q.pop();
-					if (next) return [next, d, t + 1, q];
-
-				}).filter(function (o) { return !!o });
-
-				heads.forEach(function (head) { store.set(head[0], { type: polished }) });
-
-				more |= heads.length > 0;
-
-				return heads;
-			});
-
-			return draw || (headses.length == 0) ? more : (more | grow());
-		}
-
-		function frame() {
-			var more = grow();
-			draw();
-
-			if (more)
-				window.setTimeout(frame, 10);
-		}
-
-		frame();
-
-		//while (grow());
-		//draw();
+	<script type="text/javascript">
 
 		window.addEventListener('keydown', function (e) {
-			
+
 			var left = {};
 			var right = {};
 			var toggle = {};
@@ -694,34 +519,34 @@
 			var y = cursor.y;
 
 			switch (key2action(e)) {
-			case up:
-				++y;
-				break;
-			case down:
-				--y;
-				break;
-			case upleft:
-				--x;
-				break;
-			case downright:
-				++x;
-				break;
-			case upright:
-				++x;
-				++y;
-				break;
-			case downleft:
-				--x;
-				--y;
-				break;
-			case left:
-				--x;
-				y -= x & 1;
-				break;
-			case right:
-				y += x & 1;
-				++x;
-				break;
+				case up:
+					++y;
+					break;
+				case down:
+					--y;
+					break;
+				case upleft:
+					--x;
+					break;
+				case downright:
+					++x;
+					break;
+				case upright:
+					++x;
+					++y;
+					break;
+				case downleft:
+					--x;
+					--y;
+					break;
+				case left:
+					--x;
+					y -= x & 1;
+					break;
+				case right:
+					y += x & 1;
+					++x;
+					break;
 				case brush1:
 					oldbrush = brush;
 					brush = stone;
@@ -738,13 +563,13 @@
 					oldbrush = brush;
 					brush = door;
 					break;
-			case toggle:
-				store.set(cursor, function (old) {
-					return ("type" in old && old.type == brush)
-						? { type: oldbrush }
-						: { type: brush };
-				});
-				break;
+				case toggle:
+					store.set(cursor, function (old) {
+						return ("type" in old && old.type == brush)
+							? { type: oldbrush }
+							: { type: brush };
+					});
+					break;
 			}
 
 			cursor = new Point(x, y);
