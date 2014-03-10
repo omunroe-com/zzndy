@@ -360,23 +360,79 @@
 		//	add wrapping
 		//
 
+
+		function Adjustable() {
+			this.k = 20;
+			this.min = 0;
+			this.max = .1;
+
+			this.currentmin = null;
+			this.currentmax = null;
+			this.range = null;
+		}
+
+		Adjustable.prototype.scale = function (v) {
+			this.max = Math.max(this.max, v);
+			this.min = Math.min(this.min, v);
+
+			if (this.currentmin == null)
+				this.currentmin = this.min;
+
+			if (this.currentmax == null)
+				this.currentmax = this.max;
+
+			this.range = this.currentmax - this.currentmin;
+
+			return this.currentmax == this.currentmin ? 1 : (v - this.currentmin) / this.range;
+		}
+
+		Adjustable.prototype.adjust = function () {
+			this.currentmax += (this.max - this.currentmax) / this.k;
+			this.currentmin += (this.min - this.currentmin) / this.k;
+		}
+
 		var rank = 15;
 		var supercell = new SuperCell(0, 0, rank);
 		var extremes = supercell.getCorners();
-		var cellsize = 18;
+		var cellsize = 14;
 
 		var bedrock = {};
 		var stone = {};
 		var raw = {};
 		var polished = {};
 		var door = {};
+		var wall = {};
 		var maxlevel = 24;
+
+		function cutoff(t){
+			return t*t*t*(t*3*(2*t-5)+10);
+		}
 
 		var setInitialValue = function (cell) {
 			
-			var alwaysDy = Math.abs(2*cell.pos.y-cell.pos.x) >= Math.abs(cell.pos.x);
+			if (supercell.contains(cell.pos)) {
 
-			return supercell.contains(cell.pos) ? { type: stone, level: (alwaysDy ? 0 : .5)*maxlevel + rndi(.5* maxlevel) } : null;
+				var sx = cell.pos.x >=0?1:-1;
+				var sy = cell.pos.y>=0?1:-1;
+
+				var x = Math.abs(cell.pos.x);
+				var y = Math.abs(cell.pos.y);
+
+				var dist;
+				if(sx == sy)
+					dist = x>=y?x:y;
+				else
+					dist = x+y;
+
+				var maxdist = 5;
+				var maxamount = 12;
+
+				return {
+					amount: dist >= maxdist ? 0 : cutoff(1-dist/maxdist) * rnd(.7, 1) * maxamount
+				};
+			}
+
+			return null;
 		};
 
 		function Pill(w, h) {
@@ -412,10 +468,6 @@
 					for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
 						store.set(new Point(x + j, y + i), { type: polished });
 				}
-			}
-
-			function sign(a) {
-				return a < 0 ? -1 : 1;
 			}
 
 			function line(p1, p2) {			
@@ -510,9 +562,59 @@
 
 			var dirs = [up, upleft, downleft, down, downright, upright];
 
-			var brush = stone;
-			var oldbrush = brush;
-		
+
+			var store = new HexStore(supercell.getCorners(), setInitialValue);
+			line(new Point(0, -Math.floor(rank / 2)), new Point(Math.floor(rank / 2), 0)).forEach(function (p) {
+				store.set(p, { type: wall });
+			});
+
+			var lastTime = (new Date()).getTime();
+
+			var maxamount = new Adjustable();
+			function draw(store) {
+
+				function cellColor(cell) {
+					if (cell.value != null && 'amount' in cell.value) {
+						var a = maxamount.scale(cell.value.amount);
+
+						return 'hsl(220, '+(10+90*a)+'%, ' + (50 - 40 * a) + '%)';
+					}
+
+					return 'transparent';
+				}
+
+				function drawCell(cell) {
+					var s = cellsize;
+					var screen = getScreen(cell.pos);
+					var x = screen.x;
+					var y = screen.y;
+
+					ctx.fillStyle = cellColor(cell);
+					ctx.fillHex(x, y, s);
+				}
+
+				ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
+				store.each(drawCell);
+
+				maxamount.adjust();
+			}
+
+			function frame() {
+				var newTime = (new Date()).getTime();
+				var delta = newTime - lastTime;
+				lastTime = newTime;
+
+				//var store = tick(delta);
+
+				if (store)
+					draw(store);
+
+				window.requestAnimationFrame(frame);
+			}
+
+			frame();
+
+
 		</script>
 		
 	<!-- user input -->
@@ -582,37 +684,6 @@
 
 	<!-- Tetris renderer -->
 	<script type="text/javascript">
-
-		function Adjustable() {
-			this.k = 20;
-			this.min = 0;
-			this.max = .1;
-
-			this.currentmin = null;
-			this.currentmax = null;
-			this.range = null;
-		}
-
-		Adjustable.prototype.scale = function (v) {
-			this.max = Math.max(this.max, v);
-			this.min = Math.min(this.min, v);
-
-			if (this.currentmin == null)
-				this.currentmin = this.min;
-
-			if (this.currentmax == null)
-				this.currentmax = this.max;
-
-			this.range = this.currentmax - this.currentmin;
-
-			return this.currentmax == this.currentmin ? 1 : (v - this.currentmin) / this.range;
-		}
-
-		Adjustable.prototype.adjust = function () {
-			this.currentmax += (this.max - this.currentmax) / this.k;
-			this.currentmin += (this.min - this.currentmin) / this.k;
-		}
-
 		function HextrisRenderer(ctx) {
 			this.ctx = ctx;
 
@@ -1014,7 +1085,7 @@
 
 		var lastTime = (new Date()).getTime();
 
-		function frame() {
+		function framexx() {
 			var newTime = (new Date()).getTime();
 			var delta = newTime - lastTime;
 			lastTime = newTime;
@@ -1027,7 +1098,7 @@
 			window.requestAnimationFrame(frame);
 		}
 
-		frame();
+		//frame();
 	</script>
 
 	<!-- navigation -->
@@ -1149,3 +1220,4 @@
 </body>
 </html>
 
+    
