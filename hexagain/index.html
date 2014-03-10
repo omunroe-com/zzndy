@@ -514,8 +514,7 @@
 			var oldbrush = brush;
 		
 		</script>
-
-	
+		
 	<!-- user input -->
 	<script type="text/javascript">
 
@@ -579,7 +578,6 @@
 			this.pos = pos;
 			this.fig = fig;
 		}
-
 	</script>
 
 	<!-- Tetris renderer -->
@@ -592,6 +590,7 @@
 
 			this.currentmin = null;
 			this.currentmax = null;
+			this.range = null;
 		}
 
 		Adjustable.prototype.scale = function (v) {
@@ -604,7 +603,9 @@
 			if (this.currentmax == null)
 				this.currentmax = this.max;
 
-			return this.currentmax == this.currentmin ? 1 : (v - this.currentmin) / (this.currentmax - this.currentmin);
+			this.range = this.currentmax - this.currentmin;
+
+			return this.currentmax == this.currentmin ? 1 : (v - this.currentmin) / this.range;
 		}
 
 		Adjustable.prototype.adjust = function () {
@@ -619,6 +620,7 @@
 			this.type = new Adjustable();
 		}
 
+		var tau = 2 * Math.PI;
 		HextrisRenderer.prototype.draw = function (store) {
 			var $ = this;
 			var ctx = this.ctx;
@@ -637,8 +639,8 @@
 						var type = $.type.scale(cell.value.type);
 
 						var h = 360 * type;
-						var s = 70 + 30 * level;
-						var l = 35 + 20 * level;
+						var s = 70 + 20 * (1 - level);
+						var l = 40 + 15 * (1 - level) * (1-.5*(line % 2));
 
 						return 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
 					}
@@ -658,12 +660,17 @@
 				if ('type' in cell.value) {
 					ctx.fillHex(x, y, s);
 				}
+				else if ('shadow' in cell.value) {
+					ctx.beginPath();
+					ctx.arc(x, y, s / 5, 0, tau);
+					ctx.fill();
+				}
 				else {
 					var k = s / 10;
 					var g = 3;
 
-					ctx.fillRect(x + rnd(-k / g, k / g), y + rnd(-k / g, k / g), k, k);
-					
+					ctx.fillRect(x, y, k, k);
+
 				}
 
 				ctx.restore();
@@ -671,6 +678,7 @@
 
 			ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height/2, ctx.canvas.width, ctx.canvas.height);
 			store.each(drawCell);
+
 			this.type.adjust();
 			this.level.adjust();
 		}
@@ -693,13 +701,12 @@
 			this.preview = new Pill(5, 5);
 			this.previewpos = new Point(breadth, breadth)
 
-			
 			var figs = [[[0, -1], [0, 0], [0, 1], [0, 2]],// line
 				[[-2, 0], [-1, 0], [0, 0], [1, 1]],// bend, short-right
-				[[0, 1], [0, 0], [1, 0], [2, 0]],//   bend, short-left
+				[[-1, 0], [0, 0], [1, 1], [2, 2]],//   bend, short-left
 				[[-1, -1], [0, 0], [0, 1], [1, 2]],//  "s"
 				[[-1, 1], [0, 1], [0, 0], [1, 0]], //  "z"
-				[[-1, 0], [0, 0], [1, 1], [1, 2]], //  "u"
+				[[-1, -1], [0, -1], [1, 0], [1, 1]], //"u"
 				[[-1, -1], [0, 0], [0, 1], [1, 0]],//  "y"
 				[[-1, 0], [0, 0], [0, 1], [1, 0]], //  "p"
 				[[-1, -1], [0, 0], [1, 1], [0, 1]], // "d"
@@ -708,8 +715,7 @@
 
 			var fid = 0;
 			this.bag = new Bag(figs.map(function (points) { return new Figure(fid++, points); }));
-
-			this.block = new Block(new Point(0, Math.floor(this.depth / 2) - 2), this.bag.draw());
+			this.block = null;
 			this.nextBlock = new Block(new Point(0, Math.floor(this.depth / 2) - 2), this.bag.draw());
 
 			function offset(pointoffset) {
@@ -738,16 +744,24 @@
 		}
 
 		HextrisController.prototype.fetchNext = function () {
-			console.log('new fig');
-
-			this.set(this.previewpos.x, this.previewpos.y, this.nextBlock.fig.points, {});
+			this.unset(this.previewpos, this.nextBlock.fig);
 			this.block = this.nextBlock;
 			this.nextBlock = new Block(new Point(0, Math.floor(this.depth / 2) - 2), this.bag.draw());
-			this.set(this.previewpos.x, this.previewpos.y, this.nextBlock.fig.points, { type: this.nextBlock.fig.id });
+
+			if (rnd(100) < 50) {
+				this.nextBlock.fig = rnd(100) < 50
+					? this.nextBlock.fig.rotateCw()
+					: this.nextBlock.fig.rotateCcw()
+			}
+
+			this.set(this.previewpos, this.nextBlock.fig);
+
+			if (!this.positionValid(this.block.pos, this.block.fig)) {
+				this.gameOver();
+			}
 		}
 
 		HextrisController.prototype.positionValid = function (pos, fig, okPos, okFig) {
-			console.log(pos, okPos, okPos || pos);
 			okPos = okPos || pos;
 			okFig = okFig || { points: [] };
 			var s = this.store;
@@ -756,54 +770,149 @@
 
 				var x = p[0] + pos.x;
 				var y = p[1] + pos.y;
+				var cell = s.get(new Point(x, y));
 
-				return okFig.points.every(function (ok) {
+				function isOneOfOkCells(ok) {
 					var okx = ok[0] + okPos.x;
 					var oky = ok[1] + okPos.y;
 
-					if (okx == x && oky == y)
-						return true;
+					return okx == x && oky == y;
+				}
 
-					var cell = s.get(x, y);
-
-					return cell != null && !('type' in cell);
-				});
-
+				return cell != null      // cell exists
+					&& (!('type' in cell)    // cell is unoccupied
+						|| okFig.points.some(isOneOfOkCells));
 			});
-
 		}
 
 		HextrisController.prototype.dropOne = function () {
+			var nextPos = this.block.pos.plus(new Point(0, -1));
 
-			if (this.positionValid(this.block.pos.plus(new Point(0, -1)), this.block.fig, this.block.pos, this.block.fig)) {
-				this.set(this.block.pos.x, this.block.pos.y, this.block.fig.points, {});
-				this.block.pos.y--;
-				this.set(this.block.pos.x, this.block.pos.y, this.block.fig.points, { type: this.block.fig.id });
+			if (this.positionValid(nextPos, this.block.fig, this.block.pos, this.block.fig)) {
+				this.unset(this.block.pos, this.block.fig);
+				this.set(this.block.pos = nextPos, this.block.fig);
 			}
 			else {
-				this.fetchNext();
-
-				if (!this.positionValid(this.block.pos, this.block.fig)) {
-					console.log('game over');
-				}
+				this.block = null;
 			}
 		}
 
-		HextrisController.prototype.set = function (x, y, points, value)
+		HextrisController.prototype.gameOver = function () {
+			this.isGameOver = true;
+			console.log('game over');
+		}
+
+		HextrisController.prototype.set = function (pos, fig)
 		{
 			var s = this.store;
-			points.forEach(function (p) {
-				s.set(new Point(x + p[0], y + p[1]), value);
+			fig.points.forEach(function (p) {
+				s.set(new Point(pos.x + p[0], pos.y + p[1]), { type: fig.id });
 			});
 		}
 
-		HextrisController.prototype.tick = function (delta) {
-			this.set(this.previewpos.x, this.previewpos.y, this.nextBlock.fig.points, { type: this.nextBlock.fig.id });
-			this.set(this.block.pos.x, this.block.pos.y, this.block.fig.points, { type: this.block.fig.id });
+		HextrisController.prototype.unset = function (pos, fig) {
+			var s = this.store;
+			fig.points.forEach(function (p) {
+				s.set(new Point(pos.x + p[0], pos.y + p[1]), {});
+			});
+		}
 
-			if ((this.dropCounter += delta) > this.dropTolerance) {
-				this.dropOne();
-				this.dropCounter -= this.dropTolerance;
+		HextrisController.prototype.updShadow = function () {
+			// get columns and column start cells
+			var cols = {};
+			var pos = this.block.pos;
+			this.block.fig.points.forEach(function (p) {
+				var x = p[0] + pos.x;
+				var y = p[1] + pos.y;
+
+				cols[x] = Math.min(cols[x] || Infinity, y);
+			});
+
+			console.log(cols);
+
+			return 1;
+		}
+
+		HextrisController.prototype.tick = function (delta) {
+			if (!this.isGameOver) {
+				if (this.block == null) {
+					this.fetchNext();
+					this.dropCounter = 0;
+
+					if (!this.isGameOver)
+						this.set(this.block.pos, this.block.fig);
+				}
+				else if ((this.dropCounter += delta) > this.dropTolerance) {
+					this.dropOne();
+					this.dropCounter -= this.dropTolerance;
+				}
+				else if (this.actionSource.action != null) {
+					/*
+
+						HextrisController.rotateLeft = {};
+						HextrisController.rotateRight = {};
+						HextrisController.left = {};
+						HextrisController.drop = {};
+						HextrisController.right = {};
+
+					*/
+
+					var nextfig = null;
+					var nextpos = null;
+					var resetdrop = false;
+
+					switch (this.actionSource.action)
+					{
+						case HextrisController.rotateLeft:
+							nextpos = this.block.pos;
+							nextfig = this.block.fig.rotateCcw();
+							break;
+
+						case HextrisController.rotateRight:
+							nextpos = this.block.pos;
+							nextfig = this.block.fig.rotateCw();
+							break;
+
+						case HextrisController.left:
+							nextpos = this.block.pos.plus(new Point(-1, -1));
+							nextfig = this.block.fig;
+							resetdrop = true;
+							break;
+
+						case HextrisController.right:
+							nextpos = this.block.pos.plus(new Point(1, 0));
+							nextfig = this.block.fig;
+							resetdrop = true;
+							break;
+
+						case HextrisController.down:
+							nextpos = this.block.pos.plus(new Point(0, -1));
+							nextfig = this.block.fig;
+							resetdrop = true;
+							break;
+
+						case HextrisController.drop:
+							var delta = this.updShadow();
+							nextpos = this.block.pos.plus(new Point(0, -delta));
+							nextfig = this.block.fig;
+							resetdrop = true;
+							break;
+
+					}
+
+					if (nextfig != null && nextpos != null && this.positionValid(nextpos, nextfig, this.block.pos, this.block.fig)) {
+						this.unset(this.block.pos, this.block.fig);
+						this.block.pos = nextpos;
+						this.block.fig = nextfig;
+						this.set(this.block.pos, this.block.fig);
+
+						if (resetdrop)
+							this.dropCounter = 0;
+					}
+
+					this.actionSource.action = null;
+
+				}
 			}
 
 			return this.store;
@@ -813,28 +922,38 @@
 		HextrisController.rotateRight = {};
 		HextrisController.left = {};
 		HextrisController.drop = {};
+		HextrisController.down = {};
 		HextrisController.right = {};
 
 		var im = new InputManager({
 			103: HextrisController.rotateLeft,
+			104: HextrisController.rotateRight,
 			105: HextrisController.rotateRight,
 			100: HextrisController.left,
-			101: HextrisController.drop,
+			101: HextrisController.down,
 			102: HextrisController.right,
+			32: HextrisController.drop
 		});
 
 		var game = new HextrisController(im, 31, 13);
 		var renderer = new HextrisRenderer(ctx);
 
 		var lastTime = (new Date()).getTime();
-		window.setInterval(function () {
+
+		function frame() {
 			var newTime = (new Date()).getTime();
 			var delta = newTime - lastTime;
 			lastTime = newTime;
 
 			var store = game.tick(delta);
-			renderer.draw(store);
-		}, 50);
+
+			if(store)
+				renderer.draw(store);
+
+			window.requestAnimationFrame(frame);
+		}
+
+		frame();
 	</script>
 
 	<!-- navigation -->
