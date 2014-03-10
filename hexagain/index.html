@@ -641,9 +641,9 @@
 						var type = $.type.scale(t);
 
 						var h = 360 * type;
-						var s = 70 + 20 * (1 - level);
-						var l = 40 + 15 * (1 - level) * (1 - .5 * (line % 2));
-						var a = cell.value.type >= 0 ? 1 : .2;
+						var s = (70 + 20 * (1 - level)) * (cell.value.type >= 0 ? 1 : 1.25);
+						var l = (40 + 15 * (1 - level) * (1 - .5 * (line % 2))) * (cell.value.type >= 0 ? 1 : 1.25);
+						var a = cell.value.type >= 0 ? 1 : .35;
 
 						return 'hsla(' + h + ', ' + s + '%, ' + l + '%, '+a+')';
 					}
@@ -697,8 +697,8 @@
 		{
 			this.actionSource = actionSource;
 
-			var depth = this.depth = 31;
-			var breadth = this.breadth = 13;
+			var depth = this.depth = 27;
+			var breadth = this.breadth = 11;
 
 			this.shape = new Pill(breadth, depth);
 
@@ -791,11 +791,79 @@
 			var nextPos = this.block.pos.plus(new Point(0, -1));
 
 			if (!this.move(this.block.fig, nextPos)) {
+				this.burn(this.block);
+
 				this.block = null;
 				this.shadow = null;
 			}
 		}
 		
+		HextrisController.prototype.burn = function (block) {
+
+			var levels = [];
+			var burn = [];
+
+			var s = this.store;
+			var p = this.shape;
+			var w = Math.floor(this.breadth / 2);
+			var h = Math.floor(this.depth / 2);
+
+			function allset(line) {
+				for (var x = -w; x <= w; ++x) {
+					var y = x > 0 ? line + x : line;
+					var cell = s.get(new Point(x, y));
+
+					if (cell == null || !('type' in cell) || cell.type < 0) return false;
+				}
+
+				return true;
+			}
+
+			block.fig.points.forEach(function (p) {
+				var x = p[0]+block.pos.x;
+				var y = p[1]+block.pos.y;
+
+				var line = x > 0
+					? y - x
+					: y;
+
+				if (levels.indexOf(line) == -1) {
+					levels.push(line);
+
+					if (allset(line)) {
+						burn.push(line);
+					}
+				}
+			});
+
+			if (burn.length > 0) {
+				var start = burn.reduce(function(min, l) {
+					return l < min ? l : min;
+				}, Infinity);
+
+				for (var line = start; line <= h; ++line) {
+					// count how many lines to drop
+					var fall = burn.reduce(function(num, ln) {
+						return num + (ln <= line ? 1 : 0);
+					}, 0);
+
+					if (fall > 0) {
+						for (var x = -w; x <= w; ++x) {
+							var y = x > 0 ? line + x : line;
+							var target = new Point(x, y);
+							var source = new Point(x, y+fall);
+
+							var vt = p.contains(target);
+							var vs = p.contains(source);
+
+							s.set(target, vt ? (vs ?s.get(source): {} ) : null);
+							s.set(source, vs ? {} : null);
+						}
+					}
+				}
+			}
+		}
+
 		HextrisController.prototype.move = function (nextfig, nextpos) {
 			if (nextfig != null && nextpos != null && this.positionValid(nextpos, nextfig, this.block.pos, this.block.fig)) {
 				this.unset(this.block.pos, this.block.fig);
