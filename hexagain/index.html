@@ -363,7 +363,7 @@
 		var rank = 15;
 		var supercell = new SuperCell(0, 0, rank);
 		var extremes = supercell.getCorners();
-		var cellsize = 14;
+		var cellsize = 18;
 
 		var bedrock = {};
 		var stone = {};
@@ -697,7 +697,7 @@
 		{
 			this.actionSource = actionSource;
 
-			var depth = this.depth = 27;
+			var depth = this.depth = 29;
 			var breadth = this.breadth = 11;
 
 			this.shape = new Pill(breadth, depth);
@@ -798,7 +798,7 @@
 			}
 		}
 		
-		HextrisController.prototype.burn = function (block) {
+		HextrisController.prototype.burn = function(block) {
 
 			var levels = [];
 			var burn = [];
@@ -819,9 +819,9 @@
 				return true;
 			}
 
-			block.fig.points.forEach(function (p) {
-				var x = p[0]+block.pos.x;
-				var y = p[1]+block.pos.y;
+			block.fig.points.forEach(function(p) {
+				var x = p[0] + block.pos.x;
+				var y = p[1] + block.pos.y;
 
 				var line = x > 0
 					? y - x
@@ -841,24 +841,28 @@
 					return l < min ? l : min;
 				}, Infinity);
 
+				var gap = 1;
+
 				for (var line = start; line <= h; ++line) {
+
+					while (burn.indexOf(line + gap) != -1) ++gap;
+
+
 					// count how many lines to drop
 					var fall = burn.reduce(function(num, ln) {
 						return num + (ln <= line ? 1 : 0);
 					}, 0);
 
-					if (fall > 0) {
-						for (var x = -w; x <= w; ++x) {
-							var y = x > 0 ? line + x : line;
-							var target = new Point(x, y);
-							var source = new Point(x, y+fall);
+					for (var x = -w; x <= w; ++x) {
+						var y = x > 0 ? line + x : line;
+						var target = new Point(x, y);
+						var source = new Point(x, y + gap);
 
-							var vt = p.contains(target);
-							var vs = p.contains(source);
+						var vt = p.contains(target);
+						var vs = p.contains(source);
 
-							s.set(target, vt ? (vs ?s.get(source): {} ) : null);
-							s.set(source, vs ? {} : null);
-						}
+						s.set(target, vt ? (vs ? s.get(source) : {}) : null);
+						s.set(source, vs ? {} : null);
 					}
 				}
 			}
@@ -874,7 +878,6 @@
 				this.block.fig = nextfig;
 
 				this.shadow = this.getShadow();
-				this.shadowDistance = this.block.pos.y - this.shadow.pos.y;
 
 				this.set(this.shadow.pos, this.shadow.fig);
 				this.set(this.block.pos, this.block.fig);
@@ -925,8 +928,11 @@
 					this.fetchNext();
 					this.dropCounter = 0;
 
-					if (!this.isGameOver)
+					if (!this.isGameOver) {
+						this.shadow = this.getShadow();
+						this.set(this.shadow.pos, this.shadow.fig);
 						this.set(this.block.pos, this.block.fig);
+					}
 				}
 				else if ((this.dropCounter += delta) > this.dropTolerance) {
 					this.dropOne();
