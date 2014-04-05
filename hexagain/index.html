@@ -42,31 +42,31 @@
 
     <!-- Point -->
     <script type="text/javascript">
-
-        function Point(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        Point.prototype.toString = function () { return this.x + ',' + this.y }
-
-        Point.prototype.equal = function (p) {
-            return this.x == p.x && this.y == p.y;
-        }
-
-        Point.prototype.times = function (n) {
-            return new Point(this.x * n, this.y * n);
-        }
-
-        Point.prototype.add = function (dx, dy) {
-            return new Point(this.x + dx, this.y + dy);
-        }
-
-        Point.prototype.plus = function (p) {
-            return new Point(this.x + p.x, this.y + p.y);
-        }
-
-    </script>
+        
+            function Point(x, y) {
+                    this.x = x;
+                    this.y = y;
+                }
+        
+            Point.prototype.toString = function () { return this.x + ',' + this.y }
+        
+            Point.prototype.equal = function (p) {
+                    return this.x == p.x && this.y == p.y;
+                }
+        
+            Point.prototype.times = function (n) {
+                    return new Point(this.x * n, this.y * n);
+                }
+        
+            Point.prototype.add = function (dx, dy) {
+                    return new Point(this.x + dx, this.y + dy);
+                }
+        
+            Point.prototype.plus = function (p) {
+                    return new Point(this.x + p.x, this.y + p.y);
+                }
+        
+        </script>
 
     <!-- Hexstore -->
     <script type="text/javascript">
@@ -78,283 +78,162 @@
         var downleft = {};
         var down = {};
 
-        var MakeHexStore = (function () {
+        var opposite = [];
 
-            function halfceil(n) {
-                // changing "-" to "+" will change array storage to other configuration
-                return (n - (n & 1)) >> 1;
+        opposite[downright] = upleft;
+        opposite[upright] = downleft;
+        opposite[up] = down;
+        opposite[upleft] = downleft;
+        opposite[downleft] = upright;
+        opposite[down] = up;
+
+        function MakeData(extremes, initFn) {
+
+            var minmax = extremes.reduce(function (current, point) {
+
+                var i = point.y;
+                var j = point.x;
+
+                return current == null
+                        ? [i, j, i, j]
+                        : [Math.min(current[0], i),
+                            Math.min(current[1], j),
+                            Math.max(current[2], i),
+                            Math.max(current[3], j)];
+            }, null);
+
+            var mini = minmax[0];
+            var minj = minmax[1];
+            var maxi = minmax[2];
+            var maxj = minmax[3];
+
+            // x, y (getStore(origin) -> 0 0)
+            var origin = [-mini, -minj];
+
+            // max i, max j
+            var n = maxi - mini + 1;
+            var m = maxj - minj + 1;
+
+            var data = [];
+
+            var i = -1;
+            while (++i < n) {
+                var row = [];
+                var j = -1;
+                while (++j < m)
+                    row.push(initFn(new Point(j - origin[0], i - origin[1])));
+
+                data.push(row);
             }
 
-            function getStoreFun(ox, oy) {
 
-                ox = ox || 0;
-                oy = oy || 0;
+            return [origin, data];
+        }
 
-                // return world to index coordinate conversion function give an origin (getWorld(origin) -> 0 0).
-                return function (world) {
+        function MakeHexStore(extremes, initFn, cloneFn) {
+            var originData = MakeData(extremes, initFn);
 
-                    var x = world.x;
-                    var y = world.y;
+            return new HexStore(originData[0], originData[1], initFn, cloneFn);
+        }
 
-                    var j = x + oy;
-                    var i = -y + ox - halfceil(oy) + halfceil(j);
+        function HexStore(origin, data, initFn, cloneFn) {
 
-                    return [i, j];
+            this.origin = origin;
+            this.data = data;
+            this.initFn = initFn;
+            this.cloneFn = cloneFn;
+
+        }
+
+        HexStore.prototype.forEach = function (processFn) {
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            var i = -1;
+            while (++i < n) {
+                var j = -1;
+                while (++j < m)
+                    if (this.data[i][j] != null)
+                        processFn(this.data[i][j], new Point(j - xo, i - yo));
+            }
+
+        }
+
+        // dir dx dy
+        var dirsdeltas = [
+            [downright, 1, 0],
+            [upright, 1, 1],
+            [up, 0, 1],
+            [upleft, -1, 0],
+            [downleft, -1, -1],
+            [down, 0, -1]
+        ];
+
+        HexStore.prototype.adjacent = function (pos) {
+
+            var i = pos.y + this.origin[1];
+            var j = pos.x + this.origin[0];
+
+            var data = this.data;
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            return dirsdeltas.map(function (d) {
+                var dir = d[0];
+                var dx = d[1];
+                var dy = d[2];
+
+                var id = i + dy;
+                var jd = j + dx;
+
+                return [dir, (id >= 0 && jd>= 0 && id < n && jd < m) ? data[id][jd] : null];
+            });
+
+        }
+
+        HexStore.prototype.copy = function() {
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var copy = [];
+
+            for (var i = 0; i < n; ++i) {
+                var row = [];
+                for (var j = 0; j < m; ++j) {
+                    var val = this.data[i][j];
+                    row.push(val == null ? null : this.cloneFn(val));
+                }
+                copy.push(row);
+            }
+
+            return new HexStore(this.origin, copy, this.initFn, this.cloneFn);
+        }
+
+        HexStore.prototype.nextGen = function (cellCellStoreStoreFunc) {
+
+            var newStore = this.copy();
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            for (var i = 0; i < n; ++i) {
+                for (var j = 0; j < m; ++j) {
+                    var pos = new Point(j - xo, i - yo);
+
+                    cellCellStoreStoreFunc(this.data[i][j], newStore.data[i][j], pos, this, newStore);
                 }
             }
 
-            function getWorldFun(ox, oy) {
-
-                ox = ox || 0;
-                oy = oy || 0;
-
-                return function (i, j) {
-                    var x = j - oy;
-                    var y = ox - i - halfceil(oy) + halfceil(j);
-
-                    return new Point(x, y);
-                }
-            };
-
-            function findStoreParameters(extremes) {
-                var getStore = getStoreFun();
-
-                var minmax = extremes.reduce(function (current, point) {
-
-                    var store = getStore(point);
-                    var i = store[0];
-                    var j = store[1];
-
-                    return current == null
-							? [i, j, i, j]
-							: [Math.min(current[0], i),
-								Math.min(current[1], j),
-								Math.max(current[2], i),
-								Math.max(current[3], j)];
-                }, null);
-
-                var mini = minmax[0];
-                var minj = minmax[1];
-                var maxi = minmax[2];
-                var maxj = minmax[3];
-
-                // x, y
-                var origin = [-mini, -minj];
-
-                // max i, max j
-                var dim = [maxi - mini + 1, maxj - minj + 1];
-
-                return [origin, dim];
-            }
-
-            function copy(data, valueClass) {
-
-                var n = data.length;
-                var m = data[0].length;
-
-                var cpy = [];
-
-                for (var i = 0; i < n; ++i) {
-                    var row = [];
-                    for (var j = 0; j < m; ++j) {
-                        var val = data[i][j];
-                        row.push(val == null ? null : valueClass(val));
-                    }
-                    cpy.push(row);
-                }
-
-                return cpy;
-            }
-
-            function getter(i, j, data) {
-                return (i >= 0 && j >= 0 && i < data.length && j < data[0].length && data[i][j] != null)
-					? function () { return data[i][j] }
-					: function () { return null };
-            }
-
-            function setter(i, j, data) {
-                return (i >= 0 && j >= 0 && i < data.length && j < data[0].length && data[i][j] != null)
-					? function (v) { data[i][j] = v }
-					: function (v) { };
-            }
-
-            function adjacentFunc(i, j, pos, data, ro) {
-                // dir dx dy
-                var dirs = [
-					[downright, 1, 0],
-					[upright, 1, 1],
-					[up, 0, 1],
-					[upleft, -1, 0],
-					[downleft, -1, -1],
-					[down, 0, -1]
-                ];
-
-                return function () {
-                    return dirs.map(function (d) {
-                        var dx = d[1];
-                        var dy = d[2];
-
-                        var j1 = j + dy;
-
-                        // TODO: algo
-
-                        var map = [];
-                        map[0] = [];
-                        map[1] = [];
-
-                        map[0][-1] = [];
-                        map[0][0] = [];
-                        map[0][1] = [];
-
-                        map[1][-1] = [];
-                        map[1][0] = [];
-                        map[1][1] = [];
-
-                        map[0][-1][-1] = 0;
-                        map[0][-1][0] = -1;
-
-                        map[0][0][-1] = 1;
-                        map[0][0][1] = -1;
-
-                        map[0][1][0] = 0;
-                        map[0][1][1] = -1;
-
-                        map[1][-1][-1] = 1;
-                        map[1][-1][0] = 0;
-
-                        map[1][0][-1] = -1;
-                        map[1][0][1] = -1;
-
-                        map[1][1][0] = 1;
-                        map[1][1][1] = 0;
-
-                        var i1 = i + map[j % 2][dx][dy];
-
-                        return [d[0], MakeCell(i1, j1, pos.add(dx, dy), data, ro)];
-                    })
-                };
-            };
-
-            function MakeCell(i, j, pos, data, ro) {
-                return new Cell(pos, getter(i, j, data), ro ? null : setter(i, j, data), adjacentFunc(i, j, pos, data, ro));
-            }
-
-            function MakeHexStoreInternal(data, valueClass, origin) {
-
-                var getStore = getStoreFun(origin[0], origin[1]);
-                var getWorld = getWorldFun(origin[0], origin[1]);
-
-                var oldStore = { adminHandle: {}, userHandle: {} };
-
-                oldStore.userHandle.nextGen = function (cellCellStoreStoreFunc) {
-
-                    var newData = copy(data, valueClass);
-                    var newStore = MakeHexStoreInternal(newData, valueClass, origin);
-
-                    var n = data.length;
-                    var m = data[0].length;
-
-                    for (var i = 0; i < n; ++i) {
-                        for (var j = 0; j < m; ++j) {
-                            var pos = getWorld(i, j);
-                            var oldCell = MakeCell(i, j, pos, data, true);
-                            var newCell = MakeCell(i, j, pos, newData, false);
-
-                            cellCellStoreStoreFunc(oldCell, newCell, oldStore.userHandle, newStore.userHandle)
-                        }
-                    }
-
-                    return newStore.userHandle;
-                }
-
-                oldStore.userHandle.set = function (world, conv) {
-
-                    var store = getStore(world);
-                    var i = store[0];
-                    var j = store[1];
-
-                    var coordValid = i >= 0 && j >= 0 && i < data.length && j < data[0].length;
-
-                    if (coordValid) {
-                        data[i][j] = (conv instanceof Function)
-							? conv(data[i][j])
-							: conv;
-                    }
-                }
-
-                oldStore.userHandle.forEach = function (iter) {
-                    var n = data.length;
-                    var m = data[0].length;
-
-                    for (var i = 0; i < n; ++i) {
-                        for (var j = 1; j < m; j += 2) {
-                            var val = data[i][j];
-                            if (val != null) {
-                                iter(MakeCell(i, j, getWorld(i, j), data, true));
-                            }
-                        }
-
-                        for (var j = 0; j < m; j += 2) {
-                            var val = data[i][j];
-                            if (val != null) {
-                                iter(MakeCell(i, j, getWorld(i, j), data, true));
-                            }
-                        }
-                    }
-                };
-
-
-                return oldStore;
-            }
-
-            function Cell(pos, get, set, adjacent) {
-                this.pos = pos;
-                this.get = get;
-                this.set = set;
-                this.adjacent = adjacent;
-            }
-
-            //
-            //     world (x y)                this storage (i j) with origin (1 1)
-            //                                (0 0)\       /(0 2)
-            //            (0 1)                     \(0 1)/
-            //   (-1  0)         (1 1)        (1 0)\       /(1 2)
-            //            (0 0)                     \(1 1)/
-            //   (-1 -1)         (1 0)        (2 0)\       /(2 2)
-            //            (0 -1)                    \(2 1)/
-            //
-            function MakeHexStore(extremes, valueClass) {
-                // Value class is expected to have a point constructor and a copy constructor
-
-                var params = findStoreParameters(extremes);
-
-                var origin = params[0];
-                var dim = params[1];
-
-                var getWorld = getWorldFun(origin[0], origin[1]);
-
-                var n = dim[0];
-                var m = dim[1];
-
-                var data = [];
-
-                for (var i = 0; i < n; ++i) {
-                    var row = [];
-                    for (var j = 0; j < m; ++j) {
-                        var value = valueClass(getWorld(i, j));
-
-                        row.push(value);
-                    }
-
-                    data.push(row);
-                }
-
-                return MakeHexStoreInternal(data, valueClass, origin).userHandle;
-            }
-
-            return MakeHexStore;
-        })();
-
+            return newStore;
+        }
     </script>
 
     <!-- Fullscreen canvas and drawhex -->
@@ -463,15 +342,8 @@
 
     </script>
 
+    <!-- Adjustable -->
     <script type="text/javascript">
-        //
-        // TODO:
-        //	get all hexes within specified hex-distance - see pill
-        //	calculate FOV (maybe by extending line algo)
-        //		calculate illumination (apply light from several sources plus player FOV)
-        //	add wrapping
-        //
-
         function Adjustable() {
             this.k = 20;
             this.min = 0;
@@ -501,6 +373,16 @@
             this.currentmax += (this.max - this.currentmax) / this.k;
             this.currentmin += (this.min - this.currentmin) / this.k;
         }
+    </script>
+
+    <script type="text/javascript">
+        //
+        // TODO:
+        //	get all hexes within specified hex-distance - see pill
+        //	calculate FOV (maybe by extending line algo)
+        //		calculate illumination (apply light from several sources plus player FOV)
+        //	add wrapping
+        //
 
         var rank = 10;
         var supercell = new SuperCell(0, 0, rank);
@@ -674,9 +556,12 @@
             this.value = value;
         }
 
-        function MakeCellValue(arg) {
+        function CloneCellValue(arg) {
+            return new CellValue(arg.type, arg.value);
+        }
 
-            if (arg instanceof Point && supercell.contains(arg)) {
+        function MakeCellValue(arg) {
+            if (supercell.contains(arg)) {
 
                 var sx = arg.x >= 0 ? 1 : -1;
                 var sy = arg.y >= 0 ? 1 : -1;
@@ -697,47 +582,44 @@
 
                 return new CellValue(water, amount);
             }
-            else if (arg instanceof CellValue) {
-                return new CellValue(arg.type, arg.value);
-            }
-
+                
             return null;
         }
 
-        var store = new MakeHexStore(supercell.getCorners(), MakeCellValue);
+        var store = new MakeHexStore(supercell.getCorners(), MakeCellValue, CloneCellValue);
 
         line(new Point(1, -maxdist - 1), new Point(maxdist + 1, -1))
-				.forEach(function (p) {
-				    store.set(p, { type: wall });
+				.forEach(function (val, pos) {
+				    val.type = wall;
 				});
 
         var lastTime = (new Date()).getTime();
 
         var maxamount = new Adjustable();
+        maxamount.scale(maxlevel);
 
         function draw(store) {
 
-            function cellColor(cell) {
-                var val = cell.get();
-
+            function cellColor(val, pos) {
                 if (val != null && val instanceof CellValue && val.type == water) {
                     var a = maxamount.scale(val.value);
 
                     return a == 0
-						? (((cell.pos.x % 6) == 0 && (cell.pos.y % 6) == 0) ? 'hsl(47, 97%, 70%)' : 'hsl(47, 97%, 73%)')
+						? (((pos.x % 6) == 0 && (pos.y % 6) == 0) ? 'hsl(47, 97%, 70%)' : 'hsl(47, 97%, 73%)')
 						: 'hsl(220, ' + (10 + 90 * a) + '%, ' + (50 - 40 * a) + '%)';
                 }
 
                 return 'transparent';
             }
 
-            function drawCell(cell) {
+            function drawCell(cell, pos) {
                 var s = cellsize;
-                var screen = getScreen(cell.pos);
+                var screen = getScreen(pos);
                 var x = screen.x;
                 var y = screen.y;
 
-                ctx.fillStyle = cellColor(cell);
+                ctx.fillStyle = cellColor(cell, pos);
+
                 ctx.fillHex(x, y, s);
             }
 
@@ -746,12 +628,11 @@
 
             maxamount.adjust();
         }
-
+        var flag = false;
         function tick(delta) {
 
-            function watercell(cell) {
-                var val = cell.get();
-                return val != null && val instanceof CellValue && val.type == water;
+            function watercell(val) {
+                return val != null && val.type == water;
             }
 
             function wateradj(adj) {
@@ -768,32 +649,30 @@
                 return null;
             }
 
-            var opposite = [];
+            var newStore = store.copy();
 
-            opposite[downright] = upleft;
-            opposite[upright] = downleft;
-            opposite[up] = down;
-            opposite[upleft] = downleft;
-            opposite[downleft] = upright;
-            opposite[down] = up;
-
-            return store = store.nextGen(function (oldCell, newCell, oldStore, newStore) {
+            return store = store.nextGen(function (oldCell, newCell, pos, oldStore, newStore) {
 
                 if (watercell(oldCell)) {
 
-                    var val = oldCell.get().value;
+                    var val = oldCell.value;
                     var v0 = val;
 
-                    var oldadj = oldCell.adjacent();
-                    var newadj = newCell.adjacent();
+                    var oldadj = oldStore.adjacent(pos);
+                    var newadj = newStore.adjacent(pos);
+
+                    if (!flag && pos.x==0&&pos.y==0) {
+                        console.log(oldadj)
+                        flag = true;
+                    }
 
                     function score(adj) {
                         // the bigger the better
-                        var grad = v0 - adj[1].get().value;
+                        var grad = v0 - adj[1].value;
 
                         var opps = match(opposite[adj[0]], oldadj);
 
-                        var opgrad = watercell(opps) ? (opps.get().value - v0) : 0;
+                        var opgrad = watercell(opps) ? (opps.value - v0) : 0;
 
                         return grad + opps;
                     }
@@ -810,20 +689,18 @@
 						    var newcell = match(adj[0], newadj);
 
 						    if (newcell != null) {
-						        var newval = newcell.get();
 
-						        if (val > 1 && newval.value < val) {
+						        if (val > 1 && newcell.value < val) {
 						            --val;
-						            ++newval.value;
+						            ++newcell.value;
 						        }
 						    }
 						});
 
-                    newCell.get().value -= v0 - val;
+                    newCell.value -= v0 - val;
                 }
             });
         }
-
 
         var frames = 80;
         function render() {
@@ -834,14 +711,17 @@
             if (frames < 40)
                 tick(delta);
 
-
             draw(store);
 
             var time = (new Date()).getTime();
 
-            if (--frames > 0)
-              //  window.setTimeout(render, 1000);
-            window.requestAnimationFrame(render);
+            if (--frames > 0) {
+                //window.setTimeout(render, 500);
+                window.requestAnimationFrame(render);
+            }
+            else
+                console.log('done');
+            
         }
 
         render();
