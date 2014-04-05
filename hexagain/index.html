@@ -1,318 +1,430 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Hexagain</title>
-	<style type="text/css">
-		html, body {
-			background-color: #232220;
-			color: #dad6d0;
-		}
-	</style>
+    <title>Hexagain</title>
+    <style type="text/css">
+        html, body {
+            background-color: #232220;
+            color: #dad6d0;
+        }
+    </style>
 </head>
 <body>
-	<canvas id="can"></canvas>
-	
-	<!-- random -->
-	<script type="text/javascript">
+    <canvas id="can"></canvas>
 
-		/** rnd() random value from 0 to 1
+    <!-- random -->
+    <script type="text/javascript">
+
+        /** rnd() random value from 0 to 1
 		 *  rnd(n) random from 0 to n
 		 *  rnd(n, m) random between n and m
 		 *  rnd(array) random element
 		 */
-		function rnd(a, b) {
-			switch (arguments.length) {
-				case 0:
-					return Math.random();
-				case 1:
-					if (a instanceof Array)
-						return a[Math.floor(Math.random() * a.length)];
-					else
-						return a * Math.random();
-				default: // case 2 actually
-					return a + (b - a) * Math.random();
-			}
-		}
+        function rnd(a, b) {
+            switch (arguments.length) {
+                case 0:
+                    return Math.random();
+                case 1:
+                    if (a instanceof Array)
+                        return a[Math.floor(Math.random() * a.length)];
+                    else
+                        return a * Math.random();
+                default: // case 2 actually
+                    return a + (b - a) * Math.random();
+            }
+        }
 
-		function rndi() {
-			return Math.floor(rnd.apply(null, arguments));
-		}
+        function rndi() {
+            return Math.floor(rnd.apply(null, arguments));
+        }
 
-	</script>
+    </script>
 
-	<!-- Point and cell -->
-	<script type="text/javascript">
+    <!-- Point -->
+    <script type="text/javascript">
 
-		function Point(x, y) {
-			this.x = x;
-			this.y = y;
+        function Point(x, y) {
+            this.x = x;
+            this.y = y;
+        }
 
-			this.equal = function (p) {
-				return p.x == x && p.y == y;
-			};
-		}
+        Point.prototype.toString = function () { return this.x + ',' + this.y }
 
-		Point.prototype.toString = function () { return this.x + ',' + this.y}
+        Point.prototype.equal = function (p) {
+            return this.x == p.x && this.y == p.y;
+        }
 
-		Point.prototype.times = function (n) {
-			return new Point(this.x * n, this.y * n);
-		}
+        Point.prototype.times = function (n) {
+            return new Point(this.x * n, this.y * n);
+        }
 
-		Point.prototype.plus = function (p) {
-			return new Point(this.x + p.x, this.y + p.y);
-		}
+        Point.prototype.add = function (dx, dy) {
+            return new Point(this.x + dx, this.y + dy);
+        }
+
+        Point.prototype.plus = function (p) {
+            return new Point(this.x + p.x, this.y + p.y);
+        }
+
+    </script>
+
+    <!-- Hexstore -->
+    <script type="text/javascript">
+
+        var downright = {};
+        var upright = {}
+        var up = {};
+        var upleft = {};
+        var downleft = {};
+        var down = {};
+
+        var MakeHexStore = (function () {
+
+            function halfceil(n) {
+                // changing "-" to "+" will change array storage to other configuration
+                return (n - (n & 1)) >> 1;
+            }
+
+            function getStoreFun(ox, oy) {
+
+                ox = ox || 0;
+                oy = oy || 0;
+
+                // return world to index coordinate conversion function give an origin (getWorld(origin) -> 0 0).
+                return function (world) {
+
+                    var x = world.x;
+                    var y = world.y;
+
+                    var j = x + oy;
+                    var i = -y + ox - halfceil(oy) + halfceil(j);
+
+                    return [i, j];
+                }
+            }
+
+            function getWorldFun(ox, oy) {
+
+                ox = ox || 0;
+                oy = oy || 0;
+
+                return function (i, j) {
+                    var x = j - oy;
+                    var y = ox - i - halfceil(oy) + halfceil(j);
+
+                    return new Point(x, y);
+                }
+            };
+
+            function findStoreParameters(extremes) {
+                var getStore = getStoreFun();
+
+                var minmax = extremes.reduce(function (current, point) {
+
+                    var store = getStore(point);
+                    var i = store[0];
+                    var j = store[1];
+
+                    return current == null
+							? [i, j, i, j]
+							: [Math.min(current[0], i),
+								Math.min(current[1], j),
+								Math.max(current[2], i),
+								Math.max(current[3], j)];
+                }, null);
+
+                var mini = minmax[0];
+                var minj = minmax[1];
+                var maxi = minmax[2];
+                var maxj = minmax[3];
+
+                // x, y
+                var origin = [-mini, -minj];
+
+                // max i, max j
+                var dim = [maxi - mini + 1, maxj - minj + 1];
+
+                return [origin, dim];
+            }
+
+            function copy(data, valueClass) {
+
+                var n = data.length;
+                var m = data[0].length;
+
+                var cpy = [];
+
+                for (var i = 0; i < n; ++i) {
+                    var row = [];
+                    for (var j = 0; j < m; ++j) {
+                        var val = data[i][j];
+                        row.push(val == null ? null : valueClass(val));
+                    }
+                    cpy.push(row);
+                }
+
+                return cpy;
+            }
+
+            function getter(i, j, data) {
+                return (i >= 0 && j >= 0 && i < data.length && j < data[0].length && data[i][j] != null)
+					? function () { return data[i][j] }
+					: function () { return null };
+            }
+
+            function setter(i, j, data) {
+                return (i >= 0 && j >= 0 && i < data.length && j < data[0].length && data[i][j] != null)
+					? function (v) { data[i][j] = v }
+					: function (v) { };
+            }
+
+            function adjacentFunc(i, j, pos, data, ro) {
+                // dir dx dy
+                var dirs = [
+					[downright, 1, 0],
+					[upright, 1, 1],
+					[up, 0, 1],
+					[upleft, -1, 0],
+					[downleft, -1, -1],
+					[down, 0, -1]
+                ];
+
+                return function () {
+                    return dirs.map(function (d) {
+                        var dx = d[1];
+                        var dy = d[2];
+
+                        var j1 = j + dy;
+
+                        // TODO: algo
+
+                        var map = [];
+                        map[0] = [];
+                        map[1] = [];
+
+                        map[0][-1] = [];
+                        map[0][0] = [];
+                        map[0][1] = [];
+
+                        map[1][-1] = [];
+                        map[1][0] = [];
+                        map[1][1] = [];
+
+                        map[0][-1][-1] = 0;
+                        map[0][-1][0] = -1;
+
+                        map[0][0][-1] = 1;
+                        map[0][0][1] = -1;
+
+                        map[0][1][0] = 0;
+                        map[0][1][1] = -1;
+
+                        map[1][-1][-1] = 1;
+                        map[1][-1][0] = 0;
+
+                        map[1][0][-1] = -1;
+                        map[1][0][1] = -1;
+
+                        map[1][1][0] = 1;
+                        map[1][1][1] = 0;
+
+                        var i1 = i + map[j % 2][dx][dy];
+
+                        return [d[0], MakeCell(i1, j1, pos.add(dx, dy), data, ro)];
+                    })
+                };
+            };
+
+            function MakeCell(i, j, pos, data, ro) {
+                return new Cell(pos, getter(i, j, data), ro ? null : setter(i, j, data), adjacentFunc(i, j, pos, data, ro));
+            }
+
+            function MakeHexStoreInternal(data, valueClass, origin) {
+
+                var getStore = getStoreFun(origin[0], origin[1]);
+                var getWorld = getWorldFun(origin[0], origin[1]);
+
+                var oldStore = { adminHandle: {}, userHandle: {} };
+
+                oldStore.userHandle.nextGen = function (cellCellStoreStoreFunc) {
+
+                    var newData = copy(data, valueClass);
+                    var newStore = MakeHexStoreInternal(newData, valueClass, origin);
+
+                    var n = data.length;
+                    var m = data[0].length;
+
+                    for (var i = 0; i < n; ++i) {
+                        for (var j = 0; j < m; ++j) {
+                            var pos = getWorld(i, j);
+                            var oldCell = MakeCell(i, j, pos, data, true);
+                            var newCell = MakeCell(i, j, pos, newData, false);
+
+                            cellCellStoreStoreFunc(oldCell, newCell, oldStore.userHandle, newStore.userHandle)
+                        }
+                    }
+
+                    return newStore.userHandle;
+                }
+
+                oldStore.userHandle.set = function (world, conv) {
+
+                    var store = getStore(world);
+                    var i = store[0];
+                    var j = store[1];
+
+                    var coordValid = i >= 0 && j >= 0 && i < data.length && j < data[0].length;
+
+                    if (coordValid) {
+                        data[i][j] = (conv instanceof Function)
+							? conv(data[i][j])
+							: conv;
+                    }
+                }
+
+                oldStore.userHandle.forEach = function (iter) {
+                    var n = data.length;
+                    var m = data[0].length;
+
+                    for (var i = 0; i < n; ++i) {
+                        for (var j = 1; j < m; j += 2) {
+                            var val = data[i][j];
+                            if (val != null) {
+                                iter(MakeCell(i, j, getWorld(i, j), data, true));
+                            }
+                        }
+
+                        for (var j = 0; j < m; j += 2) {
+                            var val = data[i][j];
+                            if (val != null) {
+                                iter(MakeCell(i, j, getWorld(i, j), data, true));
+                            }
+                        }
+                    }
+                };
 
 
-		function Cell(point, value) {
-			this.pos = point;
-			this.value = value;
-		}
+                return oldStore;
+            }
 
-	</script>
+            function Cell(pos, get, set, adjacent) {
+                this.pos = pos;
+                this.get = get;
+                this.set = set;
+                this.adjacent = adjacent;
+            }
 
-	<!-- Hexstore -->
-	<script type="text/javascript">
+            //
+            //     world (x y)                this storage (i j) with origin (1 1)
+            //                                (0 0)\       /(0 2)
+            //            (0 1)                     \(0 1)/
+            //   (-1  0)         (1 1)        (1 0)\       /(1 2)
+            //            (0 0)                     \(1 1)/
+            //   (-1 -1)         (1 0)        (2 0)\       /(2 2)
+            //            (0 -1)                    \(2 1)/
+            //
+            function MakeHexStore(extremes, valueClass) {
+                // Value class is expected to have a point constructor and a copy constructor
 
-		//
-		//     world (x y)                this storage (i j) with origin (1 1)
-		//                                (0 0)\       /(0 2)
-		//            (0 1)                     \(0 1)/
-		//   (-1  0)         (1 1)        (1 0)\       /(1 2)
-		//            (0 0)                     \(1 1)/
-		//   (-1 -1)         (1 0)        (2 0)\       /(2 2)
-		//            (0 -1)                    \(2 1)/
-		//
-		function HexStore(extremes, fillfunction) {
-			// getWorld(origin) -> 0 0
-			this.origin = [0, 0];
-			this.store = [];
+                var params = findStoreParameters(extremes);
 
-			var self = this;
-			var minmax = extremes.reduce(function (current, point) {
+                var origin = params[0];
+                var dim = params[1];
 
-				var store = self.getStore(point);
-				var i = store[0];
-				var j = store[1];
+                var getWorld = getWorldFun(origin[0], origin[1]);
 
-				return current == null
-                        ? [i, j, i, j]
-                        : [Math.min(current[0], i),
-                            Math.min(current[1], j),
-                            Math.max(current[2], i),
-                            Math.max(current[3], j)];
-			}, null);
+                var n = dim[0];
+                var m = dim[1];
 
-			var mini = minmax[0];
-			var minj = minmax[1];
-			var maxi = minmax[2];
-			var maxj = minmax[3];
+                var data = [];
 
-			this.origin = [-mini, -minj];
+                for (var i = 0; i < n; ++i) {
+                    var row = [];
+                    for (var j = 0; j < m; ++j) {
+                        var value = valueClass(getWorld(i, j));
 
-			var n = this.n = maxi - mini + 1;
-			var m = this.m = maxj - minj + 1;
+                        row.push(value);
+                    }
 
-			for (var i = 0; i < n; ++i) {
-				var row = [];
-				for (var j = 0; j < m; ++j) {
-					row.push(fillfunction(new Cell(this.getWorld([i, j]), null)));
-				}
+                    data.push(row);
+                }
 
-				this.store.push(row);
-			}
-		}
+                return MakeHexStoreInternal(data, valueClass, origin).userHandle;
+            }
 
-		function halfceil(n) {
-			// changing "-" to "+" will change array storage to other configuration
-			return (n - (n & 1)) >> 1;
-		}
+            return MakeHexStore;
+        })();
 
-		HexStore.prototype.getStore = function (world) {
-			var x = world.x;
-			var y = world.y;
+    </script>
 
-			var i0 = this.origin[0];
-			var j0 = this.origin[1];
+    <!-- Fullscreen canvas and drawhex -->
+    <script type="text/javascript">
+        function fullscreenCanvas(id) {
+            var c = window.document.getElementById(id);
+            var ctx = c.getContext('2d');
 
-			var j = x + j0;
-			var i = -y + i0 - halfceil(j0) + halfceil(j);
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+            ctx.canvas.style.position = 'absolute';
+            ctx.canvas.style.top = 0;
+            ctx.canvas.style.left = 0;
 
-			return [i, j];
-		};
+            return ctx;
+        }
 
-		HexStore.prototype.getWorld = function (store) {
-			var i = store[0];
-			var j = store[1];
+        var ctx = fullscreenCanvas('can');
+        var w = ctx.canvas.width;
+        var h = ctx.canvas.height;
 
-			var i0 = this.origin[0];
-			var j0 = this.origin[1];
+        var q = 1 / Math.sqrt(3);
 
-			var x = j - j0;
-			var y = i0 - i - halfceil(j0) + halfceil(j);
+        ctx.pathHex = function (h) {
+            var dx = q * h / 2;
+            var dy = h / 2;
 
-			return new Point(x, y);
-		};
+            this.beginPath();
+            this.moveTo(2 * dx, 0);
+            this.lineTo(dx, -dy);
+            this.lineTo(-dx, -dy);
+            this.lineTo(-2 * dx, 0);
+            this.lineTo(-dx, dy);
+            this.lineTo(dx, dy);
+            this.closePath();
+        };
 
-		HexStore.prototype.each = function (iter) {
-			for (var i = 0; i < this.n; ++i) {
-				for (var j = 1; j < this.m; j += 2) {
-					var val = this.store[i][j];
-					if (val != null) {
-						iter(new Cell(this.getWorld([i, j]), val));
-					}
-				}
+        ctx.fillHex = function (x, y, h) {
+            this.save();
+            this.translate(x, y);
+            this.pathHex(h);
+            this.fill();
+            this.restore();
+        };
 
-				for (var j = 0; j < this.m; j += 2) {
-					var val = this.store[i][j];
-					if (val != null) {
-						iter(new Cell(this.getWorld([i, j]), val));
-					}
-				}
-			}
-		};
+        ctx.strokeHex = function (x, y, h) {
+            this.save();
+            this.translate(x, y);
+            this.pathHex(h);
+            this.stroke();
+            this.restore();
+        };
 
-		HexStore.prototype.get = function (world) {
-			var store = this.getStore(world);
-			var i = store[0];
-			var j = store[1];
+        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+    </script>
 
-			var coordValid = i >= 0 && i < this.n && j >= 0 && j < this.m;
-
-			return coordValid
-				? this.store[i][j]
-				: null;
-		};
-
-		HexStore.prototype.set = function (world, conv) {
-			var store = this.getStore(world);
-			var i = store[0];
-			var j = store[1];
-
-			var coordValid = i >= 0 && i < this.n && j >= 0 && j < this.m;
-
-			if (coordValid) {
-				this.store[i][j] = (conv instanceof Function) ?
-					conv(this.store[i][j])
-					: conv;
-			}
-		};
-
-		HexStore.prototype.update = function (iter) {
-			var store = [];
-			for (var i = 0; i < this.n; ++i) {
-				var row = [];
-				for (var j = 0; j < this.m; ++j) {
-					var val = this.store[i][j];
-					if (val != null) {
-						var newval = iter(new Cell(this.getWorld([i, j]), val));
-						if (newval != null)
-							val = newval;
-					}
-					row.push(val);
-				}
-				store.push(row);
-			}
-
-			this.store = store;
-		};
-
-		HexStore.prototype.getAdjacent = function (world) {
-			var $ = this;
-
-			function adj(dx, dy) {
-				var point = new Point(world.x + dx, world.y + dy);
-				var store = $.getStore(point);
-				var i = store[0];
-				var j = store[1];
-
-				var value = (i >= 0 && i < $.n && j >= 0 && j < $.m)
-					? $.store[i][j]
-					: null;
-
-				return new Cell(point, value);
-			}
-
-			return [
-				adj(1, 0),
-				adj(1, 1),
-				adj(0, 1),
-				adj(-1, 0),
-				adj(-1, -1),
-				adj(0, -1)
-			];
-		};
-
-	</script>
-
-	<!-- Fullscreen canvas -->
-	<script type="text/javascript">
-		function fullscreenCanvas(id) {
-			var c = window.document.getElementById(id);
-			var ctx = c.getContext('2d');
-
-			ctx.canvas.width = window.innerWidth;
-			ctx.canvas.height = window.innerHeight;
-			ctx.canvas.style.position = 'absolute';
-			ctx.canvas.style.top = 0;
-			ctx.canvas.style.left = 0;
-
-			return ctx;
-		}
-
-		var ctx = fullscreenCanvas('can');
-		var w = ctx.canvas.width;
-		var h = ctx.canvas.height;
-
-		var q = 1 / Math.sqrt(3);
-
-		ctx.pathHex = function (h) {
-			var dx = q * h / 2;
-			var dy = h / 2;
-
-			this.beginPath();
-			this.moveTo(2 * dx, 0);
-			this.lineTo(dx, -dy);
-			this.lineTo(-dx, -dy);
-			this.lineTo(-2 * dx, 0);
-			this.lineTo(-dx, dy);
-			this.lineTo(dx, dy);
-			this.closePath();
-		};
-
-		ctx.fillHex = function (x, y, h) {
-			this.save();
-			this.translate(x, y);
-			this.pathHex(h);
-			this.fill();
-			this.restore();
-		};
-
-		ctx.strokeHex = function (x, y, h) {
-			this.save();
-			this.translate(x, y);
-			this.pathHex(h);
-			this.stroke();
-			this.restore();
-		};
-
-		ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
-	</script>
-
-	<!-- Supercell -->
-	<script type="text/javascript">
-
-		/* Hexagonal area with same tiling properties as underlying cells.
+    <!-- Supercell -->
+    <script type="text/javascript">
+        /* Hexagonal area with same tiling properties as underlying cells.
 		 */
-		function SuperCell(x, y, rank) {
-			this.x = x;
-			this.y = y;
-			this.rank = rank;
-		}
+        function SuperCell(x, y, rank) {
+            this.x = x;
+            this.y = y;
+            this.rank = rank;
+        }
 
-		SuperCell.prototype.getCorners = function () {
-			var r = this.rank;
+        SuperCell.prototype.getCorners = function () {
+            var r = this.rank;
 
-			return [new Point(2 * r, r - 1),
+            return [new Point(2 * r, r - 1),
 				new Point(2 * r, r),
 				new Point(r, 2 * r),
 				new Point(r - 1, 2 * r),
@@ -324,900 +436,429 @@
 				new Point(-r, -2 * r),
 				new Point(r, -r),
 				new Point(r + 1, -r + 1)
-			];
-		};
+            ];
+        };
 
-		SuperCell.prototype.contains = function (point) {
-			var x = point.x - this.x;
-			var y = point.y - this.y;
+        SuperCell.prototype.contains = function (point) {
+            var x = point.x - this.x;
+            var y = point.y - this.y;
 
-			var a = this.rank * 3 + 1;
-			var b = this.rank * 3;
+            var a = this.rank * 3 + 1;
+            var b = this.rank * 3;
 
-			var leftup = 2 * x + b;
-			var top = (x + a) / 2;
-			var rightup = b - x;
-			var rightdown = 2 * x - a;
-			var bottom = (x - b) / 2;
-			var leftdown = -x - a;
+            var leftup = 2 * x + b;
+            var top = (x + a) / 2;
+            var rightup = b - x;
+            var rightdown = 2 * x - a;
+            var bottom = (x - b) / 2;
+            var leftdown = -x - a;
 
-			return leftup >= y
+            return leftup >= y
 				&& top >= y
 				&& rightup >= y
 				&& rightdown <= y
 				&& bottom <= y
 				&& leftdown <= y;
-		};
+        };
 
-	</script>
+    </script>
 
-	<script type="text/javascript">
-		//
-		// TODO:
-		//	get all hexes within specified hex-distance - see pill
-		//	calculate FOV (maybe by extending line algo)
-		//		calculate illumination (apply light from several sources plus player FOV)
-		//	add wrapping
-		//
+    <script type="text/javascript">
+        //
+        // TODO:
+        //	get all hexes within specified hex-distance - see pill
+        //	calculate FOV (maybe by extending line algo)
+        //		calculate illumination (apply light from several sources plus player FOV)
+        //	add wrapping
+        //
 
+        function Adjustable() {
+            this.k = 20;
+            this.min = 0;
+            this.max = .1;
 
-		function Adjustable() {
-			this.k = 20;
-			this.min = 0;
-			this.max = .1;
+            this.currentmin = null;
+            this.currentmax = null;
+            this.range = null;
+        }
 
-			this.currentmin = null;
-			this.currentmax = null;
-			this.range = null;
-		}
+        Adjustable.prototype.scale = function (v) {
+            this.max = Math.max(this.max, v);
+            this.min = Math.min(this.min, v);
 
-		Adjustable.prototype.scale = function (v) {
-			this.max = Math.max(this.max, v);
-			this.min = Math.min(this.min, v);
+            if (this.currentmin == null)
+                this.currentmin = this.min;
 
-			if (this.currentmin == null)
-				this.currentmin = this.min;
+            if (this.currentmax == null)
+                this.currentmax = this.max;
 
-			if (this.currentmax == null)
-				this.currentmax = this.max;
+            this.range = this.currentmax - this.currentmin;
 
-			this.range = this.currentmax - this.currentmin;
+            return this.currentmax == this.currentmin ? 1 : (v - this.currentmin) / this.range;
+        }
 
-			return this.currentmax == this.currentmin ? 1 : (v - this.currentmin) / this.range;
-		}
+        Adjustable.prototype.adjust = function () {
+            this.currentmax += (this.max - this.currentmax) / this.k;
+            this.currentmin += (this.min - this.currentmin) / this.k;
+        }
 
-		Adjustable.prototype.adjust = function () {
-			this.currentmax += (this.max - this.currentmax) / this.k;
-			this.currentmin += (this.min - this.currentmin) / this.k;
-		}
+        var rank = 10;
+        var supercell = new SuperCell(0, 0, rank);
+        var extremes = supercell.getCorners();
+        var cellsize = 14;
 
-		var rank = 15;
-		var supercell = new SuperCell(0, 0, rank);
-		var extremes = supercell.getCorners();
-		var cellsize = 14;
+        var bedrock = {};
+        var stone = {};
+        var raw = {};
+        var polished = {};
+        var door = {};
+        var wall = {};
+        var maxlevel = 24;
 
-		var bedrock = {};
-		var stone = {};
-		var raw = {};
-		var polished = {};
-		var door = {};
-		var wall = {};
-		var maxlevel = 24;
+        function cutoff(t) {
+            return t * t * t * (t * 3 * (2 * t - 5) + 10);
+        }
 
-		function cutoff(t){
-			return t*t*t*(t*3*(2*t-5)+10);
-		}
+        function hexdist(p1, p2) {
+            var dx = p1.x - p2.x;
+            var dy = p1.y - p2.y;
 
-		var setInitialValue = function (cell) {
-			
-			if (supercell.contains(cell.pos)) {
+            var sx = dx >= 0 ? 1 : -1;
+            var sy = dy >= 0 ? 1 : -1;
 
-				var sx = cell.pos.x >=0?1:-1;
-				var sy = cell.pos.y>=0?1:-1;
+            dx = dx < 0 ? -dx : dx;
+            dy = dy < 0 ? -dy : dy;
 
-				var x = Math.abs(cell.pos.x);
-				var y = Math.abs(cell.pos.y);
+            return sx == sy
+				? (dx > dy ? dx : dy)
+				: (dx + dy);
+        }
 
-				var dist;
-				if(sx == sy)
-					dist = x>=y?x:y;
-				else
-					dist = x+y;
+        function worddist(p1, p2) {
+            var sq32 = Math.sqrt(3) / 2;
 
-				var maxdist = 5;
-				var maxamount = 12;
+            var x1 = p1.x * sq32;
+            var x2 = p2.x * sq32;
+            var y1 = -(p1.y - p1.x / 2);
+            var y2 = -(p2.y - p2.x / 2);
 
-				return {
-					amount: dist >= maxdist ? 0 : cutoff(1-dist/maxdist) * rnd(.7, 1) * maxamount
-				};
-			}
+            var dx = x2 - x1;
+            var dy = y2 - y1;
 
-			return null;
-		};
+            return Math.sqrt(dx * dx + dy * dy);
+        }
 
-		function Pill(w, h) {
-			var h = Math.floor(h / 2);
-			var w = Math.floor(w / 2);
+        var maxdist = rank / 3 | 0;
+        var maxamount = 40;
 
-			this.extremes = [
+        // TODO: merge pill and blob for pill is just a blob special case.
+        function Pill(w, h) {
+            var h = Math.floor(h / 2);
+            var w = Math.floor(w / 2);
+
+            this.extremes = [
 				new Point(0, h),
 				new Point(0, -h),
 				new Point(w, h),
 				new Point(-w, -h),
 				new Point(-w, h - w),
 				new Point(w, -h + w)
-			];
-
-			this.contains = function (pos) {
-				var x = pos.x;
-				var y = pos.y;
-
-				return y <= h && y >= -h && x <= w && x >= -w && y <= x + h && y >= x - h
-			}
-		}
-
-		function blob(x, y, a, b, c, d) {
-				b = b || a;
-				c = c || a;
-				d = d || c;
-
-				if (a + d - c < 1)
-					d = c + 1 - a;
-
-				for (var i = 0; i < b + c - 1; ++i) {
-					for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
-						store.set(new Point(x + j, y + i), { type: polished });
-				}
-			}
-
-			function line(p1, p2) {			
-				var dx = p2.x - p1.x;
-				var dy = 2 * (p2.y - p1.y) - dx;
-
-				var sx = dx >= 0 ? 1 : -1;
-				var sy = dy >= 0 ? 1 : -1;
-
-				dx = Math.abs(dx);
-				dy = Math.abs(dy);
-
-				var alwaysDy = dy >= dx;
-
-				var x = p1.x;
-				var y = p1.y;
-
-				var points = [new Point(x, y)];
-
-				var e = 0;
-				var n = 0, limit = 200;
-			
-				while (1) {
-					if (alwaysDy) {
-						e += dx;
-						if (3 * e >= dy) {
-							x += sx;
-							y += (sy == sx) ? sy : 0;
-							e -= dy;
-						} else {
-							y += sy;
-							e += dx;
-						}
-					} else {
-						e += dy;
-						if (e > 0) {
-							y += (sy == sx) ? sy : 0;
-							e -= dx;
-						} else {
-							y -= (sx == sy) ? 0 : sy;
-							e += dx;
-						}
-						x += sx;
-					}
-
-					points.push(new Point(x, y));
-
-					if (++n > limit) {
-						console.log('error');
-						break;
-					}
-					if(p2.x==x && p2.y==y)
-						break;
-				}
-				
-				return points;
-			}
-
-			//var hw = 3; // half leaf width
-			//var di = 10; // distance from center
-			//var le = 2; // leaf length
-
-			//blob(di, di, hw, hw, le);//    /
-			//blob(-(le + di), -(le + di), hw, hw, le);
-
-			//blob(di, -(hw - 1), le, hw, hw); //  \
-			//blob(-(le + di), -(hw - 1), le, hw, hw);
-
-			//blob(-(hw - 1), di, hw, le, hw); //  |
-			//blob(-(hw - 1), -(le + di), hw, le, hw);// |
-
-			var cursor = new Point(0, 0);
-
-			var sq32 = Math.sqrt(3) / 2;
-
-			function getScreen(world) {
-				var s = cellsize;
-				var q = .95;
-
-				return new Point(
-					q * s * world.x * sq32,
-					q * -s * (world.y - world.x / 2)
-				);
-			}
+            ];
+
+            this.contains = function (pos) {
+                var x = pos.x;
+                var y = pos.y;
+
+                return y <= h && y >= -h && x <= w && x >= -w && y <= x + h && y >= x - h
+            }
+        }
+
+        function blob(x, y, a, b, c, d) {
+            b = b || a;
+            c = c || a;
+            d = d || c;
+
+            if (a + d - c < 1)
+                d = c + 1 - a;
+
+            for (var i = 0; i < b + c - 1; ++i) {
+                for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
+                    store.set(new Point(x + j, y + i), { type: polished });
+            }
+        }
 
-			var upleft = {};
-			var up = {};
-			var upright = {};
-			var downleft = {};
-			var down = {};
-			var downright = {};
+        function line(p1, p2) {
+            var dx = p2.x - p1.x;
+            var dy = 2 * (p2.y - p1.y) - dx;
 
-			var dirs = [up, upleft, downleft, down, downright, upright];
+            var sx = dx >= 0 ? 1 : -1;
+            var sy = dy >= 0 ? 1 : -1;
 
+            dx = Math.abs(dx);
+            dy = Math.abs(dy);
 
-			var store = new HexStore(supercell.getCorners(), setInitialValue);
-			line(new Point(0, -Math.floor(rank / 2)), new Point(Math.floor(rank / 2), 0)).forEach(function (p) {
-				store.set(p, { type: wall });
-			});
+            var alwaysDy = dy >= dx;
 
-			var lastTime = (new Date()).getTime();
+            var x = p1.x;
+            var y = p1.y;
 
-			var maxamount = new Adjustable();
-			function draw(store) {
+            var points = [new Point(x, y)];
 
-				function cellColor(cell) {
-					if (cell.value != null && 'amount' in cell.value) {
-						var a = maxamount.scale(cell.value.amount);
+            var e = 0;
+            var n = 0, limit = 200;
 
-						return 'hsl(220, '+(10+90*a)+'%, ' + (50 - 40 * a) + '%)';
-					}
+            while (1) {
+                if (alwaysDy) {
+                    e += dx;
+                    if (3 * e >= dy) {
+                        x += sx;
+                        y += (sy == sx) ? sy : 0;
+                        e -= dy;
+                    } else {
+                        y += sy;
+                        e += dx;
+                    }
+                } else {
+                    e += dy;
+                    if (e > 0) {
+                        y += (sy == sx) ? sy : 0;
+                        e -= dx;
+                    } else {
+                        y -= (sx == sy) ? 0 : sy;
+                        e += dx;
+                    }
+                    x += sx;
+                }
 
-					return 'transparent';
-				}
+                points.push(new Point(x, y));
 
-				function drawCell(cell) {
-					var s = cellsize;
-					var screen = getScreen(cell.pos);
-					var x = screen.x;
-					var y = screen.y;
+                if (p2.x == x && p2.y == y)
+                    break;
+            }
 
-					ctx.fillStyle = cellColor(cell);
-					ctx.fillHex(x, y, s);
-				}
+            return points;
+        }
 
-				ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
-				store.each(drawCell);
+        //var hw = 3; // half leaf width
+        //var di = 10; // distance from center
+        //var le = 2; // leaf length
 
-				maxamount.adjust();
-			}
+        //blob(di, di, hw, hw, le);//    /
+        //blob(-(le + di), -(le + di), hw, hw, le);
 
-			function frame() {
-				var newTime = (new Date()).getTime();
-				var delta = newTime - lastTime;
-				lastTime = newTime;
+        //blob(di, -(hw - 1), le, hw, hw); //  \
+        //blob(-(le + di), -(hw - 1), le, hw, hw);
 
-				//var store = tick(delta);
+        //blob(-(hw - 1), di, hw, le, hw); //  |
+        //blob(-(hw - 1), -(le + di), hw, le, hw);// |
 
-				if (store)
-					draw(store);
+        var cursor = new Point(0, 0);
 
-				window.requestAnimationFrame(frame);
-			}
+        var sq32 = Math.sqrt(3) / 2;
 
-			frame();
+        function getScreen(world) {
+            var s = cellsize;
+            var q = .95;
 
+            return new Point(
+				q * s * world.x * sq32,
+				q * -s * (world.y - world.x / 2)
+			);
+        }
 
-		</script>
-		
-	<!-- user input -->
-	<script type="text/javascript">
+        var dirs = [up, upleft, downleft, down, downright, upright];
+        var water = {};
 
-		function InputManager(mapping) {
-			var $ = this;
-			this.action = null;
-			this.handler = function (event) { $.action = mapping[event.which] };
+        function CellValue(type, value) {
+            this.type = type;
+            this.value = value;
+        }
 
-			window.addEventListener('keydown', this.handler, false);
-		}
+        function MakeCellValue(arg) {
 
-	</script>
+            if (arg instanceof Point && supercell.contains(arg)) {
 
-	<!-- Bag -->
-	<script type="text/javascript">
-		function Bag(options) {
-			this.numSets = 3;
-			this.options = options;// array of arrays of arrays
-			this.bag = [];
-		}
+                var sx = arg.x >= 0 ? 1 : -1;
+                var sy = arg.y >= 0 ? 1 : -1;
 
-		Bag.prototype.draw = function () {
-
-			if (this.bag.length == 0) {
-				// bag is empty generate new set of values
-				for (var i = 0; i < this.numSets; ++i) {
-					this.options = this.options.sort(function () { return rnd(3) - 1; });
-
-					for (var j = 0; j < this.options.length; ++j) {
-						this.bag.push(this.options[j].clone());
-					}
-				}
-			}
+                var x = Math.abs(arg.x);
+                var y = Math.abs(arg.y);
 
-			return this.bag.pop();
-		};
+                var dist;
+                if (sx == sy)
+                    dist = x >= y ? x : y;
+                else
+                    dist = x + y;
 
-	</script>
+                dist = hexdist(new Point(0, 0), arg);
+                dist = worddist(new Point(0, 0), arg);
 
-	<!-- Figure -->
-	<script type="text/javascript">
+                var amount = dist >= maxdist ? 0 : (cutoff(1 - dist / maxdist) * maxamount) | 0;
 
-		function Figure(id, points) {
-			this.id = id;
-			this.points = points;
-		}
+                return new CellValue(water, amount);
+            }
+            else if (arg instanceof CellValue) {
+                return new CellValue(arg.type, arg.value);
+            }
 
-		Figure.prototype.clone = function () {
-			return new Figure(this.id, this.points.map(function (p) { return [p[0], p[1]] }));
-		}
+            return null;
+        }
 
-		Figure.prototype.rotateCw = function () {
-			return new Figure(this.id, this.points.map(function (p) { var x = p[0]; var y = p[1]; return [y, y - x]; }));
-		}
+        var store = new MakeHexStore(supercell.getCorners(), MakeCellValue);
 
-		Figure.prototype.rotateCcw = function () {
-			return new Figure(this.id, this.points.map(function (p) { var x = p[0]; var y = p[1]; return [x - y, x]; }));
-		}
+        line(new Point(1, -maxdist - 1), new Point(maxdist + 1, -1))
+				.forEach(function (p) {
+				    store.set(p, { type: wall });
+				});
 
-		function Block(pos, fig) {
-			this.pos = pos;
-			this.fig = fig;
-		}
-	</script>
+        var lastTime = (new Date()).getTime();
 
-	<!-- Tetris renderer -->
-	<script type="text/javascript">
-		function HextrisRenderer(ctx) {
-			this.ctx = ctx;
+        var maxamount = new Adjustable();
 
-			this.level = new Adjustable();
-			this.type = new Adjustable();
-		}
+        function draw(store) {
 
-		var tau = 2 * Math.PI;
-		HextrisRenderer.prototype.draw = function (store) {
-			var $ = this;
-			var ctx = this.ctx;
-
-			function cellColor(cell) {
-				if (cell.value != null) {
-					var line = cell.pos.x > 0
-						? cell.pos.y-cell.pos.x
-						: cell.pos.y;
-
-					var level = $.level.scale(line);
-
-					if ('type' in cell.value) {
-						var t = cell.value.type < 0 ? (-cell.value.type - 1)
-							: cell.value.type;
-
-						var type = $.type.scale(t + 1);
-						var type = $.type.scale(t);
-
-						var h = 360 * type;
-						var s = (70 + 20 * (1 - level)) * (cell.value.type >= 0 ? 1 : 1.25);
-						var l = (40 + 15 * (1 - level) * (1 - .5 * (line % 2))) * (cell.value.type >= 0 ? 1 : 1.25);
-						var a = cell.value.type >= 0 ? 1 : .35;
-
-						return 'hsla(' + h + ', ' + s + '%, ' + l + '%, '+a+')';
-					}
-					return 'hsla(0, 0%, 100%, '+(.4 - .2*level)+')';
-				}
-				return 'transparent';
-			}
+            function cellColor(cell) {
+                var val = cell.get();
 
-			function drawCell(cell) {
-				var s = cellsize;
-				var screen = getScreen(cell.pos);
-				var x = screen.x;
-				var y = screen.y;
-
-				ctx.fillStyle = cellColor(cell);
+                if (val != null && val instanceof CellValue && val.type == water) {
+                    var a = maxamount.scale(val.value);
 
-				if ('type' in cell.value) {
-					if (cell.value.type < 0) {
-						ctx.beginPath();
-						ctx.arc(x, y, s / 5, 0, tau);
-						ctx.fill();
-					}
-					else {
-						ctx.fillHex(x, y, s);
-					}
-				}
-				else {
-					var k = s / 10;
-					var g = 3;
-
-					ctx.fillRect(x, y, k, k);
+                    return a == 0
+						? (((cell.pos.x % 6) == 0 && (cell.pos.y % 6) == 0) ? 'hsl(47, 97%, 70%)' : 'hsl(47, 97%, 73%)')
+						: 'hsl(220, ' + (10 + 90 * a) + '%, ' + (50 - 40 * a) + '%)';
+                }
 
-				}
-
-				ctx.restore();
-			}
-
-			ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height/2, ctx.canvas.width, ctx.canvas.height);
-			store.each(drawCell);
+                return 'transparent';
+            }
 
-			this.type.adjust();
-			this.level.adjust();
-		}
+            function drawCell(cell) {
+                var s = cellsize;
+                var screen = getScreen(cell.pos);
+                var x = screen.x;
+                var y = screen.y;
 
-
-	</script>
+                ctx.fillStyle = cellColor(cell);
+                ctx.fillHex(x, y, s);
+            }
 
-	<!-- Tetris -->
-	<script type="text/javascript">
-		function HextrisController(actionSource, depth, breadth)
-		{
-			this.actionSource = actionSource;
-
-			var depth = this.depth = 29;
-			var breadth = this.breadth = 11;
-
-			this.shape = new Pill(breadth, depth);
-
-			var $ = this;
-			this.preview = new Pill(5, 5);
-			this.previewpos = new Point(breadth, breadth)
-
-			var figs = [[[0, -1], [0, 0], [0, 1], [0, 2]],// line
-				[[-2, 0], [-1, 0], [0, 0], [1, 1]],// bend, short-right
-				[[-1, 0], [0, 0], [1, 1], [2, 2]],//   bend, short-left
-				[[-1, -1], [0, 0], [0, 1], [1, 2]],//  "s"
-				[[-1, 1], [0, 1], [0, 0], [1, 0]], //  "z"
-				[[-1, -1], [0, -1], [1, 0], [1, 1]], //"u"
-				[[-1, -1], [0, 0], [0, 1], [1, 0]],//  "y"
-				[[-1, 0], [0, 0], [0, 1], [1, 0]], //  "p"
-				[[-1, -1], [0, 0], [1, 1], [0, 1]], // "d"
-				[[-1, 0], [0, 0], [0, 1], [1, 1]] //   "o"
-			];
-
-			var fid = 0;
-			this.bag = new Bag(figs.map(function (points) { return new Figure(fid++, points); }));
-			this.block = null;
-			this.nextBlock = new Block(new Point(0, Math.floor(this.depth / 2) - 2), this.bag.draw());
-
-			function offset(pointoffset) {
-				return function (point) {
-					return point.plus(pointoffset);
-				}
-			}
-
-			this.store = new HexStore($.shape.extremes.concat($.preview.extremes.map(offset($.previewpos))), function (cell) {
-				var x = cell.pos.x;
-				var y = cell.pos.y;
-
-				var line = Math.floor(depth / 2) + (x <= 0 ? y : y - x);
-
-				return $.shape.contains(cell.pos) || $.preview.contains(cell.pos.plus(new Point(-$.previewpos.x, -$.previewpos.y)))
-				? { level: line }
-					: null;
-			});
-
-
-			this.dropCounter = 0;
-			this.dropTolerance = 500; // should be based on speed
-		}
-
-		HextrisController.prototype.fetchNext = function () {
-			this.unset(this.previewpos, this.nextBlock.fig);
-			this.block = this.nextBlock;
-			this.nextBlock = new Block(new Point(0, Math.floor(this.depth / 2) - 2), this.bag.draw());
+            ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
+            store.forEach(drawCell);
 
-			if (rnd(100) < 50) {
-				this.nextBlock.fig = rnd(100) < 50
-					? this.nextBlock.fig.rotateCw()
-					: this.nextBlock.fig.rotateCcw()
-			}
+            maxamount.adjust();
+        }
 
-			this.set(this.previewpos, this.nextBlock.fig);
+        function tick(delta) {
 
-			if (!this.positionValid(this.block.pos, this.block.fig)) {
-				this.gameOver();
-			}
-		}
+            function watercell(cell) {
+                var val = cell.get();
+                return val != null && val instanceof CellValue && val.type == water;
+            }
 
-		HextrisController.prototype.positionValid = function (pos, fig, okPos, okFig) {
-			okPos = okPos || pos;
-			okFig = okFig || { points: [] };
-			var s = this.store;
+            function wateradj(adj) {
+                return watercell(adj[1]);
+            }
 
-			return fig.points.every(function (p) {
+            function match(dir, adjes) {
+                var i = -1, n = adjes.length;
 
-				var x = p[0] + pos.x;
-				var y = p[1] + pos.y;
-				var cell = s.get(new Point(x, y));
-
-				function isOneOfOkCells(ok) {
-					var okx = ok[0] + okPos.x;
-					var oky = ok[1] + okPos.y;
-
-					return okx == x && oky == y;
-				}
-
-				return cell != null      // cell exists
-					&& (!('type' in cell) || cell.type < 0    // cell is unoccupied
-						|| okFig.points.some(isOneOfOkCells));
-			});
-		}
+                while (++i < n)
+                    if (adjes[i][0] == dir)
+                        return adjes[i][1];
 
-		HextrisController.prototype.dropOne = function() {
-			var nextPos = this.block.pos.plus(new Point(0, -1));
+                return null;
+            }
 
-			if (!this.move(this.block.fig, nextPos)) {
-				this.burn(this.block);
-
-				this.block = null;
-				this.shadow = null;
-			}
-		}
-		
-		HextrisController.prototype.burn = function(block) {
-
-			var levels = [];
-			var burn = [];
-
-			var s = this.store;
-			var p = this.shape;
-			var w = Math.floor(this.breadth / 2);
-			var h = Math.floor(this.depth / 2);
-
-			function allset(line) {
-				for (var x = -w; x <= w; ++x) {
-					var y = x > 0 ? line + x : line;
-					var cell = s.get(new Point(x, y));
-
-					if (cell == null || !('type' in cell) || cell.type < 0) return false;
-				}
-
-				return true;
-			}
-
-			block.fig.points.forEach(function(p) {
-				var x = p[0] + block.pos.x;
-				var y = p[1] + block.pos.y;
+            var opposite = [];
 
-				var line = x > 0
-					? y - x
-					: y;
-
-				if (levels.indexOf(line) == -1) {
-					levels.push(line);
-
-					if (allset(line)) {
-						burn.push(line);
-					}
-				}
-			});
-
-			if (burn.length > 0) {
-				var start = burn.reduce(function(min, l) {
-					return l < min ? l : min;
-				}, Infinity);
-
-				var gap = 1;
-
-				for (var line = start; line <= h; ++line) {
-
-					while (burn.indexOf(line + gap) != -1) ++gap;
-
-
-					// count how many lines to drop
-					var fall = burn.reduce(function(num, ln) {
-						return num + (ln <= line ? 1 : 0);
-					}, 0);
-
-					for (var x = -w; x <= w; ++x) {
-						var y = x > 0 ? line + x : line;
-						var target = new Point(x, y);
-						var source = new Point(x, y + gap);
-
-						var vt = p.contains(target);
-						var vs = p.contains(source);
-
-						s.set(target, vt ? (vs ? s.get(source) : {}) : null);
-						s.set(source, vs ? {} : null);
-					}
-				}
-			}
-		}
-
-		HextrisController.prototype.move = function (nextfig, nextpos) {
-			if (nextfig != null && nextpos != null && this.positionValid(nextpos, nextfig, this.block.pos, this.block.fig)) {
-				this.unset(this.block.pos, this.block.fig);
-				if (this.shadow != null)
-					this.unset(this.shadow.pos, this.shadow.fig);
-				
-				this.block.pos = nextpos;
-				this.block.fig = nextfig;
-
-				this.shadow = this.getShadow();
-
-				this.set(this.shadow.pos, this.shadow.fig);
-				this.set(this.block.pos, this.block.fig);
-
-				return true;
-			}
-
-			return false;
-		}
-
-		HextrisController.prototype.gameOver = function () {
-			this.isGameOver = true;
-			console.log('game over');
-		}
-
-		HextrisController.prototype.set = function (pos, fig)
-		{
-			var s = this.store;
-			fig.points.forEach(function (p) {
-				s.set(new Point(pos.x + p[0], pos.y + p[1]), { type: fig.id });
-			});
-		}
-
-		HextrisController.prototype.unset = function (pos, fig) {
-			var s = this.store;
-			fig.points.forEach(function (p) {
-				s.set(new Point(pos.x + p[0], pos.y + p[1]), {});
-			});
-		}
-
-		HextrisController.prototype.getShadow = function () {
-
-			var shadow = new Block(new Point(this.block.pos.x, this.block.pos.y), this.block.fig.clone());
-			shadow.fig.id = -shadow.fig.id - 1;
-
-			while (this.positionValid(shadow.pos, shadow.fig)) {
-				shadow.pos.y--;
-			}
-
-			shadow.pos.y++;
-
-			return shadow;
-		}
-
-		HextrisController.prototype.tick = function (delta) {
-			if (!this.isGameOver) {
-				if (this.block == null) {
-					this.fetchNext();
-					this.dropCounter = 0;
-
-					if (!this.isGameOver) {
-						this.shadow = this.getShadow();
-						this.set(this.shadow.pos, this.shadow.fig);
-						this.set(this.block.pos, this.block.fig);
-					}
-				}
-				else if ((this.dropCounter += delta) > this.dropTolerance) {
-					this.dropOne();
-					this.dropCounter -= this.dropTolerance;
-				}
-				else if (this.actionSource.action != null) {
-					var nextfig = null;
-					var nextpos = null;
-					var resetdrop = false;
-
-					switch (this.actionSource.action)
-					{
-						case HextrisController.rotateLeft:
-							nextpos = this.block.pos;
-							nextfig = this.block.fig.rotateCcw();
-							break;
-
-						case HextrisController.rotateRight:
-							nextpos = this.block.pos;
-							nextfig = this.block.fig.rotateCw();
-							break;
-
-						case HextrisController.left:
-							nextpos = this.block.pos.plus(new Point(-1, -1));
-							nextfig = this.block.fig;
-							resetdrop = true;
-							break;
-
-						case HextrisController.right:
-							nextpos = this.block.pos.plus(new Point(1, 0));
-							nextfig = this.block.fig;
-							resetdrop = true;
-							break;
-
-						case HextrisController.down:
-							nextpos = this.block.pos;
-							nextfig = this.block.fig;
-							this.dropCounter = this.dropTolerance;
-							break;
-
-						case HextrisController.drop:
-							nextpos = new Point(this.shadow.pos.x, this.shadow.pos.y);
-							nextfig = this.block.fig;
-							resetdrop = true;
-							break;
-					}
-
-					if (this.move(nextfig, nextpos) && resetdrop) {
-						this.dropCounter = 0;
-					}
-
-					this.actionSource.action = null;
-
-				}
-			}
-
-			return this.store;
-		}
-
-		HextrisController.rotateLeft = {};
-		HextrisController.rotateRight = {};
-		HextrisController.left = {};
-		HextrisController.drop = {};
-		HextrisController.down = {};
-		HextrisController.right = {};
-
-		var im = new InputManager({
-			103: HextrisController.rotateLeft,
-			104: HextrisController.rotateRight,
-			105: HextrisController.rotateRight,
-			100: HextrisController.left,
-			101: HextrisController.down,
-			102: HextrisController.right,
-			32: HextrisController.drop
-		});
-
-		var game = new HextrisController(im, 31, 13);
-		var renderer = new HextrisRenderer(ctx);
-
-		var lastTime = (new Date()).getTime();
-
-		function framexx() {
-			var newTime = (new Date()).getTime();
-			var delta = newTime - lastTime;
-			lastTime = newTime;
-
-			var store = game.tick(delta);
-
-			if(store)
-				renderer.draw(store);
-
-			window.requestAnimationFrame(frame);
-		}
-
-		//frame();
-	</script>
-
-	<!-- navigation -->
-	<script type="text/javascript">
-
-		var action = null;
-
-		var left = {};
-		var right = {};
-		var toggle = {};
-
-		var brush1 = {};
-		var brush2 = {};
-		var brush3 = {};
-		var brush4 = {};
-		var brush5 = {};
-
-		function handleinput() {
-			var donothing = false;
-
-			var x = cursor.x;
-			var y = cursor.y;
-
-			switch (action) {
-				case up:
-					++y;
-					break;
-				case down:
-					--y;
-					break;
-				case upleft:
-					--x;
-					break;
-				case downright:
-					++x;
-					break;
-				case upright:
-					++x;
-					++y;
-					break;
-				case downleft:
-					--x;
-					--y;
-					break;
-				case left:
-					--x;
-					y -= x & 1;
-					break;
-				case right:
-					y += x & 1;
-					++x;
-					break;
-				case brush1:
-					oldbrush = brush;
-					brush = stone;
-					break;
-				case brush2:
-					oldbrush = brush;
-					brush = raw;
-					break;
-				case brush3:
-					oldbrush = brush;
-					brush = polished;
-					break;
-				case brush4:
-					oldbrush = brush;
-					brush = door;
-					break;
-				case toggle:
-					store.set(cursor, function (old) {
-						return ("type" in old && old.type == brush)
-							? { type: oldbrush }
-							: { type: brush };
-					});
-					break;
-				default:
-					donothing = true;
-					break;
-			}
-
-			if (!donothing) {
-				cursor = new Point(x, y);
-				draw();
-				action = null;
-			}
-		}
-		/*
-		window.setInterval(handleinput, 50);
-
-		
-		window.addEventListener('keydown', function (e) {
-			
-			function key2action(event) {
-				var map = {
-					103: upleft,
-					104: up,
-					105: upright,
-					100: downleft,
-					101: down,
-					102: downright,
-					97: left,
-					99: right,
-					32: toggle,
-					49: brush1,
-					50: brush2,
-					51: brush3,
-					52: brush4,
-					53: brush5,
-				};
-
-				return map[event.which];
-			}
-
-			action = key2action(e);
-
-		}, false);
-		*/
-	</script>
+            opposite[downright] = upleft;
+            opposite[upright] = downleft;
+            opposite[up] = down;
+            opposite[upleft] = downleft;
+            opposite[downleft] = upright;
+            opposite[down] = up;
+
+            return store = store.nextGen(function (oldCell, newCell, oldStore, newStore) {
+
+                if (watercell(oldCell)) {
+
+                    var val = oldCell.get().value;
+                    var v0 = val;
+
+                    var oldadj = oldCell.adjacent();
+                    var newadj = newCell.adjacent();
+
+                    function score(adj) {
+                        // the bigger the better
+                        var grad = v0 - adj[1].get().value;
+
+                        var opps = match(opposite[adj[0]], oldadj);
+
+                        var opgrad = watercell(opps) ? (opps.get().value - v0) : 0;
+
+                        return grad + opps;
+                    }
+
+                    function byadjvalue(adj1, adj2) {
+                        // reverse order
+                        return score(adj2) - score(adj1);
+                    }
+
+                    oldadj.filter(wateradj)
+						.sort(byadjvalue)
+						.forEach(function (adj) {
+
+						    var newcell = match(adj[0], newadj);
+
+						    if (newcell != null) {
+						        var newval = newcell.get();
+
+						        if (val > 1 && newval.value < val) {
+						            --val;
+						            ++newval.value;
+						        }
+						    }
+						});
+
+                    newCell.get().value -= v0 - val;
+                }
+            });
+        }
+
+
+        var frames = 80;
+        function render() {
+            var newTime = (new Date()).getTime();
+            var delta = newTime - lastTime;
+            lastTime = newTime;
+
+            if (frames < 40)
+                tick(delta);
+
+
+            draw(store);
+
+            var time = (new Date()).getTime();
+
+            if (--frames > 0)
+              //  window.setTimeout(render, 1000);
+            window.requestAnimationFrame(render);
+        }
+
+        render();
+
+    </script>
+    <!-- user input -->
+    <script type="text/javascript">
+
+        function InputManager(mapping) {
+            var $ = this;
+            this.action = null;
+            this.handler = function (event) { $.action = mapping[event.which] };
+
+            window.addEventListener('keydown', this.handler, false);
+        }
+
+    </script>
+
 </body>
 </html>
-
-    
