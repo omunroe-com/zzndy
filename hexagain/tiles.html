@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        html, body {
+            background-color: #232220;
+            color: #dad6d0;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="can-black"></canvas>
+    <canvas id="can-red"></canvas>
+    <canvas id="can-white"></canvas>
+
+    <!-- Fullscreen canvas and drawhex -->
+    <script type="text/javascript">
+        function fullscreenCanvas(id) {
+            var c = window.document.getElementById(id);
+            var ctx = c.getContext('2d');
+
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+            ctx.canvas.style.position = 'absolute';
+            ctx.canvas.style.top = 0;
+            ctx.canvas.style.left = 0;
+
+            return ctx;
+        }
+
+        function tranclateCenter(ctx) {
+            ctx.translate((ctx.canvas.width / 2) | 0, (ctx.canvas.height / 2) | 0);
+            return ctx;
+        }
+
+        var ctxRed = tranclateCenter(fullscreenCanvas('can-red'));
+        var ctxBlack = tranclateCenter(fullscreenCanvas('can-black'));
+        var ctxWhite = tranclateCenter(fullscreenCanvas('can-white'));
+
+    </script>
+
+    <!-- imagedata -->
+    <script type="text/javascript">
+
+
+        function imageData() {
+
+            var width = 0;
+            var height = 0;
+
+            for (var i = 0; i < arguments.length; i += 2) {
+
+                var skip = arguments[i];
+                var draw = arguments[i + 1];
+
+                width++;
+                height = Math.max(height, skip + draw);
+            }
+
+            var sf = 2;//scalefactor
+
+            var ctx = document.createElement('canvas').getContext('2d');
+            ctx.canvas.width = width * sf;
+            ctx.canvas.height = height * sf;
+
+            var data = ctx.createImageData(ctx.canvas.width, ctx.canvas.height);
+
+            var col = 0;
+
+            for (var i = 0; i < arguments.length; i += 2) {
+
+                var skip = arguments[i];
+                var draw = arguments[i + 1];
+
+                for (var j = 0; j < draw; ++j)
+                    for (var xi = 0; xi < sf; ++xi)
+                        for (var xj = 0; xj < sf; ++xj) {
+
+                            var prow = (j + skip) * sf + xj;
+                            var pcol = col * sf + xi;
+                            var pos = (prow * ctx.canvas.width + pcol) * 4;
+
+                            data.data[pos + 0] = 255;
+                            data.data[pos + 1] = 255;
+                            data.data[pos + 2] = 255;
+                            data.data[pos + 3] = 255;
+                        }
+
+                ++col;
+
+            }
+
+            ctx.putImageData(data, 0, 0);
+
+
+            return ctx;
+        }
+
+        function imageDataMirrorred() {
+
+            var args = new Array(arguments.length * 2);
+
+            for (var i = 0; i < arguments.length; i += 2) {
+                args[i] = args[arguments.length * 2 - i - 2] = arguments[i];
+                args[i + 1] = args[arguments.length * 2 - i - 1] = arguments[i + 1];
+            }
+
+            return imageData.apply(null, args);
+        }
+
+        function imageDataRev() {
+            var args = new Array(arguments.length);
+
+            for (var i = 0; i < arguments.length; i += 2) {
+                args[i] = arguments[arguments.length - i - 2];
+                args[i + 1] = arguments[arguments.length - i - 1];
+            }
+
+            return imageData.apply(null, args);
+        }
+
+        function flipArgs() {
+            var args = new Array(arguments.length);
+
+            var width = 0;
+            var height = 0;
+
+            for (var i = 0; i < arguments.length; i += 2) {
+
+                var skip = arguments[i];
+                var draw = arguments[i + 1];
+
+                height = Math.max(height, skip + draw);
+            }
+
+            var args = new Array(arguments.length);
+
+            for (var i = 0; i < arguments.length; i += 2) {
+
+                var skip = arguments[i];
+                var draw = arguments[i + 1];
+
+                args[i] = height - (skip + draw);
+                args[i + 1] = draw;
+            }
+
+            return args;
+        }
+
+        function imageDataFlip() {
+            var flipped = flipArgs.apply(null, arguments);
+
+            return imageData.apply(null, flipped);
+        }
+
+        function imageDataFlipRev() {
+            var flipped = flipArgs.apply(null, arguments);
+
+            return imageDataRev.apply(null, flipped);
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function makemap(mapheight, mapwidth, makecell) {
+            var map = [];
+            for (var i = 0; i < mapheight; ++i) {
+                var row = [];
+                for (var j = 0; j < mapwidth; ++j) row.push(makecell(i, j));
+                map.push(row);
+
+            }
+            return map;
+        }
+
+        var cols = 17;
+        var rows = 17;
+
+        var sf = 2;
+        var sizex = sf * 14;
+        var sizey = sf * 16;
+
+        function makecell(i, j) {
+
+            var ii = i - j;
+            var jj = j - i;
+
+            var limit = (Math.min(rows, cols)/2)|0;
+
+            if (ii > limit || jj > limit) return 0;
+
+            //if (i == 0 || j == 0 || i == rows - 1||j==cols-1||ii==limit||jj==limit) return 1;
+
+            var val = Math.floor(Math.random() * 4);
+            return val;
+
+            return val == 0 ? Math.floor(Math.random() * 4) : val;
+        }
+
+        var map = makemap(rows, cols, makecell);
+
+        function getAdj(map, i, j) {
+
+            var dirsdeltas = [
+                [/*down-right*/ 1, 0],
+                [/*up-right*/ 1, 1],
+                [/*up*/ 0, 1],
+                [/*up-left*/ -1, 0],
+                [/*down-left*/ -1, -1],
+                [/*down*/ 0, -1]
+            ];
+
+            var n = map.length;
+            var m = map[n - 1].length;
+
+            return dirsdeltas.map(function (d, dir) {
+                var dx = d[0];
+                var dy = d[1];
+
+                var id = i + dy;
+                var jd = j + dx;
+
+                return (id >= 0 && jd >= 0 && id < n && jd < m) ? map[id][jd] : null;
+            });
+        }
+
+        // "bitmaps"
+        var core = imageDataMirrorred(4, 8, 3, 10, 3, 10, 2, 12, 1, 14, 1, 14, 0, 16);
+        var corners = [
+            [16, 5, imageData(0, 6, 2, 2)],
+            [10, 0, imageData(0, 1, 0, 1, 0, 2, 0, 3, 1, 2, 3, 1)],
+            [2, 0, imageDataRev(0, 1, 0, 1, 0, 2, 0, 3, 1, 2, 3, 1)],
+            [0, 5, imageDataRev(0, 6, 2, 2)],
+            [2, 12, imageDataFlipRev(0, 1, 0, 1, 0, 2, 0, 3, 1, 2, 3, 1)],
+            [10, 12, imageDataFlip(0, 1, 0, 1, 0, 2, 0, 3, 1, 2, 3, 1)]
+        ];
+
+        function renderCore(ctx, x, y) {
+            ctx.drawImage(core.canvas, x + 2 * sf, y);
+            return;
+        }
+
+        function renderCorner(ctx, x, y, c) {
+            var corner = corners[c]
+            ctx.drawImage(corner[2].canvas, x + corner[0] * sf, y + corner[1] * sf);
+        }
+
+        function colorize(ctx, color) {
+
+            ctx.save();
+
+            ctx.globalCompositeOperation = 'source-atop';
+            ctx.fillStyle = color;
+            ctx.fillRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
+
+            ctx.restore();
+        }
+
+        function render() {
+
+            var layers = [];
+
+            layers[2] = ctxBlack;
+            layers[1] = ctxRed;
+            layers[3] = ctxWhite;
+
+            for (var i = -1; i <= map.length; ++i) {
+                for (var j = -1; j <= map[0].length; ++j) {
+
+
+                    var valid = (i >= 0 && j >= 0 && i < map.length && j < map[i].length);
+                    var ctx = valid ? layers[map[i][j]] : null;
+
+                    var x = j * sizex - (sizex*cols/2)|0;
+                    var y = -(i - rows / 2) + (j - cols / 2) / 2;
+
+                    y = (y * sizey) | 0;
+
+                    var adj = getAdj(map, i, j);
+
+                    if (valid && ctx) {
+                        renderCore(ctx, x, y);
+                    }
+                    for (var d = 0; d < 6; ++d) {
+                        if (ctx && valid && (adj[d] == map[i][j] || adj[(d + 1) % 6] == map[i][j]))
+                            renderCorner(ctx, x, y, d);
+                        else if ((!valid || adj[d] != map[i][j]) && adj[d] == adj[(d + 1) % 6] && layers[adj[d]]) {
+                            var other = layers[adj[d]];
+
+                            if (other)
+                                renderCorner(other, x, y, d);
+                        }
+                        else if(ctx && (layers[adj[d]] || layers[adj[(d+1)%6]])) {
+                            renderCorner(ctx, x, y, d);
+                        }
+                    }
+                }
+            }
+
+            colorize(ctxBlack, 'black');
+            colorize(ctxRed, 'red');
+            colorize(ctxWhite, 'white');
+        }
+
+        //ctxBlack.scale(1.1, 1.1);
+        //ctxRed.scale(1.1, 1.1);
+        render();
+
+    </script>
+</body>
+</html>
