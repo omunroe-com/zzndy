@@ -266,23 +266,48 @@
             var i = s + sockDist * (hexoid.i - o) - z;
             var j = s + sockDist * (hexoid.j - o) - z;
 
-            return new Hexoid(i, j, sockSize * hexoid.w, sockSize * hexoid.h);
+            var w = sockSize + hexoid.w * sockDist;
+            var h = sockSize + hexoid.h * sockDist;
+
+            var tx = z + 1 + hexoid.tx  * sockDist;
+            var ty = z + 1 + hexoid.ty * sockDist;
+
+            return new Hexoid(i, j, w, h, tx, ty);
         }
 
         var cells = makemap(sockWidth, sockWidth, function (i, j) {
             return sockhexoid.contains(i, j)
-            ? new Cell(new Hexoid(i, j, 1, 1), makemaphexoid(new Hexoid(i, j, 1, 1)))
+            ? new Cell(new Hexoid(i, j, 0, 0), makemaphexoid(new Hexoid(i, j, 0, 0)))
                 : null;
         });
 
+        // tall
         cells[2][1] = null;
+        cells[1][1].logical.h = 1;
+        cells[1][1].logical.ty = 1;
+        cells[1][1].physical = makemaphexoid(cells[1][1].logical);
+
+        // wide
+        cells[3][4] = null;
+        cells[3][3].logical.w = 1;
+        cells[3][3].logical.tx = 1;
+        cells[3][3].physical = makemaphexoid(cells[3][3].logical);
+
+        cells[5][4] = null;
+        cells[6][4] = null;
+
+        cells[5][3].logical.w = 1;
+        cells[5][3].logical.h = 1;
+        cells[5][3].logical.tx = 1;
+        cells[5][3].physical = makemaphexoid(cells[5][3].logical);
+
 
         function makecell(i, j) {
             if (maphexoid.contains(i, j)) {
                 for (var k = 0; k < cells.length; ++k)
                     for (var l = 0; l < cells[k].length; ++l)
-                        if (cells[k][l] != null && cells[k][l].physical.contains(i,j)) 
-                                return 3;
+                        if (cells[k][l] != null && cells[k][l].physical.contains(i, j))
+                            return 3;
 
                 return Math.floor(Math.random() * 2) + 1;
             }
@@ -379,8 +404,6 @@
             console.log('render completed in ' + ((new Date()).getTime() - time) + 'ms');
         }
 
-        //ctxBlack.scale(1.1, 1.1);
-        //ctxRed.scale(1.1, 1.1);
         render();
 
     </script>
