@@ -166,28 +166,46 @@
 
     <script type="text/javascript">
 
-
-        function Hexoid(i, j, sizei, sizej, sizek) {
+        /* Hexoid: origin at x
+        dimentions: distance between y=const, w; distance between x=const, h; 
+                    distance from origin to bottom tip, tx;
+                    distance from origin to top-left tip, ty
+              o
+           o     o
+        o           o
+        o           o 
+        x           o
+           o     o  . 
+              o     .
+                 .  .
+                    .
+        */
+        function Hexoid(i, j, w, h, tx, ty) {
             this.i = i;
             this.j = j;
-            this.wi = (sizei / 2) | 0;
-            this.wj = (sizej / 2) | 0;
-            this.wk = (sizek / 2) | 0;
+            this.w = w;
+            this.h = h;
+
+            if (arguments.length == 4) {
+                tx = Math.ceil(w / 2);
+                ty = Math.ceil(h / 2);
+            }
+
+            this.tx = tx;
+            this.ty = ty;
         }
 
         Hexoid.prototype.contains = function (i, j) {
+            var dy = i - this.i;
+            var dx = j - this.j;
 
-            var di = i - this.i;
-            var dj = j - this.j;
-            var dk = Math.abs(di - dj);
-
-            return Math.abs(di) <= this.wi && Math.abs(dj) <= this.wj && dk <= this.wk;
+            return dy >= 0 && dx >= 0 && dy < this.h && dx < this.w && dy - dx < this.ty && dx - dy < this.tx;
         }
 
-        function Cell(w, h, hexoid) {
-            this.w = w;
-            this.h = h;
-            this.hexoid = hexoid;
+        function Cell(logical, physical)
+        {
+            this.logical = logical;
+            this.physical = physical;
         }
 
         function makemap(mapheight, mapwidth, makecell) {
@@ -200,55 +218,6 @@
             }
             return map;
         }
-
-        var sockDist = 7;
-        var sockSize = 5;
-        var sockWidth = 7;
-
-        
-        var size = sockWidth * sockDist + 2;
-
-        var sf = 1;
-        var sizex = sf * 14;
-        var sizey = sf * 16;
-
-        var maphexoid = new Hexoid((size / 2) | 0, (size / 2) | 0, size, size, size);
-
-        function makehexoid(i, j, w, h) {
-            var s = (size / 2) | 0;
-
-            var o = (sockWidth / 2) | 0;
-
-            i = s + sockDist * (i - o);
-            j = s + sockDist * (j - o);
-
-            return new Hexoid(i, j, sockSize, sockSize, sockSize);
-        }
-
-        var cells = makemap(sockWidth, sockWidth, function (i, j) {
-            var hexoid = makehexoid(i, j, 1, 1);
-            return maphexoid.contains(hexoid.i, hexoid.j)
-            ? new Cell(1, 1, hexoid)
-                : null;
-        });
-
-        
-        function makecell(i, j) {
-
-            if (maphexoid.contains(i, j)) {
-                for (var k = 0; k < cells.length; ++k)
-                    for (var l = 0; l < cells[k].length; ++l)
-                        if (cells[k][l] != null && cells[k][l].hexoid.contains(i, j))
-                            return 3;
-                    
-                return Math.floor(Math.random() * 2) + 1;
-            }
-
-            return 0;
-        }
-
-        var map = makemap(size, size, makecell);
-
 
         function getAdj(map, i, j) {
 
@@ -275,11 +244,55 @@
             });
         }
 
-
+        var sockDist = 7;
+        var sockSize = 5;
+        var sockWidth = 7;
         
+        var size = sockWidth * sockDist + 2;
 
+        var sf = 1;
+        var sizex = sf * 14;
+        var sizey = sf * 16;
 
+        var sockhexoid = new Hexoid(0, 0, sockWidth, sockWidth);
+        var maphexoid = new Hexoid(0, 0, size, size);
 
+        function makemaphexoid(hexoid) {
+            var s = (size / 2) | 0;
+
+            var o = (sockWidth / 2) | 0;
+            var z = (sockSize / 2) | 0;
+
+            var i = s + sockDist * (hexoid.i - o) - z;
+            var j = s + sockDist * (hexoid.j - o) - z;
+
+            return new Hexoid(i, j, sockSize * hexoid.w, sockSize * hexoid.h);
+        }
+
+        var cells = makemap(sockWidth, sockWidth, function (i, j) {
+            return sockhexoid.contains(i, j)
+            ? new Cell(new Hexoid(i, j, 1, 1), makemaphexoid(new Hexoid(i, j, 1, 1)))
+                : null;
+        });
+
+        cells[2][1] = null;
+
+        function makecell(i, j) {
+            if (maphexoid.contains(i, j)) {
+                for (var k = 0; k < cells.length; ++k)
+                    for (var l = 0; l < cells[k].length; ++l)
+                        if (cells[k][l] != null && cells[k][l].physical.contains(i,j)) 
+                                return 3;
+
+                return Math.floor(Math.random() * 2) + 1;
+            }
+
+            return 0;
+        }
+
+        var time = (new Date()).getTime();
+        var map = makemap(size, size, makecell);
+        console.log('Done creating in ' + ((new Date()).getTime() - time) + 'ms');
 
         // "bitmaps"
         var core = imageDataMirrorred(4, 8, 3, 10, 3, 10, 2, 12, 1, 14, 1, 14, 0, 16);
