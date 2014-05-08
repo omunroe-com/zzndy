@@ -167,15 +167,15 @@
     <script type="text/javascript">
 
         /* Hexoid: origin at x
-        dimentions: distance between y=const, w; distance between x=const, h; 
+        dimentions: distance between y=const, w; distance between x=const, h;
                     distance from origin to bottom tip, tx;
                     distance from origin to top-left tip, ty
               o
            o     o
         o           o
-        o           o 
+        o           o
         x           o
-           o     o  . 
+           o     o  .
               o     .
                  .  .
                     .
@@ -202,8 +202,7 @@
             return dy >= 0 && dx >= 0 && dy < this.h && dx < this.w && dy - dx < this.ty && dx - dy < this.tx;
         }
 
-        function Cell(logical, physical)
-        {
+        function Cell(logical, physical) {
             this.logical = logical;
             this.physical = physical;
         }
@@ -247,7 +246,7 @@
         var sockDist = 7;
         var sockSize = 5;
         var sockWidth = 7;
-        
+
         var size = sockWidth * sockDist + 2;
 
         var sf = 1;
@@ -269,7 +268,7 @@
             var w = sockSize + hexoid.w * sockDist;
             var h = sockSize + hexoid.h * sockDist;
 
-            var tx = z + 1 + hexoid.tx  * sockDist;
+            var tx = z + 1 + hexoid.tx * sockDist;
             var ty = z + 1 + hexoid.ty * sockDist;
 
             return new Hexoid(i, j, w, h, tx, ty);
@@ -281,26 +280,44 @@
                 : null;
         });
 
-        // tall
-        cells[2][1] = null;
-        cells[1][1].logical.h = 1;
-        cells[1][1].logical.ty = 1;
-        cells[1][1].physical = makemaphexoid(cells[1][1].logical);
+        // todo: validate coordinates and cells compatibility
+        function merge(i1, j1, i2, j2) {
+            
+            var dx = j2 - j1;
+            var dy = i2 - i1;
 
-        // wide
-        cells[3][4] = null;
-        cells[3][3].logical.w = 1;
-        cells[3][3].logical.tx = 1;
-        cells[3][3].physical = makemaphexoid(cells[3][3].logical);
+            var h1 = cells[i1][j1].logical;
+            var h2 = cells[i2][j2].logical;
 
-        cells[5][4] = null;
-        cells[6][4] = null;
+            var w = h2.w + dx;
+            var h = h2.h + dy;
 
-        cells[5][3].logical.w = 1;
-        cells[5][3].logical.h = 1;
-        cells[5][3].logical.tx = 1;
-        cells[5][3].physical = makemaphexoid(cells[5][3].logical);
+            var tx = h1.tx + 1 - dy;
+            var ty = h1.ty + 1 - dx;
 
+            var hexoid = new Hexoid(i1, j1, w, h, tx, ty);
+
+            console.log(dx, dy);
+            console.log(h1.w, h1.h, h1.tx, h1.ty)
+            console.log(h2.w, h2.h, h2.tx, h2.ty)
+            console.log(i1, j1, w, h, tx, ty);
+
+            cells[i1][j1] = new Cell(hexoid, makemaphexoid(hexoid));
+            cells[i2][j2] = null;
+        }
+
+
+        merge(1, 1, 2, 1);
+        merge(3, 3, 3, 4);
+
+        merge(4, 4, 4, 5);
+        merge(4, 4, 5, 5);
+
+        
+        merge(3, 2, 4, 2);
+        merge(3, 2, 4, 3);
+
+        merge(1, 3, 2, 4);
 
         function makecell(i, j) {
             if (maphexoid.contains(i, j)) {
@@ -371,7 +388,7 @@
                     var valid = (i >= 0 && j >= 0 && i < map.length && j < map[i].length);
                     var ctx = valid ? layers[map[i][j]] : null;
 
-                    var x = j * sizex - (sizex*cols/2)|0;
+                    var x = j * sizex - (sizex * cols / 2) | 0;
                     var y = -(i - rows / 2) + (j - cols / 2) / 2;
 
                     y = (y * sizey) | 0;
@@ -390,7 +407,7 @@
                             if (other)
                                 renderCorner(other, x, y, d);
                         }
-                        else if(ctx && (layers[adj[d]] || layers[adj[(d+1)%6]])) {
+                        else if (ctx && (layers[adj[d]] || layers[adj[(d + 1) % 6]])) {
                             renderCorner(ctx, x, y, d);
                         }
                     }
