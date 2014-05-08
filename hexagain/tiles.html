@@ -32,20 +32,19 @@
             return ctx;
         }
 
-        function tranclateCenter(ctx) {
+        function translateCenter(ctx) {
             ctx.translate((ctx.canvas.width / 2) | 0, (ctx.canvas.height / 2) | 0);
             return ctx;
         }
 
-        var ctxRed = tranclateCenter(fullscreenCanvas('can-red'));
-        var ctxBlack = tranclateCenter(fullscreenCanvas('can-black'));
-        var ctxWhite = tranclateCenter(fullscreenCanvas('can-white'));
+        var ctxRed = translateCenter(fullscreenCanvas('can-red'));
+        var ctxBlack = translateCenter(fullscreenCanvas('can-black'));
+        var ctxWhite = translateCenter(fullscreenCanvas('can-white'));
 
     </script>
 
     <!-- imagedata -->
     <script type="text/javascript">
-
 
         function imageData() {
 
@@ -61,7 +60,7 @@
                 height = Math.max(height, skip + draw);
             }
 
-            var sf = 2;//scalefactor
+            var sf = 1;//scalefactor
 
             var ctx = document.createElement('canvas').getContext('2d');
             ctx.canvas.width = width * sf;
@@ -167,6 +166,30 @@
 
     <script type="text/javascript">
 
+
+        function Hexoid(i, j, sizei, sizej, sizek) {
+            this.i = i;
+            this.j = j;
+            this.wi = (sizei / 2) | 0;
+            this.wj = (sizej / 2) | 0;
+            this.wk = (sizek / 2) | 0;
+        }
+
+        Hexoid.prototype.contains = function (i, j) {
+
+            var di = i - this.i;
+            var dj = j - this.j;
+            var dk = Math.abs(di - dj);
+
+            return Math.abs(di) <= this.wi && Math.abs(dj) <= this.wj && dk <= this.wk;
+        }
+
+        function Cell(w, h, hexoid) {
+            this.w = w;
+            this.h = h;
+            this.hexoid = hexoid;
+        }
+
         function makemap(mapheight, mapwidth, makecell) {
             var map = [];
             for (var i = 0; i < mapheight; ++i) {
@@ -178,31 +201,54 @@
             return map;
         }
 
-        var cols = 17;
-        var rows = 17;
+        var sockDist = 7;
+        var sockSize = 5;
+        var sockWidth = 7;
 
-        var sf = 2;
+        
+        var size = sockWidth * sockDist + 2;
+
+        var sf = 1;
         var sizex = sf * 14;
         var sizey = sf * 16;
 
-        function makecell(i, j) {
+        var maphexoid = new Hexoid((size / 2) | 0, (size / 2) | 0, size, size, size);
 
-            var ii = i - j;
-            var jj = j - i;
+        function makehexoid(i, j, w, h) {
+            var s = (size / 2) | 0;
 
-            var limit = (Math.min(rows, cols)/2)|0;
+            var o = (sockWidth / 2) | 0;
 
-            if (ii > limit || jj > limit) return 0;
+            i = s + sockDist * (i - o);
+            j = s + sockDist * (j - o);
 
-            //if (i == 0 || j == 0 || i == rows - 1||j==cols-1||ii==limit||jj==limit) return 1;
-
-            var val = Math.floor(Math.random() * 4);
-            return val;
-
-            return val == 0 ? Math.floor(Math.random() * 4) : val;
+            return new Hexoid(i, j, sockSize, sockSize, sockSize);
         }
 
-        var map = makemap(rows, cols, makecell);
+        var cells = makemap(sockWidth, sockWidth, function (i, j) {
+            var hexoid = makehexoid(i, j, 1, 1);
+            return maphexoid.contains(hexoid.i, hexoid.j)
+            ? new Cell(1, 1, hexoid)
+                : null;
+        });
+
+        
+        function makecell(i, j) {
+
+            if (maphexoid.contains(i, j)) {
+                for (var k = 0; k < cells.length; ++k)
+                    for (var l = 0; l < cells[k].length; ++l)
+                        if (cells[k][l] != null && cells[k][l].hexoid.contains(i, j))
+                            return 3;
+                    
+                return Math.floor(Math.random() * 2) + 1;
+            }
+
+            return 0;
+        }
+
+        var map = makemap(size, size, makecell);
+
 
         function getAdj(map, i, j) {
 
@@ -228,6 +274,12 @@
                 return (id >= 0 && jd >= 0 && id < n && jd < m) ? map[id][jd] : null;
             });
         }
+
+
+        
+
+
+
 
         // "bitmaps"
         var core = imageDataMirrorred(4, 8, 3, 10, 3, 10, 2, 12, 1, 14, 1, 14, 0, 16);
@@ -263,11 +315,16 @@
 
         function render() {
 
+            var time = (new Date()).getTime();
+
             var layers = [];
 
             layers[2] = ctxBlack;
             layers[1] = ctxRed;
             layers[3] = ctxWhite;
+
+            var cols = size;
+            var rows = size;
 
             for (var i = -1; i <= map.length; ++i) {
                 for (var j = -1; j <= map[0].length; ++j) {
@@ -302,9 +359,11 @@
                 }
             }
 
-            colorize(ctxBlack, 'black');
-            colorize(ctxRed, 'red');
-            colorize(ctxWhite, 'white');
+            colorize(ctxBlack, '#24282a');
+            colorize(ctxRed, '#2a3236');
+            colorize(ctxWhite, 'silver');
+
+            console.log('render completed in ' + ((new Date()).getTime() - time) + 'ms');
         }
 
         //ctxBlack.scale(1.1, 1.1);
