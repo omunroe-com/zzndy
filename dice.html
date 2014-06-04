@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+	<style type="text/css">
+		.plot {
+			height: 500px;
+			display: inline-block;
+			margin: 0 2px;
+		}
+		.bar {
+			display:inline-block;
+			margin: 0 1px;
+			width: 1.2em;
+			vertical-align:bottom;
+			background-color: #cb1d0b;
+			font-size:80%;
+			text-align:center;
+		}
+		.label {
+			text-align: center;
+		}
+	</style>
+    <title></title>
+</head>
+<body>
+	<script type="text/javascript">		
+
+		function upsert(arr, key, value) {
+
+			for (var i = 0; i < arr.length; ++i) {
+
+				if (arr[i][0] == key) {
+					arr[i][1].push(value);
+					return;
+				}
+			}
+
+			arr.push([key, [value]]);
+		}
+
+		function upsert2(arr, key, value, v2) {
+
+			for (var i = 0; i < arr.length; ++i) {
+
+				if (arr[i][0] == key) {
+					arr[i][1] += value;
+					arr[i][2].push(v2);
+					return;
+				}
+			}
+
+			arr.push([key, value, [v2]]);
+		}
+
+		function getCombinations(numDice, sideValues) {
+			var vals = [];
+
+			for (var i = 0; i < sideValues.length; ++i) {
+				vals.push([sideValues[i]]);
+			}
+
+			if (numDice > 1) {
+				var result = [];
+				var merge = getCombinations(numDice - 1, sideValues);
+
+				for (var i = 0; i < vals.length; ++i)
+					for (var j = 0; j < merge.length; ++j)
+						result.push(vals[i].concat(merge[j]));
+
+				return result;
+			}
+
+			return vals;
+		}
+
+		function max(arr, v) {
+			v = v || function (x) { return x }
+			return arr.map(v).reduce(function (a, b) { return a > b ? a : b }, -Infinity);
+		}
+
+		function min(arr, v) {
+			v = v || function (x) {return x }
+			return arr.map(v).reduce(function (a, b, i) { return a < b ? a : b }, Infinity);
+		}
+
+		function sum(arr) {
+			return arr.reduce(function (a, b) { return a + b });
+		}
+
+		function getProbabilities(numDice, sideValues, numDropLeast, numDropMost)
+		{
+			var comb = getCombinations(numDice, sideValues);
+			var prob = Math.pow(1 / sideValues.length, numDice);
+			var xxx = [];
+			
+			comb.forEach(function (x) {
+
+				var z = x;
+
+				for (var j = 0; j < numDropLeast; ++j) {
+					var done = false;
+					z = z.filter(function (y) {
+
+						if (done || y > min(z)) return true;
+
+						done = true;
+						return false;
+					});
+				}
+
+				for (var j = 0; j < numDropMost; ++j) {
+					var done = false;
+					z = z.filter(function (y) {
+						if (done || y < max(z)) return true;
+
+						done = true;
+						return false;
+					});
+				}
+
+				upsert2(xxx, sum(z), prob, x);
+			});
+
+
+			xxx.sort(function (a, b) { return a[0] - b[0] });
+
+			xxx.label = numDice + 'd' + sideValues.length;
+
+			if (numDropLeast > 0 && numDropMost == 0)
+				xxx.label += ' pick ' + (numDice - numDropLeast) + ' best';
+
+			if (numDropLeast == 0 && numDropMost > 0)
+				xxx.label += ' drop ' + numDropMost + ' best';
+
+			if (numDropLeast > 0 && numDropMost > 0) {
+				xxx.label += ' drop ' + numDropLeast + ' worst and' + numDropMost + ' best';
+			}
+
+
+			return xxx;
+		}
+
+		function render()
+		{
+			var maxprob = 0;
+
+			for (var k = 0; k < arguments.length; ++k) {
+
+				var probabilities = arguments[k];
+
+				for (var i = 0; i < probabilities.length; ++i) {
+					maxprob = maxprob < probabilities[i][1] ? probabilities[i][1] : maxprob;
+
+					console.log(probabilities[i][0], probabilities[i][1]/*, probabilities[i][2].reduce(function (a, b) { return a + ' ' + b.join('+') }, '')*/);
+				}
+			}
+
+
+			for (var k = 0; k < arguments.length; ++k) {
+
+				var probabilities = arguments[k];
+
+				var e = document.createElement('div');
+				e.className = 'plot';
+				var code = [];
+
+				for (var i = 0; i < probabilities.length; ++i) {
+					code.push('<div class="bar" style="height: ' + (100 * probabilities[i][1] / maxprob) + '%">' + probabilities[i][0] + '</div>');
+				}
+
+				code.push('<div class="label">' + probabilities.label + '</div>');
+				e.innerHTML = code.join('');
+				document.body.appendChild(e);
+
+				
+
+			}
+
+			document.body.appendChild(document.createElement('div'));
+
+		}
+
+
+		var numDice = 5;
+		var sideValues = [1, 2, 3, 4, 5, 6];
+		var numDropLeast = 2;
+		var numDropMost = 0;
+		
+		render(getProbabilities(2, sideValues, 0, 0)
+			, getProbabilities(3, sideValues, 1, 0)
+			, getProbabilities(4, sideValues, 2, 0)
+			, getProbabilities(5, sideValues, 3, 0)
+			, getProbabilities(5, sideValues, 2, 1)
+			);
+
+		render(getProbabilities(3, sideValues, 0, 0)
+	, getProbabilities(4, sideValues, 1, 0)
+	, getProbabilities(5, sideValues, 2, 0)
+	);
+	
+		</script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<style type="text/css">
+		body {
+			background-color: #12110f;
+		}
+	</style>
+    <title>Hexfiller</title>
+</head>
+<body>
+	<!-- Fullscreen canvas and drawhex -->
+    <script type="text/javascript">
+	    function fullscreenCanvas() {
+		    var c = window.document.createElement('canvas');
+		    window.document.body.appendChild(c);
+
+		    var ctx = c.getContext('2d');
+
+		    ctx.canvas.width = window.innerWidth;
+		    ctx.canvas.height = window.innerHeight;
+		    ctx.canvas.style.position = 'absolute';
+		    ctx.canvas.style.top = 0;
+		    ctx.canvas.style.left = 0;
+
+		    return ctx;
+	    }
+
+	    var ctx = fullscreenCanvas();
+	    var w = ctx.canvas.width;
+	    var h = ctx.canvas.height;
+
+	    var q = 1 / Math.sqrt(3);
+
+	    ctx.pathHex = function (h) {
+		    var dx = q * h / 2;
+		    var dy = h / 2;
+
+		    this.beginPath();
+		    this.moveTo(2 * dx, 0);
+		    this.lineTo(dx, -dy);
+		    this.lineTo(-dx, -dy);
+		    this.lineTo(-2 * dx, 0);
+		    this.lineTo(-dx, dy);
+		    this.lineTo(dx, dy);
+		    this.closePath();
+	    };
+
+	    ctx.fillHex = function (x, y, h) {
+		    this.save();
+		    this.translate(x, y);
+		    this.pathHex(h);
+		    this.fill();
+		    this.restore();
+	    };
+
+	    ctx.strokeHex = function (x, y, h) {
+		    this.save();
+		    this.translate(x, y);
+		    this.pathHex(h);
+		    this.stroke();
+		    this.restore();
+	    };
+
+	    ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+    </script>
+
+	<!-- Logic -->
+	<script type="text/javascript">
+
+		function Cluster(val) {
+			this.val = val;
+		}
+
+		function HexFiller(numColors, numPlayers, cols, rows, cellValidFn) {
+
+			this.numColors = numColors;
+			this.numPlayers = numPlayers;
+			this.cols = cols;
+			this.rows = rows;
+			
+			var data = [];
+			for (var i = 0; i < rows; ++i) {
+				var row = [];
+
+				for (var j = 0; j < cols; ++j) {
+
+
+
+					row.push(cellValidFn(i, j)
+						? new Cluster(Math.floor(Math.random() * numColors))
+						: null);
+
+
+				}
+
+				data.push(row);
+			}
+			
+			this.data = data;
+		}
+
+		HexFiller.prototype.forEach = function(iterFn) {
+			for (var i = 0; i < this.rows; ++i)
+				for (var j = 0; j < this.cols; ++j)
+					if (this.data[i][j] != null)
+						iterFn(i, j, this.data[i][j]);
+		};
+
+	</script>
+
+	<!-- renderer -->
+	<script type="text/javascript">
+
+		var colors = [
+			'rgb(227, 38, 54)'    // red
+			, 'rgb(40, 205,  20)'  // green
+			, 'rgb(48, 77, 200)'   // blue
+			, 'rgb(105, 229, 235)' // cyan
+			, 'rgb(205, 0, 225)'   // magenta
+			, 'rgb(180, 180, 180)' // gray
+			, 'rgb(255, 215, 0)'   // yellow
+		];
+		
+		function HexFillerRenderer(ctx, filler,scale, hexToPix) {
+			this.ctx = ctx;
+			this.filler = filler;
+			this.scale = scale;
+			this.hexToPix = hexToPix;
+			this.lightAngle = 2.7 * Math.PI / 3;
+		}
+
+		HexFillerRenderer.prototype.draw = function() {
+			var self = this;
+			this.filler.forEach(function(i, j, value) { self.drawCell(i, j, value); });
+		};
+
+
+		function tint1(ctx, x, y, h, color) {
+			
+			ctx.save();
+			ctx.translate(x, y);
+
+			var dx = q * h / 2;
+			var dy = h / 2;
+
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(dx, dy);
+			ctx.lineTo(2 * dx, 0);
+			
+			ctx.closePath();
+
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.restore();
+		}
+		
+		function tint2(ctx, x, y, h, color) {
+
+			ctx.save();
+			ctx.translate(x, y);
+
+			var dx = q * h / 2;
+			var dy = h / 2;
+
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(2 * dx, 0);
+			ctx.lineTo(dx, -dy);
+
+			ctx.closePath();
+
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.restore();
+		}
+		
+		function tint3(ctx, x, y, h, color) {
+
+			ctx.save();
+			ctx.translate(x, y);
+
+			var dx = q * h / 2;
+			var dy = h / 2;
+
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(dx, -dy);
+			ctx.lineTo(-dx, -dy);
+
+			ctx.closePath();
+
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.restore();
+		}
+		function tint4(ctx, x, y, h, color) {
+
+			ctx.save();
+			ctx.translate(x, y);
+
+			var dx = q * h / 2;
+			var dy = h / 2;
+
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(-dx, -dy);
+			ctx.lineTo(-2 * dx, 0);
+
+			ctx.closePath();
+
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.restore();
+		}
+		
+		function tint5(ctx, x, y, h, color) {
+
+			ctx.save();
+			ctx.translate(x, y);
+
+			var dx = q * h / 2;
+			var dy = h / 2;
+
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(-2 * dx, 0);
+			ctx.lineTo(-dx, dy);
+
+			ctx.closePath();
+
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.restore();
+		}
+		
+		function tint6(ctx, x, y, h, color) {
+
+			ctx.save();
+			ctx.translate(x, y);
+
+			var dx = q * h / 2;
+			var dy = h / 2;
+
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(-dx, dy);
+			ctx.lineTo(dx, dy);
+			
+			ctx.closePath();
+
+			ctx.fillStyle = color;
+			ctx.fill();
+			ctx.restore();
+		}
+
+		HexFillerRenderer.prototype.drawCell = function(i, j, value) {
+			var xy = this.hexToPix(i, j);
+			this.ctx.fillStyle = colors[value.val];
+			this.ctx.fillHex(xy[0], xy[1], this.scale * .96);
+
+
+			function colorize(deltaAngle) {
+				var max = .3;
+				var x = Math.cos(deltaAngle);
+
+				if (x > 0) return 'rgba(255, 255, 255, ' + (x * max) + ')';
+
+				return 'rgba(0,0,0,' + (-x * max) + ')';
+
+
+			}
+
+
+			tint6(ctx, xy[0], xy[1], this.scale * .95, colorize(this.lightAngle));
+			tint1(ctx, xy[0], xy[1], this.scale * .95, colorize(this.lightAngle + Math.PI / 3));
+			tint3(ctx, xy[0], xy[1], this.scale * .95, colorize(this.lightAngle + 3 * Math.PI / 3));
+			tint4(ctx, xy[0], xy[1], this.scale * .95, colorize(this.lightAngle + 4 * Math.PI / 3));
+
+		};
+	</script>
+
+	<script type="text/javascript">
+
+		var sq32 = Math.sqrt(3) / 2;
+
+		var hexSizeBase = 32;
+		var hexSize = hexSizeBase;
+
+		var w = 33;
+		var h = 34;
+
+		function hexToPix(i, j) {
+
+			i -= h / 2;
+			j -= w / 2;
+
+			return [hexSize * j * sq32,
+				-hexSize * (i - j / 2) + .25*hexSize];
+		}
+		function area(i, j) {
+			var h = hexSize * 9;
+			var xy = hexToPix(i, j);
+			var y = xy[1];
+
+			return y < h && y > -h;
+		}
+
+		var filler = new HexFiller(7, 2, w, h, area);
+
+		var renderer = new HexFillerRenderer(ctx, filler, hexSize, hexToPix);
+		
+
+		var t = 0;
+		function tick() {
+
+			ctx.clearRect(-2000, -2000, 4000, 4000);
+			hexSize = hexSizeBase * (1 + .03 * Math.sin(t++ / 100));
+
+			renderer.scale = hexSize;
+			renderer.lightAngle += .01;
+
+			renderer.draw();
+
+			//window.requestAnimationFrame(tick);
+
+		}
+
+		tick();
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<style type="text/css">
+		html {
+			background-color: #262926;
+		}
+
+		canvas {
+			cursor: none;
+			z-index: -100;
+		}
+
+		.palette div {
+			display: inline-block;
+			width: 2em;
+			height: 2em;
+			background-color: #ff00ff;
+		}
+	</style>
+</head>
+<body>
+
+	<div>
+		<input id="offset-x" type="number" value="18" /></div>
+	<div>
+		<input id="offset-y" type="number" value="20" /></div>
+	<div>
+		<input id="skew-x" type="number" value="0" /></div>
+	<div>
+		<input id="skew-y" type="number" value="10" /></div>
+	<div class="palette">
+		<div id="color-1"></div>
+		<div id="color-2"></div>
+		<div id="color-3"></div>
+		<div id="color-4"></div>
+	</div>
+
+	<!-- Fullscreen canvas -->
+	<script type="text/javascript">
+		function fullscreenCanvas() {
+			var c = window.document.createElement('canvas');
+			window.document.body.appendChild(c);
+
+			var ctx = c.getContext('2d');
+
+			ctx.canvas.width = window.innerWidth;
+			ctx.canvas.height = window.innerHeight;
+			ctx.canvas.style.position = 'absolute';
+			ctx.canvas.style.top = 0;
+			ctx.canvas.style.left = 0;
+
+			return ctx;
+		}
+	</script>
+
+	<script type="text/javascript">
+
+		var size = 8;
+
+		var ctx = fullscreenCanvas();
+		var cursor = fullscreenCanvas();
+		cursor.fillStyle = cursor.strokeStyle = 'rgba(255, 255, 255, .7)';
+
+		var colors = ['#304439', '#506a60', '#80aa89', '#d0ffd9'];
+		ctx.fillStyle = colors[0];
+
+		colors.forEach(function (color, i) {
+			var e = document.getElementById('color-' + (i + 1));
+
+			e.style.backgroundColor = colors[i];
+			var color = colors[i];
+			console.log(color);
+			e.addEventListener('mousedown', function () { ctx.fillStyle = color });
+		});
+
+		var deltax = 18;
+		var deltay = 20;
+		var skewx = 0;
+		var skewy = 10;
+
+		function bind(id, callback) {
+			var e = document.getElementById(id);
+
+			var fn = function () {
+				callback(parseInt(e.value, 10));
+			}
+
+			e.addEventListener('keyup', fn);
+			e.addEventListener('mouseup', fn);
+		}
+
+		bind('offset-x', function (val) { deltax = val });
+		bind('offset-y', function (val) { deltay = val });
+		bind('skew-x', function (val) { skewx = val });
+		bind('skew-y', function (val) { skewy = val });
+
+		var next = null;
+		var down = null;
+
+		function addPoint(x, y) {
+			next = [x, y];
+
+			if (mouseDown > 0) down = next;
+		}
+
+		var mouseDown = 0;
+
+		function downAt(x, y) {
+			++mouseDown;
+			down = [x, y];
+		}
+
+		function putCursor(x, y) {
+			x = round(x);
+			y = round(y);
+
+			var a = (size / 2) | 0;
+
+			var dx = 10;
+			var dy = 10;
+
+			for (var i = -dx; i <= dx; ++i) {
+				for (var j = -dy; j <= dy; ++j) {
+					if (i == 0 && j == 0) continue;
+
+					var p = x + i * size * deltax + a - j * size * skewx;
+					var q = y + j * size * deltay + a - i * size * skewy;
+
+					cursor.fillRect(p, q, 1, 1);
+				}
+			}
+
+			cursor.strokeRect(x + .5, y + .5, size - 1, size - 1);
+		}
+
+		function draw(x, y) {
+			x = round(x);
+			y = round(y);
+			
+			var dx = 10;
+			var dy = 10;
+
+			for (var i = -dx; i <= dx; ++i) {
+				for (var j = -dy; j <= dy; ++j) {
+
+					var p = x + i * size * deltax- j * size * skewx;
+					var q = y + j * size * deltay- i * size * skewy;
+
+					ctx.fillRect(p, q, size, size);
+				}
+			}
+		}
+
+		function round(n) {
+			return n - n % size;
+		}
+
+		function frame() {
+
+			if (next != null) {
+				cursor.clearRect(0, 0, cursor.canvas.width, cursor.canvas.height);
+				putCursor(next[0], next[1]);
+				next = null;
+			}
+
+			if (down != null) {
+				draw(down[0], down[1]);
+				down = null;
+			}
+
+			window.requestAnimationFrame(frame);
+		}
+
+		window.requestAnimationFrame(frame);
+
+		cursor.canvas.addEventListener('mousemove', function (e) { addPoint(e.clientX, e.clientY) });
+		cursor.canvas.addEventListener('mousedown', function (e) { downAt(e.clientX, e.clientY) });
+		cursor.canvas.addEventListener('mouseup', function (e) { --mouseDown; });
+		cursor.canvas.addEventListener('mouseout', function (e) { mouseDown = 0; });
+
+		frame();
+
+	</script>
+
+</body>
+</html>
