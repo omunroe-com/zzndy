@@ -15,293 +15,293 @@
     <!-- random -->
     <script type="text/javascript">
 
-        /** rnd() random value from 0 to 1
+    	/** rnd() random value from 0 to 1
 		 *  rnd(n) random from 0 to n
 		 *  rnd(n, m) random between n and m
 		 *  rnd(array) random element
 		 */
-        function rnd(a, b) {
-            switch (arguments.length) {
-                case 0:
-                    return Math.random();
-                case 1:
-                    if (a instanceof Array)
-                        return a[Math.floor(Math.random() * a.length)];
-                    else
-                        return a * Math.random();
-                default: // case 2 actually
-                    return a + (b - a) * Math.random();
-            }
-        }
+    	function rnd(a, b) {
+    		switch (arguments.length) {
+    			case 0:
+    				return Math.random();
+    			case 1:
+    				if (a instanceof Array)
+    					return a[Math.floor(Math.random() * a.length)];
+    				else
+    					return a * Math.random();
+    			default: // case 2 actually
+    				return a + (b - a) * Math.random();
+    		}
+    	}
 
-        function rndi() {
-            return Math.floor(rnd.apply(null, arguments));
-        }
+    	function rndi() {
+    		return Math.floor(rnd.apply(null, arguments));
+    	}
 
     </script>
 
     <!-- Point -->
     <script type="text/javascript">
 
-        function Point(x, y) {
-            this.x = x;
-            this.y = y;
-        }
+    	function Point(x, y) {
+    		this.x = x;
+    		this.y = y;
+    	}
 
-        Point.prototype.toString = function () { return this.x + ',' + this.y }
+    	Point.prototype.toString = function () { return this.x + ',' + this.y }
 
-        Point.prototype.equal = function (p) {
-            return this.x == p.x && this.y == p.y;
-        }
+    	Point.prototype.equal = function (p) {
+    		return this.x == p.x && this.y == p.y;
+    	}
 
-        Point.prototype.times = function (n) {
-            return new Point(this.x * n, this.y * n);
-        }
+    	Point.prototype.times = function (n) {
+    		return new Point(this.x * n, this.y * n);
+    	}
 
-        Point.prototype.add = function (dx, dy) {
-            return new Point(this.x + dx, this.y + dy);
-        }
+    	Point.prototype.add = function (dx, dy) {
+    		return new Point(this.x + dx, this.y + dy);
+    	}
 
-        Point.prototype.plus = function (p) {
-            return new Point(this.x + p.x, this.y + p.y);
-        }
+    	Point.prototype.plus = function (p) {
+    		return new Point(this.x + p.x, this.y + p.y);
+    	}
 
     </script>
 
     <!-- Hexstore -->
     <script type="text/javascript">
 
-        function MakeData(extremes, initFn) {
+    	function MakeData(extremes, initFn) {
 
-            var minmax = extremes.reduce(function (current, point) {
+    		var minmax = extremes.reduce(function (current, point) {
 
-                var i = point.y;
-                var j = point.x;
+    			var i = point.y;
+    			var j = point.x;
 
-                return current == null
+    			return current == null
                         ? [i, j, i, j]
                         : [Math.min(current[0], i),
                             Math.min(current[1], j),
                             Math.max(current[2], i),
                             Math.max(current[3], j)];
-            }, null);
+    		}, null);
 
-            var mini = minmax[0];
-            var minj = minmax[1];
-            var maxi = minmax[2];
-            var maxj = minmax[3];
+    		var mini = minmax[0];
+    		var minj = minmax[1];
+    		var maxi = minmax[2];
+    		var maxj = minmax[3];
 
-            // x, y (getStore(origin) -> 0 0)
-            var origin = [-mini, -minj];
+    		// x, y (getStore(origin) -> 0 0)
+    		var origin = [-mini, -minj];
 
-            // max i, max j
-            var n = maxi - mini + 1;
-            var m = maxj - minj + 1;
+    		// max i, max j
+    		var n = maxi - mini + 1;
+    		var m = maxj - minj + 1;
 
-            var data = [];
+    		var data = [];
 
-            var i = -1;
-            while (++i < n) {
-                var row = [];
-                var j = -1;
-                while (++j < m)
-                    row.push(initFn(new Point(j - origin[0], i - origin[1])));
+    		var i = -1;
+    		while (++i < n) {
+    			var row = [];
+    			var j = -1;
+    			while (++j < m)
+    				row.push(initFn(new Point(j - origin[0], i - origin[1])));
 
-                data.push(row);
-            }
+    			data.push(row);
+    		}
 
 
-            return [origin, data];
-        }
+    		return [origin, data];
+    	}
 
-        function MakeHexStore(extremes, initFn, cloneFn) {
-            var originData = MakeData(extremes, initFn);
+    	function MakeHexStore(extremes, initFn, cloneFn) {
+    		var originData = MakeData(extremes, initFn);
 
-            return new HexStore(originData[0], originData[1], initFn, cloneFn);
-        }
+    		return new HexStore(originData[0], originData[1], initFn, cloneFn);
+    	}
 
-        function HexStore(origin, data, initFn, cloneFn) {
-            this.origin = origin;
-            this.data = data;
-            this.initFn = initFn;
-            this.cloneFn = cloneFn;
-        }
+    	function HexStore(origin, data, initFn, cloneFn) {
+    		this.origin = origin;
+    		this.data = data;
+    		this.initFn = initFn;
+    		this.cloneFn = cloneFn;
+    	}
 
-        HexStore.prototype.set = function (pos, value) {
-            var n = this.data.length;
-            var m = this.data[0].length;
+    	HexStore.prototype.set = function (pos, value) {
+    		var n = this.data.length;
+    		var m = this.data[0].length;
 
-            var xo = this.origin[0];
-            var yo = this.origin[1];
+    		var xo = this.origin[0];
+    		var yo = this.origin[1];
 
-            var j = pos.x + xo;
-            var i = pos.y + yo;
+    		var j = pos.x + xo;
+    		var i = pos.y + yo;
 
-            if (i >= 0 && j >= 0 && i < n && j < m) this.data[i][j] = value;
-        }
+    		if (i >= 0 && j >= 0 && i < n && j < m) this.data[i][j] = value;
+    	}
 
-        HexStore.prototype.forEach = function (processFn) {
+    	HexStore.prototype.forEach = function (processFn) {
 
-            var n = this.data.length;
-            var m = this.data[0].length;
+    		var n = this.data.length;
+    		var m = this.data[0].length;
 
-            var xo = this.origin[0];
-            var yo = this.origin[1];
+    		var xo = this.origin[0];
+    		var yo = this.origin[1];
 
-            var i = -1;
-            while (++i < n) {
-                var j = -1;
-                while (++j < m)
-                    if (this.data[i][j] != null)
-                        processFn(this.data[i][j], new Point(j - xo, i - yo));
-            }
-        }
+    		var i = -1;
+    		while (++i < n) {
+    			var j = -1;
+    			while (++j < m)
+    				if (this.data[i][j] != null)
+    					processFn(this.data[i][j], new Point(j - xo, i - yo));
+    		}
+    	}
 
-        // dx dy
-        var dirsdeltas = [
+    	// dx dy
+    	var dirsdeltas = [
             [/*down-right*/ 1, 0],
             [/*up-right*/ 1, 1],
             [/*up*/ 0, 1],
             [/*up-left*/ -1, 0],
             [/*down-left*/ -1, -1],
             [/*down*/ 0, -1]
-        ];
+    	];
 
-        function Adjacent(dir, cell) {
-            this.dir = dir;
-            this.cell = cell;
-        }
+    	function Adjacent(dir, cell) {
+    		this.dir = dir;
+    		this.cell = cell;
+    	}
 
-        HexStore.prototype.adjacent = function (pos) {
+    	HexStore.prototype.adjacent = function (pos) {
 
-            var i = pos.y + this.origin[1];
-            var j = pos.x + this.origin[0];
+    		var i = pos.y + this.origin[1];
+    		var j = pos.x + this.origin[0];
 
-            var data = this.data;
-            var n = this.data.length;
-            var m = this.data[0].length;
+    		var data = this.data;
+    		var n = this.data.length;
+    		var m = this.data[0].length;
 
-            return dirsdeltas.map(function (d, dir) {
-                var dx = d[0];
-                var dy = d[1];
+    		return dirsdeltas.map(function (d, dir) {
+    			var dx = d[0];
+    			var dy = d[1];
 
-                var id = i + dy;
-                var jd = j + dx;
+    			var id = i + dy;
+    			var jd = j + dx;
 
-                return new Adjacent(dir, (id >= 0 && jd >= 0 && id < n && jd < m) ? data[id][jd] : null);
-            });
+    			return new Adjacent(dir, (id >= 0 && jd >= 0 && id < n && jd < m) ? data[id][jd] : null);
+    		});
 
-        }
+    	}
 
-        HexStore.prototype.copy = function () {
+    	HexStore.prototype.copy = function () {
 
-            var n = this.data.length;
-            var m = this.data[0].length;
+    		var n = this.data.length;
+    		var m = this.data[0].length;
 
-            var copy = [];
+    		var copy = [];
 
-            for (var i = 0; i < n; ++i) {
-                var row = [];
-                for (var j = 0; j < m; ++j) {
-                    var val = this.data[i][j];
-                    row.push(val == null ? null : this.cloneFn(val));
-                }
-                copy.push(row);
-            }
+    		for (var i = 0; i < n; ++i) {
+    			var row = [];
+    			for (var j = 0; j < m; ++j) {
+    				var val = this.data[i][j];
+    				row.push(val == null ? null : this.cloneFn(val));
+    			}
+    			copy.push(row);
+    		}
 
-            return new HexStore(this.origin, copy, this.initFn, this.cloneFn);
-        }
+    		return new HexStore(this.origin, copy, this.initFn, this.cloneFn);
+    	}
 
-        HexStore.prototype.nextGen = function (cellCellStoreStoreFunc) {
+    	HexStore.prototype.nextGen = function (cellCellStoreStoreFunc) {
 
-            var newStore = this.copy();
+    		var newStore = this.copy();
 
-            var n = this.data.length;
-            var m = this.data[0].length;
+    		var n = this.data.length;
+    		var m = this.data[0].length;
 
-            var xo = this.origin[0];
-            var yo = this.origin[1];
+    		var xo = this.origin[0];
+    		var yo = this.origin[1];
 
-            for (var i = 0; i < n; ++i) {
-                for (var j = 0; j < m; ++j) {
-                    var pos = new Point(j - xo, i - yo);
+    		for (var i = 0; i < n; ++i) {
+    			for (var j = 0; j < m; ++j) {
+    				var pos = new Point(j - xo, i - yo);
 
-                    cellCellStoreStoreFunc(this.data[i][j], newStore.data[i][j], pos, this, newStore);
-                }
-            }
+    				cellCellStoreStoreFunc(this.data[i][j], newStore.data[i][j], pos, this, newStore);
+    			}
+    		}
 
-            return newStore;
-        }
+    		return newStore;
+    	}
     </script>
 
     <!-- Fullscreen canvas and drawhex -->
     <script type="text/javascript">
-        function fullscreenCanvas(id) {
-            var c = window.document.getElementById(id);
-            var ctx = c.getContext('2d');
+    	function fullscreenCanvas(id) {
+    		var c = window.document.getElementById(id);
+    		var ctx = c.getContext('2d');
 
-            ctx.canvas.width = window.innerWidth;
-            ctx.canvas.height = window.innerHeight;
-            ctx.canvas.style.position = 'absolute';
-            ctx.canvas.style.top = 0;
-            ctx.canvas.style.left = 0;
+    		ctx.canvas.width = window.innerWidth;
+    		ctx.canvas.height = window.innerHeight;
+    		ctx.canvas.style.position = 'absolute';
+    		ctx.canvas.style.top = 0;
+    		ctx.canvas.style.left = 0;
 
-            return ctx;
-        }
+    		return ctx;
+    	}
 
-        var ctx = fullscreenCanvas('can');
-        var w = ctx.canvas.width;
-        var h = ctx.canvas.height;
+    	var ctx = fullscreenCanvas('can');
+    	var w = ctx.canvas.width;
+    	var h = ctx.canvas.height;
 
-        var q = 1 / Math.sqrt(3);
+    	var q = 1 / Math.sqrt(3);
 
-        ctx.pathHex = function (h) {
-            var dx = q * h / 2;
-            var dy = h / 2;
+    	ctx.pathHex = function (h) {
+    		var dx = q * h / 2;
+    		var dy = h / 2;
 
-            this.beginPath();
-            this.moveTo(2 * dx, 0);
-            this.lineTo(dx, -dy);
-            this.lineTo(-dx, -dy);
-            this.lineTo(-2 * dx, 0);
-            this.lineTo(-dx, dy);
-            this.lineTo(dx, dy);
-            this.closePath();
-        };
+    		this.beginPath();
+    		this.moveTo(2 * dx, 0);
+    		this.lineTo(dx, -dy);
+    		this.lineTo(-dx, -dy);
+    		this.lineTo(-2 * dx, 0);
+    		this.lineTo(-dx, dy);
+    		this.lineTo(dx, dy);
+    		this.closePath();
+    	};
 
-        ctx.fillHex = function (x, y, h) {
-            this.save();
-            this.translate(x, y);
-            this.pathHex(h);
-            this.fill();
-            this.restore();
-        };
+    	ctx.fillHex = function (x, y, h) {
+    		this.save();
+    		this.translate(x, y);
+    		this.pathHex(h);
+    		this.fill();
+    		this.restore();
+    	};
 
-        ctx.strokeHex = function (x, y, h) {
-            this.save();
-            this.translate(x, y);
-            this.pathHex(h);
-            this.stroke();
-            this.restore();
-        };
+    	ctx.strokeHex = function (x, y, h) {
+    		this.save();
+    		this.translate(x, y);
+    		this.pathHex(h);
+    		this.stroke();
+    		this.restore();
+    	};
 
-        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+    	ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
     </script>
 
     <!-- Supercell -->
     <script type="text/javascript">
-        /* Hexagonal area with same tiling properties as underlying cells.
+    	/* Hexagonal area with same tiling properties as underlying cells.
 		 */
-        function SuperCell(x, y, rank) {
-            this.x = x;
-            this.y = y;
-            this.rank = rank;
-        }
+    	function SuperCell(x, y, rank) {
+    		this.x = x;
+    		this.y = y;
+    		this.rank = rank;
+    	}
 
-        SuperCell.prototype.getCorners = function () {
-            var r = this.rank;
+    	SuperCell.prototype.getCorners = function () {
+    		var r = this.rank;
 
-            return [new Point(2 * r, r - 1),
+    		return [new Point(2 * r, r - 1),
 				new Point(2 * r, r),
 				new Point(r, 2 * r),
 				new Point(r - 1, 2 * r),
@@ -313,492 +313,491 @@
 				new Point(-r, -2 * r),
 				new Point(r, -r),
 				new Point(r + 1, -r + 1)
-            ];
-        };
+    		];
+    	};
 
-        SuperCell.prototype.contains = function (point) {
-            var x = point.x - this.x;
-            var y = point.y - this.y;
+    	SuperCell.prototype.contains = function (point) {
+    		var x = point.x - this.x;
+    		var y = point.y - this.y;
 
-            var a = this.rank * 3 + 1;
-            var b = this.rank * 3;
+    		var a = this.rank * 3 + 1;
+    		var b = this.rank * 3;
 
-            var leftup = 2 * x + b;
-            var top = (x + a) / 2;
-            var rightup = b - x;
-            var rightdown = 2 * x - a;
-            var bottom = (x - b) / 2;
-            var leftdown = -x - a;
+    		var leftup = 2 * x + b;
+    		var top = (x + a) / 2;
+    		var rightup = b - x;
+    		var rightdown = 2 * x - a;
+    		var bottom = (x - b) / 2;
+    		var leftdown = -x - a;
 
-            return leftup >= y
+    		return leftup >= y
 				&& top >= y
 				&& rightup >= y
 				&& rightdown <= y
 				&& bottom <= y
 				&& leftdown <= y;
-        };
+    	};
 
     </script>
 
     <!-- RangeScale -->
     <script type="text/javascript">
 
-        function Range(min, max) {
-            this.min = min;
-            this.max = max;
-        }
+    	function Range(min, max) {
+    		this.min = min;
+    		this.max = max;
+    	}
 
-        Range.prototype.include = function (value) {
-            this.min = Math.min(this.min, value);
-            this.max = Math.max(this.max, value);
-        }
+    	Range.prototype.include = function (value) {
+    		this.min = Math.min(this.min, value);
+    		this.max = Math.max(this.max, value);
+    	}
 
-        Range.prototype.place = function (value) {
-            return value > this.max ? 1
+    	Range.prototype.place = function (value) {
+    		return value > this.max ? 1
 				: value < this.min ? 0
 				: (value - this.min) / (this.max - this.min);
-        }
+    	}
 
-        function RangeScale(initiala, initialb) {
+    	function RangeScale(initiala, initialb) {
 
-            if (arguments.length == 2) {
-                this.current = new Range(initiala, initialb);
-            }
-            else if (arguments.length == 1) {
-                this.current = new Range(0, initiala);
-            }
-            else {
-                this.current = new Range(0, 1);
-            }
+    		if (arguments.length == 2) {
+    			this.current = new Range(initiala, initialb);
+    		}
+    		else if (arguments.length == 1) {
+    			this.current = new Range(0, initiala);
+    		}
+    		else {
+    			this.current = new Range(0, 1);
+    		}
 
-            this.next = null;
-        }
+    		this.next = null;
+    	}
 
-        RangeScale.prototype.place = function (value) {
+    	RangeScale.prototype.place = function (value) {
 
-            if (this.next == null)
-                this.next = new Range(value, value);
+    		if (this.next == null)
+    			this.next = new Range(value, value);
 
-            this.next.include(value);
+    		this.next.include(value);
 
-            return this.current.place(value);
-        }
+    		return this.current.place(value);
+    	}
 
-        RangeScale.prototype.update = function () {
-            this.current = new Range((this.current.min + this.next.min) / 2, (this.current.max + this.next.max) / 2);
-            this.next = null;
-        }
+    	RangeScale.prototype.update = function () {
+    		this.current = new Range((this.current.min + this.next.min) / 2, (this.current.max + this.next.max) / 2);
+    		this.next = null;
+    	}
 
     </script>
 
     <script type="text/javascript">
-        //
-        // TODO:
-        //	get all hexes within specified hex-distance - see pill
-        //	calculate FOV (maybe by extending line algo)
-        //		calculate illumination (apply light from several sources plus player FOV)
-        //	add wrapping
-        //
+    	//
+    	// TODO:
+    	//	get all hexes within specified hex-distance - see pill
+    	//	calculate FOV (maybe by extending line algo)
+    	//		calculate illumination (apply light from several sources plus player FOV)
+    	//	add wrapping
+    	//
 
-        var rank = 13;
-        var supercell = new SuperCell(0, 0, rank);
-        var extremes = supercell.getCorners();
-        var cellsize = 13;
-        var maxlevel = 24;
-        var maxamount = 100;
+    	var rank = 13;
+    	var supercell = new SuperCell(0, 0, rank);
+    	var extremes = supercell.getCorners();
+    	var cellsize = 13;
+    	var maxlevel = 24;
+    	var maxamount = 195;
 
-        var wall = {};
+    	var wall = {};
 
-        function cutoff(t) {
-            return t * t * t * (t * 3 * (2 * t - 5) + 10);
-        }
+    	function cutoff(t) {
+    		return t * t * t * (t * 3 * (2 * t - 5) + 10);
+    	}
 
-        function hexdist(p1, p2) {
-            var dx = p1.x - p2.x;
-            var dy = p1.y - p2.y;
+    	function hexdist(p1, p2) {
+    		var dx = p1.x - p2.x;
+    		var dy = p1.y - p2.y;
 
-            var sx = dx >= 0 ? 1 : -1;
-            var sy = dy >= 0 ? 1 : -1;
+    		var sx = dx >= 0 ? 1 : -1;
+    		var sy = dy >= 0 ? 1 : -1;
 
-            dx = dx < 0 ? -dx : dx;
-            dy = dy < 0 ? -dy : dy;
+    		dx = dx < 0 ? -dx : dx;
+    		dy = dy < 0 ? -dy : dy;
 
-            return sx == sy
+    		return sx == sy
 				? (dx > dy ? dx : dy)
 				: (dx + dy);
-        }
+    	}
 
-        function worddist(p1, p2) {
-            var sq32 = Math.sqrt(3) / 2;
+    	function worddist(p1, p2) {
+    		var sq32 = Math.sqrt(3) / 2;
 
-            var x1 = p1.x * sq32;
-            var x2 = p2.x * sq32;
-            var y1 = -(p1.y - p1.x / 2);
-            var y2 = -(p2.y - p2.x / 2);
+    		var x1 = p1.x * sq32;
+    		var x2 = p2.x * sq32;
+    		var y1 = -(p1.y - p1.x / 2);
+    		var y2 = -(p2.y - p2.x / 2);
 
-            var dx = x2 - x1;
-            var dy = y2 - y1;
+    		var dx = x2 - x1;
+    		var dy = y2 - y1;
 
-            return Math.sqrt(dx * dx + dy * dy);
-        }
+    		return Math.sqrt(dx * dx + dy * dy);
+    	}
 
-        var maxdist = rank / 3 | 0;
+    	var maxdist = rank / 3 | 0;
 
+    	// TODO: merge pill and blob for pill is just a blob special case.
+    	function Pill(w, h) {
+    		var h = Math.floor(h / 2);
+    		var w = Math.floor(w / 2);
 
-        // TODO: merge pill and blob for pill is just a blob special case.
-        function Pill(w, h) {
-            var h = Math.floor(h / 2);
-            var w = Math.floor(w / 2);
-
-            this.extremes = [
+    		this.extremes = [
 				new Point(0, h),
 				new Point(0, -h),
 				new Point(w, h),
 				new Point(-w, -h),
 				new Point(-w, h - w),
 				new Point(w, -h + w)
-            ];
+    		];
 
-            this.contains = function (pos) {
-                var x = pos.x;
-                var y = pos.y;
+    		this.contains = function (pos) {
+    			var x = pos.x;
+    			var y = pos.y;
 
-                return y <= h && y >= -h && x <= w && x >= -w && y <= x + h && y >= x - h
-            }
-        }
+    			return y <= h && y >= -h && x <= w && x >= -w && y <= x + h && y >= x - h
+    		}
+    	}
 
-        function blob(x, y, a, b, c, d) {
-            b = b || a;
-            c = c || a;
-            d = d || c;
+    	function blob(x, y, a, b, c, d) {
+    		b = b || a;
+    		c = c || a;
+    		d = d || c;
 
-            if (a + d - c < 1)
-                d = c + 1 - a;
+    		if (a + d - c < 1)
+    			d = c + 1 - a;
 
-            for (var i = 0; i < b + c - 1; ++i) {
-                for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
-                    store.set(new Point(x + j, y + i), { type: polished });
-            }
-        }
+    		for (var i = 0; i < b + c - 1; ++i) {
+    			for (var j = (i > b - 1 ? i - b + 1 : 0) ; j < (i < d ? a + i : a + d - 1) ; ++j)
+    				store.set(new Point(x + j, y + i), { type: polished });
+    		}
+    	}
 
-        function line(p1, p2) {
-            var dx = p2.x - p1.x;
-            var dy = 2 * (p2.y - p1.y) - dx;
+    	function line(p1, p2) {
+    		var dx = p2.x - p1.x;
+    		var dy = 2 * (p2.y - p1.y) - dx;
 
-            var sx = dx >= 0 ? 1 : -1;
-            var sy = dy >= 0 ? 1 : -1;
+    		var sx = dx >= 0 ? 1 : -1;
+    		var sy = dy >= 0 ? 1 : -1;
 
-            dx = Math.abs(dx);
-            dy = Math.abs(dy);
+    		dx = Math.abs(dx);
+    		dy = Math.abs(dy);
 
-            var alwaysDy = dy >= dx;
+    		var alwaysDy = dy >= dx;
 
-            var x = p1.x;
-            var y = p1.y;
+    		var x = p1.x;
+    		var y = p1.y;
 
-            var points = [new Point(x, y)];
+    		var points = [new Point(x, y)];
 
-            var e = 0;
-            var n = 0, limit = 200;
+    		var e = 0;
+    		var n = 0, limit = 200;
 
-            while (1) {
-                if (alwaysDy) {
-                    e += dx;
-                    if (3 * e >= dy) {
-                        x += sx;
-                        y += (sy == sx) ? sy : 0;
-                        e -= dy;
-                    } else {
-                        y += sy;
-                        e += dx;
-                    }
-                } else {
-                    e += dy;
-                    if (e > 0) {
-                        y += (sy == sx) ? sy : 0;
-                        e -= dx;
-                    } else {
-                        y -= (sx == sy) ? 0 : sy;
-                        e += dx;
-                    }
-                    x += sx;
-                }
+    		while (1) {
+    			if (alwaysDy) {
+    				e += dx;
+    				if (3 * e >= dy) {
+    					x += sx;
+    					y += (sy == sx) ? sy : 0;
+    					e -= dy;
+    				} else {
+    					y += sy;
+    					e += dx;
+    				}
+    			} else {
+    				e += dy;
+    				if (e > 0) {
+    					y += (sy == sx) ? sy : 0;
+    					e -= dx;
+    				} else {
+    					y -= (sx == sy) ? 0 : sy;
+    					e += dx;
+    				}
+    				x += sx;
+    			}
 
-                points.push(new Point(x, y));
+    			points.push(new Point(x, y));
 
-                if (p2.x == x && p2.y == y)
-                    break;
-            }
+    			if (p2.x == x && p2.y == y)
+    				break;
+    		}
 
-            return points;
-        }
+    		return points;
+    	}
 
-        //var hw = 3; // half leaf width
-        //var di = 10; // distance from center
-        //var le = 2; // leaf length
+    	var cursor = new Point(0, 0);
 
-        //blob(di, di, hw, hw, le);//    /
-        //blob(-(le + di), -(le + di), hw, hw, le);
+    	var sq32 = Math.sqrt(3) / 2;
 
-        //blob(di, -(hw - 1), le, hw, hw); //  \
-        //blob(-(le + di), -(hw - 1), le, hw, hw);
+    	function getScreen(world) {
+    		var s = cellsize;
+    		var q = .95;
 
-        //blob(-(hw - 1), di, hw, le, hw); //  |
-        //blob(-(hw - 1), -(le + di), hw, le, hw);// |
-
-        var cursor = new Point(0, 0);
-
-        var sq32 = Math.sqrt(3) / 2;
-
-        function getScreen(world) {
-            var s = cellsize;
-            var q = .95;
-
-            return new Point(
+    		return new Point(
 				q * s * world.x * sq32,
 				q * -s * (world.y - world.x / 2)
 			);
-        }
+    	}
 
-        var water = {};
+    	var water = {};
 
-        function CellValue(type, value, vector) {
-            this.type = type;
-            this.value = value;
+    	function addHexVector(v, v1/*[dr, ur, u, ul, dl, d]*/) {
 
-            if (vector == null) {
-                this.vector = [0, 0, 0, 0, 0, 0];
-            }
-            else {
-                var v = vector.slice();
+			for (var i = 0; i < 6; ++i) {
+    			v[i] += v1[i];
+    		}
+    	}
 
-                for (var i = 0; i < 6 ; ++i) {
-                    var j = (i + 3) % 6;
-                    var common = Math.min(v[i], v[j]);
+    	function normalizeHexVector(v) {
+    		// cancel-out opposite vectors
+    		for (var i = 0; i < 6 ; ++i) {
+    			var j = (i + 3) % 6;
+    			var common = Math.min(v[i], v[j]);
 
-                    v[i] -= common;
-                    v[j] -= common;
-                }
+    			v[i] -= common;
+    			v[j] -= common;
+    		}
 
-                for (var i = 0; i < 6 ; ++i) {
-                    var j = (i + 1) % 6;
-                    var k = (i + 5) % 6;
+    		// add 120 degrees vectors
+    		for (var i = 0; i < 6 ; ++i) {
+    			var j = (i + 1) % 6;
+    			var k = (i + 5) % 6;
 
-                    var common = Math.min(v[j], v[k]);
+    			var common = Math.min(v[j], v[k]);
 
-                    v[i] += common;
-                    v[j] -= common;
-                    v[k] -= common;
-                }
-                this.vector = v;
-            }
-        }
+    			v[i] += common;
+    			v[j] -= common;
+    			v[k] -= common;
+    		}
+    	}
 
-        function CloneCellValue(arg) {
-            return new CellValue(arg.type, arg.value, arg.vector);
-        }
+    	function CellValue(type, value) {
+    		this.type = type;
+    		this.value = value;
 
-        function MakeCellValue(arg) {
-            if (supercell.contains(arg)) {
+    		this.vector = [0, 0, 0, 0, 0, 0];
+    	}
 
-                var sx = arg.x >= 0 ? 1 : -1;
-                var sy = arg.y >= 0 ? 1 : -1;
+    	function CloneCellValue(arg) {
+    		return new CellValue(arg.type, arg.value);
+    	}
 
-                var x = Math.abs(arg.x);
-                var y = Math.abs(arg.y);
+    	function MakeCellValue(arg) {
+    		if (supercell.contains(arg)) {
 
-                var dist;
-                if (sx == sy)
-                    dist = x >= y ? x : y;
-                else
-                    dist = x + y;
+    			var sx = arg.x >= 0 ? 1 : -1;
+    			var sy = arg.y >= 0 ? 1 : -1;
 
-                dist = hexdist(new Point(0, 0), arg);
-                dist = worddist(new Point(0, 0), arg);
+    			var x = Math.abs(arg.x);
+    			var y = Math.abs(arg.y);
 
-                var amount = dist >= maxdist ? 0 : (cutoff(1 - dist / maxdist) * maxamount) | 0;
+    			var dist;
+    			if (sx == sy)
+    				dist = x >= y ? x : y;
+    			else
+    				dist = x + y;
 
-                return new CellValue(water, amount);
-            }
+    			dist = hexdist(new Point(0, 0), arg);
+    			dist = worddist(new Point(0, 0), arg);
 
-            return null;
-        }
+    			var amount = dist >= maxdist ? 0 : (cutoff(1 - dist / maxdist) * maxamount) | 0;
 
-        var store = new MakeHexStore(supercell.getCorners(), MakeCellValue, CloneCellValue);
+    			var cell = new CellValue(water, amount);
 
+    			return cell;
 
-        var a = Math.floor(maxdist / 2);
+    		}
 
-        line(new Point(-maxdist, maxdist - a), new Point(maxdist, maxdist + a))
+    		return null;
+    	}
+
+    	var store = new MakeHexStore(supercell.getCorners(), MakeCellValue, CloneCellValue);
+
+    	var a = Math.floor(maxdist / 2);
+
+    	line(new Point(-maxdist, maxdist - a), new Point(maxdist, maxdist + a))
 				.forEach(function (pos) {
-				    store.set(pos, new CellValue(wall, 0));
+					store.set(pos, new CellValue(wall, 0));
 				});
 
-        var lastTime = (new Date()).getTime();
+    	var lastTime = (new Date()).getTime();
 
-        var amountRange = new RangeScale(10);
+    	var amountRange = new RangeScale(10);
 
-        function draw(store) {
+    	function draw(store) {
 
-            function cellColor(val, pos) {
-                if (val != null && val instanceof CellValue && val.type == water) {
-                    var a = amountRange.place(val.value);
+    		function cellColor(val, pos) {
+    			if (val != null && val instanceof CellValue && val.type == water) {
 
-                    return a == 0
+    				var a = amountRange.place(val.value);
+    				//var a = amountRange.place(val.value / 10 + val.vector[0] + val.vector[1] + val.vector[2] + val.vector[3] + val.vector[4] + val.vector[5]);
+
+    				return a == 0
 						? (((pos.x % 6) == 0 && (pos.y % 6) == 0) ? 'hsl(47, 97%, 70%)' : 'hsl(47, 97%, 73%)')
 						: 'hsl(210, ' + (10 + 90 * a) + '%, ' + (50 - 40 * a) + '%)';
-                }
+    			}
 
-                return 'transparent';
-            }
+    			return 'transparent';
+    		}
 
-            function drawCell(cell, pos) {
-                var s = cellsize;
-                var screen = getScreen(pos);
-                var x = screen.x;
-                var y = screen.y;
+    		function drawCell(cell, pos) {
+    			var s = cellsize;
+    			var screen = getScreen(pos);
+    			var x = screen.x;
+    			var y = screen.y;
 
-                ctx.fillStyle = cellColor(cell, pos);
-                ctx.fillHex(x, y, s);
+    			ctx.fillStyle = cellColor(cell, pos);
+    			ctx.fillHex(x, y, s);
 
-                //var width = ctx.measureText(cell.value);
-                //ctx.font = "8pt Courier New";
-                //ctx.fillStyle = "#FFF";
-                //ctx.fillText(cell.value, x - width.width / 2, y+2);
-            }
+    			//var width = ctx.measureText(cell.value);
+    			//ctx.font = "8pt Courier New";
+    			//ctx.fillStyle = "#FFF";
+    			//ctx.fillText(cell.value, x - width.width / 2, y+2);
+    		}
 
-            ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
-            store.forEach(drawCell);
+    		ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
+    		store.forEach(drawCell);
 
-            amountRange.update();
-            amountRange.place(0); // force minimum range
-            amountRange.place(12);
-        }
+    		amountRange.update();
+    		amountRange.place(0); // force minimum range
+    		amountRange.place(24);
+    	}
 
-        var bias = 0;
-        function tick(delta) {
+    	var bias = 0;
+    	function tick(delta) {
 
-            // for every cell sort all neighbors by relative overshoot plus by motion vector
-            // using this order compare each neighbor's value with this cell's value plus motion vector towards this neighbor.
-            // if neighbors's value is less, give them one point of value, plus add overshoot plus this cell's motion vector decreased by one to neighbor's motion vector.
+    		// for every cell sort all neighbors by relative overshoot plus by motion vector
+    		// using this order compare each neighbor's value with this cell's value plus motion vector towards this neighbor.
+    		// if neighbors's value is less, give them one point of value, plus add overshoot plus this cell's motion vector decreased by one to neighbor's motion vector.
 
-            function watercell(val) {
-                return val != null && val.type == water;
-            }
+    		//store.set(new Point(-10, 10), new CellValue(water, 10));
+    		//store.set(new Point(10, -10), new CellValue(water, 0))
 
-            function match(dir, adjes) {
-                var i = -1, n = adjes.length;
+    		function watercell(val) {
+    			return val != null && val.type == water;
+    		}
 
-                while (++i < n)
-                    if (adjes[i].dir == dir)
-                        return adjes[i].cell;
+    		bias+=5;
+    		var vecsum = 0;
+    		store = store.nextGen(function (oldCell, newCell, pos, oldStore, newStore) {
+    			if (!watercell(oldCell) || oldCell.value <= 0)
+    				return;
 
-                return null;
-            }
+    			var val = oldCell.value;
+    			var vec = oldCell.vector;
+    			
+    			var v0 = val;
 
-            var newStore = store.copy();
+    			var oldadj = oldStore.adjacent(pos);
+    			var newadj = newStore.adjacent(pos);
 
-            bias = (++bias) % 6;
-            return store = store.nextGen(function (oldCell, newCell, pos, oldStore, newStore) {
+    			var grad1 = [];
+    			var grad2 = [];
 
-                if (watercell(oldCell) && oldCell.value > 0) {
+    			oldadj.forEach(function (adj) {
 
-                    var val = oldCell.value;
-                    var v0 = val;
+    				vecsum += vec[adj.dir];
+    				var val = watercell(adj.cell) ? v0 - adj.cell.value + vec[adj.dir] : 0;
 
-                    var oldadj = oldStore.adjacent(pos);
-                    var newadj = newStore.adjacent(pos);
+    				grad1.push(val);
+    				grad2.push(val);
+    			});
 
-                    function score(adj, dir) {
-                        if (!watercell(adj))
-                            return -Infinity;
+    			normalizeHexVector(grad2);
+    			addHexVector(grad1, grad2);
 
-                        // the bigger the score, the earlier this cell will the receiver queue
+    			// the bigger the score, the earlier this cell will appear in the receiver queue
+    			function score(dir) {
+    				//return bias % 6 + 6 * grad1[dir] * 6;
+    				return bias % 6 + 6 * grad1[dir] + 3 * grad1[(dir + 1) % 6] + 3 * grad1[(dir + 5) % 6];
+    			}
 
-                        // overshoot
-                        var grad = v0 - adj.value;
+    			function byadjvalue(adj1, adj2) {
+    				// reverse order
+    				return score(adj2.dir) - score(adj1.dir);
+    			}
 
-                        // inertia
-                        var iner = oldCell.vector[dir];
+    			var decay = 12;
+    			var mingrad = 1;
 
-                        var backcell = oldadj[(dir + 3) % 6];
-                        var backGrad = watercell(backcell.cell) ? v0 - backcell.cell.value : 0;
+    			oldadj.sort(byadjvalue)
+					.forEach(function (adj) {
+						if (val > 1) {
 
-                        var b = (dir + bias) % 6;
+							var dir = adj.dir;
+							var newcell = newadj[dir].cell;
 
-                        return grad + iner + b/6 - backGrad;
-                    }
+							if (watercell(adj.cell)) {
 
-                    function byadjvalue(adj1, adj2) {
-                        // reverse order
-                        return score(adj2.cell, adj2.dir) - score(adj1.cell, adj1.dir);
-                    }
+								var delta = v0 + vec[dir] - adj.cell.value;
 
-                    oldadj.sort(byadjvalue)
-					      .forEach(function (adj) {
-					          if (val > 1) {
+								if (delta > mingrad) {
+									--val;
+									++newcell.value;
 
-					              var dir = adj.dir;
-					              var newcell = newadj[dir].cell;
+									
+									newcell.vector[dir] += delta > decay ? delta - decay : delta;
+									normalizeHexVector(newcell.vector);
+									//addHexVector(newcell.vector, gradv);
+								}
+							}
+						}
+					});
 
-					              if (watercell(adj.cell)) {
+    			newCell.value -= v0 - val;
+    		});
+    		console.log(vecsum);
 
-					                  var v = oldCell.vector[dir];
-					                  if (val + v > adj.cell.value) {
-					                      --val;
-					                      ++newcell.value;
+    		return store;
+    	}
 
-					                      if (v > 1)
-					                          newcell.vector[dir] += v - 1;
-					                  }
-					              }
-					          }
-					      });
+    	var frames = 1080;
+    	var coldframes = 5;
+    	var frame = 0;
+    	function render() {
+    		var newTime = (new Date()).getTime();
+    		var delta = newTime - lastTime;
+    		lastTime = newTime;
 
-                    newCell.value -= v0 - val;
-                }
-            });
-        }
+    		if (frame > coldframes)
+    			tick(delta);
 
-        var frames = 1080;
-        var coldframes = 5;
-        var frame = 0;
-        function render() {
-            var newTime = (new Date()).getTime();
-            var delta = newTime - lastTime;
-            lastTime = newTime;
+    		draw(store);
 
-            if (frame > coldframes)
-                tick(delta);
+    		var time = (new Date()).getTime();
 
-            draw(store);
+    		if (++frame < frames) {
+    			window.setTimeout(queRender, 16);
+    		}
+    		else
+    			console.log('done');
+    	}
 
-            var time = (new Date()).getTime();
+    	function queRender() {
+    		window.requestAnimationFrame(render);
+    	}
 
-            if (++frame < frames) {
-                window.setTimeout(queRender, 16);
-            }
-            else
-                console.log('done');
-        }
-
-        function queRender() {
-            window.requestAnimationFrame(render);
-        }
-
-        queRender();
+    	queRender();
 
     </script>
+
     <!-- user input -->
     <script type="text/javascript">
 
-        function InputManager(mapping) {
-            var $ = this;
-            this.action = null;
-            this.handler = function (event) { $.action = mapping[event.which] };
+    	function InputManager(mapping) {
+    		var $ = this;
+    		this.action = null;
+    		this.handler = function(event) { $.action = mapping[event.which] };
 
-            window.addEventListener('keydown', this.handler, false);
-        }
+    		window.addEventListener('keydown', this.handler, false);
+    	}
 
     </script>
 
