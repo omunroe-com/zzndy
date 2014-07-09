@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -498,7 +499,6 @@
     		var points = [new Point(x, y)];
 
     		var e = 0;
-    		var n = 0, limit = 200;
 
     		while (1) {
     			if (alwaysDy) {
@@ -577,36 +577,29 @@
     		}
     	}
 
-    	function CellValue(type, value, vector) {
+    	function CellValue(type, value) {
     		this.type = type;
     		this.value = value;
 
-    		this.vector = vector || [0, 0, 0, 0, 0, 0];
-
-    		if (vector) normalizeHexVector(this.vector);
+    		this.vector = [0, 0, 0, 0, 0, 0];
+    		this.counter = [0, 0, 0, 0, 0, 0];
     	}
 
     	function CloneCellValue(arg) {
-    		return new CellValue(arg.type, arg.value, arg.vector);
+    		return new CellValue(arg.type, arg.value);
     	}
 
     	function MakeCellValue(arg) {
     		if (supercell.contains(arg)) {
 
-    			var sx = arg.x >= 0 ? 1 : -1;
-    			var sy = arg.y >= 0 ? 1 : -1;
-
-    			var x = Math.abs(arg.x);
-    			var y = Math.abs(arg.y);
-
     			var dist = worddist(new Point(0, 0), arg);
 
     			var amount = dist >= maxdist ? 0 : (cutoff(1 - dist / maxdist) * maxamount) | 0;
 
+    			//amount = arg.x == 10 && arg.y == 10 ? maxamount * 2 : 0;
     			var cell = new CellValue(water, amount);
 
     			return cell;
-
     		}
 
     		return null;
@@ -635,7 +628,7 @@
     			if (val != null && val instanceof CellValue && val.type == water) {
 
     				var a = amountRange.place(val.value);
-    				//var a = amountRange.place(val.value / 10 + val.vector[0] + val.vector[1] + val.vector[2] + val.vector[3] + val.vector[4] + val.vector[5]);
+    				var a = amountRange.place(val.value / 10 + val.vector[0] + val.vector[1] + val.vector[2] + val.vector[3] + val.vector[4] + val.vector[5]);
 
     				return a == 0
 						? (((pos.x % 6) == 0 && (pos.y % 6) == 0) ? 'hsl(47, 97%, 70%)' : 'hsl(47, 97%, 73%)')
@@ -663,21 +656,34 @@
     		amountRange.place(24);
     	}
 
+    	function dec(v, i, xi) {
+
+    		return i == xi || v[i] < 1 ? v[i] : v[i] - 1;
+    	}
+
+    	function trySubstract(v1, v2) {
+
+    		var v = [];
+
+    		for (var i = 0; i < v1.length; ++i) {
+    			var d = v1[i] - v2[i];
+
+    			if (d<0)
+    				return v1;
+
+    			v.push(d);
+    		}
+    		
+    		return v;
+    	}
+
     	var bias = 0;
     	function tick(delta) {
-
-    		// for every cell sort all neighbors by relative overshoot plus by motion vector
-    		// using this order compare each neighbor's value with this cell's value plus motion vector towards this neighbor.
-    		// if neighbors's value is less, give them one point of value, plus add overshoot plus this cell's motion vector decreased by one to neighbor's motion vector.
-
-    		//store.set(new Point(-10, 10), new CellValue(water, 10));
-    		//store.set(new Point(10, -10), new CellValue(water, 0))
-
     		function watercell(val) {
     			return val != null && val.type == water;
     		}
 
-    		bias+=5;
+    		bias+=1;
     		var vecsum = 0;
 
     		function update(cell, newCell, surround, newSurround) {
@@ -685,28 +691,46 @@
     			var val = val0;
     			var vec = cell.vector;
 
+
+    			cell.counter = trySubstract(cell.counter, cell.vector);
+
     			var scores = surround.map(function (node) {
     				if (vec[node.dir] > 0) --vec[node.dir];
     				vecsum += vec[node.dir];
-    				return (watercell(node.cell) ? val0 + vec[node.dir] - node.cell.value : 0) * 6 + bias % 6;
+
+    				newCell.counter[node.dir] = cell.counter[node.dir];
+
+    				return (watercell(node.cell) ? val0 + vec[node.dir] - cell.counter[node.dir] - node.cell.value : 0) * 6 + bias % 6;
     			});
 
     			surround.sort(function(n1, n2) { return scores[n2.dir] - scores[n1.dir]; })
     				.forEach(function (node) {
     					if (val > 1 && watercell(node.cell)) {
-    						var delta = val0 + vec[node.dir] - node.cell.value;
-    						if (delta > 1) {
+    						var pot = val0 - node.cell.value;
+    						var kin = vec[node.dir];
+
+    						var d = pot > kin ? pot : kin;
+
+    						if (d > 0) {
     							var newcell = newSurround[node.dir].cell;
     							--val;
     							++newcell.value;
-    							
-    							addHexVector(newcell.vector, vec);
+    							newcell.counter[node.dir]++;
 
-    							if (val0 - node.cell.value > 1)
-    								newcell.vector[node.dir] += val0 - node.cell.value - 1;
-    							
-								normalizeHexVector(newcell.vector);
+    							if (kin > pot) {
+    								var vec2 = [dec(vec, 0, node.dir), dec(vec, 1, node.dir), dec(vec, 2, node.dir), dec(vec, 3, node.dir), dec(vec, 4, node.dir), dec(vec, 5, node.dir)];
+    								addHexVector(newcell.vector, vec2);
+    							} else {
+    								newcell.vector[node.dir] += pot - 1;
+    							}
+
+    							normalizeHexVector(newcell.vector);
     						}
+    					} else {
+
+    						newCell.vector[(node.dir + 3) % 6] += newCell.vector[node.dir];
+    						newCell.vector[node.dir] = 0;
+
     					}
     				});
 
@@ -724,7 +748,7 @@
     			update(oldCell, newCell, oldadj, newadj);
     		});
     		
-    		//console.log(vecsum);
+    		console.log(vecsum);
     		//debugger;
 
     		return store;
