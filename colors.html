@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+	<style>
+		html {
+			background-color: #262626;
+			color: #999;
+		}
+
+		.sample {
+			display: inline-block;
+			width: 1ex;
+			height: 2ex;
+			border-bottom: 5px solid transparent;
+		}
+
+		.out-of-gamut {
+			border-bottom: 5px solid yellow;
+		}
+
+	</style>
+</head>
+<body>
+
+	<script type="text/javascript">
+
+		var rgbData = [
+			[0, 0, 0], [0, 0, 36], [0, 0, 51], [0, 0, 66], [0, 0, 81], [2, 0, 90], [4, 0, 99], [7, 0, 106], [11, 0, 115], [14, 0, 119], [20, 0, 123], [27, 0, 128], [33, 0, 133],
+			[41, 0, 137], [48, 0, 140], [55, 0, 143], [61, 0, 146], [66, 0, 149], [72, 0, 150], [78, 0, 151], [84, 0, 152], [91, 0, 153], [97, 0, 155],
+			[104, 0, 155], [110, 0, 156], [115, 0, 157], [122, 0, 157], [128, 0, 157], [134, 0, 157], [139, 0, 157], [146, 0, 156], [152, 0, 155], [157, 0, 155],
+			[162, 0, 155], [167, 0, 154], [171, 0, 153], [175, 1, 152], [178, 1, 151], [182, 2, 149], [185, 4, 149], [188, 5, 147], [191, 6, 146], [193, 8, 144],
+			[195, 11, 142], [198, 13, 139], [201, 17, 135], [203, 20, 132], [206, 23, 127], [208, 26, 121], [210, 29, 116], [212, 33, 111], [214, 37, 103],
+			[217, 41, 97], [219, 46, 89], [221, 49, 78], [223, 53, 66], [224, 56, 54], [226, 60, 42], [228, 64, 30], [229, 68, 25], [231, 72, 20], [232, 76, 16],
+			[234, 78, 12], [235, 82, 10], [236, 86, 8], [237, 90, 7], [238, 93, 5], [239, 96, 4], [240, 100, 3], [241, 103, 3], [241, 106, 2], [242, 109, 1],
+			[243, 113, 1], [244, 116, 0], [244, 120, 0], [245, 125, 0], [246, 129, 0], [247, 133, 0], [248, 136, 0], [248, 139, 0], [249, 142, 0], [249, 145, 0],
+			[250, 149, 0], [251, 154, 0], [252, 159, 0], [253, 163, 0], [253, 168, 0], [253, 172, 0], [254, 176, 0], [254, 179, 0], [254, 184, 0], [254, 187, 0],
+			[254, 191, 0], [254, 195, 0], [254, 199, 0], [254, 202, 1], [254, 205, 2], [254, 208, 5], [254, 212, 9], [254, 216, 12], [255, 219, 15],
+			[255, 221, 23], [255, 224, 32], [255, 227, 39], [255, 229, 50], [255, 232, 63], [255, 235, 75], [255, 238, 88], [255, 239, 102], [255, 241, 116],
+			[255, 242, 134], [255, 244, 149], [255, 245, 164], [255, 247, 179], [255, 248, 192], [255, 249, 203], [255, 251, 216], [255, 253, 228], [255, 254, 239],
+			[255, 255, 249]
+		];
+
+		function rgb2hsv(r, g, b) {
+			var max = Math.max(r, g, b);
+			var min = Math.min(r, g, b);
+			var d = max - min;
+
+			var h = 60 * (d == 0 ? 0 : max == r ? (((g - b) / d) % 6) : max == g ? ((b - r) / d + 2) : ((r - g) / d + 4));
+			var s = d == 0 ? 0 : (d / max);
+			var v = max/255;
+
+			return [h, s*100, v*100];
+		}
+
+		function rgb2hsl(r, g, b) {
+			var max = Math.max(r, g, b);
+			var min = Math.min(r, g, b);
+			var d = max - min;
+
+			var h = 60 * (d == 0 ? 0 : max == r ? (((g - b) / d) % 6) : max == g ? ((b - r) / d + 2) : ((r - g) / d + 4));
+			var l = (max + min) / 2 / 255;
+			var s = d == 0 ? 0 : (d / 255 / (1 - Math.abs(2 * l - 1)));
+
+			return [h, s*100, l*100];
+		}
+
+		function rgb2hcy(r, g, b) {
+		}
+
+		var oog1 = 0;
+
+		// hue Chroma luma
+		function hcy2rgb(h, c, y) {
+			h /= 60;
+
+			var k = (1 - Math.abs((h % 2) - 1));
+			var x = c * k;
+			
+			// 601
+			var r = .3;
+			var g = .59;
+			var b = .11;
+
+			// 709
+			r = .21;
+			g = .72;
+			b = .07;
+
+			var z = h < 1 ? r + k * g
+				: h < 2 ? g + k * r
+					: h < 3 ? g + k * b
+						: h < 4 ? b + k * g
+							: h < 5 ? b + k * r
+								: r + k * b;
+
+			var max1 = y / z;
+
+			var max2 = 1 > z ? (1 - y) / (1 - z) : 1 < z ? -y / (1 - z) : 1;
+			var max3 = k > z ? (k - y) / (k - z) : k < z ? -y / (k - z) : k;
+			
+			var max = Math.min(max1, max2, max3)
+
+
+			if (max < 0) ++oog1;
+
+			var rgb = h < 1 ? [c, x, 0]
+				: h < 2 ? [x, c, 0]
+					: h < 3 ? [0, c, x]
+						: h < 4 ? [0, x, c]
+							: h < 5 ? [x, 0, c]
+								: [c, 0, x];
+
+			var m = y - (r * rgb[0] + g * rgb[1] + b * rgb[2]);
+
+			return [rgb[0] + m, rgb[1] + m, rgb[2] + m];
+		}
+
+		document.body.appendChild(document.createTextNode('RGB'));
+		document.body.appendChild(document.createElement('div'));
+
+		for (var i = 0; i < rgbData.length; ++i) {
+			var el = document.createElement('div');
+			el.className = 'sample';
+			el.style.backgroundColor = 'rgb(' + rgbData[i][0] + ',' + rgbData[i][1] + ',' + rgbData[i][2] + ')';
+
+			document.body.appendChild(el);
+		}
+
+		document.body.appendChild(document.createElement('div'));
+		document.body.appendChild(document.createTextNode('HSV'));
+		document.body.appendChild(document.createElement('div'));
+
+		for (var i = 0; i < rgbData.length; ++i) {
+			var c = rgb2hsv(rgbData[i][0], rgbData[i][1], rgbData[i][2]);
+
+			var el = document.createElement('div');
+			el.className = 'sample';
+			el.style.backgroundColor = 'hsv(' + c[0] + ',' + c[1] + '%,' + c[2] + '%)';
+
+			//console.log('hsv(' + c[0] + ',' + c[1] + '%,' + c[2] + '%)');
+
+			document.body.appendChild(el);
+		}
+
+		document.body.appendChild(document.createElement('div'));
+		document.body.appendChild(document.createTextNode('HSL'));
+		document.body.appendChild(document.createElement('div'));
+
+		for (var i = 0; i < rgbData.length; ++i) {
+			var c = rgb2hsl(rgbData[i][0], rgbData[i][1], rgbData[i][2]);
+
+			var el = document.createElement('div');
+			el.className = 'sample';
+			el.style.backgroundColor = 'hsl(' + c[0] + ',' + c[1] + '%,' + c[2] + '%)';
+
+			document.body.appendChild(el);
+		}
+
+		document.body.appendChild(document.createElement('div'));
+		document.body.appendChild(document.createTextNode('HSY'));
+		document.body.appendChild(document.createElement('div'));
+
+		function rgbvalue(r, g, b) {
+
+			var m = 0;
+			var M = 255;
+
+			r = (M * r) | 0;
+			g = (M * g) | 0;
+			b = (M * b) | 0;
+
+			var oog = r > M || b > M || g > M || r < m || g < m || b < m;
+
+			return ['rgb(' + r + ',' + g + ',' + b + ')', oog];
+		}
+
+		
+		function gamutBias(r, g, b) {
+
+			return r > 1 || b > 1 || g > 1 ? 1
+				: r < 0 || g < 0 || b < 0 ? -1
+					: 0;
+
+		}
+
+		function findInGamut(h, c, y) {
+			var rgb = hcy2rgb(h, c, y);
+			return rgb;
+
+			var d = gamutBias(rgb[0], rgb[1], rgb[2]);
+			var eps = 1E-6;
+			
+			if (d != 0) {
+				
+				var od = d;
+				var a = d > 0 ? 0 : c;
+				var b = d < 0 ? c : 1;
+
+				var n = 0;
+				do {
+					c = (a + b) / 2;
+
+					rgb = hcy2rgb(h, c, y);
+					d = gamutBias(rgb[0], rgb[1], rgb[2]);
+
+					a = d == od ? 0 : c;
+					b = d==od ? c : 1;
+
+				} while (d != 0 && ++n < 20 && b - a > eps);
+
+				if (n >= 20)
+					console.log(h, c, y, hcy2rgb(h, c, y).join(' '));
+
+			}
+			return rgb;
+		}
+
+
+		var chromaLevels = 10;
+		var lumaLevels = 150;
+		var oog2 = 0;
+		for (var chromaLevel = 0; chromaLevel <= chromaLevels; ++chromaLevel) {
+			for (var lumaLevel = 0; lumaLevel <= lumaLevels; ++lumaLevel) {
+
+				var c = findInGamut(360 * lumaLevel / lumaLevels, lumaLevel / lumaLevels, chromaLevel / chromaLevels);
+				var el = document.createElement('div');
+				var x = rgbvalue(c[0], c[1], c[2]);
+				var col = x[0];
+				var oog = x[1];
+
+				if (oog) oog2++;
+
+				el.className = oog ? 'out-of-gamut sample' : 'sample';
+
+				el.style.backgroundColor = col;
+
+				document.body.appendChild(el);
+			}
+
+			document.body.appendChild(document.createElement('div'));
+		}
+
+		console.log(oog1, oog2);
+
+	</script>
+
+</body>
+</html>
