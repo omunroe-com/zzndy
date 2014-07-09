@@ -628,7 +628,8 @@
     			if (val != null && val instanceof CellValue && val.type == water) {
 
     				var a = amountRange.place(val.value);
-    				var a = amountRange.place(val.value / 10 + val.vector[0] + val.vector[1] + val.vector[2] + val.vector[3] + val.vector[4] + val.vector[5]);
+    				//var a = amountRange.place(1 + val.vector[0] + val.vector[1] + val.vector[2] + val.vector[3] + val.vector[4] + val.vector[5]);
+    				//var a = amountRange.place(1 + val.counter[0] + val.counter[1] + val.counter[2] + val.counter[3] + val.counter[4] + val.counter[5]);
 
     				return a == 0
 						? (((pos.x % 6) == 0 && (pos.y % 6) == 0) ? 'hsl(47, 97%, 70%)' : 'hsl(47, 97%, 73%)')
@@ -658,7 +659,14 @@
 
     	function dec(v, i, xi) {
 
-    		return i == xi || v[i] < 1 ? v[i] : v[i] - 1;
+    		return i == xi && v[i] > 1 ? v[i] - 1 : v[i];
+    	}
+
+    	function addHexVector2(v0, v1, n) {
+    		for (var i = 0; i < 6; ++i) {
+    			var v = v1[i] - (i == n ? 1 : 0);
+    			if (v > v0[i]) v0[i] = v;
+    		}
     	}
 
     	function trySubstract(v1, v2) {
@@ -691,15 +699,22 @@
     			var val = val0;
     			var vec = cell.vector;
 
-
     			cell.counter = trySubstract(cell.counter, cell.vector);
 
-    			var scores = surround.map(function (node) {
-    				if (vec[node.dir] > 0) --vec[node.dir];
+    			surround.forEach(function (node) {
+    				if (vec[node.dir] > 0)
+    					--vec[node.dir];
+    				
     				vecsum += vec[node.dir];
+    				//newCell.counter[node.dir] = cell.counter[node.dir];
 
-    				newCell.counter[node.dir] = cell.counter[node.dir];
+    				if (node.cell==null) {
+    					vec[(node.dir + 3) % 6] += vec[node.dir];
+    					vec[node.dir] = 0;
+    				}
+    			});
 
+    			var scores = surround.map(function (node) {
     				return (watercell(node.cell) ? val0 + vec[node.dir] - cell.counter[node.dir] - node.cell.value : 0) * 6 + bias % 6;
     			});
 
@@ -715,22 +730,16 @@
     							var newcell = newSurround[node.dir].cell;
     							--val;
     							++newcell.value;
-    							newcell.counter[node.dir]++;
+    							newCell.counter[node.dir]++;
 
     							if (kin > pot) {
-    								var vec2 = [dec(vec, 0, node.dir), dec(vec, 1, node.dir), dec(vec, 2, node.dir), dec(vec, 3, node.dir), dec(vec, 4, node.dir), dec(vec, 5, node.dir)];
-    								addHexVector(newcell.vector, vec2);
+    								addHexVector2(newcell.vector, vec, node.dir);
     							} else {
     								newcell.vector[node.dir] += pot - 1;
     							}
 
     							normalizeHexVector(newcell.vector);
     						}
-    					} else {
-
-    						newCell.vector[(node.dir + 3) % 6] += newCell.vector[node.dir];
-    						newCell.vector[node.dir] = 0;
-
     					}
     				});
 
