@@ -1,0 +1,224 @@
+<html>
+<head>
+<title>Elo</title>
+</head>
+<body>
+<div id="elo-content"></div>
+<script type="text/javascript">
+
+function unique(arr) {
+			var u = {}, a = [];
+			for (var i = 0, l = arr.length; i < l; ++i) {
+				if (Object.prototype.hasOwnProperty.call(u, arr[i])) continue;
+				a.push(arr[i]);
+				u[arr[i]] = 1;
+			}
+			return a;
+		}
+
+		var initScore = 1400;
+		var x10dif = 400;
+		var kFactor = 10;
+
+		function EloPlayer() {
+			this.score = initScore;
+			this.numMatches = 0;
+		}
+
+		function eloMatch(winner, looser, tie) {
+			winner.Update(looser, tie ? .5 : 1);
+			looser.Update(winner, tie ? .5 : 0);
+		}
+
+		EloPlayer.prototype.Update = function (other, result) {
+			var expected = 1 / (1 + Math.pow(10, (this.score - other.score) / x10dif));
+
+			var delta = kFactor * (result - expected);
+			this.score = Math.max(0, this.score + delta);
+			this.numMatches++;
+		}
+
+		function Item(name) {
+			this.name = name;
+			this.elo = new EloPlayer();
+		}
+
+		var collect = {};
+		var compare = {};
+		var display = {};
+
+		function X(eltId) {
+			this.root = document.getElementById(eltId);
+			this.stage = collect;
+		}
+
+		function div(elt) {
+			var e = document.createElement('div');
+			e.appendChild(elt);
+			return e;
+		}
+
+		function Sequence(items) {
+			this.items = items;
+			this.current = 0;
+		}
+
+		Sequence.prototype.next = function () {
+			if (this.current >= this.items.length) return null;
+
+			return this.items[this.current++];
+		}
+
+		function getPairs(items) {
+			var a = [];
+
+			for (var i = 0; i < items.length; ++i) {
+				for (var j = i + 1; j < items.length; ++j) {
+					a.push([items[i], items[j]]);
+				}
+			}
+
+			return a;
+		}
+
+		X.prototype.moveTo = function (stage, arg) {
+			switch (stage) {
+				case collect:
+					this.items = null;
+					break;
+				case compare:
+					this.items = getItems(arg).map(function (s) { return new Item(s) });
+					this.sequence = new Sequence(getPairs(this.items));
+					break;
+				case display:
+					this.sequence = null;
+					break;
+			}
+
+			this.stage = stage;
+			this.render();
+		}
+
+		function fac(n) {
+			return n <= 1 ? 1 : n * fac(n - 1);
+		}
+
+		function numPairs(n) {
+			return fac(n) / (fac(n - 2) * 2);
+		}
+
+		function getItems(text) {
+			return unique(text.split('\n').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0 }));
+		}
+
+		X.prototype.updateItemsList = function (text, elt, nfo) {
+			var lines = getItems(text);
+			elt.disabled = lines.length < 2;
+
+			var n = numPairs(lines.length);
+			nfo.innerHTML = lines.length + ' items, ' + n + ' pairs';
+		}
+
+		X.prototype.renderCollect = function () {
+			var self = this;
+			this.root.innerHTML = '';
+			var ta = document.createElement('textarea');
+			var ok = document.createElement('button');
+			var nfo = document.createElement('div');
+
+			ta.placeholder = 'Enter pairs';
+			ta.rows = 10;
+			ta.addEventListener('keyup', function () { self.updateItemsList(ta.value, ok, nfo) });
+
+			ok.appendChild(document.createTextNode('Done'));
+			ok.addEventListener('click', function () { self.moveTo(compare, ta.value); });
+			ok.disabled = true;
+			
+			var bottom = div(nfo);
+			bottom.appendChild(ok);
+
+			this.root.appendChild(div(ta))
+			this.root.appendChild(bottom);
+		}
+
+		function button(text, code) {
+			var b = document.createElement('button');
+
+			b.appendChild(document.createTextNode(text));
+			b.addEventListener('click', code);
+
+			return b;
+		}
+
+		X.prototype.renderCompare = function () {
+
+			var self = this;
+			this.root.innerHTML= '';
+
+			var item = this.sequence.next();
+
+			if (item == null) {
+				this.moveTo(display);
+				return;
+			}
+
+			var a = item[0];
+			var b = item[1];
+
+			if (Math.random() < .5) {
+				var c = a;
+				a = b;
+				b = c;
+			}
+
+			console.log(a, b);
+
+			var left = button(a.name, function () { eloMatch(a.elo, b.elo, false); self.render() });
+			var tie = button('tie', function () { eloMatch(a.elo, b.elo, true); self.render() });
+			var right = button(b.name, function () { eloMatch(b.elo, a.elo, false); self.render() });
+
+			this.root.appendChild(left);
+			this.root.appendChild(tie);
+			this.root.appendChild(right);
+			this.root.appendChild(div(document.createTextNode(this.sequence.current + '/' + this.sequence.items.length)));
+		}
+
+		X.prototype.renderDisplay = function () {
+			var self = this;
+			this.root.innerHTML = '';
+
+			var list = document.createElement('ol');
+
+			this.items.sort(function (a, b) { return b.elo.score - a.elo.score });
+
+			this.items.forEach(function (item, n) {
+				var e = document.createElement('li');
+				e.appendChild(document.createTextNode(item.name + '  ' + item.elo.score.toFixed(2)));
+				list.appendChild(e);
+			});
+
+			this.root.appendChild(list);
+			this.root.appendChild(button('Again', function(){self.moveTo(collect)}));
+		}
+
+		X.prototype.render = function () {
+
+			switch (this.stage) {
+				case collect: this.renderCollect();
+					break;
+				case compare: this.renderCompare();
+					break;
+				case display: this.renderDisplay();
+					break;
+				}
+
+		}
+
+
+
+		var v = new X('elo-content');
+		v.render();
+
+</script>
+</body>
+</html>
