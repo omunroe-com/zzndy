@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<style type="text/css">
+		html {
+			background-color: #262926;
+		}
+
+	</style>
+</head>
+<body>
+	<!-- Fullscreen canvas -->
+	<script type="text/javascript">
+		function fullscreenCanvas() {
+			var c = window.document.createElement('canvas');
+			window.document.body.appendChild(c);
+
+			var ctx = c.getContext('2d');
+
+			ctx.canvas.width = window.innerWidth;
+			ctx.canvas.height = window.innerHeight;
+			ctx.canvas.style.position = 'absolute';
+			ctx.canvas.style.top = 0;
+			ctx.canvas.style.left = 0;
+
+			return ctx;
+		}
+	</script>
+
+    <script type="text/javascript">
+        var r = .3;
+        var g = .59;
+        var b = .11;
+
+        // hue Chroma luma
+        function hcy2rgb(h, c, y) {
+            h0 = h;
+            h /= 60;
+
+            var k = (1 - Math.abs((h % 2) - 1));
+
+            var K = h < 1 ? r + k * g
+            : h < 2 ? g + k * r
+            : h < 3 ? g + k * b
+            : h < 4 ? b + k * g
+            : h < 5 ? b + k * r
+            : r + k * b;
+
+            var cmax = 1;
+
+            if (y <= 0 || y >= 1) cmax = 0;
+            else cmax *= K < y ? (y - 1) / (K - 1) : K > y ? y / K : 1;
+            c = Math.min(c, cmax);
+
+            var x = c * k;
+            var rgb = h < 1 ? [c, x, 0]
+            : h < 2 ? [x, c, 0]
+            : h < 3 ? [0, c, x]
+            : h < 4 ? [0, x, c]
+            : h < 5 ? [x, 0, c]
+            : [c, 0, x];
+
+            var m = y - (r * rgb[0] + g * rgb[1] + b * rgb[2]);
+
+            return [rgb[0] + m, rgb[1] + m, rgb[2] + m];
+        }
+
+        function hcyCol(h, c, y)
+        {
+            var col = hcy2rgb(h % 360, c, y);
+            ctx.fillStyle = 'rgb(' + (255 * col[0] | 0) + ', ' + (255 * col[1] | 0) + ',' + (255 * col[2] | 0) + ')';
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function Point(x, y)
+        {
+            this.x = x; this.y = y;
+        }
+
+        function DerivedPoint(p, dx, dy)
+        {
+            this.point = p;
+            this.dx = dx;
+            this.dy = dy;
+        }
+
+        Object.defineProperty(DerivedPoint.prototype, 'x', {
+            get: function () { return this.point.x + this.dx; },
+            set: function (v) { this.point.x = v - this.dx }
+        });
+
+        Object.defineProperty(DerivedPoint.prototype, 'y', {
+            get: function () { return this.point.y + this.dy; },
+            set: function (v) { this.point.y = v - this.dy}
+        });
+
+        Point.prototype.distanceLessThan = function (maxdist) {
+            maxdist *= maxdist;
+            var p1 = this;
+
+            return function(p) {
+                var distSq = (p.x - p1.x) * (p.x - p1.x) + (p.y - p1.y) * (p.y - p1.y);
+                return distSq < maxdist;
+            }
+        }
+
+        function Line(p1, p2) {
+            this.nodes = [p1, p2];
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        var ctx = fullscreenCanvas();
+
+        var extent = 25;
+        var zoom = ctx.canvas.width < ctx.canvas.height
+            ? ctx.canvas.width / extent
+            : ctx.canvas.height / extent;
+
+        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+        ctx.scale(zoom, -zoom);
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#999';
+        ctx.fillStyle = '#777';
+        ctx.lineWidth = 1 / zoom;
+
+        var a = 5;
+        var w2 = a / Math.sqrt(3);
+
+        var pa = new Point(w2, 0);
+        var pb = new Point(w2 / 2, a / 2);
+     
+        var p1 = pa;
+        var p2 = pb;
+        var p3 = new DerivedPoint(pa, -3 * w2 / 2, a / 2);
+        var p4 = new DerivedPoint(pb, -3 * w2 / 2, -a / 2);
+        var p5 = new DerivedPoint(pa, -3 * w2 / 2, -a / 2);
+        var p6 = new DerivedPoint(pb, 0, -a);
+
+        var lines = [
+            new Line(p1, p2),
+            new Line(p2, p3),
+            new Line(p3, p4),
+            new Line(p4, p5),
+            new Line(p5, p6),
+            new Line(p6, p1)
+        ];
+
+        var cursor = new Point(-extent*2, -extent*2);
+        var selected = null;
+        var prevClickTime = 0;
+        var lastClickTime = 0;
+        var dblClickTime = 250;
+
+        function onmousemove(e) {
+            cursor = new Point(cursor.x = (e.clientX - ctx.canvas.width / 2) / zoom, (ctx.canvas.height / 2 - e.clientY) / zoom);
+
+            if (selected) {
+                var p = lines[selected[0]].nodes[selected[1]];
+
+             
+                p.x = cursor.x;
+                p.y = cursor.y;
+            }
+        }
+
+        function findNode(cursor)
+        {
+            for (var i = 0; i < lines.length; ++i)
+            {
+                var node = findIndex(lines[i].nodes, cursor.distanceLessThan(10 / zoom));
+                if (node >= 0) {
+                    return [i, node];
+                }
+            }
+
+            return null;
+        }
+
+        function onmousedown(e) {
+            var node = findNode(cursor);
+
+            if (e.button == 1 && node && lines[node[0]].nodes.length > 2 && node[1]!=0 && node[1]!=lines[node[0]].nodes.lenght) {
+                lines[node[0]].nodes.splice(node[1], 1);
+                selected = null;
+
+                return;
+            }
+
+            prevClickTime = lastClickTime;
+            lastClickTime = (new Date()).getTime();
+
+            selected = node;
+        }
+
+        function onmouseup() {
+            selected = null;
+
+            var time = (new Date()).getTime();
+            var dbclick = (time - prevClickTime) < dblClickTime;
+            
+            if (dbclick) {
+                var node = findNode(cursor);
+
+                if (node) {
+                    console.log(node);
+
+                    var line = lines[node[0]];
+                    var i = node[1] == 0 ? 1 : node[1];
+
+                    var newNode = new Point(line.nodes[i].x - (line.nodes[i].x - line.nodes[i-1].x) / 2,
+                        line.nodes[i].y - (line.nodes[i ].y - line.nodes[i-1].y) / 2);
+
+                    line.nodes.splice(i, 0, newNode);
+                }
+            }
+        }
+
+        function findIndex(array, predicate) {
+            for(var i=0;i<array.length;++i)
+                if (predicate(array[i], i, array))
+                    return i;
+        }
+
+        function drawLine(line) {
+            var k = 10;
+
+            for (var n = 0; n < k; ++n) {
+                for (var m = 0; m < k; ++m) {
+                    var dx = (n - k / 2) * 3 * w2 / 2;
+                    var dy = (m - k / 2) * a + ((1 + n) % 2) * a / 2;
+
+                    ctx.beginPath();
+                    ctx.moveTo(line.nodes[0].x + dx, line.nodes[0].y + dy);
+
+                    for (var i = 1; i < line.nodes.length; ++i)
+                        ctx.lineTo(line.nodes[i].x + dx, line.nodes[i].y + dy);
+
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function frame() {
+            ctx.clearRect(-extent*2, -extent*2, extent * 4, extent * 4);
+
+            ctx.strokeStyle = '#777';
+            ctx.fillStyle = 'rgba(200, 20,20,.3)';
+
+            var m = 10;
+            var n = 10;
+            for (var i = 0; i < n; ++i) {
+                for (var j = 0; j < m; ++j)
+                {
+                    ctx.save();
+                    var dx = (i - n / 2) * 3 * w2 / 2;
+                    var dy = (j - m / 2) * a + ((1 + i) % 2) * a / 2;
+
+                    ctx.fillStyle= hcyCol(i*50+j*10, .5, .5);
+                    
+                    ctx.translate(dx, dy);
+
+                    ctx.beginPath();
+
+                    var first = true;
+                    lines.forEach(function (line) {
+                        if (first) {
+                            ctx.moveTo(line.nodes[0].x, line.nodes[0].y);
+                            first = false;
+                        }
+
+                        for (var k = first ? 1 : 0; k < line.nodes.length; ++k)
+                            ctx.lineTo(line.nodes[k].x, line.nodes[k].y);
+                    });
+
+
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+            }
+
+
+            ctx.strokeStyle = 'white';
+            ctx.fillStyle = 'white';
+            lines.forEach(function (line) {
+            
+                ctx.beginPath();
+                ctx.moveTo(line.nodes[0].x, line.nodes[0].y);
+                for (var i = 1; i < line.nodes.length; ++i)
+                    ctx.lineTo(line.nodes[i].x, line.nodes[i].y);
+
+                ctx.stroke();
+
+                line.nodes.forEach(function(node) {
+                    ctx.fillRect(node.x - 1.5 / zoom, node.y - 1.5 / zoom, 3 / zoom, 3 / zoom);
+                });
+            });
+
+            var node = findNode(cursor);
+
+            if (selected) {
+                ctx.fillRect(lines[selected[0]].nodes[selected[1]].x - 5 / zoom, lines[selected[0]].nodes[selected[1]].y - 5 / zoom, 10 / zoom, 10 / zoom);
+            }
+
+            if (node) {
+                ctx.strokeRect(lines[node[0]].nodes[node[1]].x - 5 / zoom, lines[node[0]].nodes[node[1]].y - 5 / zoom, 10 / zoom, 10 / zoom);
+            }
+
+            window.requestAnimationFrame(frame);
+        }
+
+        ctx.canvas.addEventListener('mousemove', onmousemove);
+        ctx.canvas.addEventListener('mousedown', onmousedown);
+
+        ctx.canvas.addEventListener('mouseup', onmouseup);
+        
+        window.requestAnimationFrame(frame);
+
+    </script>
+
+</body>
+</html>
