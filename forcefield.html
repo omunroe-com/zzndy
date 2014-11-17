@@ -1,0 +1,562 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>forcefield</title>
+    <style type="text/css">
+        html, body {
+            background-color: #232220;
+            color: #dad6d0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="can"></canvas>
+
+    <!-- random -->
+    <script type="text/javascript">
+
+        /** rnd() random value from 0 to 1
+		 *  rnd(n) random from 0 to n
+		 *  rnd(n, m) random between n and m
+		 *  rnd(array) random element
+		 */
+        function rnd(a, b) {
+            switch (arguments.length) {
+            case 0:
+                return Math.random();
+            case 1:
+                if (a instanceof Array)
+                    return a[Math.floor(Math.random() * a.length)];
+                else
+                    return a * Math.random();
+            default: // case 2 actually
+                return a + (b - a) * Math.random();
+            }
+        }
+
+        function rndi() {
+            return Math.floor(rnd.apply(null, arguments));
+        }
+
+    </script>
+
+    <!-- Point -->
+    <script type="text/javascript">
+
+        function Point(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        Point.prototype.toString = function () { return this.x + ',' + this.y }
+
+        Point.prototype.equal = function (p) {
+            return this.x == p.x && this.y == p.y;
+        }
+
+        Point.prototype.times = function (n) {
+            return new Point(this.x * n, this.y * n);
+        }
+
+        Point.prototype.add = function (dx, dy) {
+            return new Point(this.x + dx, this.y + dy);
+        }
+
+        Point.prototype.plus = function (p) {
+            return new Point(this.x + p.x, this.y + p.y);
+        }
+
+    </script>
+
+    <!-- Hexstore -->
+    <script type="text/javascript">
+
+        function MakeData(extremes, initFn) {
+
+            var minmax = extremes.reduce(function (current, point) {
+
+                var i = point.y;
+                var j = point.x;
+
+                return current == null
+                    ? [i, j, i, j]
+                    : [Math.min(current[0], i),
+                        Math.min(current[1], j),
+                        Math.max(current[2], i),
+                        Math.max(current[3], j)];
+            }, null);
+
+            var mini = minmax[0];
+            var minj = minmax[1];
+            var maxi = minmax[2];
+            var maxj = minmax[3];
+
+            // x, y (getStore(origin) -> 0 0)
+            var origin = [-mini, -minj];
+
+            // max i, max j
+            var n = maxi - mini + 1;
+            var m = maxj - minj + 1;
+
+            var data = [];
+
+            var i = -1;
+            while (++i < n) {
+                var row = [];
+                var j = -1;
+                while (++j < m)
+                    row.push(initFn(new Point(j - origin[0], i - origin[1])));
+
+                data.push(row);
+            }
+
+
+            return [origin, data];
+        }
+
+        function MakeHexStore(extremes, initFn, cloneFn) {
+            var originData = MakeData(extremes, initFn);
+
+            return new HexStore(originData[0], originData[1], initFn, cloneFn);
+        }
+
+        function HexStore(origin, data, initFn, cloneFn) {
+            this.origin = origin;
+            this.data = data;
+            this.initFn = initFn;
+            this.cloneFn = cloneFn;
+        }
+
+        HexStore.prototype.set = function (pos, value) {
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            var j = pos.x + xo;
+            var i = pos.y + yo;
+
+            if (i >= 0 && j >= 0 && i < n && j < m) this.data[i][j] = value;
+        }
+
+        HexStore.prototype.forEach = function (processFn) {
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            var i = -1;
+            while (++i < n) {
+                var j = -1;
+                while (++j < m)
+                    if (this.data[i][j] != null)
+                        processFn(this.data[i][j], new Point(j - xo, i - yo));
+            }
+        }
+
+        // dx dy
+        var dirsdeltas = [
+            [/*down-right*/ 1, 0],
+            [/*up-right*/ 1, 1],
+            [/*up*/ 0, 1],
+            [/*up-left*/ -1, 0],
+            [/*down-left*/ -1, -1],
+            [/*down*/ 0, -1]
+        ];
+
+        function Adjacent(dir, cell) {
+            this.dir = dir;
+            this.cell = cell;
+        }
+
+        HexStore.prototype.adjacent = function (pos) {
+
+            var i = pos.y + this.origin[1];
+            var j = pos.x + this.origin[0];
+
+            var data = this.data;
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            return dirsdeltas.map(function (d, dir) {
+                var dx = d[0];
+                var dy = d[1];
+
+                var id = i + dy;
+                var jd = j + dx;
+
+                return new Adjacent(dir, (id >= 0 && jd >= 0 && id < n && jd < m) ? data[id][jd] : null);
+            });
+
+        }
+
+        HexStore.prototype.copy = function () {
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var copy = [];
+
+            for (var i = 0; i < n; ++i) {
+                var row = [];
+                for (var j = 0; j < m; ++j) {
+                    var val = this.data[i][j];
+                    row.push(val == null ? null : this.cloneFn(val));
+                }
+                copy.push(row);
+            }
+
+            return new HexStore(this.origin, copy, this.initFn, this.cloneFn);
+        }
+
+        HexStore.prototype.nextGen = function (cellCellStoreStoreFunc) {
+
+            var newStore = this.copy();
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            for (var i = 0; i < n; ++i) {
+                for (var j = 0; j < m; ++j) {
+                    var pos = new Point(j - xo, i - yo);
+
+                    cellCellStoreStoreFunc(this.data[i][j], newStore.data[i][j], pos, this, newStore);
+                }
+            }
+
+            return newStore;
+        }
+    </script>
+
+    <!-- Fullscreen canvas and drawhex -->
+    <script type="text/javascript">
+        function fullscreenCanvas(id) {
+            var c = window.document.getElementById(id);
+            var ctx = c.getContext('2d');
+
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+            ctx.canvas.style.position = 'absolute';
+            ctx.canvas.style.top = 0;
+            ctx.canvas.style.left = 0;
+
+            return ctx;
+        }
+
+        var ctx = fullscreenCanvas('can');
+        var w = ctx.canvas.width;
+        var h = ctx.canvas.height;
+
+        var q = 1 / Math.sqrt(3);
+
+        ctx.pathHex = function (h) {
+            var dx = q * h / 2;
+            var dy = h / 2;
+
+            this.beginPath();
+            this.moveTo(2 * dx, 0);
+            this.lineTo(dx, -dy);
+            this.lineTo(-dx, -dy);
+            this.lineTo(-2 * dx, 0);
+            this.lineTo(-dx, dy);
+            this.lineTo(dx, dy);
+            this.closePath();
+        };
+
+        ctx.fillHex = function (x, y, h) {
+            this.save();
+            this.translate(x, y);
+            this.pathHex(h);
+            this.fill();
+            this.restore();
+        };
+
+        ctx.strokeHex = function (x, y, h) {
+            this.save();
+            this.translate(x, y);
+            this.pathHex(h);
+            this.stroke();
+            this.restore();
+        };
+
+        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+    </script>
+
+    <!-- Supercell -->
+    <script type="text/javascript">
+        /* Hexagonal area with same tiling properties as underlying cells.
+		 */
+        function SuperCell(x, y, rank) {
+            this.x = x;
+            this.y = y;
+            this.rank = rank;
+        }
+
+        SuperCell.prototype.getCorners = function () {
+            var r = this.rank;
+
+            return [new Point(2 * r, r - 1),
+                new Point(2 * r, r),
+                new Point(r, 2 * r),
+                new Point(r - 1, 2 * r),
+                new Point(-r + 1, r + 1),
+                new Point(-r, r),
+                new Point(-2 * r, -r),
+                new Point(-2 * r, -r - 1),
+                new Point(-r - 1, -2 * r),
+                new Point(-r, -2 * r),
+                new Point(r, -r),
+                new Point(r + 1, -r + 1)
+            ];
+        };
+
+        SuperCell.prototype.contains = function (point) {
+            var x = point.x - this.x;
+            var y = point.y - this.y;
+
+            var a = this.rank * 3 + 1;
+            var b = this.rank * 3;
+
+            var leftup = 2 * x + b;
+            var top = (x + a) / 2;
+            var rightup = b - x;
+            var rightdown = 2 * x - a;
+            var bottom = (x - b) / 2;
+            var leftdown = -x - a;
+
+            return leftup >= y
+                && top >= y
+                && rightup >= y
+                && rightdown <= y
+                && bottom <= y
+                && leftdown <= y;
+        };
+
+    </script>
+    
+    <script type="text/javascript">
+        
+        // hue Chroma luma
+        function hcy2rgb(h, c, y, a) {
+            // 601
+            var r = .3;
+            var g = .59;
+            var b = .11;
+
+            var h0 = h;
+            h /= 60;
+
+            var k = (1 - Math.abs((h % 2) - 1));
+
+            var K = h < 1 ? r + k * g
+				        : h < 2 ? g + k * r
+					        : h < 3 ? g + k * b
+						        : h < 4 ? b + k * g
+							        : h < 5 ? b + k * r
+								        : r + k * b;
+
+            var cmax = 1;
+
+            if (y <= 0 || y >= 1) cmax = 0;
+            else cmax *= K < y ? (y - 1) / (K - 1) : K > y ? y / K : 1;
+            //c *= cmax;
+            c = Math.min(c, cmax);
+
+            var x = c * k;
+            var rgb = h < 1 ? [c, x, 0]
+                    : h < 2 ? [x, c, 0]
+                        : h < 3 ? [0, c, x]
+                            : h < 4 ? [0, x, c]
+                                : h < 5 ? [x, 0, c]
+                                    : [c, 0, x];
+
+            var m = y - (r * rgb[0] + g * rgb[1] + b * rgb[2]);
+
+            var rgbdata = [rgb[0] + m, rgb[1] + m, rgb[2] + m];
+            return 'rgba(' + (rgbdata[0] * 255).toFixed(0) + ',' + (rgbdata[1] * 255).toFixed(0) + ',' + (rgbdata[2] * 255).toFixed(0) + ', ' + (a || 1) + ')';
+
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        var rank = 13;
+        var supercell = new SuperCell(0, 0, rank);
+        var extremes = supercell.getCorners();
+        var cellsize = 20;
+    	
+        function CellValue(type, value) {
+            this.type = type;
+            this.value = value;
+
+            this.vector = [0, 0, 0, 0, 0, 0];
+            this.counter = [0, 0, 0, 0, 0, 0];
+        }
+
+        function CloneCellValue(arg) {
+            return new CellValue(arg.type, arg.value);
+        }
+
+        var cos = Math.cos;
+        var sin = Math.sin;
+
+
+        function MakeCellValue(arg) {
+            if (supercell.contains(arg)) {
+
+                var d = rnd(.8*cellsize, 1.5*cellsize);
+                var a = rnd(2*Math.PI);
+
+                return new CellValue('', new Point(d * cos(a), d * sin(a)));
+            }
+
+            return null;
+        }
+
+        var store = new MakeHexStore(supercell.getCorners(), MakeCellValue, CloneCellValue);
+
+        var sq32 = Math.sqrt(3) / 2;
+
+        function getScreen(world) {
+            var s = cellsize;
+            var q = 1;
+
+            return new Point(
+                q * s * world.x * sq32,
+                q * -s * (world.y - world.x / 2)
+            );
+        }
+
+    
+        function draw(store) {
+            var amin = .3;
+
+            function cellColor(val, pos) {
+                if (val != null && val instanceof CellValue) {
+                    var a = ((390 + Math.atan2(val.value.x, val.value.y) * 180 / Math.PI) % 360).toFixed();
+                    var alpha = (amin + (.9 - amin) * (val.value.x * val.value.x + val.value.y * val.value.y) / (cellsize * cellsize))
+                    //return 'hsla(' + a + ', 100%, 70%, ' + alpha + ')';
+
+                    return hcy2rgb(a, 1, .5, alpha);
+                }
+
+                return 'transparent';
+            }
+
+            function drawCell(cell, pos) {
+                var s = cellsize;
+                var screen = getScreen(pos);
+                var x = screen.x;
+                var y = screen.y;
+
+                ctx.fillStyle = ctx.strokeStyle = cellColor(cell, pos);
+
+                ctx.save()
+                ctx.translate(x, y);
+
+                ctx.fillHex(0,0,cellsize);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+
+                var a = Math.atan2(cell.value.x, cell.value.y);
+                var dx = cellsize/2 * Math.cos(a);
+                var dy = cellsize/2 * Math.sin(a);
+
+                ctx.lineTo(dx, dy);
+                ctx.stroke();
+                ctx.beginPath();
+                //ctx.arc(0, 0, 1, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
+            store.forEach(drawCell);
+
+        }
+
+        var x = Math.PI / 3;
+        var a = 4 * Math.PI / 3;
+        var da = [a, a + x, a + 2 * x, a + 3 * x, a + 4 * x, a + 5 * x];
+        var ffff = false;
+        var ddd = 0;
+        function tick() {
+            var total = 0;
+            var zero = getScreen(new Point(0, 0));
+
+            store = store.nextGen(function (oldCell, newCell, pos, oldStore, newStore) {
+                if (oldCell != null) {
+                    var zz = oldStore.adjacent(pos);
+                    var adj = zz.filter(function (a) { return a.cell != null });
+
+                    if (adj.length == 6) {
+                        if (pos.x == -10 && pos.y == -10) {
+                            var d = cellsize;
+                            var a = Math.PI / 6 - 2 * ddd / 3;
+
+                            newCell.value = new Point(d * cos(a), d * sin(a));
+                        } else if (pos.x == 10 && pos.y == 10) {
+                            var d = cellsize;
+                            var a = Math.PI / 3 - ddd / 2;
+
+                            newCell.value = new Point(d * cos(a), d * sin(a));
+                        } else if (pos.x == -10 && pos.y == 0) {
+                            var d = cellsize;
+                            var a = Math.PI - 4 * Math.PI / 6 + ddd;
+
+                            newCell.value = new Point(d * cos(a), d * sin(a));
+                        } else if (pos.x == 10 && pos.y == 0) {
+                            var d = cellsize;
+                            var a = Math.PI + 3 * Math.PI / 6 + ddd;
+
+                            newCell.value = new Point(d * cos(a), d * sin(a));
+                        } else {
+                            var sum = adj.reduce(function(sum, el) { return sum.plus(el.cell.value.times(1 / adj.length)) }, oldCell.value);
+
+                            newCell.value = sum.times(.5);
+                        }
+                    } else {
+                        var p = getScreen(pos)
+                        var a = Math.atan2(zero.x - p.x, zero.y - p.y);
+                        var d = cellsize;
+
+                        newCell.value = new Point(d * cos(a), d * sin(a));
+                    }
+
+                    total += newCell.value.x * newCell.value.x + newCell.value.y * newCell.value.y;
+                }
+            });
+            ddd += .01;
+            //console.log(total);
+            draw(store);
+            ffff = true;
+            window.requestAnimationFrame(tick);
+        }
+
+        tick();
+
+    </script>
+
+    <!-- user input -->
+    <script type="text/javascript">
+
+        function InputManager(mapping) {
+            var $ = this;
+            this.action = null;
+            this.handler = function(event) { $.action = mapping[event.which] };
+
+            window.addEventListener('keydown', this.handler, false);
+        }
+
+    </script>
+
+</body>
+</html>
