@@ -347,57 +347,6 @@
 
     </script>
 
-    <!-- RangeScale -->
-    <script type="text/javascript">
-
-    	function Range(min, max) {
-    		this.min = min;
-    		this.max = max;
-    	}
-
-    	Range.prototype.include = function (value) {
-    		this.min = Math.min(this.min, value);
-    		this.max = Math.max(this.max, value);
-    	}
-
-    	Range.prototype.place = function (value) {
-    		return value > this.max ? 1
-				: value < this.min ? 0
-				: (value - this.min) / (this.max - this.min);
-    	}
-
-    	function RangeScale(initiala, initialb) {
-
-    		if (arguments.length == 2) {
-    			this.current = new Range(initiala, initialb);
-    		}
-    		else if (arguments.length == 1) {
-    			this.current = new Range(0, initiala);
-    		}
-    		else {
-    			this.current = new Range(0, 1);
-    		}
-
-    		this.next = null;
-    	}
-
-    	RangeScale.prototype.place = function (value) {
-
-    		if (this.next == null)
-    			this.next = new Range(value, value);
-
-    		this.next.include(value);
-
-    		return this.current.place(value);
-    	}
-
-    	RangeScale.prototype.update = function () {
-    		this.current = new Range((this.current.min + this.next.min) / 2, (this.current.max + this.next.max) / 2);
-    		this.next = null;
-    	}
-
-    </script>
-
     <script type="text/javascript">
     	//
     	// TODO:
@@ -407,7 +356,7 @@
     	//	add wrapping
     	//
 
-    	var rank = 1;
+    	var rank = 4;
     	var supercell = new SuperCell(0, 0, rank);
     	var extremes = supercell.getCorners();
     	var k = .5;
@@ -597,10 +546,13 @@
 
     			        var grad = ctx.createLinearGradient(0, dy, 0, -dy);
     			        grad.addColorStop(0, col);
-    			       // if (a.cell != null) {
+    			        if (a.cell != null) {
     			            grad.addColorStop(.3, col);
     			            grad.addColorStop(.7, cellColor(a.cell, null));
-    			      //  }
+    			        }
+    			        else {
+    			            grad.addColorStop(.5, col);
+    			        }
 
     			        grad.addColorStop(1, cellColor(a.cell, null));
     			        ctx.fillStyle = grad;
@@ -626,29 +578,24 @@
     		store.forEach(drawCell);
     	}
 
-    	var inc = false;
-    	var dk = .001;
+    	var dk = .01;
     	var kmin = .6;
     	var kmax = 1;
 
+
+    	window.addEventListener('mousewheel', function(e) {
+    	    k += e.wheelDelta > 0 ? dk : -dk;
+
+    	    if (k >= kmax)
+    	        k = kmax;
+    	    if (k <= kmin)
+    	        k = kmin;
+	    });
+
+
+
     	function tick() {
     		draw(store);
-
-    		if (inc) {
-    		    k += dk;
-    		    if (k >= kmax) {
-    		        k = kmax;
-    		        inc = false;
-    		    }
-    		}
-    		else {
-    		    k -= dk;
-    		    if (k <= kmin) {
-    		        k = kmin;
-    		        inc = true;
-    		    }
-    		}
-
 
     		window.requestAnimationFrame(tick);
     	}
