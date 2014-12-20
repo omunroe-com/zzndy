@@ -1,0 +1,652 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>spread</title>
+    <style type="text/css">
+        html, body {
+            background-color: #232220;
+            color: #dad6d0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="can"></canvas>
+
+    <!-- random -->
+    <script type="text/javascript">
+
+        /** rnd() random value from 0 to 1
+		 *  rnd(n) random from 0 to n
+		 *  rnd(n, m) random between n and m
+		 *  rnd(array) random element
+		 */
+        function rnd(a, b) {
+            switch (arguments.length) {
+            case 0:
+                return Math.random();
+            case 1:
+                if (a instanceof Array)
+                    return a[Math.floor(Math.random() * a.length)];
+                else
+                    return a * Math.random();
+            default: // case 2 actually
+                return a + (b - a) * Math.random();
+            }
+        }
+
+        function rndi() {
+            return Math.floor(rnd.apply(null, arguments));
+        }
+
+    </script>
+
+    <!-- Point -->
+    <script type="text/javascript">
+
+        function Point(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        Point.prototype.toString = function () { return this.x + ',' + this.y }
+
+        Point.prototype.equal = function (p) {
+            return this.x == p.x && this.y == p.y;
+        }
+
+        Point.prototype.times = function (n) {
+            return new Point(this.x * n, this.y * n);
+        }
+
+        Point.prototype.add = function (dx, dy) {
+            return new Point(this.x + dx, this.y + dy);
+        }
+
+        Point.prototype.plus = function (p) {
+            return new Point(this.x + p.x, this.y + p.y);
+        }
+
+    </script>
+
+    <!-- Hexstore -->
+    <script type="text/javascript">
+
+        function GridPoint(i, j) {
+            this.i = i;
+            this.j = j;
+        }
+
+        var sq32 = Math.sqrt(3) / 2;
+
+        function world(i, j) {
+            if (arguments.length == 1) {
+                j = i.j;
+                i = i.i;
+            }
+
+            return new Point(j * sq32, i - j / 2);
+        }
+
+        function grid(x, y) {
+            if (arguments.length == 1) {
+                y = x.y;
+                x = x.x;
+            }
+
+            var j = x / sq32;
+
+            return new GridPoint(y + j / 2, j);
+        }
+
+        function MakeData(extremes, initFn) {
+
+            var minmax = extremes.reduce(function(current, point) {
+                var i = point.y;
+                var j = point.x;
+
+                return current == null
+                    ? [i, j, i, j]
+                    : [
+                        Math.min(current[0], i),
+                        Math.min(current[1], j),
+                        Math.max(current[2], i),
+                        Math.max(current[3], j)
+                    ];
+            }, null);
+
+            var mini = minmax[0];
+            var minj = minmax[1];
+            var maxi = minmax[2];
+            var maxj = minmax[3];
+
+            // x, y (getStore(origin) -> 0 0)
+            var origin = [-mini, -minj];
+
+            // max i, max j
+            var n = maxi - mini + 1;
+            var m = maxj - minj + 1;
+
+            var data = [];
+
+            var i = -1;
+            while (++i < n) {
+                var row = [];
+                var j = -1;
+                while (++j < m) {
+                    row.push(initFn(new GridPoint(i - origin[1], j - origin[0])));
+                }
+
+                data.push(row);
+            }
+
+
+            return [origin, data];
+        }
+
+        function MakeHexStore(extremes, initFn, cloneFn) {
+            var originData = MakeData(extremes, initFn);
+
+            return new HexStore(originData[0], originData[1], initFn, cloneFn);
+        }
+
+        function HexStore(origin, data, initFn, cloneFn) {
+            this.origin = origin;
+            this.data = data;
+            this.initFn = initFn;
+            this.cloneFn = cloneFn;
+        }
+
+        HexStore.prototype.set = function (pos, value) {
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            var j = pos.j + xo;
+            var i = pos.i + yo;
+
+            if (i >= 0 && j >= 0 && i < n && j < m) this.data[i][j] = value;
+        }
+
+        HexStore.prototype.forEach = function (processFn) {
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            var i = -1;
+            while (++i < n) {
+                var j = -1;
+                while (++j < m)
+                    if (this.data[i][j] != null)
+                        processFn(this.data[i][j], new GridPoint(i - yo, j - xo));
+            }
+        }
+
+        var dirdr = 0;
+        var dirur = 1;
+        var dirup = 2;
+        var dirul = 3;
+        var dirdl = 4;
+        var durdn = 5;
+
+        // dx dy
+        var dirsdeltas = [
+            [/*down-right*/ 1, 0],
+            [/*up-right*/ 1, 1],
+            [/*up*/ 0, 1],
+            [/*up-left*/ -1, 0],
+            [/*down-left*/ -1, -1],
+            [/*down*/ 0, -1]
+        ];
+
+        function Adjacent(dir, cell) {
+            this.dir = dir;
+            this.cell = cell;
+        }
+
+        HexStore.prototype.get = function (pos, dir) {
+            var i = pos.i + this.origin[1];
+            var j = pos.j + this.origin[0];
+
+            var data = this.data;
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var id = i + dirsdeltas[dir][1];
+            var jd = j + dirsdeltas[dir][0];
+
+            return (id >= 0 && jd >= 0 && id < n && jd < m) ? this.data[id][jd] : null
+        }
+
+        HexStore.prototype.adjacent = function (pos) {
+
+            var i = pos.i + this.origin[1];
+            var j = pos.j + this.origin[0];
+
+            var data = this.data;
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            return dirsdeltas.map(function (d, dir) {
+                var dx = d[0];
+                var dy = d[1];
+
+                var id = i + dy;
+                var jd = j + dx;
+
+                return new Adjacent(dir, (id >= 0 && jd >= 0 && id < n && jd < m) ? data[id][jd] : null);
+            });
+
+        }
+
+        HexStore.prototype.copy = function () {
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var copy = [];
+
+            for (var i = 0; i < n; ++i) {
+                var row = [];
+                for (var j = 0; j < m; ++j) {
+                    var val = this.data[i][j];
+                    row.push(val == null ? null : this.cloneFn(val));
+                }
+                copy.push(row);
+            }
+
+            return new HexStore(this.origin, copy, this.initFn, this.cloneFn);
+        }
+
+        HexStore.prototype.nextGen = function (cellCellStoreStoreFunc) {
+
+            var newStore = this.copy();
+
+            var n = this.data.length;
+            var m = this.data[0].length;
+
+            var xo = this.origin[0];
+            var yo = this.origin[1];
+
+            for (var i = 0; i < n; ++i) {
+                for (var j = 0; j < m; ++j) {
+                    var pos = new GridPoint(i - yo, j - xo);
+                    cellCellStoreStoreFunc(this.data[i][j], newStore.data[i][j], pos, this, newStore);
+                }
+            }
+
+            return newStore;
+        }
+    </script>
+
+    <!-- Fullscreen canvas and drawhex -->
+    <script type="text/javascript">
+        function fullscreenCanvas(id) {
+            var c = window.document.getElementById(id);
+            var ctx = c.getContext('2d');
+
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+            ctx.canvas.style.position = 'absolute';
+            ctx.canvas.style.top = 0;
+            ctx.canvas.style.left = 0;
+
+            return ctx;
+        }
+
+        var ctx = fullscreenCanvas('can');
+        var w = ctx.canvas.width;
+        var h = ctx.canvas.height;
+
+        var q = 1 / Math.sqrt(3);
+
+        ctx.pathHex = function (h) {
+            var dx = q * h / 2;
+            var dy = h / 2;
+
+            this.beginPath();
+            this.moveTo(2 * dx, 0);
+            this.lineTo(dx, -dy);
+            this.lineTo(-dx, -dy);
+            this.lineTo(-2 * dx, 0);
+            this.lineTo(-dx, dy);
+            this.lineTo(dx, dy);
+            this.closePath();
+        };
+
+        ctx.fillHex = function (x, y, h) {
+            this.save();
+            this.translate(x, y);
+            this.pathHex(h);
+            this.fill();
+            this.restore();
+        };
+
+        ctx.strokeHex = function (x, y, h) {
+            this.save();
+            this.translate(x, y);
+            this.pathHex(h);
+            this.stroke();
+            this.restore();
+        };
+
+        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+        ctx.scale(1, -1);
+    </script>
+
+    <!-- Supercell -->
+    <script type="text/javascript">
+        /* Hexagonal area with same tiling properties as underlying cells.
+		 */
+        function SuperCell(x, y, rank) {
+            this.x = x;
+            this.y = y;
+            this.rank = rank;
+        }
+
+        SuperCell.prototype.getCorners = function () {
+            var r = this.rank;
+
+            return [new Point(2 * r, r - 1),
+                new Point(2 * r, r),
+                new Point(r, 2 * r),
+                new Point(r - 1, 2 * r),
+                new Point(-r + 1, r + 1),
+                new Point(-r, r),
+                new Point(-2 * r, -r),
+                new Point(-2 * r, -r - 1),
+                new Point(-r - 1, -2 * r),
+                new Point(-r, -2 * r),
+                new Point(r, -r),
+                new Point(r + 1, -r + 1)
+            ];
+        };
+
+        SuperCell.prototype.contains = function (point) {
+            var x = point.j - this.x;
+            var y = point.i - this.y;
+
+            var a = this.rank * 3 + 1;
+            var b = this.rank * 3;
+
+            var leftup = 2 * x + b;
+            var top = (x + a) / 2;
+            var rightup = b - x;
+            var rightdown = 2 * x - a;
+            var bottom = (x - b) / 2;
+            var leftdown = -x - a;
+
+            return leftup >= y
+                && top >= y
+                && rightup >= y
+                && rightdown <= y
+                && bottom <= y
+                && leftdown <= y;
+        };
+
+    </script>
+    
+    <script type="text/javascript">
+        
+        // hue Chroma luma
+        function hcy2rgb(h, c, y, a) {
+            // 601
+            var r = .3;
+            var g = .59;
+            var b = .11;
+
+            var h0 = h;
+            h /= 60;
+
+            var k = (1 - Math.abs((h % 2) - 1));
+
+            var K = h < 1 ? r + k * g
+                : h < 2 ? g + k * r
+                : h < 3 ? g + k * b
+                : h < 4 ? b + k * g
+                : h < 5 ? b + k * r
+                : r + k * b;
+
+            var cmax = 1;
+
+            if (y <= 0 || y >= 1) cmax = 0;
+            else cmax *= K < y ? (y - 1) / (K - 1) : K > y ? y / K : 1;
+            //c *= cmax;
+            c = Math.min(c, cmax);
+
+            var x = c * k;
+            var rgb = h < 1 ? [c, x, 0]
+                : h < 2 ? [x, c, 0]
+                : h < 3 ? [0, c, x]
+                : h < 4 ? [0, x, c]
+                : h < 5 ? [x, 0, c]
+                : [c, 0, x];
+
+            var m = y - (r * rgb[0] + g * rgb[1] + b * rgb[2]);
+
+            var rgbdata = [rgb[0] + m, rgb[1] + m, rgb[2] + m];
+            return 'rgba(' + (rgbdata[0] * 255).toFixed(0) + ',' + (rgbdata[1] * 255).toFixed(0) + ',' + (rgbdata[2] * 255).toFixed(0) + ', ' + (a || 1) + ')';
+
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        function Ball(pos, r, v) {
+            this.pos = pos;
+            this.r = r;
+            this.v = v;
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        var rank = 40;
+        var supercell = new SuperCell(0, 0, rank);
+        var extremes = supercell.getCorners();
+
+        function dist(p, q) {
+            var dx = (p.x - q.x);
+            var dy = (p.y - q.y);
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        var zero = new Point(0, 0);
+
+        var zoom = Math.min(w, h) / supercell.getCorners().reduce(function (max, c) { return Math.max(max, dist(zero, c)) }, 0)*sq32;
+
+        function CellValue(v) {
+            this.v = v;
+        }
+
+        function CloneCellValue(arg) {
+            return new CellValue(arg.v);
+        }
+
+        var tau = 2 * Math.PI;
+        var cos = Math.cos;
+        var sin = Math.sin;
+        
+        var maxd = supercell.getCorners().reduce(function (max, c) { return Math.max(max, dist(zero, c))}, 0)*.5;
+
+        var mind = maxd/2;
+        var minballs = 10;
+        var maxballs = 15;
+        var minr = maxd/15;
+        var maxr = maxd/3;
+        var balls = [];
+        for (var i = 0; i < rnd(minballs, maxballs) ; ++i) {
+            var a = rnd(tau);
+            var d = rnd(mind, maxd);
+            var pos = new Point(d * cos(a), d * sin(a));
+            a = rnd(tau);
+            var v = new Point(mind * cos(a) / 50, mind * sin(a) / 50);
+            var r = rnd(minr, maxr);
+
+            balls.push(new Ball(pos, r, v));
+        }
+
+        function MakeCellValue(arg) {
+            if (supercell.contains(arg)) {
+                return new CellValue(0);
+            }
+
+            return null;
+        }
+
+        var store = new MakeHexStore(supercell.getCorners(), MakeCellValue, CloneCellValue);
+
+        var ps = [
+            new Point(0,0),
+            new Point(0,0),
+            new Point(0,1),
+            new Point(-sq32, .5),
+            new Point(-sq32, -.5)
+        ];
+
+        function getk(a, b) {
+            a = a < 1 ? 0 : a;
+        }
+
+        function draw(store, clear) {
+
+            function z(a, b, c) {
+                return (a == 0 && b != 0 && c != 0) || (a != 0 && b == 0 && c == 0);
+            }
+
+            function line(dk, a1, a2, b1, b2, ka, kb) {
+
+                var ka = 2;
+                var kb = 2;
+
+                var a = ps[dk + a1].plus(ps[dk + a2]).times(1 / ka);
+                var b = ps[dk + b1].plus(ps[dk + b2]).times(1 / kb);
+                
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+            }
+            
+            function triangle(a, b, c, t, x) {
+                var va = (a == null ? 0 : a.v)/t;
+                var vb = (b == null ? 0 : b.v)/t;
+                var vc = (c == null ? 0 : c.v)/t;
+
+                a = va >= 1 ? 1 : 0;
+                b = vb >= 1 ? 1 : 0;
+                c = vc >= 1 ? 1 : 0;
+
+                if ((a == 0 && b == 0 && c == 0) || (a != 0 && b != 0 && c != 0)) return;
+
+                if (z(a, b, c)) line(x, 0, 2, 0, 3, va / (va + vb), va / (va + vc));
+                else if (z(b, c, a)) line(x, 0, 2, 2, 3, va / (va + vb), vb / (vb + vc));
+                else if (z(c, a, b)) line(x, 2, 3, 0, 3, vb / (vb + vc), va / (va + vc));
+            }
+
+            function drawCell(cell, pos) {
+                var screen = world(pos);
+                var x = screen.x;
+                var y = screen.y;
+
+                ctx.save();
+                ctx.translate(x, y);
+
+                var a = store.get(pos, dirup);
+                var b = store.get(pos, dirul);
+                var c = store.get(pos, dirdl);
+
+                //triangle(cell, a, b, .3, 0);
+                //triangle(cell, b, c, .3, 2);
+
+                triangle(cell, a, b, .5, 0);
+                triangle(cell, b, c, .5, 1);
+
+                //triangle(cell, a, b, .7, 0);
+                //triangle(cell, b, c, .7, 2);
+
+                //ctx.fillRect(0, 0, .2, .2);
+
+                ctx.restore();
+            }
+
+            if(clear)
+            ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
+
+            ctx.save();
+            ctx.scale(zoom, zoom);
+            var lw = ctx.lineWidth = 1 / zoom;
+
+            ctx.strokeStyle = '#fff';
+            store.forEach(drawCell);
+
+            //ctx.strokeStyle = hcy2rgb(0, 0, 1, .05);
+            //balls.forEach(function (b) {
+            //    ctx.beginPath();
+            //    ctx.arc(b.pos.x, b.pos.y, b.r, 0, tau);
+            //    ctx.stroke();
+            //});
+
+            ctx.restore();
+        }
+
+        var x = Math.PI / 3;
+        var a = 4 * Math.PI / 3;
+        var da = [a, a + x, a + 2 * x, a + 3 * x, a + 4 * x, a + 5 * x];
+        var ddd = rnd(Math.PI*2);
+
+        var csr = new Point(0, 0);
+        var frameNum = 500;
+        var frameNo = -1;
+        var frames = new Array(frameNum);
+
+        function fl(n) { return Math.floor(n); }
+
+        function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+        function tick() {
+            store = store.nextGen(function (oldCell, newCell, pos, oldStore, newStore) {
+
+                if (oldCell != null) {
+                    var p = world(pos);
+                    var sum = balls.reduce(function (s, b) {
+                        var d = dist(p, b.pos) / b.r / 2;
+
+                        if (d > 1) return s;
+
+                        return s + fade(1 - d);
+                    }, 0);
+
+                    newCell.v = sum;
+
+                }
+            });
+
+            balls.forEach(function (b) {
+
+                var nextpos = b.pos.plus(b.v);
+
+                while(dist(nextpos, zero) > maxd) {
+                    var a = rnd(tau);
+                    b.v = new Point(mind * cos(a) / 50, mind * sin(a) / 50);
+                    nextpos = b.pos.plus(b.v);
+                }
+
+                b.pos = nextpos;
+
+            });
+            
+            draw(store, true);
+
+            ddd += .01;
+            window.requestAnimationFrame(tick);
+        }
+        
+        tick();
+
+    </script>
+</body>
+</html>
