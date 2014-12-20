@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>spread</title>
+    <title>Metaballs</title>
     <style type="text/css">
         html, body {
             background-color: #232220;
@@ -390,6 +390,7 @@
 
     </script>
     
+    <!-- Colors -->
     <script type="text/javascript">
         
         // hue Chroma luma
@@ -435,6 +436,7 @@
 
     </script>
 
+    <!-- Balls -->
     <script type="text/javascript">
         function Ball(pos, r, v) {
             this.pos = pos;
@@ -445,7 +447,7 @@
 
     <script type="text/javascript">
 
-        var rank = 40;
+        var rank = 25;
         var supercell = new SuperCell(0, 0, rank);
         var extremes = supercell.getCorners();
 
@@ -471,7 +473,7 @@
         var cos = Math.cos;
         var sin = Math.sin;
         
-        var maxd = supercell.getCorners().reduce(function (max, c) { return Math.max(max, dist(zero, c))}, 0)*.5;
+        var maxd = supercell.getCorners().reduce(function (max, c) { return Math.max(max, dist(zero, c)) }, 0) / 2;
 
         var mind = maxd/2;
         var minballs = 10;
@@ -479,12 +481,14 @@
         var minr = maxd/15;
         var maxr = maxd/3;
         var balls = [];
+
+        // generate metaballs
         for (var i = 0; i < rnd(minballs, maxballs) ; ++i) {
             var a = rnd(tau);
             var d = rnd(mind, maxd);
             var pos = new Point(d * cos(a), d * sin(a));
             a = rnd(tau);
-            var v = new Point(mind * cos(a) / 50, mind * sin(a) / 50);
+            var v = new Point(mind * cos(a) / 100, mind * sin(a) / 100);
             var r = rnd(minr, maxr);
 
             balls.push(new Ball(pos, r, v));
@@ -501,9 +505,9 @@
         var store = new MakeHexStore(supercell.getCorners(), MakeCellValue, CloneCellValue);
 
         var ps = [
-            new Point(0,0),
-            new Point(0,0),
-            new Point(0,1),
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 1),
             new Point(-sq32, .5),
             new Point(-sq32, -.5)
         ];
@@ -512,30 +516,42 @@
             a = a < 1 ? 0 : a;
         }
 
+        var enableLepr = true;
+        var oneOnly = false;
+
         function draw(store, clear) {
 
             function z(a, b, c) {
-                return (a == 0 && b != 0 && c != 0) || (a != 0 && b == 0 && c == 0);
+                return (a >=1 && b < 1 && c < 1) || (a < 1 && b >= 1 && c >= 1);
             }
 
-            function line(dk, a1, a2, b1, b2, ka, kb) {
+            function calcpoint(a, b, k) {
+                var a = ps[a];
+                var b = ps[b];
 
-                var ka = 2;
-                var kb = 2;
+                return a.plus(b.plus(a.times(-1)).times(k))
+            }
 
-                var a = ps[dk + a1].plus(ps[dk + a2]).times(1 / ka);
-                var b = ps[dk + b1].plus(ps[dk + b2]).times(1 / kb);
+            function line(dc, dk, a1, a2, b1, b2, ka, kb) {
+                if (!enableLepr) ka = kb = .5;
+
+                var a = calcpoint(dk + a1, dk + a2, ka);
+                var b = calcpoint(dk + b1, dk + b2, kb);
                 
                 ctx.beginPath();
                 ctx.moveTo(a.x, a.y);
                 ctx.lineTo(b.x, b.y);
                 ctx.stroke();
             }
+
+            function getk(v0, v1){
+                return (1 - v0) / (v1 - v0);
+            }
             
             function triangle(a, b, c, t, x) {
-                var va = (a == null ? 0 : a.v)/t;
-                var vb = (b == null ? 0 : b.v)/t;
-                var vc = (c == null ? 0 : c.v)/t;
+                var va = (a == null ? 0 : a.v) / t;
+                var vb = (b == null ? 0 : b.v) / t;
+                var vc = (c == null ? 0 : c.v) / t;
 
                 a = va >= 1 ? 1 : 0;
                 b = vb >= 1 ? 1 : 0;
@@ -543,10 +559,14 @@
 
                 if ((a == 0 && b == 0 && c == 0) || (a != 0 && b != 0 && c != 0)) return;
 
-                if (z(a, b, c)) line(x, 0, 2, 0, 3, va / (va + vb), va / (va + vc));
-                else if (z(b, c, a)) line(x, 0, 2, 2, 3, va / (va + vb), vb / (vb + vc));
-                else if (z(c, a, b)) line(x, 2, 3, 0, 3, vb / (vb + vc), va / (va + vc));
+                ctx.strokeStyle = hcy2rgb(360*t, 1, .5, 1);
+
+                if (z(a, b, c)) line(0, x, 0, 2, 0, 3, getk(va, vb), getk(va, vc));
+                else if (z(b, c, a)) line(1, x, 0, 2, 2, 3, getk(va, vb), getk(vb, vc));
+                else if (z(c, a, b)) line(2, x, 2, 3, 0, 3, getk(vb, vc), getk(va, vc));
             }
+
+            
 
             function drawCell(cell, pos) {
                 var screen = world(pos);
@@ -560,16 +580,17 @@
                 var b = store.get(pos, dirul);
                 var c = store.get(pos, dirdl);
 
-                //triangle(cell, a, b, .3, 0);
-                //triangle(cell, b, c, .3, 2);
-
-                triangle(cell, a, b, .5, 0);
-                triangle(cell, b, c, .5, 1);
-
-                //triangle(cell, a, b, .7, 0);
-                //triangle(cell, b, c, .7, 2);
-
-                //ctx.fillRect(0, 0, .2, .2);
+                if (oneOnly) {
+                    triangle(cell, a, b, .5, 0);
+                    triangle(cell, b, c, .5, 1);
+                }
+                else {
+                    var n = 10;
+                    for (var i = 0; i < n; ++i) {
+                        triangle(cell, a, b, i / (n - 1), 0);
+                        triangle(cell, b, c, i / (n - 1), 1);
+                    }
+                }
 
                 ctx.restore();
             }
@@ -583,14 +604,7 @@
 
             ctx.strokeStyle = '#fff';
             store.forEach(drawCell);
-
-            //ctx.strokeStyle = hcy2rgb(0, 0, 1, .05);
-            //balls.forEach(function (b) {
-            //    ctx.beginPath();
-            //    ctx.arc(b.pos.x, b.pos.y, b.r, 0, tau);
-            //    ctx.stroke();
-            //});
-
+            
             ctx.restore();
         }
 
@@ -646,6 +660,13 @@
         }
         
         tick();
+
+        window.addEventListener('click', function () {
+
+            if (oneOnly == enableLepr)
+                oneOnly = !oneOnly;
+            else enableLepr = !enableLepr;
+        }, false);
 
     </script>
 </body>
