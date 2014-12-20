@@ -1,4 +1,3 @@
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -72,19 +71,47 @@
     <!-- Hexstore -->
     <script type="text/javascript">
 
+        function GridPoint(i, j) {
+            this.i = i;
+            this.j = j;
+        }
+
+        var sq32 = Math.sqrt(3) / 2;
+
+        function world(i, j) {
+            if (arguments.length == 1) {
+                j = i.j;
+                i = i.i;
+            }
+
+            return new Point(j * sq32, i - j / 2);
+        }
+
+        function grid(x, y) {
+            if (arguments.length == 1) {
+                y = x.y;
+                x = x.x;
+            }
+
+            var j = x / sq32;
+
+            return new GridPoint(y + j / 2, j);
+        }
+
         function MakeData(extremes, initFn) {
 
-            var minmax = extremes.reduce(function (current, point) {
-
+            var minmax = extremes.reduce(function(current, point) {
                 var i = point.y;
                 var j = point.x;
 
                 return current == null
                     ? [i, j, i, j]
-                    : [Math.min(current[0], i),
+                    : [
+                        Math.min(current[0], i),
                         Math.min(current[1], j),
                         Math.max(current[2], i),
-                        Math.max(current[3], j)];
+                        Math.max(current[3], j)
+                    ];
             }, null);
 
             var mini = minmax[0];
@@ -105,8 +132,9 @@
             while (++i < n) {
                 var row = [];
                 var j = -1;
-                while (++j < m)
-                    row.push(initFn(new Point(j - origin[0], i - origin[1])));
+                while (++j < m) {
+                    row.push(initFn(new GridPoint(i - origin[1], j - origin[0])));
+                }
 
                 data.push(row);
             }
@@ -135,8 +163,8 @@
             var xo = this.origin[0];
             var yo = this.origin[1];
 
-            var j = pos.x + xo;
-            var i = pos.y + yo;
+            var j = pos.j + xo;
+            var i = pos.i + yo;
 
             if (i >= 0 && j >= 0 && i < n && j < m) this.data[i][j] = value;
         }
@@ -154,7 +182,7 @@
                 var j = -1;
                 while (++j < m)
                     if (this.data[i][j] != null)
-                        processFn(this.data[i][j], new Point(j - xo, i - yo));
+                        processFn(this.data[i][j], new GridPoint(i - yo, j - xo));
             }
         }
 
@@ -175,8 +203,8 @@
 
         HexStore.prototype.adjacent = function (pos) {
 
-            var i = pos.y + this.origin[1];
-            var j = pos.x + this.origin[0];
+            var i = pos.i + this.origin[1];
+            var j = pos.j + this.origin[0];
 
             var data = this.data;
             var n = this.data.length;
@@ -225,8 +253,7 @@
 
             for (var i = 0; i < n; ++i) {
                 for (var j = 0; j < m; ++j) {
-                    var pos = new Point(j - xo, i - yo);
-
+                    var pos = new GridPoint(i - yo, j - xo);
                     cellCellStoreStoreFunc(this.data[i][j], newStore.data[i][j], pos, this, newStore);
                 }
             }
@@ -287,6 +314,7 @@
         };
 
         ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+        ctx.scale(1, -1);
     </script>
 
     <!-- Supercell -->
@@ -318,8 +346,8 @@
         };
 
         SuperCell.prototype.contains = function (point) {
-            var x = point.x - this.x;
-            var y = point.y - this.y;
+            var x = point.j - this.x;
+            var y = point.i - this.y;
 
             var a = this.rank * 3 + 1;
             var b = this.rank * 3;
@@ -356,11 +384,11 @@
             var k = (1 - Math.abs((h % 2) - 1));
 
             var K = h < 1 ? r + k * g
-				        : h < 2 ? g + k * r
-					        : h < 3 ? g + k * b
-						        : h < 4 ? b + k * g
-							        : h < 5 ? b + k * r
-								        : r + k * b;
+                : h < 2 ? g + k * r
+                : h < 3 ? g + k * b
+                : h < 4 ? b + k * g
+                : h < 5 ? b + k * r
+                : r + k * b;
 
             var cmax = 1;
 
@@ -371,11 +399,11 @@
 
             var x = c * k;
             var rgb = h < 1 ? [c, x, 0]
-                    : h < 2 ? [x, c, 0]
-                        : h < 3 ? [0, c, x]
-                            : h < 4 ? [0, x, c]
-                                : h < 5 ? [x, 0, c]
-                                    : [c, 0, x];
+                : h < 2 ? [x, c, 0]
+                : h < 3 ? [0, c, x]
+                : h < 4 ? [0, x, c]
+                : h < 5 ? [x, 0, c]
+                : [c, 0, x];
 
             var m = y - (r * rgb[0] + g * rgb[1] + b * rgb[2]);
 
@@ -388,34 +416,26 @@
 
     <script type="text/javascript">
 
-        var rank = 13;
+        var rank = 15;
         var supercell = new SuperCell(0, 0, rank);
         var extremes = supercell.getCorners();
-        var cellsize = 20;
     	
-        function CellValue(type, value) {
-            this.type = type;
+        function CellValue(value) {
             this.value = value;
-
-            this.vector = [0, 0, 0, 0, 0, 0];
-            this.counter = [0, 0, 0, 0, 0, 0];
         }
 
         function CloneCellValue(arg) {
-            return new CellValue(arg.type, arg.value);
+            return new CellValue(arg.value);
         }
 
         var cos = Math.cos;
         var sin = Math.sin;
-
-
+        
         function MakeCellValue(arg) {
             if (supercell.contains(arg)) {
-
-                var d = rnd(.8*cellsize, 1.5*cellsize);
-                var a = rnd(2*Math.PI);
-
-                return new CellValue('', new Point(d * cos(a), d * sin(a)));
+                var d = rnd(.1, .5);
+                var a = rnd(2 * Math.PI);
+                return new CellValue(new Point(d * cos(a), d * sin(a)));
             }
 
             return null;
@@ -423,27 +443,14 @@
 
         var store = new MakeHexStore(supercell.getCorners(), MakeCellValue, CloneCellValue);
 
-        var sq32 = Math.sqrt(3) / 2;
-
-        function getScreen(world) {
-            var s = cellsize;
-            var q = 1;
-
-            return new Point(
-                q * s * world.x * sq32,
-                q * -s * (world.y - world.x / 2)
-            );
-        }
-
-    
         function draw(store) {
             var amin = .3;
+            var amax = .9;
 
             function cellColor(val, pos) {
                 if (val != null && val instanceof CellValue) {
-                    var a = ((390 + Math.atan2(val.value.x, val.value.y) * 180 / Math.PI) % 360).toFixed();
-                    var alpha = (amin + (.9 - amin) * (val.value.x * val.value.x + val.value.y * val.value.y) / (cellsize * cellsize))
-                    //return 'hsla(' + a + ', 100%, 70%, ' + alpha + ')';
+                    var a = ((720 + Math.atan2(val.value.x, val.value.y) * 180 / Math.PI) % 360).toFixed();
+                    var alpha = (amin + (amax - amin) * (val.value.x * val.value.x + val.value.y * val.value.y));
 
                     return hcy2rgb(a, 1, .5, alpha);
                 }
@@ -452,90 +459,171 @@
             }
 
             function drawCell(cell, pos) {
-                var s = cellsize;
-                var screen = getScreen(pos);
+                var screen = world(pos);
                 var x = screen.x;
                 var y = screen.y;
 
                 ctx.fillStyle = ctx.strokeStyle = cellColor(cell, pos);
 
-                ctx.save()
+                ctx.save();
                 ctx.translate(x, y);
 
-                ctx.fillHex(0,0,cellsize);
+                ctx.fillHex(0, 0, 1);
 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
 
-                var a = Math.atan2(cell.value.x, cell.value.y);
-                var dx = cellsize/2 * Math.cos(a);
-                var dy = cellsize/2 * Math.sin(a);
+                var a = Math.atan2(cell.value.y, cell.value.x);
+                var dx = Math.cos(a);
+                var dy = Math.sin(a);
 
-                ctx.lineTo(dx, dy);
-                ctx.stroke();
-                ctx.beginPath();
-                //ctx.arc(0, 0, 1, 0, Math.PI * 2);
+                ctx.lineTo(dx / 2, dy / 2);
                 ctx.stroke();
                 ctx.restore();
             }
 
             ctx.clearRect(-ctx.canvas.width / 2, -ctx.canvas.height / 2, ctx.canvas.width, ctx.canvas.height);
+
+            ctx.save();
+            ctx.scale(1.3*rank,1.3* rank);
+            var lw = ctx.lineWidth = 1.5 / rank;
             store.forEach(drawCell);
 
+           
+            var first = true;
+            for (var i = 0; i < frameNum; ++i) {
+                var n = (frameNum + frameNo - i) % frameNum;
+                var frame = frames[n];
+                if (frame) {
+
+                    if (first) {
+                        first = false;
+                    } else {
+                        var q = 1 - i / frameNum;
+                        ctx.strokeStyle = 'rgba(255,255,255,' + q + ')';
+                        ctx.lineWidth= lw*q;
+                        ctx.lineTo(frame.x, frame.y);
+                        ctx.stroke();
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(frame.x, frame.y);
+                }
+            }
+
+            ctx.restore();
         }
 
         var x = Math.PI / 3;
         var a = 4 * Math.PI / 3;
         var da = [a, a + x, a + 2 * x, a + 3 * x, a + 4 * x, a + 5 * x];
-        var ddd = 0;
+        var ddd = rnd(Math.PI*2);
+
+        var csr = new Point(0, 0);
+        var frameNum = 500;
+        var frameNo = -1;
+        var frames = new Array(frameNum);
+
+        function fl(n) { return Math.floor(n); }
+
+        
+        function dist(p, q) {
+            var dx = (p.x - q.x) ;
+            var dy = (p.y - q.y) ;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
         function tick() {
             var total = 0;
-            var zero = getScreen(new Point(0, 0));
+            var force = new Point(0, 0);
+
+            var p = grid(csr);
+            var ix = fl(p.j);
+            var iy = fl(p.i);
+            var x1, x2, x3, y1, y2, y3;
+
+            if (p.j - ix <= p.i - iy) {
+                x1 = ix;
+                y1 = iy;
+                x2 = ix;
+                y2 = iy + 1;
+                x3 = ix + 1;
+                y3 = iy + 1;
+            }
+            else {
+                x1 = ix;
+                y1 = iy;
+                x2 = ix + 1;
+                y2 = iy;
+                x3 = ix + 1;
+                y3 = iy + 1;
+            }
 
             store = store.nextGen(function (oldCell, newCell, pos, oldStore, newStore) {
+                
                 if (oldCell != null) {
                     var zz = oldStore.adjacent(pos);
                     var adj = zz.filter(function (a) { return a.cell != null });
-                    var extravalue =null;
+                    var extravalue = null;
 
                     if (adj.length == 6) {
-                        if (pos.x == 0 && pos.y == 10) {
-                            extravalue = ddd;
-                        } else if (pos.x == 10 && pos.y == 10) {
-                            extravalue = ddd*1.1-Math.PI/3;
-                        } else if (pos.x == 10 && pos.y == 0) {
-                            extravalue = ddd*1.2-2*Math.PI/3;
-                        } else if (pos.x == 0 && pos.y == -10) {
-                            extravalue = ddd*1.3-3*Math.PI/3;;
-                        } else if (pos.x == -10 && pos.y == -10) {
-                            extravalue = ddd*1.4-4*Math.PI/3;;
-                        } else if (pos.x == -10 && pos.y == 0) {
-                            extravalue = ddd*1.5-5*Math.PI/3;;
+                        if (pos.j == 0 && pos.i == 10) {
+                            extravalue = 0;//ddd;
+                        } else if (pos.j == 10 && pos.i == 10) {
+                            extravalue = ddd - Math.PI / 3;
+                        } else if (pos.j == 10 && pos.i == 0) {
+                            extravalue = ddd - 2 * Math.PI / 3;
+                        } else if (pos.j == 0 && pos.i == -10) {
+                            extravalue = ddd - 3 * Math.PI / 3;
+                        } else if (pos.j == -10 && pos.i == -10) {
+                            extravalue = ddd - 4 * Math.PI / 3;
+                        } else if (pos.j == -10 && pos.i == 0) {
+                            extravalue = ddd - 5 * Math.PI / 3;
                         } else {
-                            var sum = adj.reduce(function(sum, el) { return sum.plus(el.cell.value.times(1 / adj.length)) }, oldCell.value);
-
-                            newCell.value = sum.times(.5);
-
+                            newCell.value = adj
+                                .reduce(function (sum, el) { return sum == null ? el.cell.value : sum.plus(el.cell.value) }, null)
+                                .times(1 / adj.length);
                         }
-                            if(extravalue!=null){
-                                var p = new Point(cellsize * cos(extravalue), cellsize*sin(extravalue));
-                                var q = sin(ddd/5)*sin(ddd/5);
-                                newCell.value = newCell.value.times(q).plus(p.times(1-q));
-                            }
+
+                        // wind
+                        var windMaxAmount = .02*sin(3*ddd)*sin(5*ddd)*sin(7*ddd);
+                        var windAngle = ddd * 2;
+                        var wind = new Point(windMaxAmount * cos(windAngle), windMaxAmount * sin(windAngle));
+
+                        newCell.value = newCell.value.plus(wind);
+
+                        if (extravalue != null) {
+                            var p = new Point(cos(extravalue), sin(extravalue));
+                            var q = sin(ddd / 5) * sin(ddd / 5);
+                            
+                            newCell.value = newCell.value.times(q).plus(p.times(1 - q));
+                        }
                     } else {
-                        var p = getScreen(pos)
-                        var a = Math.atan2(zero.x - p.x, zero.y - p.y);
-                        var d = cellsize;
+                        var p = world(pos);
+                        var a = Math.atan2(-p.y, -p.x);
+                        var d = .8;
 
                         newCell.value = new Point(d * cos(a), d * sin(a));
                     }
 
                     total += newCell.value.x * newCell.value.x + newCell.value.y * newCell.value.y;
                 }
+
+                if ((pos.j == x1 && pos.i == y1) || (pos.j == x2 && pos.i == y2) || (pos.j == x3 && pos.i == y3)) {
+                    var d = dist(world(pos), csr);
+                    var k = fade(d);
+                    force = force.plus(newCell.value.times(k));
+                }
+
             });
-            ddd += .05;
-            //console.log(total);
+
+            csr = csr.plus(force);
+            frames[(++frameNo) % frameNum] = csr;
+            
             draw(store);
+
+            ddd += .01;
             window.requestAnimationFrame(tick);
         }
 
