@@ -6,6 +6,7 @@
             -moz-column-count: 2;
             float: left;
             margin-bottom: 1em;
+	    clear: both;
         }
 
         .ruleset1
@@ -13,9 +14,14 @@
             clear: both;
         }
 
+	hr { clear: both }
+
         object {
             padding: .1em;
         }
+
+	.five sup { margin-left: -1em; }
+	.five object { margin-right: 1em; }
 
         .rule {
             padding-right: 2em;
@@ -77,9 +83,16 @@
         code.push(this.size);
         code.push('"></object></td><td class="steps">');
 
+	var missBreaks = 0;
         var breakIssued = false;
         for (var i in this.steps)
         {
+	    if(this.steps[i] == '2')
+	    {
+		    ++missBreaks;
+		    code.push('<sup>&times;2</sup>');
+		    continue;
+	    }
             var step = this.mapping[this.steps[i]];
             code.push('<object data="');
             code.push(path);
@@ -89,7 +102,7 @@
             code.push('" height="');
             code.push(this.stepSize);
             code.push('"></object>');
-            if (i >= this.steps.length / 2 - 1 && !breakIssued)
+            if (i >= this.steps.length / 2 - 1 - missBreaks && !breakIssued)
             {
                 breakIssued = true;
                 code.push('<br />');
@@ -127,13 +140,28 @@
         , new Rule('rotate-corner-ccw', 'bl ru br rd bl ru br rd')
     ];
 
+    mapping = {
+	    'tl': 'top-left-5x5',
+	    'cc': 'front-ccw-5x5',
+	    'ld': 'left-down-5x5',
+	    'tr': 'top-right-5x5',
+	    'dl': 'bottom-left-5x5',
+	    'dr': 'bottom-right-5x5'
+    };
+
+    var fiveRules = [
+    	new Rule('swap-edges-5x5', 'tr cc 2 tr cc 2 ld 2 tr ld 2 dr cc 2 dl cc 2 tl 2')
+    ];
+
     var width = 90;
 
     document.write('<div class="ruleset">' + twoRules.join('') + '</div>');
-    document.write('<br/>');
+    document.write('<hr/>');
     document.write('<div class="ruleset1">' + twoCases.join('') + '</div>');
     document.write('<hr/>');
     document.write('<div class="ruleset">' + threeRules.join('') + '</div>');
+    document.write('<hr/>');
+    document.write('<div class="ruleset five">' + fiveRules.join('') + '</div>');
 </script>
 
 </body>
